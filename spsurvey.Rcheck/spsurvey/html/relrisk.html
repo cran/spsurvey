@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Relative Risk</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for relrisk {spsurvey}"><tr><td>relrisk {spsurvey}</td><td align="right">R Documentation</td></tr></table>
+<h2>Relative Risk</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function calculates the relative risk estimate for a 2x2 table of cell
+counts defined by a categorical response variable and a categorical
+explanatory (stressor) variable for an unequal probability design.  Relative
+risk is the ratio of two probabilities: the numerator is the probability that
+the first level of the response variable is observed given occurrence of the
+first level of the stressor variable, and the denominator is the probability
+that the first level of the response variable is observed given occurrence of
+the second level of the stressor variable.  The standard error of the base e
+log of the relative risk estimate and confidence limits for the estimate also
+are calculated.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+relrisk(dframe, response="response", stressor="stressor",
+   response.levels=c("Poor", "Good"), stressor.levels=c("Poor", "Good"),
+   wgt="wgt", xcoord="xcoord", ycoord="ycoord", stratum=NULL, cluster=NULL,
+   N.cluster=NULL, wgt1=NULL, xcoord1=NULL, ycoord1=NULL, popsize=NULL,
+   stage1size=NULL, support=NULL, swgt=NULL, swgt1=NULL, unitsize=NULL,
+   vartype="Local", conf=95, check.ind=TRUE)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>dframe</code></td>
+<td>
+a data frame containing the variables required for the analysis.
+If variable names are not provided in the corresponding arguments,
+then variables should be named as follows:<br>
+response = the categorical response variable values<br>
+stressor = the categorical explanatory (stressor) variable values<br>
+wgt = the final adjusted weights<br>
+xcoord = the x-coordinates for location<br>
+ycoord = the y-coordinates for location<br>
+stratum = the stratum codes</td></tr>
+<tr valign="top"><td><code>response</code></td>
+<td>
+name of the column in dframe containing the categorical
+response variable.  The default is "response".</td></tr>
+<tr valign="top"><td><code>stressor</code></td>
+<td>
+name of the column in dframe containing the categorical
+stressor variable.  The default is "stressor".</td></tr>
+<tr valign="top"><td><code>response.levels</code></td>
+<td>
+category values (levels) for the categorical response
+variable, where the first level is used for calculating the relative risk 
+estimate.  If response.levels is not supplied, then values "Poor" and "Good"
+are used for the first level and second level of the response variable,
+respectively.  The default is c("Poor", "Good").</td></tr>
+<tr valign="top"><td><code>stressor.levels</code></td>
+<td>
+category values (levels) for the categorical stressor
+variable, where the first level is used for calculating the numerator of 
+the relative risk estimate and the second level is used for calculating 
+the denominator of the estimate.  If stressor.levels is not supplied, then
+values "Poor" and "Good" are used for the first level and second level of
+the stressor variable, respectively.  The default is c("Poor", "Good").</td></tr>
+<tr valign="top"><td><code>wgt</code></td>
+<td>
+the final adjusted weight (inverse of the sample inclusion
+probability) for each site, which is either the weight for a 
+single-stage sample or the stage two weight for a two-stage sample.</td></tr>
+<tr valign="top"><td><code>xcoord</code></td>
+<td>
+x-coordinate for location for each site, which is either the
+x-coordinate for a single-stage sample or the stage two 
+x-coordinate for a two-stage sample.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>ycoord</code></td>
+<td>
+y-coordinate for location for each site, which is either the
+y-coordinate for a single-stage sample or the stage two 
+y-coordinate for a two-stage sample.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>stratum</code></td>
+<td>
+the stratum for each site.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>cluster</code></td>
+<td>
+the stage one sampling unit (primary sampling unit or cluster) 
+code for each site.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>N.cluster</code></td>
+<td>
+the number of stage one sampling units in the resource, which 
+is required for calculation of finite and continuous population 
+correction factors for a two-stage sample.  For a stratified sample 
+this variable must be a vector containing a value for each stratum and
+must have the names attribute set to identify the stratum codes.  The
+default is NULL.</td></tr>
+<tr valign="top"><td><code>wgt1</code></td>
+<td>
+the final adjusted stage one weight for each site.  The default
+is NULL.</td></tr>
+<tr valign="top"><td><code>xcoord1</code></td>
+<td>
+the stage one x-coordinate for location for each site.  The
+default is NULL.</td></tr>
+<tr valign="top"><td><code>ycoord1</code></td>
+<td>
+the stage one y-coordinate for location for each site.  The
+default is NULL.</td></tr>
+<tr valign="top"><td><code>popsize</code></td>
+<td>
+the known size of the resource - the total number of sampling 
+units of a finite resource or the measure of an extensive resource,
+which is required for calculation of finite and continuous population 
+correction factors for a single-stage sample.  This variable is also 
+used to adjust estimators for the known size of a resource.  For a
+stratified sample this variable must be a vector containing a value 
+for each stratum and must have the names attribute set to identify the
+stratum codes.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>stage1size</code></td>
+<td>
+the known size of the stage one sampling units of a two-
+stage sample, which is required for calculation of finite and  
+continuous population correction factors for a two-stage sample and 
+must have the names attribute set to identify the stage one sampling 
+unit codes.  For a stratified sample, the names attribute must be set
+to identify both stratum codes and stage one sampling unit codes using
+a convention where the two codes are separated by the # symbol, e.g.,
+"Stratum 1#Cluster 1".  The default is NULL.</td></tr>
+<tr valign="top"><td><code>support</code></td>
+<td>
+the support value for each site - the value one (1) for a 
+site from a finite resource or the measure of the sampling unit  
+associated with a site from an extensive resource, which is required  
+for calculation of finite and continuous population correction  
+factors.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>swgt</code></td>
+<td>
+the size-weight for each site, which is the stage two size-weight 
+for a two-stage sample.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>swgt1</code></td>
+<td>
+the stage one size-weight for each site.  The default is NULL.</td></tr>
+<tr valign="top"><td><code>unitsize</code></td>
+<td>
+the known sum of the size-weights of the resource, which for a 
+stratified sample must be a vector containing a value for each stratum 
+and must have the names attribute set to identify the stratum codes.  
+The default is NULL.</td></tr>
+<tr valign="top"><td><code>vartype</code></td>
+<td>
+the choice of variance estimator, where "Local" = local mean
+estimator and "SRS" = SRS estimator.  The default is "Local".</td></tr>
+<tr valign="top"><td><code>conf</code></td>
+<td>
+the confidence level.  The default is 95%.</td></tr>
+<tr valign="top"><td><code>check.ind</code></td>
+<td>
+a logical value that indicates whether compatability
+checking of the input values is conducted, where TRUE = conduct 
+compatibility checking and FALSE = do not conduct compatibility 
+checking.  The default is TRUE.</td></tr>
+</table>
+
+<h3>Details</h3>
+
+<p>
+The relative risk estimate is computed using the ratio of a numerator
+probability to a denominator probability, which are estimated using cell and
+marginal totals from a 2x2 table of cell counts defined by a categorical
+response variable and a categorical stressor variable. An estimate of the
+numerator probability is provided by the ratio of the cell total defined by
+the first level of response variable and the first level of the stressor
+variable to the marginal total for the first level of the stressor variable.
+An estimate of the denominator probability is provided by the ratio of the
+cell total defined by the first level of response variable and the second
+level of the stressor variable to the marginal total for the second level of
+the stressor variable.  Cell and marginal totals are estimated using the
+Horvitz-Thompson estimator. The standard error of the base e log of the
+relative risk estimate is calculated using a first-order Taylor series
+linearization (Sarndal et al., 1992).
+</p>
+
+
+<h3>Value</h3>
+
+<p>
+Value is a list containing the following components:
+<ul>
+<li><code>RelRisk</code> - the relative risk estimate
+<li><code>RRnum</code> - numerator ("elevated" risk) of the relative risk
+estimate
+<li><code>RRdenom</code> - denominator ("baseline" risk) of the relative risk
+estimate
+<li><code>RRlog.se</code> - standard error for the log of the relative risk
+estimate
+<li><code>ConfLimits</code> - confidence limits for the relative risk estimate
+<li><code>WeightTotal</code> - sum of the final adjusted weights
+<li><code>CellCounts</code> - cell and margin counts for the 2x2 table
+<li><code>CellProportions</code> - estimated cell proportions for the 2x2 table
+</ul>
+
+<h3>Author(s)</h3>
+
+<p>
+Tom Kincaid <a href="mailto:Kincaid.Tom@epa.gov">Kincaid.Tom@epa.gov</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Särndal, C.-E., B. Swensson, and J. Wretman. (1992). <EM>Model Assisted
+Survey Sampling.</EM> Springer-Verlag, New York.
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+dframe &lt;- data.frame(response=sample(c("Poor", "Good"), 100, replace=TRUE),
+   stressor=sample(c("Poor", "Good"), 100, replace=TRUE),
+   wgt=runif(100, 10, 100))
+relrisk(dframe, vartype="SRS")
+
+dframe$xcoord &lt;- runif(100)
+dframe$ycoord &lt;- runif(100)
+relrisk(dframe)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>spsurvey</em> version 1.6 <a href="00Index.html">Index]</a></div>
+
+</body></html>

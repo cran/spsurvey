@@ -1,0 +1,51 @@
+\HeaderA{grtslin}{Select GRTS Sample of a Linear Resource}{grtslin}
+\keyword{survey}{grtslin}
+\begin{Description}\relax
+This function select a GRTS sample of a linear resource.  This function uses
+hierarchical randomization to ensure that the sample will include no more
+than one point per cell and then picks a point in selected cells.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+grtslin(shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
+   shift.grid=TRUE, startlev=NULL, maxlev=11)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{shapefilename}] name of the input shapefile.  If shapefilename equals
+NULL, then the shapefile or shapefiles in the currrent directory are used.
+The default is NULL.
+\item[\code{linframe}] a data frame containing id, mdcaty and mdm.
+\item[\code{samplesize}] number of points to select in the sample.  The default is
+100.
+\item[\code{SiteBegin}] number to use for first site in the design.  The default is
+1.
+\item[\code{shift.grid}] option to randomly shift the hierarchical grid, where TRUE
+means shift the grid and FALSE means do not shift the grid, which is
+useful if one desires strict spatial stratification by hierarchical grid
+cells.  The default is TRUE.
+\item[\code{startlev}] initial number of hierarchical levels to use for the GRTS
+grid, which must be less than or equal to maxlev (if maxlev is specified)
+and cannot be greater than 11.  The default is NULL.
+\item[\code{maxlev}] maximum number of hierarchical levels to use for the GRTS grid,
+which cannot be greater than 11.  The default is 11.
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+A data frame of GRTS sample points containing: SiteID, id, x, y, mdcaty,
+and weight.
+\end{Value}
+\begin{Author}\relax
+Tony Olsen \email{Olsen.Tony@epa.gov}\\
+Tom Kincaid \email{Kincaid.Tom@epa.gov}
+\end{Author}
+\begin{References}\relax
+Stevens, D.L., Jr., and A.R. Olsen. (2004). Spatially-balanced sampling of
+natural resources. \emph{Journal of the American Statistical Association}, \bold{99},
+262-278.
+\end{References}
+\begin{SeeAlso}\relax
+\code{\LinkA{grts}{grts}}
+\end{SeeAlso}
+

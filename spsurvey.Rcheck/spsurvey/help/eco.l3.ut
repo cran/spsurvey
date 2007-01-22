@@ -1,0 +1,72 @@
+eco.l3.ut              package:spsurvey              R Documentation
+
+_E_x_a_m_p_l_e _P_o_l_y_g_o_n_s _D_a_t_a_s_e_t
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     This dataset is a list composed of two element, each of which is a
+     matrix containing the x-coordinates and y-coordinates for a
+     polygon.
+
+_U_s_a_g_e:
+
+     data(eco.l3.ut)
+
+_F_o_r_m_a_t:
+
+     A list containing two elements:
+
+     '_1' a matrix containing two variables named xcoord and ycoord,
+          which are the x-coordinates and y-coordinates for the first
+          polygon.
+
+     '_2' a matrix containing two variables named xcoord and ycoord,
+          which are the x-coordinates and y-coordinates for the second
+          polygon.
+
+_S_o_u_r_c_e:
+
+     This dataset is a subset of the Level III ecoregions in Utah. 
+     Further  information regarding ecoregions is available at the
+     following web site:  <URL:
+     http://www.epa.gov/wed/pages/ecoregions.htm>
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Omernik, J.M., (1987). Ecoregions of the conterminous United
+     States. _Annals of  Association of American Geographers_, *77*,
+     1-118.
+
+_S_e_e _A_l_s_o:
+
+     'sp2shape'
+
+_E_x_a_m_p_l_e_s:
+
+     # This example converts the dataset to an sp package object
+     data(eco.l3.ut)
+     n <- length(eco.l3.ut)
+     nparts <- rep(1, n)
+     ringdir <- rep(1, n)
+     IDs <- as.character(1:n)
+     shapes <- vector(mode="list", length=n)
+     for(i in 1:n) {
+        shapes[[i]] <- list(Pstart=0, verts=eco.l3.ut[[i]], 
+           nVerts=nrow(eco.l3.ut[[i]]), nParts=nparts[i])
+        attr(shapes[[i]], "RingDir") <- ringdir[i]
+     }
+     PolygonsList <- vector(mode="list", length=n)
+     for(i in 1:n) {
+       PolygonsList[[i]] <- shape2spList(shape=shapes[[i]], shp.type="poly",
+          ID=IDs[i])
+     }
+     att.data <- data.frame(id=1:n, area=1:n)
+     for(i in 1:n) {
+        att.data$area[i] <- PolygonsList[[i]]@area
+     }
+     rownames(att.data) <- IDs
+     sp.obj <- SpatialPolygonsDataFrame(Sr=SpatialPolygons(Srl=PolygonsList),
+        data=att.data)
+     # To convert the sp package object to a shapefile use the following code: 
+     # sp2shape(sp.obj, "eco.l3.ut")
+

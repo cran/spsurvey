@@ -1,0 +1,38 @@
+\HeaderA{marinus}{Convert Coordinates from Latitude/Longitude to the Equidistant, Cylindric Map Projection}{marinus}
+\keyword{misc}{marinus}
+\begin{Description}\relax
+This function converts x,y coordinates measured in units of latitude and 
+longitude, i.e., geographic coordinates measured in decimal degrees, to 
+coordinates in the equidistant, cylindric map projection measured in units of
+kilometers.  The projection center is defined as the midpoint in latitude-
+longitude space.  The map projection is here named after Marinus of Tyre.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+marinus(lat, lon)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{lat}] vector of latitudes.
+\item[\code{lon}] vector of longitudes.
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+A matrix with column names "x" and "y" containing the x and y coordinates 
+in the equidistant, cylindric map projection measured in units of kilometers.
+\end{Value}
+\begin{Author}\relax
+Denis White \email{White.Denis@epa.gov}
+\end{Author}
+\begin{References}\relax
+J.P. Snyder. USGS Prof. Paper 1395, p. 90.
+\end{References}
+\begin{Examples}
+\begin{ExampleCode}
+lat <- 45 + runif(100, -5, 5)
+lon <- 120 + runif(100, -10, 10)
+marinus(lat, lon)
+\end{ExampleCode}
+\end{Examples}
+

@@ -1,0 +1,33 @@
+\HeaderA{irslin}{Select an Independent Random Sample (IRS) of a Linear Resource}{irslin}
+\keyword{survey}{irslin}
+\begin{Description}\relax
+This function selects an independent random sample (IRS) of a linear resource.
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+irslin(shapefilename=NULL, linframe, samplesize=100, SiteBegin=1)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{shapefilename}] name of the input shapefile.  If shapefilename equals
+NULL, then the shapefile or shapefiles in the currrent directory are used.
+The default is NULL.
+\item[\code{linframe}] a data frame containing id, mdcaty and mdm.
+\item[\code{samplesize}] number of points to select in the sample.  The default is
+100.
+\item[\code{SiteBegin}] number to use for first site in the design.  The default is
+1.
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+A data frame of IRS sample points containing: SiteID, id, x, y, mdcaty,
+and weight.
+\end{Value}
+\begin{Author}\relax
+Tom Kincaid \email{Kincaid.Tom@epa.gov}
+\end{Author}
+\begin{SeeAlso}\relax
+\code{\LinkA{irs}{irs}}
+\end{SeeAlso}
+

@@ -1,0 +1,73 @@
+dsgnsum               package:spsurvey               R Documentation
+
+_S_u_m_m_a_r_i_z_e _t_h_e _S_i_t_e_s _S_e_l_e_c_t_e_d _f_o_r _a _S_u_r_v_e_y _D_e_s_i_g_n
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     This function summarizes the sites selected for a survey design by
+     producing contingency tables containing the cross-tabluation of
+     number of sites for survey design variables and, optionally, for
+     auxiliary variables.
+
+_U_s_a_g_e:
+
+     dsgnsum(sp.obj, auxvar=NULL)
+
+_A_r_g_u_m_e_n_t_s:
+
+  sp.obj: the sp package object of class "SpatialPointsDataFrame"
+          produced by the grts function that contains survey design
+          information and additional attribute (auxiliary) variables.
+
+  auxvar: a vector containing the names of columns from sites that
+          identify auxiliary variables to be used to summarize the
+          survey design.
+
+_V_a_l_u_e:
+
+     A list containing the following components: 
+
+DesignSum: a list of contingency tables containing the cross-tabulation
+          of number of sites for the following combinations of survey
+          design variables:
+           (1) multidensity category (mdcaty) and stratum
+           (2) stratum and panel
+           (3) mdcaty, panel, and stratum
+
+AuxVarSum: a list of contingency tables containing the cross-tabulation
+          of number of sites for each auxiliary variable and the design
+          variables mdcaty, panel, and stratum
+
+     In addition the output list plus labeling information is printed
+     to the console.
+
+_A_u_t_h_o_r(_s):
+
+     Tony Olsen Olsen.Tony@epa.gov
+      Tom Kincaid Kincaid.Tom@epa.gov
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Stevens, D.L., Jr., and A.R. Olsen. (2004). Spatially-balanced
+     sampling of natural resources. Journal of the American Statistical
+     Association *99*: 262-278.
+
+_S_e_e _A_l_s_o:
+
+     'grts' 'framesum'
+
+_E_x_a_m_p_l_e_s:
+
+     ## Not run: 
+     test.design <- list(Stratum1=list(panel=c(PanelOne=50),
+        seltype="Equal", over=10), Stratum2=list(panel=c(PanelOne=50,
+        PanelTwo=50), seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25,
+        CatyThree=25, CatyFour=25), over=75)
+     test.attframe <- read.dbf("test.shapefile")
+     test.sample <- grts(design=test.design, DesignID="Test.Site", type.frame="area",
+        src.frame="shapefile", in.shape="test.shapefile", att.frame=test.attframe,
+        stratum="test.stratum", mdcaty="test.mdcaty", shapefile=TRUE,
+        shapefilename="test.sample")
+     dsgnsum(test.sample, auxvar=c("test.ecoregion", "test.state"))
+     ## End(Not run)
+

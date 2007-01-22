@@ -1,0 +1,41 @@
+\HeaderA{sp2shape}{Convert an sp Package Object to an ESRI Shapefile}{sp2shape}
+\keyword{IO}{sp2shape}
+\begin{Description}\relax
+This function creates an ESRI shapefile from an sp package object.  The type 
+of shapefile, i.e., point, polyline, or polygon, is determined by the class of
+the sp object, which must be either "SpatialPointsDataFrame",
+"SpatialLinesDataFrame", or "SpatialPolygonsDataFrame".
+\end{Description}
+\begin{Usage}
+\begin{verbatim}
+sp2shape(sp.obj, shpfilename="tempfile", prjfilename=NULL)
+\end{verbatim}
+\end{Usage}
+\begin{Arguments}
+\begin{ldescription}
+\item[\code{sp.obj}] the sp package object.
+\item[\code{shpfilename}] name (without any extension) of the output shapefile.  The
+default is "tempfile".
+\item[\code{prjfilename}] name (without any extension) of the projection file for the
+output shapefile.  The default is NULL.
+\end{ldescription}
+\end{Arguments}
+\begin{Value}
+An ESRI shapefile of type point, polyline, or polygon.
+\end{Value}
+\begin{Author}\relax
+Tom Kincaid \email{Kincaid.Tom@epa.gov}
+\end{Author}
+\begin{References}\relax
+ESRI Shapefile Technical Description: 
+\url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf}
+\end{References}
+\begin{Examples}
+\begin{ExampleCode}
+  ## Not run: 
+  sp2shape(my.sp.object, "my.shapefile")
+  
+## End(Not run)
+\end{ExampleCode}
+\end{Examples}
+

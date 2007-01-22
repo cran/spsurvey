@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><title>R: Summarize the Sites Selected for a Survey Design</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<link rel="stylesheet" type="text/css" href="../../R.css">
+</head><body>
+
+<table width="100%" summary="page for dsgnsum {spsurvey}"><tr><td>dsgnsum {spsurvey}</td><td align="right">R Documentation</td></tr></table>
+<h2>Summarize the Sites Selected for a Survey Design</h2>
+
+
+<h3>Description</h3>
+
+<p>
+This function summarizes the sites selected for a survey design by producing
+contingency tables containing the cross-tabluation of number of sites for
+survey design variables and, optionally, for auxiliary variables.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+dsgnsum(sp.obj, auxvar=NULL)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>sp.obj</code></td>
+<td>
+the sp package object of class "SpatialPointsDataFrame" produced
+by the grts function that contains survey design information and additional
+attribute (auxiliary) variables.</td></tr>
+<tr valign="top"><td><code>auxvar</code></td>
+<td>
+a vector containing the names of columns from sites that
+identify auxiliary variables to be used to summarize the survey design.</td></tr>
+</table>
+
+<h3>Value</h3>
+
+<p>
+A list containing the following components:
+</p>
+<table summary="R argblock">
+<tr valign="top"><td><code>DesignSum</code></td>
+<td>
+a list of contingency tables containing the cross-tabulation
+of number of sites for the following combinations of survey design
+variables:<br>
+(1) multidensity category (mdcaty) and stratum<br>
+(2) stratum and panel<br>
+(3) mdcaty, panel, and stratum</td></tr>
+<tr valign="top"><td><code>AuxVarSum</code></td>
+<td>
+a list of contingency tables containing the cross-tabulation
+of number of sites for each auxiliary variable and the design variables
+mdcaty, panel, and stratum</td></tr>
+</table>
+<p>
+
+In addition the output list plus labeling information is printed to the
+console.</p>
+
+<h3>Author(s)</h3>
+
+<p>
+Tony Olsen <a href="mailto:Olsen.Tony@epa.gov">Olsen.Tony@epa.gov</a><br>
+Tom Kincaid <a href="mailto:Kincaid.Tom@epa.gov">Kincaid.Tom@epa.gov</a>
+</p>
+
+
+<h3>References</h3>
+
+<p>
+Stevens, D.L., Jr., and A.R. Olsen. (2004). Spatially-balanced sampling of
+natural resources. Journal of the American Statistical Association <B>99</B>:
+262-278.
+</p>
+
+
+<h3>See Also</h3>
+
+<p>
+<code><a href="grts.html">grts</a></code>
+<code><a href="framesum.html">framesum</a></code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+test.design &lt;- list(Stratum1=list(panel=c(PanelOne=50),
+   seltype="Equal", over=10), Stratum2=list(panel=c(PanelOne=50,
+   PanelTwo=50), seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25,
+   CatyThree=25, CatyFour=25), over=75)
+test.attframe &lt;- read.dbf("test.shapefile")
+test.sample &lt;- grts(design=test.design, DesignID="Test.Site", type.frame="area",
+   src.frame="shapefile", in.shape="test.shapefile", att.frame=test.attframe,
+   stratum="test.stratum", mdcaty="test.mdcaty", shapefile=TRUE,
+   shapefilename="test.sample")
+dsgnsum(test.sample, auxvar=c("test.ecoregion", "test.state"))
+## End(Not run)
+</pre>
+
+
+
+<hr><div align="center">[Package <em>spsurvey</em> version 1.6 <a href="00Index.html">Index]</a></div>
+
+</body></html>

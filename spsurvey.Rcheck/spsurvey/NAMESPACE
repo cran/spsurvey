@@ -1,0 +1,5 @@
+useDynLib(spsurvey, .registration = TRUE)
+
+exportPattern("^[^\\.]")
+
+importFrom(MASS, ginv)

@@ -1,0 +1,71 @@
+grtsarea              package:spsurvey              R Documentation
+
+_S_e_l_e_c_t _G_R_T_S _S_a_m_p_l_e _o_f _a_n _A_r_e_a _R_e_s_o_u_r_c_e
+
+_D_e_s_c_r_i_p_t_i_o_n:
+
+     This function select a GRTS sample of an area resource.  This
+     function uses hierarchical randomization to ensure that the sample
+     will include no more than one point per cell and then picks a
+     point in selected cells.
+
+_U_s_a_g_e:
+
+     grtsarea(shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
+        shift.grid=TRUE, startlev=NULL, maxlev=11, maxtry=1000, acept=1)
+
+_A_r_g_u_m_e_n_t_s:
+
+shapefilename: name of the input shapefile.  If shapefilename equals
+          NULL, then the shapefile or shapefiles in the currrent
+          directory are used. The default is NULL.
+
+areaframe: a data frame containing id, mdcaty and mdm.
+
+samplesize: number of points to select in the sample.  The default is
+          100.
+
+SiteBegin: number to use for first site in the design.  The default is
+          1.
+
+shift.grid: option to randomly shift the hierarchical grid, where TRUE
+          means shift the grid and FALSE means do not shift the grid,
+          which is useful if one desires strict spatial stratification
+          by hierarchical grid cells.  The default is TRUE.
+
+startlev: initial number of hierarchical levels to use for the GRTS
+          grid, which must be less than or equal to maxlev (if maxlev
+          is specified) and cannot be greater than 11.  The default is
+          NULL.
+
+  maxlev: maximum number of hierarchical levels to use for the GRTS
+          grid, which cannot be greater than 11.  The default is 11.
+
+  maxtry: maximum number of iterations for randomly generating a point
+          The default is 1000.
+
+   acept: parameter that controls peakedness of a center-peaked
+          distribution, which must be between 0 and 1.  A value of 0
+          gives a triangular distribution, and a value of 1 gives a
+          uniform distribution.  The default is 1.
+
+_V_a_l_u_e:
+
+     A data frame of GRTS sample points containing: SiteID, id, x, y,
+     mdcaty, and weight.
+
+_A_u_t_h_o_r(_s):
+
+     Tony Olsen Olsen.Tony@epa.gov
+      Tom Kincaid Kincaid.Tom@epa.gov
+
+_R_e_f_e_r_e_n_c_e_s:
+
+     Stevens, D.L., Jr., and A.R. Olsen. (2004). Spatially-balanced
+     sampling of natural resources. _Journal of the American
+     Statistical Association_, *99*, 262-278.
+
+_S_e_e _A_l_s_o:
+
+     'grts'
+

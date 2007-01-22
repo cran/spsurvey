@@ -1,0 +1,173 @@
+Entry: adjwgt
+Aliases: adjwgt
+Keywords: survey misc
+Description: Adjust Initial Survey Design Weights
+URL: ../../../library/spsurvey/html/adjwgt.html
+
+Entry: albersgeod
+Aliases: albersgeod
+Keywords: survey
+Description: Project Albers Projection in Plane to Spheroid
+URL: ../../../library/spsurvey/html/albersgeod.html
+
+Entry: cat.analysis
+Aliases: cat.analysis
+Keywords: survey univar
+Description: Categorical Data Analysis for Probability Survey Data
+URL: ../../../library/spsurvey/html/cat.analysis.html
+
+Entry: category.est
+Aliases: category.est
+Keywords: survey univar
+Description: Category Proportion and Size Estimates
+URL: ../../../library/spsurvey/html/category.est.html
+
+Entry: cdf.decon
+Aliases: cdf.decon
+Keywords: survey distribution
+Description: Cumulative Distribution Function - Deconvolution
+URL: ../../../library/spsurvey/html/cdf.decon.html
+
+Entry: cdf.est
+Aliases: cdf.est
+Keywords: survey distribution
+Description: Cumulative Distribution Function - Estimation
+URL: ../../../library/spsurvey/html/cdf.est.html
+
+Entry: cdf.test
+Aliases: cdf.test
+Keywords: survey distribution
+Description: Cumulative Distribution Function - Inference
+URL: ../../../library/spsurvey/html/cdf.test.html
+
+Entry: cont.analysis
+Aliases: cont.analysis
+Keywords: survey distribution univar
+Description: Continuous Data Analysis for Probability Survey Data
+URL: ../../../library/spsurvey/html/cont.analysis.html
+
+Entry: dsgnsum
+Aliases: dsgnsum
+Keywords: survey
+Description: Summarize the Sites Selected for a Survey Design
+URL: ../../../library/spsurvey/html/dsgnsum.html
+
+Entry: eco.l3.ut
+Aliases: eco.l3.ut
+Keywords: datasets
+Description: Example Polygons Dataset
+URL: ../../../library/spsurvey/html/eco.l3.ut.html
+
+Entry: framesum
+Aliases: framesum
+Keywords: survey
+Description: Summarize Frame Size for a Survey Design
+URL: ../../../library/spsurvey/html/framesum.html
+
+Entry: grts
+Aliases: grts
+Keywords: survey
+Description: Generalized Random-Tessellation Stratified (GRTS) Survey Design
+URL: ../../../library/spsurvey/html/grts.html
+
+Entry: grtsarea
+Aliases: grtsarea
+Keywords: survey
+Description: Select GRTS Sample of an Area Resource
+URL: ../../../library/spsurvey/html/grtsarea.html
+
+Entry: grtslin
+Aliases: grtslin
+Keywords: survey
+Description: Select GRTS Sample of a Linear Resource
+URL: ../../../library/spsurvey/html/grtslin.html
+
+Entry: grtspts
+Aliases: grtspts
+Keywords: survey
+Description: Select GRTS Sample of a Finite Resource
+URL: ../../../library/spsurvey/html/grtspts.html
+
+Entry: irs
+Aliases: irs
+Keywords: survey
+Description: Independent Random Sample (IRS) Survey Design
+URL: ../../../library/spsurvey/html/irs.html
+
+Entry: irsarea
+Aliases: irsarea
+Keywords: survey
+Description: Select an Independent Random Sample (IRS) of an Area Resource
+URL: ../../../library/spsurvey/html/irsarea.html
+
+Entry: irslin
+Aliases: irslin
+Keywords: survey
+Description: Select an Independent Random Sample (IRS) of a Linear Resource
+URL: ../../../library/spsurvey/html/irslin.html
+
+Entry: irspts
+Aliases: irspts
+Keywords: survey
+Description: Select an Independent Random Sample (IRS) of a Finite Resource
+URL: ../../../library/spsurvey/html/irspts.html
+
+Entry: luck.ash
+Aliases: luck.ash
+Keywords: datasets
+Description: Example Polygons Dataset
+URL: ../../../library/spsurvey/html/luck.ash.html
+
+Entry: marinus
+Aliases: marinus
+Keywords: misc
+Description: Convert Coordinates from Latitude/Longitude to the Equidistant, Cylindric Map Projection
+URL: ../../../library/spsurvey/html/marinus.html
+
+Entry: psurvey.analysis
+Aliases: psurvey.analysis
+Keywords: survey
+Description: Create an Object of Class psurvey.analysis
+URL: ../../../library/spsurvey/html/psurvey.analysis.html
+
+Entry: read.dbf
+Aliases: read.dbf
+Keywords: survey
+Description: Read the Attribute (dbf) File of an ESRI Shapefile
+URL: ../../../library/spsurvey/html/read.dbf.html
+
+Entry: read.shape
+Aliases: read.shape
+Keywords: IO
+Description: Read an ESRI Shapefile
+URL: ../../../library/spsurvey/html/read.shape.html
+
+Entry: relrisk
+Aliases: relrisk
+Keywords: survey survival
+Description: Relative Risk
+URL: ../../../library/spsurvey/html/relrisk.html
+
+Entry: sp2shape
+Aliases: sp2shape
+Keywords: IO
+Description: Convert an sp Package Object to an ESRI Shapefile
+URL: ../../../library/spsurvey/html/sp2shape.html
+
+Entry: spsurvey-internal
+Aliases: mdmpts mdmlin mdmarea cell.wt selectpts selectframe ftnt.inv.fcn vecprint shape2spList ranho readDbfFile readShapeFile readShapeFilePts getRecordShapeSizes writeShapeFilePoint writeShapeFilePolygon pointInPolygonObj numLevels constructAddr pickGridCells pointInPolygonFile linSample getRecordIDs getShapeBox linSampleIRS dframe.check input.check vecprint uniqueID catvar.prop catvar.size cdf.nresp cdf.prop cdf.total cdf.size.prop cdf.size.total cdfvar.prop cdfvar.total cdfvar.size.prop cdfvar.size.total simex dcdf.prop dcdf.total dcdf.size.prop dcdf.size.total dcdfvar.prop dcdfvar.total dcdfvar.size.prop dcdfvar.size.total isotonic sorted cdfvar.test total.var relrisk.var localmean.weight localmean.var localmean.cov localmean.df wnas input.format warnprnt
+Keywords: internal
+Description: Internal spsurvey Functions
+URL: ../../../library/spsurvey/html/spsurvey-internal.html
+
+Entry: total.est
+Aliases: total.est
+Keywords: survey univar
+Description: Population Total, Mean, Variance, and Standard Deviation
+URL: ../../../library/spsurvey/html/total.est.html
+
+Entry: write.object
+Aliases: write.object
+Keywords: aplot
+Description: Write an Object to a Plot
+URL: ../../../library/spsurvey/html/write.object.html
