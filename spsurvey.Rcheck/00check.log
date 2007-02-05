@@ -1,7 +1,7 @@
 * using log directory 'C:/R/R-2.4.1/src/library/spsurvey/spsurvey.Rcheck'
 * using R version 2.4.1 (2006-12-18)
 * checking for file 'spsurvey/DESCRIPTION' ... OK
-* this is package 'spsurvey' version '1.6'
+* this is package 'spsurvey' version '1.6.1'
 * checking package dependencies ... OK
 * checking if this is a source package ... OK
 * checking whether package 'spsurvey' can be installed ... OK

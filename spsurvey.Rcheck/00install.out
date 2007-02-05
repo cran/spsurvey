@@ -43,49 +43,35 @@ Loading required package: sp
   installing help
  >>> Building/Updating help pages for package 'spsurvey'
      Formats: text html latex example chm 
-  adjwgt                            text    html    latex   example chm
-  albersgeod                        text    html    latex           chm
-  cat.analysis                      text    html    latex   example chm
-  category.est                      text    html    latex   example chm
-  cdf.decon                         text    html    latex   example chm
-  cdf.est                           text    html    latex   example chm
-  cdf.test                          text    html    latex   example chm
-  cont.analysis                     text    html    latex   example chm
-  dsgnsum                           text    html    latex   example chm
-  eco.l3.ut                         text    html    latex   example chm
-  framesum                          text    html    latex   example chm
-  grts                              text    html    latex   example chm
-  grtsarea                          text    html    latex           chm
-  grtslin                           text    html    latex           chm
-  grtspts                           text    html    latex           chm
-  irs                               text    html    latex   example chm
-  irsarea                           text    html    latex           chm
-  irslin                            text    html    latex           chm
-  irspts                            text    html    latex           chm
-  luck.ash                          text    html    latex   example chm
-  marinus                           text    html    latex   example chm
-  psurvey.analysis                  text    html    latex   example chm
-  read.dbf                          text    html    latex   example chm
-  read.shape                        text    html    latex   example chm
-  relrisk                           text    html    latex   example chm
-  sp2shape                          text    html    latex   example chm
-  spsurvey-internal                 text    html    latex           chm
-  total.est                         text    html    latex   example chm
-  write.object                      text    html    latex   example chm
-Microsoft HTML Help Compiler 4.74.8702
-
-Compiling c:\R\R-2.4.1\src\library\spsurvey\chm\spsurvey.chm
-
-
-Compile time: 0 minutes, 2 seconds
-30	Topics
-85	Local links
-4	Internet links
-1	Graphic
-
-
-Created c:\R\R-2.4.1\src\library\spsurvey\chm\spsurvey.chm, 77,263 bytes
-Compression decreased file by 126,306 bytes.
+  adjwgt                            text    html    latex   example
+  albersgeod                        text    html    latex
+  cat.analysis                      text    html    latex   example
+  category.est                      text    html    latex   example
+  cdf.decon                         text    html    latex   example
+  cdf.est                           text    html    latex   example
+  cdf.test                          text    html    latex   example
+  cont.analysis                     text    html    latex   example
+  dsgnsum                           text    html    latex   example
+  eco.l3.ut                         text    html    latex   example
+  framesum                          text    html    latex   example
+  grts                              text    html    latex   example
+  grtsarea                          text    html    latex
+  grtslin                           text    html    latex
+  grtspts                           text    html    latex
+  irs                               text    html    latex   example
+  irsarea                           text    html    latex
+  irslin                            text    html    latex
+  irspts                            text    html    latex
+  luck.ash                          text    html    latex   example
+  marinus                           text    html    latex   example
+  psurvey.analysis                  text    html    latex   example
+  read.dbf                          text    html    latex   example
+  read.shape                        text    html    latex   example
+  relrisk                           text    html    latex   example
+  sp2shape                          text    html    latex   example
+  spsurvey-internal                 text    html    latex
+  total.est                         text    html    latex   example
+  write.object                      text    html    latex   example
   adding MD5 sums
 
 * DONE (spsurvey)

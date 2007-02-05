@@ -82,7 +82,7 @@ Type 'q()' to quit R.
 > library('spsurvey')
 Loading required package: sp
 
-Version 1.6 of the spsurvey library was loaded successfully.
+Version 1.6.1 of the spsurvey library was loaded successfully.
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -4447,7 +4447,7 @@ Sum               0.4451361 0.5548639 1.0000000
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  12.62 0.16 13.24 NA NA 
+Time elapsed:  12.45 0.31 13.24 NA NA 
 > grDevices::dev.off()
 null device 
           1 

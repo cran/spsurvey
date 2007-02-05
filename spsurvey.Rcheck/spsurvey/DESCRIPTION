@@ -1,12 +1,12 @@
 Package: spsurvey
-Version: 1.6
-Date: 2007-01-22
+Version: 1.6.1
+Date: 2007-02-05
 Title: Spatial Survey Design and Analysis
 Author: Tom Kincaid <Kincaid.Tom@epa.gov> and Tony Olsen
         <Olsen.Tony@epa.gov> with contributions from Don Stevens,
         Christian Platt, Denis White, and Richard Remington
 Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
-Depends: sp (<= 0.9-4)
+Depends: sp
 Imports: MASS
 ZipData: no
 Description: This group of functions implements algorithms required for
@@ -16,4 +16,4 @@ Description: This group of functions implements algorithms required for
 License: GPL Version 2 or later
 URL: http://www.epa.gov/nheerl/arm/
 SaveImage: yes
-Built: R 2.4.1; i386-pc-mingw32; 2007-01-22 11:45:29; windows
+Built: R 2.4.1; i386-pc-mingw32; 2007-02-05 10:28:58; windows
