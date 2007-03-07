@@ -82,7 +82,7 @@ Type 'q()' to quit R.
 > library('spsurvey')
 Loading required package: sp
 
-Version 1.6.1 of the spsurvey library was loaded successfully.
+Version 1.6.2 of the spsurvey library was loaded successfully.
 
 > 
 > assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -564,49 +564,46 @@ $Pct
 > 
 > ### ** Examples
 > 
-> z <- rnorm(100, 10, 1)
-> wgt <- runif(100, 10, 100)
-> sample1 <- list(z=z, wgt=wgt)
-> sample2 <- list(z=z+2, wgt=wgt)
-> bounds <- seq(min(sample1$z, sample2$z), max(sample1$z,
-+    sample2$z), length=4)[-1]
+> resp <- rnorm(100, 10, 1)
+> wgt <- runif(100, 40, 60)
+> sample1 <- list(z=resp, wgt=wgt)
+> sample2 <- list(z=resp+0.5, wgt=wgt)
+> bounds <- sort(c(sample1$z, sample2$z))[floor(seq(200/3, 200, length=3))]
 > cdf.test(sample1, sample2, bounds, vartype="SRS")
                     Test Statistic Degrees of Freedom_1 Degrees of Freedom_2
-Wald                     112.01799              2.00000                   NA
-Wald_F                    55.72612              2.00000             197.0000
-Mean Eigenvalue           83.56308              2.00000                   NA
-Mean Eigenvalue_F         41.78154              2.00000             396.0000
-Satterthwaite             73.98801              1.77083                   NA
-Satterthwaite_F           41.78154              1.77083             350.6244
+Wald                     15.075938             2.000000                   NA
+Wald_F                    7.499898             2.000000             197.0000
+Mean Eigenvalue          14.652462             2.000000                   NA
+Mean Eigenvalue_F         7.326231             2.000000             396.0000
+Satterthwaite            14.628103             1.996675                   NA
+Satterthwaite_F           7.326231             1.996675             395.3417
                          p Value
-Wald                0.000000e+00
-Wald_F              0.000000e+00
-Mean Eigenvalue     0.000000e+00
-Mean Eigenvalue_F   0.000000e+00
-Satterthwaite       0.000000e+00
-Satterthwaite_F     1.665335e-15
+Wald                0.0005324780
+Wald_F              0.0007259086
+Mean Eigenvalue     0.0006580493
+Mean Eigenvalue_F   0.0007511205
+Satterthwaite       0.0006631405
+Satterthwaite_F     0.0007568086
 > 
-> x <- runif(100)
-> y <- runif(100)
-> sample1 <- list(z=z, wgt=wgt, x=x, y=y)
-> sample2 <- list(z=z+rnorm(100), wgt=wgt, x=x, y=y)
-> bounds <- seq(min(sample1$z, sample2$z), max(sample1$z,
-+    sample2$z), length=4)[-1]
+> xcoord <- runif(100)
+> ycoord <- runif(100)
+> sample1 <- list(z=resp, wgt=wgt, x=xcoord, y=ycoord)
+> sample2 <- list(z=1.05*resp, wgt=wgt, x=xcoord, y=ycoord)
 > cdf.test(sample1, sample2, bounds)
                     Test Statistic Degrees of Freedom_1 Degrees of Freedom_2
-Wald                     12.861250             2.000000                   NA
-Wald_F                    6.397816             2.000000               195.00
-Mean Eigenvalue          12.957055             2.000000                   NA
-Mean Eigenvalue_F         6.478528             2.000000               392.00
-Satterthwaite            12.918383             1.994031                   NA
-Satterthwaite_F           6.478528             1.994031               390.83
-                        p Value
-Wald                0.001611444
-Wald_F              0.002036219
-Mean Eigenvalue     0.001536071
-Mean Eigenvalue_F   0.001705733
-Satterthwaite       0.001554043
-Satterthwaite_F     0.001725308
+Wald                      21.02414             2.000000                   NA
+Wald_F                    10.45844             2.000000             195.0000
+Mean Eigenvalue           20.48807             2.000000                   NA
+Mean Eigenvalue_F         10.24403             2.000000             392.0000
+Satterthwaite             20.45899             1.997161                   NA
+Satterthwaite_F           10.24403             1.997161             391.4436
+                         p Value
+Wald                2.720609e-05
+Wald_F              4.846551e-05
+Mean Eigenvalue     3.556905e-05
+Mean Eigenvalue_F   4.607193e-05
+Satterthwaite       3.593698e-05
+Satterthwaite_F     4.653463e-05
 > 
 > 
 > 
@@ -4447,7 +4444,7 @@ Sum               0.4451361 0.5548639 1.0000000
 > ### * <FOOTER>
 > ###
 > cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  12.45 0.31 13.24 NA NA 
+Time elapsed:  12.96 0.2 13.62 NA NA 
 > grDevices::dev.off()
 null device 
           1 

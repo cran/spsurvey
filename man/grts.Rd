@@ -35,12 +35,12 @@ grts(design, DesignID="Site", SiteBegin=1, type.frame="finite",
       over = number of replacement sites ("oversample" sites) for the entire
         design, which is set equal to 0 if none are required\cr\cr
     Example design for a stratified sample:\cr
-      design = list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
+      design <- list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
         over=10),\cr "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50),
         seltype="Unequal",\cr caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
         CatyFour=25), over=75))\cr\cr
     Example design for an unstratified sample:\cr
-      design = list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
+      design <- list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
         seltype="Unequal",\cr caty.n=c("Caty 1"=50, "Caty 2"=25, "Caty 3"=25,
         "Caty 4"=25, "Caty 5"=75), over=100))\cr}
   \item{DesignID}{name for the design, which is used to create a site

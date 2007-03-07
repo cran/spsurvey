@@ -45,7 +45,7 @@ _A_r_g_u_m_e_n_t_s:
           required
 
            Example design for a stratified sample:
-           design = list("Stratum 1"=list(panel=c(Panel=50),
+           design <- list("Stratum 1"=list(panel=c(Panel=50),
           seltype="Equal", over=10),
            "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50),
           seltype="Unequal",
@@ -53,7 +53,7 @@ _A_r_g_u_m_e_n_t_s:
           over=75))
 
            Example design for an unstratified sample:
-           design = list(None=list(panel=c(Panel1=50, Panel2=100,
+           design <- list(None=list(panel=c(Panel1=50, Panel2=100,
           Panel3=50), seltype="Unequal",
            caty.n=c("Caty 1"=50, "Caty 2"=25, "Caty 3"=25, "Caty 4"=25,
           "Caty 5"=75), over=100))

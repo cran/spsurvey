@@ -10,7 +10,7 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: December 20, 2006
+# Last Revised: February 15, 2007
 # Description:
 #   This function select a GRTS sample of a finite, linear, or area resource.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -40,12 +40,12 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #       over = number of replacement sites ("oversample" sites) for the entire
 #         design, which is set equal to 0 if none are required
 #     Example design for a stratified sample: 
-#       design = list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
+#       design <- list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
 #         over=10), "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50),
 #         seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
 #         CatyFour=25), over=75))
 #     Example design for an unstratified sample: 
-#       design=list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
+#       design <- list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
 #         seltype="Unequal", caty.n=c("Caty 1"=50, "Caty 2"=25, "Caty 3"=25,
 #         "Caty 4"=25, "Caty 5"=75), over=100))
 #   DesignID = name for the design, which is used to create a site ID
@@ -413,8 +413,8 @@ if(type.frame == "finite") {
          if(design[[s]]$over == 0) {
             n.desired <- design[[s]]$caty.n
          } else {
-            over.n <- design[[s]]$over * (design[[s]]$caty.n /
-               sum(design[[s]]$caty.n))
+            over.n <- design[[s]]$over * design[[s]]$caty.n /
+               sum(design[[s]]$caty.n)
             if(any(over.n != floor(over.n))) 
                warning(paste("\nOversample size is not proportional to category sample sizes for stratum, \n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
@@ -629,8 +629,8 @@ if(type.frame == "finite") {
          if(design[[s]]$over == 0) {
             n.desired <- design[[s]]$caty.n
          } else {
-            over.n <- design[[s]]$over * (design[[s]]$caty.n /
-               sum(design[[s]]$caty.n))
+            over.n <- design[[s]]$over * design[[s]]$caty.n /
+               sum(design[[s]]$caty.n)
             if(any(over.n != floor(over.n))) 
                warning(paste("\nOversample size is not proportional to category sample sizes for stratum, \n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
@@ -807,8 +807,8 @@ if(type.frame == "finite") {
          if(design[[s]]$over == 0) {
             n.desired <- design[[s]]$caty.n
          } else {
-            over.n <- design[[s]]$over * (design[[s]]$caty.n /
-               sum(design[[s]]$caty.n))
+            over.n <- design[[s]]$over * design[[s]]$caty.n /
+               sum(design[[s]]$caty.n)
             if(any(over.n != floor(over.n))) 
                warning(paste("\nOversample size is not proportional to category sample sizes for stratum, \n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
@@ -911,7 +911,7 @@ if(type.frame == "finite") {
 # If src.frame equals "sp.object", then remove the temporary shapefile
 
 if(sp.ind) {
-   remove.file(paste(in.shape, ".dbf", sep=""), paste(in.shape, ".shp", sep=""), paste(in.shape, ".shx", sep=""))
+   file.remove(paste(in.shape, ".dbf", sep=""), paste(in.shape, ".shp", sep=""), paste(in.shape, ".shx", sep=""))
 }
 
 # Add DesignID name to the numeric siteID value to create a new siteID

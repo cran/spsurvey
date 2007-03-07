@@ -9,7 +9,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: December 18, 2006
+# Last Revised: February 8, 2007
 # Description:
 #   This function select a GRTS sample of a finite resource.  This function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -86,8 +86,8 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
       } else {
          nlev <- startlev
       }
-      cel.wt <- 2
-      celmax <- 3
+      cel.wt <- 99999
+      celmax <- 100000
       sint <- 1
       while (any(cel.wt/sint > 1) && max(cel.wt) != celmax && nlev <= maxlev) {
          celmax <- max(cel.wt)
@@ -150,7 +150,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
       rstrt <- runif(1, 0, sint)
       ttl.wt <- c(0, cumsum(cel.wt[rord]))
       idx <- ceiling((ttl.wt - rstrt)/sint)
-   smpdx <- .Call("pickGridCells", samplesize, as.integer(idx))
+      smpdx <- .Call("pickGridCells", samplesize, as.integer(idx))
       rdx <- rord[smpdx]
       n.cells <- length(unique(rdx))
       if(length(rdx) > n.cells) {

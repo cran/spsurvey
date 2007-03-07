@@ -1,4 +1,4 @@
-This is e-TeX, Version 3.141592-2.2 (MiKTeX 2.4) (preloaded format=latex 2006.7.27)  5 FEB 2007 10:30
+This is e-TeX, Version 3.141592-2.2 (MiKTeX 2.4) (preloaded format=latex 2006.7.27)  7 MAR 2007 13:18
 entering extended mode
 **\nonstopmode{}\input{spsurvey-manual.tex}
 (spsurvey-manual.tex (C:\texmf\tex\latex\base\article.cls
@@ -327,218 +327,218 @@ ULL, warn.df=NULL,[]
  []
 
 [13] [14] [15] [16] [17]
-Overfull \hbox (18.74011pt too wide) in paragraph at lines 900--900
+Overfull \hbox (18.74011pt too wide) in paragraph at lines 897--897
  []\T1/aett/m/n/10 cont.analysis(sites=NULL, subpop=NULL, design=NULL, data.con
 t=NULL, sigma=NULL,[] 
  []
 
-[18]
-Overfull \hbox (18.74011pt too wide) in paragraph at lines 902--902
+
+Overfull \hbox (18.74011pt too wide) in paragraph at lines 899--899
  []   \T1/aett/m/n/10 popcorrect=FALSE, sizeweight=FALSE, unitsize=NULL, vartyp
 e="Local", conf=95,[] 
  []
 
-[19]
-Underfull \hbox (badness 10000) in paragraph at lines 963--990
+[18] [19]
+Underfull \hbox (badness 10000) in paragraph at lines 960--987
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 963--990
+Underfull \hbox (badness 10000) in paragraph at lines 960--987
 
  []
 
 
-Overfull \hbox (13.25159pt too wide) in paragraph at lines 963--990
+Overfull \hbox (13.25159pt too wide) in paragraph at lines 960--987
 \T1/aer/m/n/10 popsize = list("Pop 1"=1500, "Pop2"=list("SubPop 1"=750, "Sub-Po
 p 2"=500,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 963--990
+Underfull \hbox (badness 10000) in paragraph at lines 960--987
 
  []
 
 [20] [21] [22] [23]
 LaTeX Font Info:    Font shape `T1/aett/bx/n' in size <10> not available
-(Font)              Font shape `T1/aett/m/n' tried instead on input line 1177.
+(Font)              Font shape `T1/aett/m/n' tried instead on input line 1174.
  [24] [25] [26] [27]
-Overfull \hbox (18.74011pt too wide) in paragraph at lines 1345--1345
+Overfull \hbox (18.74011pt too wide) in paragraph at lines 1342--1342
  []   \T1/aett/m/n/10 id=NULL, xcoord=NULL, ycoord=NULL, stratum=NULL, mdcaty=N
 ULL, startlev=NULL,[] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1352--1380
+Underfull \hbox (badness 10000) in paragraph at lines 1349--1377
 
  []
 
 
-Overfull \hbox (23.78983pt too wide) in paragraph at lines 1352--1380
-\T1/aer/m/n/10 design = list("Stratum 1"=list(panel=c(Panel=50), sel-type="Equa
-l", over=10), 
+Overfull \hbox (27.11978pt too wide) in paragraph at lines 1349--1377
+\T1/aer/m/n/10 design <- list("Stratum 1"=list(panel=c(Panel=50), sel-type="Equ
+al", over=10), 
  []
 
 
-Overfull \hbox (36.48055pt too wide) in paragraph at lines 1352--1380
+Overfull \hbox (36.48055pt too wide) in paragraph at lines 1349--1377
 \T1/aer/m/n/10 "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50), sel-ty
 pe="Unequal", 
  []
 
 
-Overfull \hbox (30.40526pt too wide) in paragraph at lines 1352--1380
+Overfull \hbox (30.40526pt too wide) in paragraph at lines 1349--1377
 \T1/aer/m/n/10 caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, Caty-Four=25), ov
 er=75)) 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1352--1380
+Underfull \hbox (badness 10000) in paragraph at lines 1349--1377
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1352--1380
+Underfull \hbox (badness 10000) in paragraph at lines 1349--1377
 
  []
 
 [28] [29]
-Underfull \hbox (badness 10000) in paragraph at lines 1447--1451
+Underfull \hbox (badness 10000) in paragraph at lines 1444--1448
 
  []
 
 [30] [31] [32]
-Overfull \hbox (3.02014pt too wide) in paragraph at lines 1622--1622
+Overfull \hbox (3.02014pt too wide) in paragraph at lines 1619--1619
  []\T1/aett/m/n/10 grtspts(src.frame="shapefile", shapefilename=NULL, ptsframe,
  samplesize=100,[] 
  []
 
 [33]
-Overfull \hbox (8.26013pt too wide) in paragraph at lines 1682--1682
+Overfull \hbox (8.26013pt too wide) in paragraph at lines 1679--1679
  []   \T1/aett/m/n/10 id=NULL, xcoord=NULL, ycoord=NULL, stratum=NULL, mdcaty=N
 ULL, maxtry=1000,[] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1688--1716
+Underfull \hbox (badness 10000) in paragraph at lines 1685--1713
 
  []
 
 
-Overfull \hbox (23.78983pt too wide) in paragraph at lines 1688--1716
+Overfull \hbox (23.78983pt too wide) in paragraph at lines 1685--1713
 \T1/aer/m/n/10 design = list("Stratum 1"=list(panel=c(Panel=50), sel-type="Equa
 l", over=10), 
  []
 
 
-Overfull \hbox (36.48055pt too wide) in paragraph at lines 1688--1716
+Overfull \hbox (36.48055pt too wide) in paragraph at lines 1685--1713
 \T1/aer/m/n/10 "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50), sel-ty
 pe="Unequal", 
  []
 
 
-Overfull \hbox (30.40526pt too wide) in paragraph at lines 1688--1716
+Overfull \hbox (30.40526pt too wide) in paragraph at lines 1685--1713
 \T1/aer/m/n/10 caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, Caty-Four=25), ov
 er=75)) 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1688--1716
+Underfull \hbox (badness 10000) in paragraph at lines 1685--1713
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1688--1716
+Underfull \hbox (badness 10000) in paragraph at lines 1685--1713
 
  []
 
 [34] [35]
-Underfull \hbox (badness 10000) in paragraph at lines 1769--1773
+Underfull \hbox (badness 10000) in paragraph at lines 1766--1770
 
  []
 
 [36]
-Overfull \hbox (23.9801pt too wide) in paragraph at lines 1824--1824
+Overfull \hbox (23.9801pt too wide) in paragraph at lines 1821--1821
  []\T1/aett/m/n/10 irsarea(shapefilename=NULL, areaframe, samplesize=100, SiteB
 egin=1, maxtry=1000)[] 
  []
 
 [37] [38] [39] [40] [41] [42] [43]
-Underfull \hbox (badness 10000) in paragraph at lines 2115--2142
+Underfull \hbox (badness 10000) in paragraph at lines 2112--2139
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2115--2142
+Underfull \hbox (badness 10000) in paragraph at lines 2112--2139
 
  []
 
 
-Overfull \hbox (13.25159pt too wide) in paragraph at lines 2115--2142
+Overfull \hbox (13.25159pt too wide) in paragraph at lines 2112--2139
 \T1/aer/m/n/10 popsize = list("Pop 1"=1500, "Pop2"=list("SubPop 1"=750, "Sub-Po
 p 2"=500,
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 2115--2142
+Underfull \hbox (badness 10000) in paragraph at lines 2112--2139
 
  []
 
 [44] [45] [46]
-Overfull \hbox (7.29199pt too wide) in paragraph at lines 2306--2308
+Overfull \hbox (7.29199pt too wide) in paragraph at lines 2303--2305
 []\T1/aer/m/n/10 ESRI Shape-file Tech-ni-cal De-scrip-tion: [][]$\T1/aett/m/n/1
 0 http : / / www . esri . com / library / whitepapers / pdfs /
  []
 
 [47]
-Overfull \hbox (7.29199pt too wide) in paragraph at lines 2353--2355
+Overfull \hbox (7.29199pt too wide) in paragraph at lines 2350--2352
 []\T1/aer/m/n/10 ESRI Shape-file Tech-ni-cal De-scrip-tion: [][]$\T1/aett/m/n/1
 0 http : / / www . esri . com / library / whitepapers / pdfs /
  []
 
 [48]
-Overfull \hbox (1.58553pt too wide) in paragraph at lines 2408--2413
+Overfull \hbox (1.58553pt too wide) in paragraph at lines 2405--2410
 \T1/aer/m/n/10 first level is used for cal-cu-lat-ing the rel-a-tive risk es-ti
 -mate. If re-sponse.levels
  []
 
 [49] [50] [51] [52]
-Overfull \hbox (7.29199pt too wide) in paragraph at lines 2561--2563
+Overfull \hbox (7.29199pt too wide) in paragraph at lines 2558--2560
 []\T1/aer/m/n/10 ESRI Shape-file Tech-ni-cal De-scrip-tion: [][]$\T1/aett/m/n/1
 0 http : / / www . esri . com / library / whitepapers / pdfs /
  []
 
 
-Overfull \hbox (3.02014pt too wide) in paragraph at lines 2657--2657
+Overfull \hbox (3.02014pt too wide) in paragraph at lines 2654--2654
  []\T1/aett/m/n/10 writeShapeFilePolygon(shapeTypeVal, fileLengthVal, contentLe
 nVec, nPartsVec,[] 
  []
 
 
-Overfull \hbox (13.50012pt too wide) in paragraph at lines 2658--2658
+Overfull \hbox (13.50012pt too wide) in paragraph at lines 2655--2655
  []   \T1/aett/m/n/10 nPointsVec, partsVec, xVec, yVec, prjFileNameVec, dbfFiel
 dNames, dbfFields,[] 
  []
 
 
-Overfull \hbox (8.26013pt too wide) in paragraph at lines 2666--2666
+Overfull \hbox (8.26013pt too wide) in paragraph at lines 2663--2663
  []\T1/aett/m/n/10 linSample(fileNamePrefix, xcVec, ycVec, dxVec, dyVec, dsgnmd
 IDVec, dsgnmdVec)[] 
  []
 
 [53]
-Overfull \hbox (8.26013pt too wide) in paragraph at lines 2669--2669
+Overfull \hbox (8.26013pt too wide) in paragraph at lines 2666--2666
  []\T1/aett/m/n/10 linSampleIRS(fileNamePrefix, lenCumSumVec, sampPosVec, dsgnI
 DVec, dsgnLenVec,[] 
  []
 
 [54] [55]
-Overfull \hbox (8.26013pt too wide) in paragraph at lines 2774--2774
+Overfull \hbox (8.26013pt too wide) in paragraph at lines 2771--2771
  []\T1/aett/m/n/10 total.est(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL
 , N.cluster=NULL,[] 
  []
 
 
-Overfull \hbox (3.02014pt too wide) in paragraph at lines 2775--2775
+Overfull \hbox (3.02014pt too wide) in paragraph at lines 2772--2772
  []   \T1/aett/m/n/10 wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL, stage1size=NUL
 L, support=NULL,[] 
  []
@@ -553,4 +553,4 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 4999
  38i,6n,27p,228b,431s stack positions out of 5000i,500n,10000p,200000b,32768s
 
-Output written on spsurvey-manual.dvi (60 pages, 230644 bytes).
+Output written on spsurvey-manual.dvi (60 pages, 230568 bytes).

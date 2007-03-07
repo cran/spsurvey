@@ -867,20 +867,17 @@ Statistical Association, Alexandria, VA.
 \end{References}
 \begin{Examples}
 \begin{ExampleCode}
-z <- rnorm(100, 10, 1)
-wgt <- runif(100, 10, 100)
-sample1 <- list(z=z, wgt=wgt)
-sample2 <- list(z=z+2, wgt=wgt)
-bounds <- seq(min(sample1$z, sample2$z), max(sample1$z,
-   sample2$z), length=4)[-1]
+resp <- rnorm(100, 10, 1)
+wgt <- runif(100, 40, 60)
+sample1 <- list(z=resp, wgt=wgt)
+sample2 <- list(z=resp+0.5, wgt=wgt)
+bounds <- sort(c(sample1$z, sample2$z))[floor(seq(200/3, 200, length=3))]
 cdf.test(sample1, sample2, bounds, vartype="SRS")
 
-x <- runif(100)
-y <- runif(100)
-sample1 <- list(z=z, wgt=wgt, x=x, y=y)
-sample2 <- list(z=z+rnorm(100), wgt=wgt, x=x, y=y)
-bounds <- seq(min(sample1$z, sample2$z), max(sample1$z,
-   sample2$z), length=4)[-1]
+xcoord <- runif(100)
+ycoord <- runif(100)
+sample1 <- list(z=resp, wgt=wgt, x=xcoord, y=ycoord)
+sample2 <- list(z=1.05*resp, wgt=wgt, x=xcoord, y=ycoord)
 cdf.test(sample1, sample2, bounds)
 \end{ExampleCode}
 \end{Examples}
@@ -1369,12 +1366,12 @@ values in mdcaty\\
 over = number of replacement sites ("oversample" sites) for the entire
 design, which is set equal to 0 if none are required\\\\
 Example design for a stratified sample:\\
-design = list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
+design <- list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
 over=10),\\ "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50),
 seltype="Unequal",\\ caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
 CatyFour=25), over=75))\\\\
 Example design for an unstratified sample:\\
-design = list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
+design <- list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
 seltype="Unequal",\\ caty.n=c("Caty 1"=50, "Caty 2"=25, "Caty 3"=25,
 "Caty 4"=25, "Caty 5"=75), over=100))\\
 \item[\code{DesignID}] name for the design, which is used to create a site

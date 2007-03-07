@@ -6,7 +6,7 @@ irsarea <- function (shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
 # Purpose: Select an independent random sample (IRS) of an area resource
 # Programmer: Tom Kincaid
 # Date: November 30, 2005
-# Last Revised: August 29, 2006
+# Last Revised: February 23, 2007
 # Description:      
 #   This function selects an IRS of an area resource.  
 # Arguments:
@@ -35,7 +35,7 @@ irsarea <- function (shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
 # Determine IDs for records that will contain sample points
 
    area.cumsum <- cumsum(areaframe$area*areaframe$mdm)
-   samp.pos <- sort(runif(samplesize, 0, area.cumsum[nrow(areaframe)]))
+   samp.pos <- runif(samplesize, 0, area.cumsum[nrow(areaframe)])
    samp.id <- .Call("getRecordIDs", area.cumsum, samp.pos, areaframe$id)
 
 # Pick sample points

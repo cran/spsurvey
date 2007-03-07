@@ -7,7 +7,7 @@
 **               for the x and y coordinates.
 **  Programmer:  Tom Kincaid
 **  Created:     November 30, 2005
-**  Last Revised: June 23, 2006
+**  Last Revised: February 23, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -107,17 +107,12 @@ SEXP getRecordIDs( SEXP areaCumSumVec, SEXP sampPosVec, SEXP dsgnIDVec ) {
   }
 
   /* determine the polygon IDs values for the sample positions */
-  j = 0;
-  for ( i = 0; i < dsgnSize; ++i ) {
-    while ( sampPos[j] < areaCumSum[i] ) {
-      id[j] = dsgnID[i];
-      ++j;
-      if ( j == smpSize ) {
+  for ( j = 0; j < smpSize; ++j ) {
+    for ( i = 0; i < dsgnSize; ++i ) {
+      if ( sampPos[j] < areaCumSum[i] ) {
+        id[j] = dsgnID[i];
     	   break;
       }
-    }
-    if ( j == smpSize ) {
-    	 break;
     }
   }
 

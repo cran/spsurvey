@@ -54,20 +54,17 @@ cdf.test <- function(sample1, sample2, bounds, vartype="Local") {
 #      localmean.df - calculate the degrees of freedom of the local mean 
 #         variance-covariance estimator
 #   Examples:
-#      z <- rnorm(100, 10, 1)
-#      wgt <- runif(100, 10, 100)
-#      sample1 <- list(z=z, wgt=wgt)
-#      sample2 <- list(z=z+2, wgt=wgt)
-#      bounds <- seq(min(sample1$z, sample2$z), max(sample1$z, sample2$z), 
-#         length=4)[-1]
+#      resp <- rnorm(100, 10, 1)
+#      wgt <- runif(100, 40, 60)
+#      sample1 <- list(z=resp, wgt=wgt)
+#      sample2 <- list(z=resp+0.5, wgt=wgt)
+#      bounds <- sort(c(sample1$z, sample2$z))[floor(seq(200/3, 200, length=3))]
 #      cdf.test(sample1, sample2, bounds, vartype="SRS")
 #
-#      x <- runif(100)
-#      y <- runif(100)
-#      sample1 <- list(z=z, wgt=wgt, x=x, y=y)
-#      sample2 <- list(z=z+rnorm(100), wgt=wgt, x=x, y=y)
-#      bounds <- seq(min(sample1$z, sample2$z), max(sample1$z, sample2$z), 
-#         length=4)[-1]
+#      xcoord <- runif(100)
+#      ycoord <- runif(100)
+#      sample1 <- list(z=resp, wgt=wgt, x=xcoord, y=ycoord)
+#      sample2 <- list(z=1.05*resp, wgt=wgt, x=xcoord, y=ycoord)
 #      cdf.test(sample1, sample2, bounds)
 ################################################################################
 

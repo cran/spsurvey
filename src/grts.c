@@ -12,7 +12,7 @@
 **               polylines shapefile, and cWtFcn is called for a points
 **               shapefile.
 **  Created:     October 19, 2004
-**  Revised:     January 22, 2007
+**  Revised:     February 8, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -1426,8 +1426,8 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   	nlev = maxlev;
   }
   Rprintf( "Initial number of levels: %i \n", nlev );
-  celWts[0] = 2.0;
-  celMax = 3.0;
+  celWts[0] = 99999.0;
+  celMax = 100000.0;
   sint = 1.0;
   while ( any( celWts, celWtsSize, sint, 1 ) && 
           ( maxWt(celWts, celWtsSize) != celMax ) &&

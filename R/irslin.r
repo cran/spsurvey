@@ -5,7 +5,7 @@ irslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1) {
 # Purpose: Select an independent random sample (IRS) of a linear resource
 # Programmer: Tom Kincaid
 # Date: November 17, 2005
-# Last Revised: August 29, 2006
+# Last Revised: March 7, 2007
 # Description:      
 #   This function selects an IRS of a linear resource.  
 # Arguments:
@@ -24,9 +24,14 @@ irslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1) {
 # Pick sample points
 
    len.cumsum <- cumsum(linframe$len*linframe$mdm)
-   samp.pos <- sort(runif(samplesize, 0, len.cumsum[nrow(linframe)]))
+   samp.pos <- runif(samplesize, 0, len.cumsum[nrow(linframe)])
+   ordr <- rank(samp.pos)
+   samp.pos <- sort(samp.pos)
    temp <- .Call("linSampleIRS", shapefilename, len.cumsum, samp.pos,
       linframe$id, linframe$len, linframe$mdm)
+   temp$id <- temp$id[ordr]
+   temp$x <- temp$x[ordr]
+   temp$y <- temp$y[ordr]
    mdcaty <- linframe$mdcaty[match(temp$id, linframe$id)]
    mdm <- linframe$mdm[match(temp$id, linframe$id)]
 

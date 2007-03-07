@@ -9,7 +9,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 #          risk estimate
 # Programmer: Tom Kincaid
 # Date: March 9, 2005
-# Last Revised: June 28, 2006
+# Last Revised: February 15, 2007
 # Description:
 #   This function calculates the variance-covariance estimate for the cell and
 #   marginal totals used to calculate the relative risk estimate.  Either the
@@ -229,7 +229,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 
       temp <- 0
       for(i in 1:ncluster)
-         temp <- temp + varest2[,,i]*wgt1.u[i]
+         temp <- temp + var2est[,,i]*wgt1.u[i]
       if(vartype == "Local") {
          weight.lst <- localmean.weight(x1.u, y1.u, 1/wgt1.u)
          varest <- pcfactor*localmean.cov(total2est*matrix(rep(wgt1.u, 4),

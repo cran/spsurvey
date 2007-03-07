@@ -105,25 +105,22 @@ Statistical Association, Alexandria, VA.
 <h3>Examples</h3>
 
 <pre>
-z &lt;- rnorm(100, 10, 1)
-wgt &lt;- runif(100, 10, 100)
-sample1 &lt;- list(z=z, wgt=wgt)
-sample2 &lt;- list(z=z+2, wgt=wgt)
-bounds &lt;- seq(min(sample1$z, sample2$z), max(sample1$z,
-   sample2$z), length=4)[-1]
+resp &lt;- rnorm(100, 10, 1)
+wgt &lt;- runif(100, 40, 60)
+sample1 &lt;- list(z=resp, wgt=wgt)
+sample2 &lt;- list(z=resp+0.5, wgt=wgt)
+bounds &lt;- sort(c(sample1$z, sample2$z))[floor(seq(200/3, 200, length=3))]
 cdf.test(sample1, sample2, bounds, vartype="SRS")
 
-x &lt;- runif(100)
-y &lt;- runif(100)
-sample1 &lt;- list(z=z, wgt=wgt, x=x, y=y)
-sample2 &lt;- list(z=z+rnorm(100), wgt=wgt, x=x, y=y)
-bounds &lt;- seq(min(sample1$z, sample2$z), max(sample1$z,
-   sample2$z), length=4)[-1]
+xcoord &lt;- runif(100)
+ycoord &lt;- runif(100)
+sample1 &lt;- list(z=resp, wgt=wgt, x=xcoord, y=ycoord)
+sample2 &lt;- list(z=1.05*resp, wgt=wgt, x=xcoord, y=ycoord)
 cdf.test(sample1, sample2, bounds)
 </pre>
 
 
 
-<hr><div align="center">[Package <em>spsurvey</em> version 1.6.1 <a href="00Index.html">Index]</a></div>
+<hr><div align="center">[Package <em>spsurvey</em> version 1.6.2 <a href="00Index.html">Index]</a></div>
 
 </body></html>
