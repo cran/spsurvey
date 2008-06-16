@@ -9,10 +9,10 @@
 }
 \usage{
 grts(design, DesignID="Site", SiteBegin=1, type.frame="finite",
-   src.frame="shapefile", in.shape=NULL, sp.object=NULL,  att.frame=NULL,
+   src.frame="shapefile", in.shape=NULL, sp.object=NULL, att.frame=NULL,
    id=NULL, xcoord=NULL, ycoord=NULL, stratum=NULL, mdcaty=NULL, startlev=NULL,
-   maxlev=11, maxtry=1000, shift.grid=TRUE, do.sample=TRUE,shapefile=TRUE,
-   prjfilename=NULL, out.shape="sample")
+   maxlev=11, maxtry=1000, shift.grid=TRUE, do.sample=rep(TRUE, length(design)),
+   shapefile=TRUE, prjfilename=NULL, out.shape="sample")
 }
 \arguments{
   \item{design}{named list of stratum design specifications, where each element of
@@ -55,13 +55,13 @@ grts(design, DesignID="Site", SiteBegin=1, type.frame="finite",
     is included in att.frame.  The default is "shapefile".}
   \item{in.shape}{name (without any extension) of the input shapefile.  If
     src.frame equal "shapefile" and in.shape equals NULL, then the shapefile or
-    shapefiles in the currrent directory are used.  The default is NULL.}
+    shapefiles in the working directory are used.  The default is NULL.}
   \item{sp.object}{name of the sp package object when src.frame equals
     "sp.object".  The default is NULL.}
   \item{att.frame}{a data frame composed of attributes associated with elements
     in the frame, which must contain the columns used for stratum and mdcaty (if 
     required).  If src.frame equals "shapefile" and att.frame equals NULL, then
-    att.frame is created from the dbf file(s) in the current directory.  If
+    att.frame is created from the dbf file(s) in the working directory.  If
     src.frame equals "att.frame", then att.frame includes columns that contain
     x-coordinates and y-coordinates for each element in the frame.  The default
     is NULL.}
@@ -95,10 +95,13 @@ grts(design, DesignID="Site", SiteBegin=1, type.frame="finite",
     means shift the grid and FALSE means do not shift the grid, which is
     useful if one desires strict spatial stratification by hierarchical grid
     cells.  The default is TRUE.}
-  \item{do.sample}{option to select a sample, where TRUE means select a sample
-    and FALSE means return the entire sample frame in reverse hierarchical
-    order.  Note that FALSE can only be used when type.frame equals "points"
-    and seltype equals "Equal".  The default is TRUE.}
+  \item{do.sample}{named vector that provides the option controlling sample
+    selection for each stratum, where TRUE means select a sample from a
+    stratum and FALSE means return the sample frame for a stratum in reverse
+    hierarchical order.  Note that FALSE can only be used when type.frame
+    equals "points" and seltype equals "Equal".  Names for the vector must
+    match the names in design.  If the vector is not named, then the names in
+    design are used.  The default is TRUE for each stratum.}
   \item{shapefile}{option to create a shapefile containing the survey design
     information, where TRUE equals create a shapefile and FALSE equals do not
     create a shapefile.  The default is TRUE.}

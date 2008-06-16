@@ -6,7 +6,7 @@
   longitude, i.e., geographic coordinates measured in decimal degrees, to 
   coordinates in the equidistant, cylindric map projection measured in units of
   kilometers.  The projection center is defined as the midpoint in latitude-
-  longitude space.  The map projection is here named after Marinus of Tyre.
+  longitude space.  The map projection is named after Marinus of Tyre.
 }
 \usage{
 marinus(lat, lon)
@@ -16,7 +16,7 @@ marinus(lat, lon)
   \item{lon}{vector of longitudes.}
 }
 \value{
-  A matrix with column names "x" and "y" containing the x and y coordinates 
+  A data frame with column names "x" and "y" containing the x and y coordinates 
   in the equidistant, cylindric map projection measured in units of kilometers.
 }
 \references{

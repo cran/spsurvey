@@ -1,14 +1,14 @@
 category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
-   cluster=NULL, N.cluster=NULL, wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL,
-   stage1size=NULL, support=NULL, swgt=NULL, swgt1=NULL, unitsize=NULL,
-   vartype="Local", conf=95, check.ind=TRUE, warn.ind=NULL, warn.df=NULL,
-   warn.vec=NULL) {
+   cluster=NULL, wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL, popcorrect=FALSE,
+   pcfsize=NULL, N.cluster=NULL, stage1size=NULL, support=NULL,
+   sizeweight=FALSE, swgt=NULL, swgt1=NULL, vartype="Local", conf=95,
+   check.ind=TRUE, warn.ind=NULL, warn.df=NULL, warn.vec=NULL) {
 
 ################################################################################
 # Function: category.est
 # Programmer: Tom Kincaid
 # Date: August 4, 2000
-# Last Revised: June 29, 2006
+# Last Revised: June 13, 2008
 # Description:
 #   This function estimates proportion (expressed as percent) and size of a
 #   resource in each of a set of categories and can also be used to estimate
@@ -48,97 +48,102 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 #   Finite population and continuous population correction factors can be
 #   utilized in variance estimation.  The function checks for compatibility of
 #   input values and removes missing values.
-#   Input:
-#      catvar = the value of the categorical response variable or the site
-#         status for each site.
-#      wgt = the final adjusted weight (inverse of the sample inclusion
-#         probability) for each site, which is either the weight for a single-
-#         stage sample or the stage two weight for a two-stage sample.
-#      x = x-coordinate for location for each site, which is either the x-
-#          coordinate for a single-stage sample or the stage two x-coordinate
-#          for a two-stage sample.  The default is NULL.
-#      y = y-coordinate for location for each site, which is either the y-
-#          coordinate for a single-stage sample or the stage two y-coordinate
-#          for a two-stage sample.  The default is NULL.
-#      stratum = the stratum for each site.  The default is NULL.
-#      cluster = the stage one sampling unit (primary sampling unit or cluster) 
-#         code for each site.  The default is NULL.
-#      N.cluster = the number of stage one sampling units in the resource, which 
-#         is required for calculation of finite and continuous population 
-#         correction factors for a two-stage sample.  For a stratified sample 
-#         this variable must be a vector containing a value for each stratum and
-#         must have the names attribute set to identify the stratum codes.  The
-#         default is NULL.
-#      wgt1 = the final adjusted stage one weight for each site.  The default is
-#         NULL.
-#      x1 = the stage one x-coordinate for location for each site.  The default
-#         is NULL.
-#      y1 = the stage one y-coordinate for location for each site.  The default
-#         is NULL.
-#      popsize = the known size of the resource - the total number of sampling 
-#         units of a finite resource or the measure of an extensive resource,
-#         which is required for calculation of finite and continuous population 
-#         correction factors for a single-stage sample.  This variable is also 
-#         used to adjust estimators for the known size of a resource.  For a
-#         stratified sample this variable must be a vector containing a value 
-#         for each stratum and must have the names attribute set to identify the
-#         stratum codes.  The default is NULL.
-#      stage1size = the known size of the stage one sampling units of a two-
-#         stage sample, which is required for calculation of finite and  
-#         continuous population correction factors for a two-stage sample and 
-#         must have the names attribute set to identify the stage one sampling 
-#         unit codes.  For a stratified sample, the names attribute must be set
-#         to identify both stratum codes and stage one sampling unit codes using
-#         a convention where the two codes are separated by the # symbol, e.g.,
-#         "Stratum 1#Cluster 1".  The default is NULL.
-#      support = the support value for each site - the value one (1) for a 
-#         site from a finite resource or the measure of the sampling unit  
-#         associated with a site from an extensive resource, which is required  
-#         for calculation of finite and continuous population correction  
-#         factors.  The default is NULL.
-#      swgt = the size-weight for each site, which is the stage two size-weight 
-#         for a two-stage sample.  The default is NULL.
-#      swgt1 = the stage one size-weight for each site.  The default is NULL.
-#      unitsize = the known sum of the size-weights of the resource, which for a 
-#         stratified sample must be a vector containing a value for each stratum 
-#         and must have the names attribute set to identify the stratum codes.  
-#         The default is NULL.
-#      vartype = the choice of variance estimator, where "Local" = local mean
-#         estimator and "SRS" = SRS estimator.  The default is "Local".
-#      conf = the confidence level.  The default is 95%.
-#      check.ind = a logical value that indicates whether compatability
-#         checking of the input values is conducted, where TRUE = conduct 
-#         compatibility checking and FALSE = do not conduct compatibility 
-#         checking.  The default is TRUE.
-#      warn.ind = a logical value that indicates whether warning messages were
-#         generated, where TRUE = warning messages were generated and FALSE =
-#         warning messages were not generated.  The default is NULL.
-#      warn.df = a data frame for storing warning messages.  The default is
-#         NULL.
-#      warn.vec = a vector that contains names of the population type, the
-#         subpopulation, and an indicator.  The default is NULL.
-#   Output:
-#      If the function was called by the cat.analysis function, then output is
-#      an object in list format composed of the Results data frame, which
-#      contains estimates and confidence bounds, and the warn.df data frame,
-#      which contains warning messages.  If the function was called directly,
-#      then output is the Results data frame.
-#   Other Functions Required:
-#      input.check - check input values for errors, consistency, and
-#         compatibility with psurvey.analysis analytical functions
-#      wnas - remove missing values
-#      vecprint - takes an input vector and outputs a character string with
-#         line breaks inserted
-#      catvar.prop - calculate variance of the proportion estimates
-#      catvar.size - calculate variance of the size estimates
-#   Examples:
-#      catvar <- rep(c("north", "south", "east", "west"), rep(25, 4))
-#      wgt <- runif(100, 10, 100)
-#      category.est(catvar, wgt, vartype="SRS")
+# Arguments:
+#   catvar = the value of the categorical response variable or the site status
+#     for each site.
+#   wgt = the final adjusted weight (inverse of the sample inclusion
+#     probability) for each site, which is either the weight for a single-stage
+#     sample or the stage two weight for a two-stage sample.
+#   x = x-coordinate for location for each site, which is either the
+#     x-coordinate for a single-stage sample or the stage two x-coordinate for a
+#     two-stage sample.  The default is NULL.
+#   y = y-coordinate for location for each site, which is either the
+#     y-coordinate for a single-stage sample or the stage two y-coordinate for a
+#     two-stage sample.  The default is NULL.
+#   stratum = the stratum for each site.  The default is NULL.
+#   cluster = the stage one sampling unit (primary sampling unit or cluster)
+#     code for each site.  The default is NULL.
+#   wgt1 = the final adjusted stage one weight for each site.  The default is
+#     NULL.
+#   x1 = the stage one x-coordinate for location for each site.  The default is
+#     NULL.
+#   y1 = the stage one y-coordinate for location for each site.  The default is
+#     NULL.
+#   popsize = known size of the resource, which is used to perform ratio
+#     adjustment to estimators expressed using measurement units for the
+#     resource.  For a finite resource, this argument is either the total number
+#     of sampling units or the known sum of size-weights.  For an extensive
+#     resource, this argument is the measure of the resource, i.e., either known
+#     total length for a linear resource or known total area for an areal
+#     resource.  For a stratified sample this variable must be a vector
+#     containing a value for each stratum and must have the names attribute set
+#     to identify the stratum codes.  The default is NULL.
+#   popcorrect = a logical value that indicates whether finite or continuous
+#     population correction factors should be employed during variance
+#     estimation, where TRUE = use the correction factors and FALSE = do not use
+#     the correction factors.  The default is FALSE.
+#   pcfsize = size of the resource, which is required for calculation of finite
+#     and continuous population correction factors for a single-stage sample.
+#     For a stratified sample this argument must be a vector containing a value
+#     for each stratum and must have the names attribute set to identify the
+#     stratum codes.  The default is NULL.
+#   N.cluster = the number of stage one sampling units in the resource, which is
+#     required for calculation of finite and continuous population correction
+#     factors for a two-stage sample.  For a stratified sample this argument
+#     must be a vector containing a value for each stratum and must have the
+#     names attribute set to identify the stratum codes.  The default is NULL.
+#   stage1size = size of the stage one sampling units of a two-stage sample,
+#     which is required for calculation of finite and continuous population
+#     correction factors for a two-stage sample and must have the names
+#     attribute set to identify the stage one sampling unit codes.  For a
+#     stratified sample, the names attribute must be set to identify both
+#     stratum codes and stage one sampling unit codes using a convention where
+#     the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
+#     The default is NULL.
+#   support = the support value for each site - the value one (1) for a site
+#     from a finite resource or the measure of the sampling unit associated with
+#     a site from an extensive resource, which is required for calculation of
+#     finite and continuous population correction factors.  The default is NULL.
+#   sizeweight = a logical value that indicates whether size-weights should be
+#     used in the analysis, where TRUE = use the size-weights and FALSE = do not
+#     use the size-weights.  The default is FALSE.
+#   swgt = the size-weight for each site, which is the stage two size-weight for
+#     a two-stage sample.  The default is NULL.
+#   swgt1 = the stage one size-weight for each site.  The default is NULL.
+#   vartype = the choice of variance estimator, where "Local" = local mean
+#     estimator and "SRS" = SRS estimator.  The default is "Local".
+#   conf = the confidence level.  The default is 95%.
+#   check.ind = a logical value that indicates whether compatability checking of
+#     the input values is conducted, where TRUE = conduct compatibility checking
+#     and FALSE = do not conduct compatibility checking.  The default is TRUE.
+#   warn.ind = a logical value that indicates whether warning messages were
+#     generated, where TRUE = warning messages were generated and FALSE =
+#     warning messages were not generated.  The default is NULL.
+#   warn.df = a data frame for storing warning messages.  The default is NULL.
+#   warn.vec = a vector that contains names of the population type, the
+#     subpopulation, and an indicator.  The default is NULL.
+# Output:
+#   If the function was called by the cat.analysis function, then output is an
+#   object in list format composed of the Results data frame, which contains
+#   estimates and confidence bounds, and the warn.df data frame, which contains
+#   warning messages.  If the function was called directly, then output is the
+#   Results data frame.
+# Other Functions Required:
+#   input.check - check input values for errors, consistency, and compatibility
+#     with analytical functions
+#   wnas - remove missing values
+#   vecprint - takes an input vector and outputs a character string with line
+#     breaks inserted
+#   catvar.prop - calculate variance of the proportion estimates
+#   catvar.size - calculate variance of the size estimates
+# Examples:
+#   catvar <- rep(c("north", "south", "east", "west"), rep(25, 4))
+#   wgt <- runif(100, 10, 100)
+#   category.est(catvar, wgt, vartype="SRS")
 #
-#      x <- runif(100)
-#      y <- runif(100)
-#      category.est(catvar, wgt, x, y)
+#   x <- runif(100)
+#   y <- runif(100)
+#   category.est(catvar, wgt, x, y)
 ################################################################################
 
 # As necessary, create a data frame for warning messages
@@ -156,7 +161,7 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
       stop("\nValues for the categorical variable must be provided.")
    nresp <- length(catvar)
 
-# Determine whether the sample is stratified
+# Assign a logical value to the indicator variable for a stratified sample
 
    stratum.ind <- length(unique(stratum)) > 1
 
@@ -172,26 +177,19 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
       nstrata <- NULL
    }
 
-# Determine whether the sample has two stages
+# Assign a logical value to the indicator variable for a two stage sample
 
    cluster.ind <- length(unique(cluster)) > 1
 
-# Determine whether the population correction factor is to be used
+# Assign the value of popcorrect to the indicator variable for use of the
+# population correction factor
 
-   if(is.null(support)) {
-      pcfactor.ind <- FALSE
-   } else {
-      temp <- unique(support)
-      if(length(temp) == 1) {
-         pcfactor.ind <- ifelse(is.na(temp), FALSE, TRUE)
-      } else {
-         pcfactor.ind <- TRUE
-      }
-   }
+   pcfactor.ind <- popcorrect
 
-# Determine whether the sample uses size-weights
+# Assign the value of sizeweight to the indicator variable for use of size
+# weights
 
-   swgt.ind <- length(unique(swgt)) > 1
+   swgt.ind <- sizeweight
 
 # Begin the section that checks for compatibility of input values
 
@@ -217,13 +215,13 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 
       temp <- input.check(nresp, wgt, NULL, NULL, x, y, stratum.ind, stratum,
          stratum.levels, nstrata, cluster.ind, cluster, cluster.levels,
-         ncluster, N.cluster, wgt1, x1, y1, popsize, stage1size, pcfactor.ind,
-         support, swgt.ind, swgt, swgt1, unitsize, vartype, conf)
+         ncluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster,
+         stage1size, support, swgt.ind, swgt, swgt1, vartype, conf)
 
-      N.cluster <- temp$N.cluster
       popsize <- temp$popsize
+      pcfsize <- temp$pcfsize
+      N.cluster <- temp$N.cluster
       stage1size <- temp$stage1size
-      unitsize <- temp$unitsize
 
 # If the sample was stratified and had two stages, then reset cluster to its 
 # input value
@@ -336,8 +334,8 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
    }
 
 # For a stratified sample, check for strata that no longer contain any values,
-# as necesssary adjust popsize and unitsize, remove strata that contain a single
-# value, and output a warning message
+# as necesssary adjust popsize, remove strata that contain a single value, and
+# output a warning message
 
    if(stratum.ind) {
       stratum <- factor(stratum)
@@ -356,8 +354,6 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
             stratum=NA, warning=I(warn), action=I(act)))
          if(!is.null(popsize))
             popsize <- popsize[temp]
-         if(!is.null(unitsize))
-            unitsize <- unitsize[temp]
       }
 
       ind <- FALSE
@@ -393,8 +389,6 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
             }
             if(!is.null(popsize))
                popsize <- popsize[names(popsize) != stratum.levels[i]]
-            if(!is.null(unitsize))
-               unitsize <- unitsize[names(unitsize) != stratum.levels[i]]
             ind <- TRUE
          }
       }
@@ -444,40 +438,21 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 
 # Calculate additional required values
 
-   if(swgt.ind) {
-      if(!is.null(unitsize))
-         sum.unitsize <- sum(unitsize)
-      if(stratum.ind) {
-         if(cluster.ind) {
-            unitsize.hat <- tapply(wgt*swgt*wgt1*swgt1, stratum, sum)
-            sum.unitsize.hat <- sum(wgt*swgt*wgt1*swgt1)
-         } else {
-            unitsize.hat <- tapply(wgt*swgt, stratum, sum)
-            sum.unitsize.hat <- sum(wgt*swgt)
-         }
+   if(!is.null(popsize))
+      sum.popsize <- sum(popsize)
+   if(stratum.ind) {
+      if(cluster.ind) {
+         popsize.hat <- tapply(wgt*wgt1, stratum, sum)
+         sum.popsize.hat <- sum(wgt*wgt1)
       } else {
-         if(cluster.ind)
-            unitsize.hat <- sum(wgt*swgt*wgt1*swgt1)
-         else
-            unitsize.hat <- sum(wgt*swgt)
+         popsize.hat <- tapply(wgt, stratum, sum)
+         sum.popsize.hat <- sum(wgt)
       }
    } else {
-      if(!is.null(popsize))
-         sum.popsize <- sum(popsize)
-      if(stratum.ind) {
-         if(cluster.ind) {
-            popsize.hat <- tapply(wgt*wgt1, stratum, sum)
-            sum.popsize.hat <- sum(wgt*wgt1)
-         } else {
-            popsize.hat <- tapply(wgt, stratum, sum)
-            sum.popsize.hat <- sum(wgt)
-         }
-      } else {
-         if(cluster.ind)
-            popsize.hat <- sum(wgt*wgt1)
-         else
-            popsize.hat <- sum(wgt)
-      }
+      if(cluster.ind)
+         popsize.hat <- sum(wgt*wgt1)
+      else
+         popsize.hat <- sum(wgt)
    }
 
 # Branch to handle stratified and unstratified data
@@ -491,20 +466,17 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Create the data frame for estimates for all strata combined
 
    Results <- data.frame(array(0, c(nlevels+1, 10)))
-   dimnames(Results) <- list(1:(nlevels+1), c("Category", "NResp", "Estimate.P", "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""), paste("UCB", conf, "Pct.U", sep="")))
+   dimnames(Results) <- list(1:(nlevels+1), c("Category", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf,
+      "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U",
+      sep=""), paste("UCB", conf, "Pct.U", sep="")))
    Results[,1] <- c(catvar.levels, "Total")
 
-# For known popsize or unitsize, create matrices for proportion and variance
-# estimates
+# For known popsize, create matrices for proportion and variance estimates
 
-   if(!is.null(popsize) || !is.null(unitsize)) {
-      if(swgt.ind) {
-         prop.unitsize <- matrix(0, nlevels, nstrata)
-         varest.unitsize <- matrix(0, nlevels, nstrata)
-      } else {
-         prop.popsize <- matrix(0, nlevels, nstrata)
-         varest.popsize <- matrix(0, nlevels, nstrata)
-      }
+   if(!is.null(popsize)) {
+      prop.popsize <- matrix(0, nlevels, nstrata)
+      varest.popsize <- matrix(0, nlevels, nstrata)
    }
 
 # Begin the subsection for individual strata
@@ -517,36 +489,30 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
    z <- factor(catvar[stratum.i])
    z.levels <- levels(z)
    m <- length(z.levels)
-   if(swgt.ind) {
-      if(cluster.ind) {
-         w2 <- wgt[stratum.i]*swgt[stratum.i]
-         w1 <- wgt1[stratum.i]*swgt1[stratum.i]
-         prop <- tapply(w2*w1, z, sum) / unitsize.hat[i]
-         nval <- tapply(w2, z, length)
-      } else {
-         w <- wgt[stratum.i]*swgt[stratum.i]
-         prop <- tapply(w, z, sum) / unitsize.hat[i]
-         nval <- tapply(w, z, length)
-      }
+   if(cluster.ind) {
+      w2 <- wgt[stratum.i]
+      w1 <- wgt1[stratum.i]
+      prop <- tapply(w2*w1, z, sum) / popsize.hat[i]
+      nval <- tapply(w2, z, length)
    } else {
-      if(cluster.ind) {
-         w2 <- wgt[stratum.i]
-         w1 <- wgt1[stratum.i]
-         prop <- tapply(w2*w1, z, sum) / popsize.hat[i]
-         nval <- tapply(w2, z, length)
-      } else {
-         w <- wgt[stratum.i]
-         prop <- tapply(w, z, sum) / popsize.hat[i]
-         nval <- tapply(w, z, length)
-      }
+      w <- wgt[stratum.i]
+      prop <- tapply(w, z, sum) / popsize.hat[i]
+      nval <- tapply(w, z, length)
    }
 
 # Calculate the variance estimates
 
-   if(cluster.ind)
-      temp <- catvar.prop(z, w2, x[stratum.i], y[stratum.i], prop, stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], w1, x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
-   else
-      temp <- catvar.prop(z, w, x[stratum.i], y[stratum.i], prop, stratum.ind, stratum.levels[i], cluster.ind, popsize=popsize[i], pcfactor.ind=pcfactor.ind, support=support[stratum.i], vartype=vartype, warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+   if(cluster.ind) {
+      temp <- catvar.prop(z, w2, x[stratum.i], y[stratum.i], prop, stratum.ind,
+         stratum.levels[i], cluster.ind, cluster[stratum.i], w1, x1[stratum.i],
+         y1[stratum.i], pcfactor.ind, NULL, N.cluster[i], stage1size[[i]],
+         support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+   } else {
+      temp <- catvar.prop(z, w, x[stratum.i], y[stratum.i], prop, stratum.ind,
+         stratum.levels[i], cluster.ind, pcfactor.ind=pcfactor.ind,
+         pcfsize=pcfsize[i], support=support[stratum.i], vartype=vartype,
+         warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+   }
    varest <- temp$varest
    warn.ind <- temp$warn.ind
    warn.df <- temp$warn.df
@@ -572,37 +538,23 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
       rslt <- temp
    }
 
-# For known popsize or unitsize, add estimates to the  matrices for proportion
-# and variance estimates
+# For known popsize, add estimates to the  matrices for proportion and variance
+# estimates
 
-   if(!is.null(popsize) || !is.null(unitsize)) {
-      if(swgt.ind) {
-         prop.unitsize[,i] <- rslt[,2]
-         varest.unitsize[,i] <- rslt[,3]
-      } else {
-         prop.popsize[,i] <- rslt[,2]
-         varest.popsize[,i] <- rslt[,3]
-      }
+   if(!is.null(popsize)) {
+      prop.popsize[,i] <- rslt[,2]
+      varest.popsize[,i] <- rslt[,3]
    }
+
 # Add estimates to the data frame for all strata combined
 
    Results[1:nlevels, 2][!is.na(rslt[,1])] <- Results[1:nlevels, 2][!is.na(rslt[,1])] + rslt[,1][!is.na(rslt[,1])]
-   if(swgt.ind) {
-      if(!is.null(unitsize)) {
-         Results[1:nlevels, 3][!is.na(rslt[,2])] <- Results[1:nlevels, 3][!is.na(rslt[,2])] + (unitsize[i]/sum.unitsize)*rslt[,2][!is.na(rslt[,2])]
-         Results[1:nlevels, 4][!is.na(rslt[,3])] <- Results[1:nlevels, 4][!is.na(rslt[,3])] + ((unitsize[i]/sum.unitsize)^2)*rslt[,3][!is.na(rslt[,3])]
-      } else {
-         Results[1:nlevels, 3][!is.na(rslt[,2])] <- Results[1:nlevels, 3][!is.na(rslt[,2])] + (unitsize.hat[i]/sum.unitsize.hat)*rslt[,2][!is.na(rslt[,2])]
-         Results[1:nlevels, 4][!is.na(rslt[,3])] <- Results[1:nlevels, 4][!is.na(rslt[,3])] + ((unitsize.hat[i]/sum.unitsize.hat)^2)*rslt[,3][!is.na(rslt[,3])]
-      }
+   if(!is.null(popsize)) {
+      Results[1:nlevels, 3][!is.na(rslt[,2])] <- Results[1:nlevels, 3][!is.na(rslt[,2])] + (popsize[i]/sum.popsize)*rslt[,2][!is.na(rslt[,2])]
+      Results[1:nlevels, 4][!is.na(rslt[,3])] <- Results[1:nlevels, 4][!is.na(rslt[,3])] + ((popsize[i]/sum.popsize)^2)*rslt[,3][!is.na(rslt[,3])]
    } else {
-      if(!is.null(popsize)) {
-         Results[1:nlevels, 3][!is.na(rslt[,2])] <- Results[1:nlevels, 3][!is.na(rslt[,2])] + (popsize[i]/sum.popsize)*rslt[,2][!is.na(rslt[,2])]
-         Results[1:nlevels, 4][!is.na(rslt[,3])] <- Results[1:nlevels, 4][!is.na(rslt[,3])] + ((popsize[i]/sum.popsize)^2)*rslt[,3][!is.na(rslt[,3])]
-      } else {
-         Results[1:nlevels, 3][!is.na(rslt[,2])] <- Results[1:nlevels, 3][!is.na(rslt[,2])] + (popsize.hat[i]/sum.popsize.hat)*rslt[,2][!is.na(rslt[,2])]
-         Results[1:nlevels, 4][!is.na(rslt[,3])] <- Results[1:nlevels, 4][!is.na(rslt[,3])] + ((popsize.hat[i]/sum.popsize.hat)^2)*rslt[,3][!is.na(rslt[,3])]
-      }
+      Results[1:nlevels, 3][!is.na(rslt[,2])] <- Results[1:nlevels, 3][!is.na(rslt[,2])] + (popsize.hat[i]/sum.popsize.hat)*rslt[,2][!is.na(rslt[,2])]
+      Results[1:nlevels, 4][!is.na(rslt[,3])] <- Results[1:nlevels, 4][!is.na(rslt[,3])] + ((popsize.hat[i]/sum.popsize.hat)^2)*rslt[,3][!is.na(rslt[,3])]
    }
 
 # End the subsection for individual strata
@@ -621,7 +573,7 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 
 # Provide appropriate values for the "Total" row
 
-   if(!is.null(popsize) || !is.null(unitsize))
+   if(!is.null(popsize))
       Results[nlevels+1, 2:6] <- c(sum(Results[1:nlevels, 2]), 100, NA, NA, NA)
    else
       Results[nlevels+1, 2:6] <- c(sum(Results[1:nlevels, 2]), 100, 0, 100, 100)
@@ -642,46 +594,36 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
    z <- factor(catvar[stratum.i])
    z.levels <- levels(z)
    m <- length(z.levels)
-   if(swgt.ind) {
-      if(!is.null(unitsize)) {
-         size <- c(unitsize[i]*prop.unitsize[,i], unitsize[i])
-      } else {
-         if(cluster.ind) {
-            w2 <- wgt[stratum.i]*swgt[stratum.i]
-            w1 <- wgt1[stratum.i]*swgt1[stratum.i]
-            size <- c(tapply(w2*w1, z, sum), unitsize.hat[i])
-         } else {
-            w <- wgt[stratum.i]*swgt[stratum.i]
-            size <- c(tapply(w, z, sum), unitsize.hat[i])
-         }
-      }
+   if(!is.null(popsize)) {
+      size <- c(popsize[i]*prop.popsize[,i], popsize[i])
    } else {
-      if(!is.null(popsize)) {
-         size <- c(popsize[i]*prop.popsize[,i], popsize[i])
+      if(cluster.ind) {
+         w2 <- wgt[stratum.i]
+         w1 <- wgt1[stratum.i]
+         size <- c(tapply(w2*w1, z, sum), popsize.hat[i])
       } else {
-         if(cluster.ind) {
-            w2 <- wgt[stratum.i]
-            w1 <- wgt1[stratum.i]
-            size <- c(tapply(w2*w1, z, sum), popsize.hat[i])
-         } else {
-            w <- wgt[stratum.i]
-            size <- c(tapply(w, z, sum), popsize.hat[i])
-         }
+         w <- wgt[stratum.i]
+         size <- c(tapply(w, z, sum), popsize.hat[i])
       }
    }
 
 # Calculate the variance estimates
 
-   if(!is.null(popsize) || !is.null(unitsize)) {
-      if(swgt.ind)
-         varest <- c((unitsize[i]^2)*varest.unitsize[,i], NA)
-      else
-         varest <- c((popsize[i]^2)*varest.popsize[,i], NA)
+   if(!is.null(popsize)) {
+      varest <- c((popsize[i]^2)*varest.popsize[,i], NA)
    } else {
-      if(cluster.ind)
-         temp <- catvar.size(z, w2, x[stratum.i], y[stratum.i], size, stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], w1, x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
-      else
-         temp <- catvar.size(z, w, x[stratum.i], y[stratum.i], size, stratum.ind, stratum.levels[i], cluster.ind, popsize=popsize[i], pcfactor.ind=pcfactor.ind, support=support[stratum.i], vartype=vartype, warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+      if(cluster.ind) {
+         temp <- catvar.size(z, w2, x[stratum.i], y[stratum.i], size,
+            stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], w1,
+            x1[stratum.i], y1[stratum.i], pcfactor.ind, NULL, N.cluster[i],
+            stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+      } else {
+         temp <- catvar.size(z, w, x[stratum.i], y[stratum.i], size,
+            stratum.ind, stratum.levels[i], cluster.ind,
+            pcfactor.ind=pcfactor.ind, pcfsize=pcfsize[i],
+            support=support[stratum.i], vartype=vartype, warn.ind=warn.ind,
+            warn.df=warn.df, warn.vec=warn.vec)
+      }
       varest <- temp$varest
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
@@ -690,7 +632,7 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Combine estimates in a matrix
 
    rslt <- cbind(size, varest)
-   if(is.null(popsize) && is.null(unitsize) && m < nlevels) {
+   if(is.null(popsize) && m < nlevels) {
       temp <- array(0, c(nlevels+1, 2))
       k <- 1
       for(j in 1:nlevels) {
@@ -712,9 +654,9 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Add estimates to the data frame for all strata combined
 
    Results[,7][!is.na(rslt[,1])] <- Results[,7][!is.na(rslt[,1])] +
-rslt[,1][!is.na(rslt[,1])]
+      rslt[,1][!is.na(rslt[,1])]
    Results[,8][!is.na(rslt[,2])] <- Results[,8][!is.na(rslt[,2])] +
-rslt[,2][!is.na(rslt[,2])]
+      rslt[,2][!is.na(rslt[,2])]
 
 # End the subsection for individual strata
 
@@ -726,18 +668,15 @@ rslt[,2][!is.na(rslt[,2])]
 
    Results[,8] <- sqrt(Results[,8])
    Results[,9] <- pmax(Results[,7] - mult*Results[,8], 0)
-   if(!is.null(popsize) || !is.null(unitsize)) {
-      if(swgt.ind)
-         Results[,10] <- pmin(Results[,7] + mult*Results[,8], sum.unitsize)
-      else
-         Results[,10] <- pmin(Results[,7] + mult*Results[,8], sum.popsize)
+   if(!is.null(popsize)) {
+      Results[,10] <- pmin(Results[,7] + mult*Results[,8], sum.popsize)
    } else {
       Results[,10] <- Results[,7] + mult*Results[,8]
    }
 
-# For known popsize or known unitsize, adjust values for the "Total" row
+# For known popsize, adjust values for the "Total" row
 
-   if(!is.null(popsize) || !is.null(unitsize))
+   if(!is.null(popsize))
       Results[nlevels+1, 8:10] <- rep(NA, 3)
 
 # End the subsection for all strata combined
@@ -758,7 +697,10 @@ rslt[,2][!is.na(rslt[,2])]
 # Create the data frame for estimates
 
    Results <- data.frame(array(0, c(nlevels+1, 10)))
-   dimnames(Results) <- list(1:(nlevels+1), c("Category", "NResp", "Estimate.P", "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""), paste("UCB", conf, "Pct.U", sep="")))
+   dimnames(Results) <- list(1:(nlevels+1), c("Category", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf,
+      "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U",
+      sep=""), paste("UCB", conf, "Pct.U", sep="")))
    Results[,1] <- c(catvar.levels, "Total")
 
 # Begin the subsection for proportion estimates
@@ -767,36 +709,28 @@ rslt[,2][!is.na(rslt[,2])]
 
    z <- factor(catvar)
    n <- length(z)
-   if(swgt.ind) {
-      if(cluster.ind) {
-         w2 <- wgt*swgt
-         w1 <- wgt1*swgt1
-         prop <- tapply(w2*w1, z, sum) / unitsize.hat
-         nval <- tapply(w2, z, length)
-      } else {
-         w <- wgt*swgt
-         prop <- tapply(w, z, sum) / unitsize.hat
-         nval <- tapply(w, z, length)
-      }
+   if(cluster.ind) {
+      w2 <- wgt
+      w1 <- wgt1
+      prop <- tapply(w2*w1, z, sum) / popsize.hat
+      nval <- tapply(w2, z, length)
    } else {
-      if(cluster.ind) {
-         w2 <- wgt
-         w1 <- wgt1
-         prop <- tapply(w2*w1, z, sum) / popsize.hat
-         nval <- tapply(w2, z, length)
-      } else {
-         w <- wgt
-         prop <- tapply(w, z, sum) / popsize.hat
-         nval <- tapply(w, z, length)
-      }
+      w <- wgt
+      prop <- tapply(w, z, sum) / popsize.hat
+      nval <- tapply(w, z, length)
    }
 
 # Calculate the standard error estimates
 
-   if(cluster.ind)
-      temp <- catvar.prop(z, w2, x, y, prop, stratum.ind, NULL, cluster.ind, cluster, N.cluster, w1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
-   else
-      temp <- catvar.prop(z, w, x, y, prop, stratum.ind, NULL, cluster.ind, popsize=popsize, pcfactor.ind=pcfactor.ind, support=support, vartype=vartype, warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+   if(cluster.ind) {
+      temp <- catvar.prop(z, w2, x, y, prop, stratum.ind, NULL, cluster.ind,
+         cluster, w1, x1, y1, pcfactor.ind, NULL, N.cluster, stage1size,
+         support, vartype, warn.ind, warn.df, warn.vec)
+   } else {
+      temp <- catvar.prop(z, w, x, y, prop, stratum.ind, NULL, cluster.ind,
+         pcfactor.ind=pcfactor.ind, pcfsize=pcfsize, support=support,
+         vartype=vartype, warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+   }
    sdest <- sqrt(temp$varest)
    warn.ind <- temp$warn.ind
    warn.df <- temp$warn.df
@@ -814,7 +748,7 @@ rslt[,2][!is.na(rslt[,2])]
 
 # Provide appropriate values for the "Total" row
 
-   if(!is.null(popsize) || !is.null(unitsize))
+   if(!is.null(popsize))
       Results[nlevels+1, 2:6] <- c(sum(Results[1:nlevels, 2]), 100, NA, NA, NA)
    else
       Results[nlevels+1, 2:6] <- c(sum(Results[1:nlevels, 2]), 100, 0, 100, 100)
@@ -825,30 +759,26 @@ rslt[,2][!is.na(rslt[,2])]
 
 # Estimate the size of each category
 
-   if(swgt.ind) {
-      if(!is.null(unitsize))
-         size <- c(unitsize*Results[1:nlevels, 3]/100, unitsize)
-      else
-         size <- c(unitsize.hat*(prop/100), unitsize.hat)
-   } else {
-      if(!is.null(popsize))
-         size <- c(popsize*Results[1:nlevels, 3]/100, popsize)
-      else
-         size <- c(popsize.hat*(prop/100), popsize.hat)
-   }
+   if(!is.null(popsize))
+      size <- c(popsize*Results[1:nlevels, 3]/100, popsize)
+   else
+      size <- c(popsize.hat*(prop/100), popsize.hat)
 
 # Calculate the standard error estimates
 
-   if(!is.null(popsize) || !is.null(unitsize)) {
-      if(swgt.ind)
-         sdest <- unitsize*Results[,4]/100
-      else
-         sdest <- popsize*Results[,4]/100
+   if(!is.null(popsize)) {
+      sdest <- popsize*Results[,4]/100
    } else {
-      if(cluster.ind)
-         temp <- catvar.size(z, w2, x, y, size, stratum.ind, NULL, cluster.ind, cluster, N.cluster, w1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
-      else
-         temp <- catvar.size(z, w, x, y, size, stratum.ind, NULL, cluster.ind, popsize=popsize, pcfactor.ind=pcfactor.ind, support=support, vartype=vartype, warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+      if(cluster.ind) {
+         temp <- catvar.size(z, w2, x, y, size, stratum.ind, NULL, cluster.ind,
+            cluster, w1, x1, y1, pcfactor.ind, NULL, N.cluster, stage1size,
+            support, vartype, warn.ind, warn.df, warn.vec)
+      } else {
+         temp <- catvar.size(z, w, x, y, size, stratum.ind, NULL, cluster.ind,
+            pcfactor.ind=pcfactor.ind, pcfsize=pcfsize, support=support,
+            vartype=vartype, warn.ind=warn.ind, warn.df=warn.df,
+            warn.vec=warn.vec)
+      }
       sdest <- sqrt(temp$varest)
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
@@ -857,11 +787,8 @@ rslt[,2][!is.na(rslt[,2])]
 # Calculate confidence bounds
 
    lbound <- pmax(size - mult*sdest, 0)
-   if(!is.null(popsize) || !is.null(unitsize)) {
-      if(swgt.ind)
-         ubound <- pmin(size + mult*sdest, unitsize)
-      else
-         ubound <- pmin(size + mult*sdest, popsize)
+   if(!is.null(popsize)) {
+      ubound <- pmin(size + mult*sdest, popsize)
    } else {
       ubound <- size + mult*sdest
    }

@@ -6,9 +6,14 @@ category.est            Category Proportion and Size Estimates
 cdf.decon               Cumulative Distribution Function -
                         Deconvolution
 cdf.est                 Cumulative Distribution Function - Estimation
+cdf.plot                Plot the CDF and Associated Confidence Limits
 cdf.test                Cumulative Distribution Function - Inference
 cont.analysis           Continuous Data Analysis for Probability Survey
                         Data
+cont.cdfplot            Create CDF Plots from the cont.analysis Output
+                        Object
+cont.cdftest            Cumulative Distribution Function Inference for
+                        Probability Survey Data
 dsgnsum                 Summarize the Sites Selected for a Survey
                         Design
 eco.l3.ut               Example Polygons Dataset
@@ -28,13 +33,17 @@ irspts                  Select an Independent Random Sample (IRS) of a
 luck.ash                Example Polygons Dataset
 marinus                 Convert Coordinates from Latitude/Longitude to
                         the Equidistant, Cylindric Map Projection
-psurvey.analysis        Create an Object of Class psurvey.analysis
 read.dbf                Read the Attribute (dbf) File of an ESRI
                         Shapefile
+read.sas                Read SAS Datasets or a SAS XPORT (Transport)
+                        File
 read.shape              Read an ESRI Shapefile
-relrisk                 Relative Risk
+relrisk.analysis        Relative Risk Analysis for Probability Survey
+                        Data
+relrisk.est             Compute the Relative Risk Estimate
 sp2shape                Convert an sp Package Object to an ESRI
                         Shapefile
+spsurvey.analysis       Create an Object of Class spsurvey.analysis
 total.est               Population Total, Mean, Variance, and Standard
-                        Deviation
+                        Deviation Estimates
 write.object            Write an Object to a Plot

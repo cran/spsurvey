@@ -12,7 +12,7 @@ read.shape(filename=NULL)
 \arguments{
   \item{filename}{name of the shapefile without any extension.  If filename 
     equals a shapefile name, than that shapefile is read.  If filename 
-    equals NULL, then all of the shapefiles in the current directory are 
+    equals NULL, then all of the shapefiles in the working directory are 
     read.  The default is NULL.}
 }
 \value{

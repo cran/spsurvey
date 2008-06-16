@@ -7,7 +7,7 @@
 **                point for an IRS design.
 **  Programmer:   Tom Kincaid
 **  Created:      November 30, 2005
-**  Last Revised: June 22, 2006
+**  Last Revised: October 18, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -381,6 +381,8 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
 
       /* add new polygon to the record struct */
       record.poly = poly;
+      record.polyZ = NULL;
+      record.polyM = NULL;
 
     } else if ( shape.shapeType == POLYLINE_Z ) {
 
@@ -493,6 +495,8 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
 
       /* add new polygon to the record struct */
       record.polyZ = polyZ;
+      record.poly = NULL;
+      record.polyM = NULL;
 
     } else {
 
@@ -584,6 +588,8 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
 
       /* add new polygon to the record struct */
       record.polyM = polyM;
+      record.poly = NULL;
+      record.polyZ = NULL;
 
     }
 

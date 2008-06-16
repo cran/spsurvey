@@ -10,7 +10,7 @@ irslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1) {
 #   This function selects an IRS of a linear resource.  
 # Arguments:
 #   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
-#     then the shapefile or shapefiles in the currrent directory are used.  The
+#     then the shapefile or shapefiles in the working directory are used.  The
 #     default is NULL.
 #   linframe = a data frame containing id, mdcaty, len, and mdm.
 #   samplesize = number of points to select in the sample.  The default is 100.

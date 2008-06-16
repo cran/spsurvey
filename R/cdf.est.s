@@ -1,14 +1,14 @@
 cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
-   N.cluster=NULL, wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL, stage1size=NULL,
-   support=NULL, swgt=NULL, swgt1=NULL, unitsize=NULL, vartype="Local", conf=95,
-   cdfval=NULL, pctval=c(5,10,25,50,75,90,95), check.ind=TRUE, warn.ind=NULL,
-   warn.df=NULL, warn.vec=NULL) {
+   wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL, popcorrect=FALSE, pcfsize=NULL,
+   N.cluster=NULL, stage1size=NULL, support=NULL, sizeweight=FALSE, swgt=NULL,
+   swgt1=NULL, vartype="Local", conf=95, cdfval=NULL, pctval=c(5,10,25,50,75,90,95),
+   check.ind=TRUE, warn.ind=NULL, warn.df=NULL, warn.vec=NULL) {
 
 ################################################################################
 # Function: cdf.est
 # Programmer: Tom Kincaid
 # Date: July 12, 2000
-# Last Revised: October 30, 2006
+# Last Revised: June 13, 2008
 # Description:
 #   This function calculates an estimate of the cumulative distribution function
 #   (CDF) for the proportion (expressed as percent) and the total of a response 
@@ -54,114 +54,120 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 #   continuous population correction factors can be utilized in variance
 #   estimation.  The function checks for compatibility of input values and
 #   removes missing values.
-#   Input:
-#      z = the response value for each site.
-#      wgt = the final adjusted weight (inverse of the sample inclusion
-#         probability) for each site, which is either the weight for a single-
-#         stage sample or the stage two weight for a two-stage sample.
-#      x = x-coordinate for location for each site, which is either the x-
-#          coordinate for a single-stage sample or the stage two x-coordinate
-#          for a two-stage sample.  The default is NULL.
-#      y = y-coordinate for location for each site, which is either the y-
-#          coordinate for a single-stage sample or the stage two y-coordinate
-#          for a two-stage sample.  The default is NULL.
-#      stratum = the stratum for each site.  The default is NULL.
-#      cluster = the stage one sampling unit (primary sampling unit or cluster) 
-#         code for each site.  The default is NULL.
-#      N.cluster = the number of stage one sampling units in the resource, which 
-#         is required for calculation of finite and continuous population 
-#         correction factors for a two-stage sample.  For a stratified sample 
-#         this variable must be a vector containing a value for each stratum and
-#         must have the names attribute set to identify the stratum codes.  The
-#         default is NULL.
-#      wgt1 = the final adjusted stage one weight for each site.  The default is
-#         NULL.
-#      x1 = the stage one x-coordinate for location for each site.  The default
-#         is NULL.
-#      y1 = the stage one y-coordinate for location for each site.  The default
-#         is NULL.
-#      popsize = the known size of the resource - the total number of sampling 
-#         units of a finite resource or the measure of an extensive resource,
-#         which is required for calculation of finite and continuous population 
-#         correction factors for a single-stage sample.  This variable is also 
-#         used to adjust estimators for the known size of a resource.  For a
-#         stratified sample this variable must be a vector containing a value 
-#         for each stratum and must have the names attribute set to identify the
-#         stratum codes.  The default is NULL.
-#      stage1size = the known size of the stage one sampling units of a two-
-#         stage sample, which is required for calculation of finite and  
-#         continuous population correction factors for a two-stage sample and 
-#         must have the names attribute set to identify the stage one sampling 
-#         unit codes.  For a stratified sample, the names attribute must be set
-#         to identify both stratum codes and stage one sampling unit codes using
-#         a convention where the two codes are separated by the # symbol, e.g.,
-#         "Stratum 1#Cluster 1".  The default is NULL.
-#      support = the support value for each site - the value one (1) for a 
-#         site from a finite resource or the measure of the sampling unit  
-#         associated with a site from an extensive resource, which is required  
-#         for calculation of finite and continuous population correction  
-#         factors.  The default is NULL.
-#      swgt = the size-weight for each site, which is the stage two size-weight 
-#         for a two-stage sample.  The default is NULL.
-#      swgt1 = the stage one size-weight for each site.  The default is NULL.
-#      unitsize = the known sum of the size-weights of the resource, which for a 
-#         stratified sample must be a vector containing a value for each stratum 
-#         and must have the names attribute set to identify the stratum codes.  
-#         The default is NULL.
-#      vartype = the choice of variance estimator, where "Local" = local mean
-#         estimator and "SRS" = SRS estimator.  The default is "Local".
-#      conf = the confidence level.  The default is 95%.
-#      cdfval = the set of values at which the CDF is estimated.  If a set of
-#         values is not provided, then the sorted set of unique values of the
-#         response variable is used.  The default is NULL.
-#      pctval = the set of values at which percentiles are estimated.  The
-#         default set is: {5, 10, 25, 50, 75, 90, 95}.
-#      check.ind = a logical value that indicates whether compatability
-#         checking of the input values is conducted, where TRUE = conduct 
-#         compatibility checking and FALSE = do not conduct compatibility 
-#         checking.  The default is TRUE.
-#      warn.ind = a logical value that indicates whether warning messages were
-#         generated, where TRUE = warning messages were generated and FALSE =
-#         warning messages were not generated.  The default is NULL.
-#      warn.df = a data frame for storing warning messages.  The default is
-#         NULL.
-#      warn.vec = a vector that contains names of the population type, the
-#         subpopulation, and an indicator.  The default is NULL.
-#   Output:
-#      If the function was called by the cont.analysis function, then output is
-#      an object in list format composed of a list named Results, which contains
-#      estimates and confidence bounds, and a data frame named warn.df, which
-#      contains warning messages.  The Results list is composed of two data
-#      frames: one data frame named CDF, which contains the CDF estimates, and a
-#      second data frame named Pct, which contains the percentile estimates.  If
-#      the function was called directly, then output is the Results list.
-#   Other Functions Required:
-#      input.check - check input values for errors, consistency, and
-#         compatibility with psurvey.analysis analytical functions
-#      wnas - remove missing values
-#      vecprint - takes an input vector and outputs a character string with
-#         line breaks inserted
-#      cdf.nresp - calculate the number of response values less than or
-#         equal to each of the set of values at which the CDF is estimated
-#      cdf.prop - calculate the CDF for the proportion
-#      cdf.total - calculate the CDF for the total
-#      cdf.size.prop - calculate the size-weighted CDF for the proportion
-#      cdf.size.total - calculate the size-weighted CDF for the total
-#      cdfvar.prop - calculate variance of the CDF for the proportion
-#      cdfvar.total - calculate variance of the CDF for the total
-#      cdfvar.size.prop - calculate variance of the size-weighted CDF for
-#         the proportion
-#      cdfvar.size.total - calculate variance of the size-weighted CDF for
-#         the total
-#   Examples:
-#      z <- rnorm(100, 10, 1)
-#      wgt <- runif(100, 10, 100)
-#      cdfval <- seq(min(z), max(z), length=20)
-#      cdf.est(z, wgt, vartype="SRS", cdfval=cdfval)
+# Arguments:
+#   z = the response value for each site.
+#     for each site.
+#   wgt = the final adjusted weight (inverse of the sample inclusion
+#     probability) for each site, which is either the weight for a single-stage
+#     sample or the stage two weight for a two-stage sample.
+#   x = x-coordinate for location for each site, which is either the
+#     x-coordinate for a single-stage sample or the stage two x-coordinate for a
+#     two-stage sample.  The default is NULL.
+#   y = y-coordinate for location for each site, which is either the
+#     y-coordinate for a single-stage sample or the stage two y-coordinate for a
+#     two-stage sample.  The default is NULL.
+#   stratum = the stratum for each site.  The default is NULL.
+#   cluster = the stage one sampling unit (primary sampling unit or cluster)
+#     code for each site.  The default is NULL.
+#   wgt1 = the final adjusted stage one weight for each site.  The default is
+#     NULL.
+#   x1 = the stage one x-coordinate for location for each site.  The default is
+#     NULL.
+#   y1 = the stage one y-coordinate for location for each site.  The default is
+#     NULL.
+#   popsize = known size of the resource, which is used to perform ratio
+#     adjustment to estimators expressed using measurement units for the
+#     resource.  For a finite resource, this argument is either the total number
+#     of sampling units or the known sum of size-weights.  For an extensive
+#     resource, this argument is the measure of the resource, i.e., either known
+#     total length for a linear resource or known total area for an areal
+#     resource.  For a stratified sample this variable must be a vector
+#     containing a value for each stratum and must have the names attribute set
+#     to identify the stratum codes.  The default is NULL.
+#   popcorrect = a logical value that indicates whether finite or continuous
+#     population correction factors should be employed during variance
+#     estimation, where TRUE = use the correction factors and FALSE = do not use
+#     the correction factors.  The default is FALSE.
+#   pcfsize = size of the resource, which is required for calculation of finite
+#     and continuous population correction factors for a single-stage sample.
+#     For a stratified sample this argument must be a vector containing a value
+#     for each stratum and must have the names attribute set to identify the
+#     stratum codes.  The default is NULL.
+#   N.cluster = the number of stage one sampling units in the resource, which is
+#     required for calculation of finite and continuous population correction
+#     factors for a two-stage sample.  For a stratified sample this argument
+#     must be a vector containing a value for each stratum and must have the
+#     names attribute set to identify the stratum codes.  The default is NULL.
+#   stage1size = size of the stage one sampling units of a two-stage sample,
+#     which is required for calculation of finite and continuous population
+#     correction factors for a two-stage sample and must have the names
+#     attribute set to identify the stage one sampling unit codes.  For a
+#     stratified sample, the names attribute must be set to identify both
+#     stratum codes and stage one sampling unit codes using a convention where
+#     the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
+#     The default is NULL.
+#   support = the support value for each site - the value one (1) for a site
+#     from a finite resource or the measure of the sampling unit associated with
+#     a site from an extensive resource, which is required for calculation of
+#     finite and continuous population correction factors.  The default is NULL.
+#   sizeweight = a logical value that indicates whether size-weights should be
+#     used in the analysis, where TRUE = use the size-weights and FALSE = do not
+#     use the size-weights.  The default is FALSE.
+#   swgt = the size-weight for each site, which is the stage two size-weight for
+#     a two-stage sample.  The default is NULL.
+#   swgt1 = the stage one size-weight for each site.  The default is NULL.
+#   vartype = the choice of variance estimator, where "Local" = local mean
+#     estimator and "SRS" = SRS estimator.  The default is "Local".
+#   conf = the confidence level.  The default is 95%.
+#   cdfval = the set of values at which the CDF is estimated.  If a set of
+#    values is not provided, then the sorted set of unique values of the
+#    response variable is used.  The default is NULL.
+#   pctval = the set of values at which percentiles are estimated.  The default
+#    set is: {5, 10, 25, 50, 75, 90, 95}.
+#   check.ind = a logical value that indicates whether compatability checking of
+#     the input values is conducted, where TRUE = conduct compatibility checking
+#     and FALSE = do not conduct compatibility checking.  The default is TRUE.
+#   warn.ind = a logical value that indicates whether warning messages were
+#     generated, where TRUE = warning messages were generated and FALSE =
+#     warning messages were not generated.  The default is NULL.
+#   warn.df = a data frame for storing warning messages.  The default is NULL.
+#   warn.vec = a vector that contains names of the population type, the
+#     subpopulation, and an indicator.  The default is NULL.
+# Output:
+#   If the function was called by the cont.analysis function, then output is an
+#   object in list format composed of a list named Results, which contains
+#   estimates and confidence bounds, and a data frame named warn.df, which
+#   contains warning messages.  The Results list is composed of two data frames:
+#   one data frame named CDF, which contains the CDF estimates, and a second
+#   data frame named Pct, which contains the percentile estimates.  If the
+#   function was called directly, then output is the Results list.
+# Other Functions Required:
+#   input.check - check input values for errors, consistency, and compatibility
+#     with analytical functions
+#   wnas - remove missing values
+#   vecprint - takes an input vector and outputs a character string with line
+#     breaks inserted
+#   cdf.nresp - calculate the number of response values less than or equal to
+#     each of the set of values at which the CDF is estimated
+#   cdf.prop - calculate the CDF for the proportion
+#   cdf.total - calculate the CDF for the total
+#   cdf.size.prop - calculate the size-weighted CDF for the proportion
+#   cdf.size.total - calculate the size-weighted CDF for the total
+#   cdfvar.prop - calculate variance of the CDF for the proportion
+#   cdfvar.total - calculate variance of the CDF for the total
+#   cdfvar.size.prop - calculate variance of the size-weighted CDF for the
+#     proportion
+#   cdfvar.size.total - calculate variance of the size-weighted CDF for the
+#     total
+# Examples:
+#   z <- rnorm(100, 10, 1)
+#   wgt <- runif(100, 10, 100)
+#   cdfval <- seq(min(z), max(z), length=20)
+#   cdf.est(z, wgt, vartype="SRS", cdfval=cdfval)
 #
-#      x <- runif(100)
-#      y <- runif(100)
-#      cdf.est(z, wgt, x, y, cdfval=cdfval)
+#   x <- runif(100)
+#   y <- runif(100)
+#   cdf.est(z, wgt, x, y, cdfval=cdfval)
 ################################################################################
 
 # As necessary, create a data frame for warning messages
@@ -182,7 +188,7 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       stop("\nValues for the response variable must be numeric.")
    nresp <- length(z)
 
-# Determine whether the sample is stratified
+# Assign a logical value to the indicator variable for a stratified sample
 
    stratum.ind <- length(unique(stratum)) > 1
 
@@ -198,26 +204,19 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       nstrata <- NULL
    }
 
-# Determine whether the sample has two stages
+# Assign a logical value to the indicator variable for a two stage sample
 
    cluster.ind <- length(unique(cluster)) > 1
 
-# Determine whether the population correction factor is to be used
+# Assign the value of popcorrect to the indicator variable for use of the
+# population correction factor
 
-   if(is.null(support)) {
-      pcfactor.ind <- FALSE
-   } else {
-      temp <- unique(support)
-      if(length(temp) == 1) {
-         pcfactor.ind <- ifelse(is.na(temp), FALSE, TRUE)
-      } else {
-         pcfactor.ind <- TRUE
-      }
-   }
+   pcfactor.ind <- popcorrect
 
-# Determine whether the sample uses size-weights
+# Assign the value of sizeweight to the indicator variable for use of size
+# weights
 
-   swgt.ind <- length(unique(swgt)) > 1
+   swgt.ind <- sizeweight
 
 # Begin the section that checks for compatibility of input values
 
@@ -241,12 +240,16 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
 # Check for compatibility of input values
 
-      temp <- input.check(nresp, wgt, NULL, NULL, x, y, stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster, cluster.levels, ncluster, N.cluster, wgt1, x1, y1, popsize, stage1size, pcfactor.ind, support, swgt.ind, swgt, swgt1, unitsize, vartype, conf, cdfval, pctval)
+      temp <- input.check(nresp, wgt, NULL, NULL, x, y, stratum.ind, stratum,
+         stratum.levels, nstrata, cluster.ind, cluster, cluster.levels,
+         ncluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster,
+         stage1size, support, swgt.ind, swgt, swgt1, vartype, conf, cdfval,
+         pctval)
 
-      N.cluster <- temp$N.cluster
       popsize <- temp$popsize
+      pcfsize <- temp$pcfsize
+      N.cluster <- temp$N.cluster
       stage1size <- temp$stage1size
-      unitsize <- temp$unitsize
 
 # If the sample was stratified and had two stages, then reset cluster to its 
 # input value
@@ -264,12 +267,16 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       if(swgt.ind) {
          if(stratum.ind) {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum, cluster=cluster, wgt1=wgt1, x1=x1, y1=y1, swgt=swgt, swgt1=swgt1))
+               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum,
+                   cluster=cluster, wgt1=wgt1, x1=x1, y1=y1, swgt=swgt,
+                   swgt1=swgt1))
             else
-               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum, swgt=swgt))
+               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum,
+                  swgt=swgt))
          } else {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, cluster=cluster, wgt1=wgt1, x1=x1, y1=y1, swgt=swgt, swgt1=swgt1))
+               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, cluster=cluster,
+                  wgt1=wgt1, x1=x1, y1=y1, swgt=swgt, swgt1=swgt1))
             else
                temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, swgt=swgt))
          }
@@ -290,12 +297,14 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       } else {
          if(stratum.ind) {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum, cluster=cluster, wgt1=wgt1, x1=x1, y1=y1))
+               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum,
+                  cluster=cluster, wgt1=wgt1, x1=x1, y1=y1))
             else
                temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, stratum=stratum))
          } else {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, cluster=cluster, wgt1=wgt1, x1=x1, y1=y1))
+               temp <- wnas(list(z=z, wgt=wgt, x=x, y=y, cluster=cluster,
+                  wgt1=wgt1, x1=x1, y1=y1))
             else
                temp <- wnas(list(z=z, wgt=wgt, x=x, y=y))
          }
@@ -316,12 +325,14 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       if(swgt.ind) {
          if(stratum.ind) {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, stratum=stratum, cluster=cluster, wgt1=wgt1, swgt=swgt, swgt1=swgt1))
+               temp <- wnas(list(z=z, wgt=wgt, stratum=stratum, cluster=cluster,
+                  wgt1=wgt1, swgt=swgt, swgt1=swgt1))
             else
                temp <- wnas(list(z=z, wgt=wgt, stratum=stratum, swgt=swgt))
          } else {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, cluster=cluster, wgt1=wgt1, swgt=swgt, swgt1=swgt1))
+               temp <- wnas(list(z=z, wgt=wgt, cluster=cluster, wgt1=wgt1,
+                  swgt=swgt, swgt1=swgt1))
             else
                temp <- wnas(list(z=z, wgt=wgt, swgt=swgt))
          }
@@ -338,7 +349,8 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       } else {
          if(stratum.ind) {
             if(cluster.ind)
-               temp <- wnas(list(z=z, wgt=wgt, stratum=stratum, cluster=cluster, wgt1=wgt1))
+               temp <- wnas(list(z=z, wgt=wgt, stratum=stratum, cluster=cluster,
+                  wgt1=wgt1))
             else
                temp <- wnas(list(z=z, wgt=wgt, stratum=stratum))
          } else {
@@ -359,8 +371,8 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
    }
 
 # For a stratified sample, check for strata that no longer contain any values,
-# as necesssary adjust popsize and unitsize, and remove strata that contain a
-# single value
+# as necesssary adjust popsize, remove strata that contain a single value, and
+# output a warning message
 
    if(stratum.ind) {
       stratum <- factor(stratum)
@@ -379,8 +391,6 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
             stratum=NA, warning=I(warn), action=I(act)))
          if(!is.null(popsize))
             popsize <- popsize[temp]
-         if(!is.null(unitsize))
-            unitsize <- unitsize[temp]
       }
 
       ind <- FALSE
@@ -416,8 +426,6 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
             }
             if(!is.null(popsize))
                popsize <- popsize[names(popsize) != stratum.levels[i]]
-            if(!is.null(unitsize))
-               unitsize <- unitsize[names(unitsize) != stratum.levels[i]]
             ind <- TRUE
          }
       }
@@ -467,43 +475,22 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
    ncdfval <- length(cdfval)
    nvec <- 1:ncdfval
    npctval <- length(pctval)
-   if(swgt.ind) {
-      if(!is.null(unitsize)) {
-         sum.unitsize <- sum(unitsize)
-      } else {
-         if(stratum.ind) {
-            if(cluster.ind) {
-               unitsize.hat <- tapply(wgt*swgt*wgt1*swgt1, stratum, sum)
-               sum.unitsize.hat <- sum(wgt*swgt*wgt1*swgt1)
-            } else {
-               unitsize.hat <- tapply(wgt*swgt, stratum, sum)
-               sum.unitsize.hat <- sum(wgt*swgt)
-            }
-         } else {
-            if(cluster.ind)
-               unitsize.hat <- sum(wgt*swgt*wgt1*swgt1)
-            else
-               unitsize.hat <- sum(wgt*swgt)
-         }
-      }
+   if(!is.null(popsize)) {
+      sum.popsize <- sum(popsize)
    } else {
-      if(!is.null(popsize)) {
-         sum.popsize <- sum(popsize)
-      } else {
-         if(stratum.ind) {
-            if(cluster.ind) {
-               popsize.hat <- tapply(wgt*wgt1, stratum, sum)
-               sum.popsize.hat <- sum(wgt*wgt1)
-            } else {
-               popsize.hat <- tapply(wgt, stratum, sum)
-               sum.popsize.hat <- sum(wgt)
-            }
+      if(stratum.ind) {
+         if(cluster.ind) {
+            popsize.hat <- tapply(wgt*wgt1, stratum, sum)
+            sum.popsize.hat <- sum(wgt*wgt1)
          } else {
-            if(cluster.ind)
-               popsize.hat <- sum(wgt*wgt1)
-            else
-               popsize.hat <- sum(wgt)
+            popsize.hat <- tapply(wgt, stratum, sum)
+            sum.popsize.hat <- sum(wgt)
          }
+      } else {
+         if(cluster.ind)
+            popsize.hat <- sum(wgt*wgt1)
+         else
+            popsize.hat <- sum(wgt)
       }
    }
 
@@ -523,7 +510,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Create the data frame for CDF estimates
 
    rslt <- data.frame(array(0, c(ncdfval, 10)))
-   dimnames(rslt) <- list(1:ncdfval, c("Value", "NResp", "Estimate.P", "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""), paste("UCB", conf, "Pct.U", sep="")))
+   dimnames(rslt) <- list(1:ncdfval, c("Value", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf,
+      "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U",
+      sep=""), paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- cdfval
 
 # Begin the subsection for individual strata
@@ -534,26 +524,51 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
    stratum.i <- stratum == stratum.levels[i]
    if(swgt.ind) {
-      cdfest.p <- cdf.size.prop(z[stratum.i], wgt[stratum.i], swgt[stratum.i], cdfval, cluster.ind, cluster[stratum.i], wgt1[stratum.i], swgt1[stratum.i])
-      temp <- cdfvar.size.prop(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], cdfval, cdfest.p, stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], swgt[stratum.i], swgt1[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+      cdfest.p <- cdf.size.prop(z[stratum.i], wgt[stratum.i], cdfval,
+         cluster.ind, cluster[stratum.i], wgt1[stratum.i], swgt[stratum.i],
+         swgt1[stratum.i])
+      temp <- cdfvar.size.prop(z[stratum.i], wgt[stratum.i], x[stratum.i],
+         y[stratum.i], cdfval, cdfest.p, stratum.ind, stratum.levels[i],
+         cluster.ind, cluster[stratum.i], wgt1[stratum.i], x1[stratum.i],
+         y1[stratum.i], pcfactor.ind, pcfsize[i], N.cluster[i], stage1size[[i]],
+         support[stratum.i], swgt[stratum.i], swgt1[stratum.i], vartype,
+         warn.ind, warn.df, warn.vec)
       varest.p <- temp$varest
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
 
-      cdfest.u <- cdf.size.total(z[stratum.i], wgt[stratum.i], swgt[stratum.i], cdfval, cluster.ind, cluster[stratum.i], wgt1[stratum.i], swgt1[stratum.i], unitsize[i])
-      temp <- cdfvar.size.total(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], cdfval, cdfest.u, stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], swgt[stratum.i], swgt1[stratum.i], unitsize[i], vartype, warn.ind, warn.df, warn.vec)
+      cdfest.u <- cdf.size.total(z[stratum.i], wgt[stratum.i], cdfval,
+         cluster.ind, cluster[stratum.i], wgt1[stratum.i], popsize[i],
+         swgt[stratum.i], swgt1[stratum.i])
+      temp <- cdfvar.size.total(z[stratum.i], wgt[stratum.i], x[stratum.i],
+         y[stratum.i], cdfval, cdfest.u, stratum.ind, stratum.levels[i],
+         cluster.ind, cluster[stratum.i], wgt1[stratum.i], x1[stratum.i],
+         y1[stratum.i], popsize[i], pcfactor.ind, pcfsize[i], N.cluster[i],
+         stage1size[[i]], support[stratum.i], swgt[stratum.i], swgt1[stratum.i],
+         vartype, warn.ind, warn.df, warn.vec)
       varest.u <- temp$varest
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
    } else {
-      cdfest.p <- cdf.prop(z[stratum.i], wgt[stratum.i], cdfval, cluster.ind, cluster[stratum.i], wgt1[stratum.i])
-      temp <- cdfvar.prop(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], cdfval, cdfest.p, stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+      cdfest.p <- cdf.prop(z[stratum.i], wgt[stratum.i], cdfval, cluster.ind,
+         cluster[stratum.i], wgt1[stratum.i])
+      temp <- cdfvar.prop(z[stratum.i], wgt[stratum.i], x[stratum.i],
+         y[stratum.i], cdfval, cdfest.p, stratum.ind, stratum.levels[i],
+         cluster.ind, cluster[stratum.i], wgt1[stratum.i], x1[stratum.i],
+         y1[stratum.i], pcfactor.ind, pcfsize[i], N.cluster[i], stage1size[[i]],
+         support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
       varest.p <- temp$varest
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
 
-      cdfest.u <- cdf.total(z[stratum.i], wgt[stratum.i], cdfval, cluster.ind, cluster[stratum.i], wgt1[stratum.i], popsize[i])
-      temp <- cdfvar.total(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], cdfval, cdfest.u, stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+      cdfest.u <- cdf.total(z[stratum.i], wgt[stratum.i], cdfval, cluster.ind,
+         cluster[stratum.i], wgt1[stratum.i], popsize[i])
+      temp <- cdfvar.total(z[stratum.i], wgt[stratum.i], x[stratum.i],
+         y[stratum.i], cdfval, cdfest.u, stratum.ind, stratum.levels[i],
+         cluster.ind, cluster[stratum.i], wgt1[stratum.i], x1[stratum.i],
+         y1[stratum.i], popsize[i], pcfactor.ind, pcfsize[i], N.cluster[i],
+         stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df,
+         warn.vec)
       varest.u <- temp$varest
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
@@ -561,22 +576,12 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
 # Add estimates to the data frame for all strata combined
 
-   if(swgt.ind) {
-      if(!is.null(unitsize)) {
-         rslt[,3] <- rslt[,3] + (unitsize[i]/sum.unitsize)*cdfest.p
-         rslt[,4] <- rslt[,4] + ((unitsize[i]/sum.unitsize)^2)*varest.p
-      } else {
-         rslt[,3] <- rslt[,3] + (unitsize.hat[i]/sum.unitsize.hat)*cdfest.p
-         rslt[,4] <- rslt[,4] + ((unitsize.hat[i]/sum.unitsize.hat)^2)*varest.p
-      }
+   if(!is.null(popsize)) {
+      rslt[,3] <- rslt[,3] + (popsize[i]/sum.popsize)*cdfest.p
+      rslt[,4] <- rslt[,4] + ((popsize[i]/sum.popsize)^2)*varest.p
    } else {
-      if(!is.null(popsize)) {
-         rslt[,3] <- rslt[,3] + (popsize[i]/sum.popsize)*cdfest.p
-         rslt[,4] <- rslt[,4] + ((popsize[i]/sum.popsize)^2)*varest.p
-      } else {
-         rslt[,3] <- rslt[,3] + (popsize.hat[i]/sum.popsize.hat)*cdfest.p
-         rslt[,4] <- rslt[,4] + ((popsize.hat[i]/sum.popsize.hat)^2)*varest.p
-      }
+      rslt[,3] <- rslt[,3] + (popsize.hat[i]/sum.popsize.hat)*cdfest.p
+      rslt[,4] <- rslt[,4] + ((popsize.hat[i]/sum.popsize.hat)^2)*varest.p
    }
    rslt[,7] <- rslt[,7] + cdfest.u
    rslt[,8] <- rslt[,8] + varest.u
@@ -602,17 +607,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
    rslt[,4] <- 100*rslt[,4]
 
    rslt[,9] <- pmax(rslt[,7] - mult*rslt[,8], 0)
-   if(swgt.ind) {
-      if(!is.null(unitsize))
-         rslt[,10] <- pmin(rslt[,7] + mult*rslt[,8], sum.unitsize)
-      else
-         rslt[,10] <- rslt[,7] + mult*rslt[,8]
-   } else {
-      if(!is.null(popsize))
-         rslt[,10] <- pmin(rslt[,7] + mult*rslt[,8], sum.popsize)
-      else
-         rslt[,10] <- rslt[,7] + mult*rslt[,8]
-   }
+   if(!is.null(popsize))
+      rslt[,10] <- pmin(rslt[,7] + mult*rslt[,8], sum.popsize)
+   else
+      rslt[,10] <- rslt[,7] + mult*rslt[,8]
 
 # Assign results to the data frame for estimates
 
@@ -627,7 +625,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Create the data frame for percentile estimates
 
    rslt <- data.frame(array(0, c(npctval, 10)))
-   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate", "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""), paste("UCB", conf, "Pct.U", sep="")))
+   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate",
+      "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct",
+      sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""),
+      paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- paste(pctval, "Pct", sep="")
    rslt[,4] <- I(character(npctval))
    rslt[,8] <- I(character(npctval))
@@ -636,18 +637,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # as appropriate
 
    pctval.p <- pctval/100
-
-   if(swgt.ind) {
-      if(!is.null(unitsize))
-         pctval.u <- (pctval/100)*sum.unitsize
-      else
-         pctval.u <- (pctval/100)*sum.unitsize.hat
-   } else {
-      if(!is.null(popsize))
-         pctval.u <- (pctval/100)*sum.popsize
-      else
-         pctval.u <- (pctval/100)*sum.popsize.hat
-   }
+   if(!is.null(popsize))
+      pctval.u <- (pctval/100)*sum.popsize
+   else
+      pctval.u <- (pctval/100)*sum.popsize.hat
 
 # Determine whether all response values are equal and assign estimates when true
 
@@ -662,29 +655,35 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       cdfest.p <- Results$CDF$Estimate.P/100
       cdfest.u <- Results$CDF$Estimate.U
       for(j in 1:npctval) {
-         high <- ifelse(length(nvec[cdfest.p >= pctval.p[j]]) > 0, min(nvec[cdfest.p >= pctval.p[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.p <= pctval.p[j]]) > 0, max(nvec[cdfest.p <= pctval.p[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.p >= pctval.p[j]]) > 0,
+            min(nvec[cdfest.p >= pctval.p[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.p <= pctval.p[j]]) > 0,
+            max(nvec[cdfest.p <= pctval.p[j]]), NA)
          if(is.na(high)) {
             rslt[j,3] <- NA
          } else if(is.na(low)) {
             rslt[j,3] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (pctval.p[j] - cdfest.p[low]) / (cdfest.p[high] - cdfest.p[low])
+               ival <- (pctval.p[j] - cdfest.p[low]) / (cdfest.p[high] -
+                  cdfest.p[low])
             else
                ival <- 1
             rslt[j,3] <- ival*cdfval[high] + (1-ival)*cdfval[low]
          }
 
-         high <- ifelse(length(nvec[cdfest.u >= pctval.u[j]]) > 0, min(nvec[cdfest.u >= pctval.u[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.u <= pctval.u[j]]) > 0, max(nvec[cdfest.u <= pctval.u[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.u >= pctval.u[j]]) > 0,
+            min(nvec[cdfest.u >= pctval.u[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.u <= pctval.u[j]]) > 0,
+            max(nvec[cdfest.u <= pctval.u[j]]), NA)
          if(is.na(high)) {
             rslt[j,7] <- NA
          } else if(is.na(low)) {
             rslt[j,7] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (pctval.u[j] - cdfest.u[low]) / (cdfest.u[high] - cdfest.u[low])
+               ival <- (pctval.u[j] - cdfest.u[low]) / (cdfest.u[high] -
+                  cdfest.u[low])
             else
                ival <- 1
             rslt[j,7] <- ival*cdfval[high] + (1-ival)*cdfval[low]
@@ -708,34 +707,71 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       for(i in 1:nstrata) {
          stratum.i <- stratum == stratum.levels[i]
          if(swgt.ind) {
-            if(!is.null(unitsize)) {
-               temp <- cdfvar.size.prop(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], rslt[temp.p,3], pctval.p[temp.p], stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], swgt[stratum.i], swgt1[stratum.i], vartype, warn.ind, warn.df, warn.vec)
-               varest.p[temp.p] <- varest.p[temp.p] + ((unitsize[i]/sum.unitsize)^2)*temp$varest
+            if(!is.null(popsize)) {
+               temp <- cdfvar.size.prop(z[stratum.i], wgt[stratum.i],
+                  x[stratum.i], y[stratum.i], rslt[temp.p,3], pctval.p[temp.p],
+                  stratum.ind, stratum.levels[i], cluster.ind,
+                  cluster[stratum.i], wgt1[stratum.i], x1[stratum.i],
+                  y1[stratum.i], pcfactor.ind, pcfsize[i], N.cluster[i],
+                  stage1size[[i]], support[stratum.i], swgt[stratum.i],
+                  swgt1[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+               varest.p[temp.p] <- varest.p[temp.p] +
+                  ((popsize[i]/sum.popsize)^2)*temp$varest
                warn.ind <- temp$warn.ind
                warn.df <- temp$warn.df
             } else {
-               temp <- cdfvar.size.prop(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], rslt[temp.p,3], pctval.p[temp.p], stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], swgt[stratum.i], swgt1[stratum.i], vartype, warn.ind, warn.df, warn.vec)
-               varest.p[temp.p] <- varest.p[temp.p] + ((unitsize.hat[i]/ sum.unitsize.hat)^2)*temp$varest
+               temp <- cdfvar.size.prop(z[stratum.i], wgt[stratum.i],
+                  x[stratum.i], y[stratum.i], rslt[temp.p,3], pctval.p[temp.p],
+                  stratum.ind, stratum.levels[i], cluster.ind,
+                  cluster[stratum.i], wgt1[stratum.i], x1[stratum.i],
+                  y1[stratum.i], pcfactor.ind, pcfsize[i], N.cluster[i],
+                  stage1size[[i]], support[stratum.i], swgt[stratum.i],
+                  swgt1[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+               varest.p[temp.p] <- varest.p[temp.p] + ((popsize.hat[i]/
+                  sum.popsize.hat)^2)*temp$varest
                warn.ind <- temp$warn.ind
                warn.df <- temp$warn.df
             }
-            temp <- cdfvar.size.total(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], rslt[temp.u,7], pctval.u[temp.u], stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], swgt[stratum.i], swgt1[stratum.i], unitsize[i], vartype, warn.ind, warn.df, warn.vec)
+            temp <- cdfvar.size.total(z[stratum.i], wgt[stratum.i],
+               x[stratum.i], y[stratum.i], rslt[temp.u,7], pctval.u[temp.u],
+               stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i],
+               wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i],
+               pcfactor.ind, pcfsize[i], N.cluster[i], stage1size[[i]],
+               support[stratum.i], swgt[stratum.i], swgt1[stratum.i], vartype,
+               warn.ind, warn.df, warn.vec)
             varest.u[temp.u] <- varest.u[temp.u] + temp$varest
             warn.ind <- temp$warn.ind
             warn.df <- temp$warn.df
          } else {
             if(!is.null(popsize)) {
-               temp <- cdfvar.prop(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], rslt[temp.p,3], pctval.p[temp.p], stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
-               varest.p[temp.p] <- varest.p[temp.p] + ((popsize[i]/sum.popsize)^2)*temp$varest
+               temp <- cdfvar.prop(z[stratum.i], wgt[stratum.i], x[stratum.i],
+                  y[stratum.i], rslt[temp.p,3], pctval.p[temp.p], stratum.ind,
+                  stratum.levels[i], cluster.ind, cluster[stratum.i],
+                  wgt1[stratum.i], x1[stratum.i], y1[stratum.i], pcfactor.ind,
+                  pcfsize[i], N.cluster[i], stage1size[[i]], support[stratum.i],
+                  vartype, warn.ind, warn.df, warn.vec)
+               varest.p[temp.p] <- varest.p[temp.p] +
+                  ((popsize[i]/sum.popsize)^2)*temp$varest
                warn.ind <- temp$warn.ind
                warn.df <- temp$warn.df
             } else {
-               temp <- cdfvar.prop(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], rslt[temp.p,3], pctval.p[temp.p], stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
-               varest.p[temp.p] <- varest.p[temp.p] + ((popsize.hat[i]/ sum.popsize.hat)^2)*temp$varest
+               temp <- cdfvar.prop(z[stratum.i], wgt[stratum.i], x[stratum.i],
+                  y[stratum.i], rslt[temp.p,3], pctval.p[temp.p], stratum.ind,
+                  stratum.levels[i], cluster.ind, cluster[stratum.i],
+                  wgt1[stratum.i], x1[stratum.i], y1[stratum.i], pcfactor.ind,
+                  pcfsize[i], N.cluster[i], stage1size[[i]], support[stratum.i],
+                  vartype, warn.ind, warn.df, warn.vec)
+               varest.p[temp.p] <- varest.p[temp.p] + ((popsize.hat[i]/
+                  sum.popsize.hat)^2)*temp$varest
                warn.ind <- temp$warn.ind
                warn.df <- temp$warn.df
             }
-            temp <- cdfvar.total(z[stratum.i], wgt[stratum.i], x[stratum.i], y[stratum.i], rslt[temp.u,7], pctval.u[temp.u], stratum.ind, stratum.levels[i], cluster.ind, cluster[stratum.i], N.cluster[i], wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i], pcfactor.ind, stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
+            temp <- cdfvar.total(z[stratum.i], wgt[stratum.i], x[stratum.i],
+               y[stratum.i], rslt[temp.u,7], pctval.u[temp.u], stratum.ind,
+               stratum.levels[i], cluster.ind, cluster[stratum.i],
+               wgt1[stratum.i], x1[stratum.i], y1[stratum.i], popsize[i],
+               pcfactor.ind, pcfsize[i], N.cluster[i], stage1size[[i]],
+               support[stratum.i], vartype, warn.ind, warn.df, warn.vec)
             varest.u[temp.u] <- varest.u[temp.u] + temp$varest
             warn.ind <- temp$warn.ind
             warn.df <- temp$warn.df
@@ -744,52 +780,51 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
 # Calculate confidence bounds of the inverse percentile estimates
 
-      if(swgt.ind) {
-         lbound.p[temp.p] <- pmax(pctval.p[temp.p] - mult*sqrt(varest.p[temp.p]), 0)
-         ubound.p[temp.p] <- pmin(pctval.p[temp.p] + mult*sqrt(varest.p[temp.p]), 1)
-         lbound.u[temp.u] <- pmax(pctval.u[temp.u] - mult*sqrt(varest.u[temp.u]), 0)
-         if(!is.null(unitsize))
-            ubound.u[temp.u] <- pmin(pctval.u[temp.u] + mult*sqrt(varest.u[temp.u]), sum.unitsize)
-         else
-            ubound.u[temp.u] <- pctval.u[temp.u] + mult*sqrt(varest.u[temp.u])
-      } else {
-         lbound.p[temp.p] <- pmax(pctval.p[temp.p] - mult*sqrt(varest.p[temp.p]), 0)
-         ubound.p[temp.p] <- pmin(pctval.p[temp.p] + mult*sqrt(varest.p[temp.p]), 1)
-         lbound.u[temp.u] <- pmax(pctval.u[temp.u] - mult*sqrt(varest.u[temp.u]), 0)
-         if(!is.null(popsize))
-            ubound.u[temp.u] <- pmin(pctval.u[temp.u] + mult*sqrt(varest.u[temp.u]), sum.popsize)
-         else
-            ubound.u[temp.u] <- pctval.u[temp.u] + mult*sqrt(varest.u[temp.u])
-      }
-# print(cbind(lbound.p, ubound.p, lbound.u, ubound.u))
+      lbound.p[temp.p] <- pmax(pctval.p[temp.p] - mult*sqrt(varest.p[temp.p]),
+         0)
+      ubound.p[temp.p] <- pmin(pctval.p[temp.p] + mult*sqrt(varest.p[temp.p]),
+         1)
+      lbound.u[temp.u] <- pmax(pctval.u[temp.u] - mult*sqrt(varest.u[temp.u]),
+         0)
+      if(!is.null(popsize))
+         ubound.u[temp.u] <- pmin(pctval.u[temp.u] +
+            mult*sqrt(varest.u[temp.u]), sum.popsize)
+      else
+         ubound.u[temp.u] <- pctval.u[temp.u] + mult*sqrt(varest.u[temp.u])
 
 # Calculate confidence bounds of the percentile estimates
 
       for(j in 1:npctval) {
          if(temp.p[j]) {
-            high <- ifelse(length(nvec[cdfest.p >= lbound.p[j]]) > 0, min(nvec[cdfest.p >= lbound.p[j]]), NA)
-            low <- ifelse(length(nvec[cdfest.p <= lbound.p[j]]) > 0, max(nvec[cdfest.p <= lbound.p[j]]), NA)
+            high <- ifelse(length(nvec[cdfest.p >= lbound.p[j]]) > 0,
+               min(nvec[cdfest.p >= lbound.p[j]]), NA)
+            low <- ifelse(length(nvec[cdfest.p <= lbound.p[j]]) > 0,
+               max(nvec[cdfest.p <= lbound.p[j]]), NA)
             if(is.na(high)) {
                rslt[j,5] <- NA
             } else if(is.na(low)) {
                rslt[j,5] <- cdfval[high]
             } else {
                if(high > low)
-                  ival <- (lbound.p[j] - cdfest.p[low]) / (cdfest.p[high] - cdfest.p[low])
+                  ival <- (lbound.p[j] - cdfest.p[low]) / (cdfest.p[high] -
+                     cdfest.p[low])
                else
                   ival <- 1
                rslt[j,5] <- ival*cdfval[high] + (1-ival)*cdfval[low]
             }
 
-            high <- ifelse(length(nvec[cdfest.p >= ubound.p[j]]) > 0, min(nvec[cdfest.p >= ubound.p[j]]), NA)
-            low <- ifelse(length(nvec[cdfest.p <= ubound.p[j]]) > 0, max(nvec[cdfest.p <= ubound.p[j]]), NA)
+            high <- ifelse(length(nvec[cdfest.p >= ubound.p[j]]) > 0,
+               min(nvec[cdfest.p >= ubound.p[j]]), NA)
+            low <- ifelse(length(nvec[cdfest.p <= ubound.p[j]]) > 0,
+               max(nvec[cdfest.p <= ubound.p[j]]), NA)
             if(is.na(high)) {
                rslt[j,6] <- NA
             } else if(is.na(low)) {
                rslt[j,6] <- cdfval[high]
             } else {
                if(high > low)
-                  ival <- (ubound.p[j] - cdfest.p[low]) / (cdfest.p[high] - cdfest.p[low])
+                  ival <- (ubound.p[j] - cdfest.p[low]) / (cdfest.p[high] -
+                     cdfest.p[low])
                else
                   ival <- 1
                rslt[j,6] <- ival*cdfval[high] + (1-ival)*cdfval[low]
@@ -800,29 +835,35 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
          }
 
          if(temp.u[j]) {
-            high <- ifelse(length(nvec[cdfest.u >= lbound.u[j]]) > 0, min(nvec[cdfest.u >= lbound.u[j]]), NA)
-            low <- ifelse(length(nvec[cdfest.u <= lbound.u[j]]) > 0, max(nvec[cdfest.u <= lbound.u[j]]), NA)
+            high <- ifelse(length(nvec[cdfest.u >= lbound.u[j]]) > 0,
+               min(nvec[cdfest.u >= lbound.u[j]]), NA)
+            low <- ifelse(length(nvec[cdfest.u <= lbound.u[j]]) > 0,
+               max(nvec[cdfest.u <= lbound.u[j]]), NA)
             if(is.na(high)) {
                rslt[j,9] <- NA
             } else if(is.na(low)) {
                rslt[j,9] <- cdfval[high]
             } else {
                if(high > low)
-                  ival <- (lbound.u[j] - cdfest.u[low]) / (cdfest.u[high] - cdfest.u[low])
+                  ival <- (lbound.u[j] - cdfest.u[low]) / (cdfest.u[high] -
+                     cdfest.u[low])
                else
                   ival <- 1
                rslt[j,9] <- ival*cdfval[high] + (1-ival)*cdfval[low]
             }
 
-            high <- ifelse(length(nvec[cdfest.u >= ubound.u[j]]) > 0, min(nvec[cdfest.u >= ubound.u[j]]), NA)
-            low <- ifelse(length(nvec[cdfest.u <= ubound.u[j]]) > 0, max(nvec[cdfest.u <= ubound.u[j]]), NA)
+            high <- ifelse(length(nvec[cdfest.u >= ubound.u[j]]) > 0,
+               min(nvec[cdfest.u >= ubound.u[j]]), NA)
+            low <- ifelse(length(nvec[cdfest.u <= ubound.u[j]]) > 0,
+               max(nvec[cdfest.u <= ubound.u[j]]), NA)
             if(is.na(high)) {
                rslt[j,10] <- NA
             } else if(is.na(low)) {
                rslt[j,10] <- cdfval[high]
             } else {
                if(high > low)
-                  ival <- (ubound.u[j] - cdfest.u[low]) / (cdfest.u[high] - cdfest.u[low])
+                  ival <- (ubound.u[j] - cdfest.u[low]) / (cdfest.u[high] -
+                     cdfest.u[low])
                else
                   ival <- 1
                rslt[j,10] <- ival*cdfval[high] + (1-ival)*cdfval[low]
@@ -864,27 +905,37 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
    nresp <- cdf.nresp(z, cdfval)
 
    if(swgt.ind) {
-      cdfest.p <- cdf.size.prop(z, wgt, swgt, cdfval, cluster.ind, cluster, wgt1, swgt1)
-      temp <- cdfvar.size.prop(z, wgt, x, y, cdfval, cdfest.p, stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
+      cdfest.p <- cdf.size.prop(z, wgt, cdfval, cluster.ind, cluster, wgt1,
+         swgt, swgt1)
+      temp <- cdfvar.size.prop(z, wgt, x, y, cdfval, cdfest.p, stratum.ind,
+         NULL, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize,
+         N.cluster, stage1size, support, swgt, swgt1, vartype, warn.ind,
+         warn.df, warn.vec)
       sdest.p <- sqrt(temp$varest)
       lbound.p <- pmax(cdfest.p - mult*sdest.p, 0)
       ubound.p <- pmin(cdfest.p + mult*sdest.p, 1)
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
 
-      cdfest.u <- cdf.size.total(z, wgt, swgt, cdfval, cluster.ind, cluster, wgt1, swgt1, unitsize)
-      temp <- cdfvar.size.total(z, wgt, x, y, cdfval, cdfest.u, stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1, unitsize, vartype, warn.ind, warn.df, warn.vec)
+      cdfest.u <- cdf.size.total(z, wgt, cdfval, cluster.ind, cluster, wgt1,
+         popsize, swgt, swgt1)
+      temp <- cdfvar.size.total(z, wgt, x, y, cdfval, cdfest.u, stratum.ind,
+         NULL, cluster.ind, cluster, wgt1, x1, y1, popsize, pcfactor.ind,
+         pcfsize, N.cluster, stage1size, support, swgt, swgt1, vartype,
+         warn.ind, warn.df, warn.vec)
       sdest.u <- sqrt(temp$varest)
       lbound.u <- pmax(cdfest.u - mult*sdest.u, 0)
-      if(!is.null(unitsize))
-         ubound.u <- pmin(cdfest.u + mult*sdest.u, unitsize)
+      if(!is.null(popsize))
+         ubound.u <- pmin(cdfest.u + mult*sdest.u, popsize)
       else
          ubound.u <- cdfest.u + mult*sdest.u
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
    } else {
       cdfest.p <- cdf.prop(z, wgt, cdfval, cluster.ind, cluster, wgt1)
-      temp <- cdfvar.prop(z, wgt, x, y, cdfval, cdfest.p, stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+      temp <- cdfvar.prop(z, wgt, x, y, cdfval, cdfest.p, stratum.ind, NULL,
+         cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster,
+         stage1size, support, vartype, warn.ind, warn.df, warn.vec)
       sdest.p <- sqrt(temp$varest)
       lbound.p <- pmax(cdfest.p - mult*sdest.p, 0)
       ubound.p <- pmin(cdfest.p + mult*sdest.p, 1)
@@ -892,7 +943,9 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       warn.df <- temp$warn.df
 
       cdfest.u <- cdf.total(z, wgt, cdfval, cluster.ind, cluster, wgt1, popsize)
-      temp <- cdfvar.total(z, wgt, x, y, cdfval, cdfest.u, stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+      temp <- cdfvar.total(z, wgt, x, y, cdfval, cdfest.u, stratum.ind, NULL,
+         cluster.ind, cluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize,
+         N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
       sdest.u <- sqrt(temp$varest)
       lbound.u <- pmax(cdfest.u - mult*sdest.u, 0)
       if(!is.null(popsize))
@@ -903,8 +956,12 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       warn.df <- temp$warn.df
    }
 
-   rslt <- cbind(cdfval, nresp, 100*cdfest.p, 100*sdest.p, 100*lbound.p, 100*ubound.p, cdfest.u, sdest.u, lbound.u, ubound.u)
-   dimnames(rslt) <- list(1:ncdfval, c("Value", "NResp", "Estimate.P", "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""), paste("UCB", conf, "Pct.U", sep="")))
+   rslt <- cbind(cdfval, nresp, 100*cdfest.p, 100*sdest.p, 100*lbound.p,
+      100*ubound.p, cdfest.u, sdest.u, lbound.u, ubound.u)
+   dimnames(rslt) <- list(1:ncdfval, c("Value", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf,
+      "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U",
+      sep=""), paste("UCB", conf, "Pct.U", sep="")))
 
 # Assign results to the data frame for estimates
 
@@ -917,7 +974,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Create the data frame for percentile estimates
 
    rslt <- data.frame(array(0, c(npctval, 10)))
-   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate", "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""), paste("UCB", conf, "Pct.U", sep="")))
+   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate",
+      "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct",
+      sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""),
+      paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- paste(pctval, "Pct", sep="")
    rslt[,4] <- I(character(npctval))
    rslt[,8] <- I(character(npctval))
@@ -927,18 +987,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # as appropriate
 
    pctval.p <- pctval/100
-
-   if(swgt.ind) {
-      if(!is.null(unitsize))
-         pctval.u <- (pctval/100)*unitsize
-      else
-         pctval.u <- (pctval/100)*unitsize.hat
-   } else {
-      if(!is.null(popsize))
-         pctval.u <- (pctval/100)*popsize
-      else
-         pctval.u <- (pctval/100)*popsize.hat
-   }
+   if(!is.null(popsize))
+      pctval.u <- (pctval/100)*popsize
+   else
+      pctval.u <- (pctval/100)*popsize.hat
 
 # Determine whether all response values are equal and assign estimates when true
 
@@ -953,29 +1005,35 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       cdfest.p <- Results$CDF$Estimate.P/100
       cdfest.u <- Results$CDF$Estimate.U
       for(j in 1:npctval) {
-         high <- ifelse(length(nvec[cdfest.p >= pctval.p[j]]) > 0, min(nvec[cdfest.p >= pctval.p[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.p <= pctval.p[j]]) > 0, max(nvec[cdfest.p <= pctval.p[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.p >= pctval.p[j]]) > 0,
+            min(nvec[cdfest.p >= pctval.p[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.p <= pctval.p[j]]) > 0,
+            max(nvec[cdfest.p <= pctval.p[j]]), NA)
          if(is.na(high)) {
             rslt[j,3] <- NA
          } else if(is.na(low)) {
             rslt[j,3] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (pctval.p[j] - cdfest.p[low]) / (cdfest.p[high] - cdfest.p[low])
+               ival <- (pctval.p[j] - cdfest.p[low]) / (cdfest.p[high] -
+                  cdfest.p[low])
             else
                ival <- 1
             rslt[j,3] <- ival*cdfval[high] + (1-ival)*cdfval[low]
          }
 
-         high <- ifelse(length(nvec[cdfest.u >= pctval.u[j]]) > 0, min(nvec[cdfest.u >= pctval.u[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.u <= pctval.u[j]]) > 0, max(nvec[cdfest.u <= pctval.u[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.u >= pctval.u[j]]) > 0,
+            min(nvec[cdfest.u >= pctval.u[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.u <= pctval.u[j]]) > 0,
+            max(nvec[cdfest.u <= pctval.u[j]]), NA)
          if(is.na(high)) {
             rslt[j,7] <- NA
          } else if(is.na(low)) {
             rslt[j,7] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (pctval.u[j] - cdfest.u[low]) / (cdfest.u[high] - cdfest.u[low])
+               ival <- (pctval.u[j] - cdfest.u[low]) / (cdfest.u[high] -
+                  cdfest.u[low])
             else
                ival <- 1
             rslt[j,7] <- ival*cdfval[high] + (1-ival)*cdfval[low]
@@ -997,29 +1055,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       lbound.u <- rep(NA, npctval)
       ubound.u <- rep(NA, npctval)
       if(swgt.ind) {
-         temp <- cdfvar.size.prop(z, wgt, x, y, rslt[temp.p,3], pctval.p[temp.p], stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
-         sdest.p[temp.p] <- sqrt(temp$varest)
-         lbound.p[temp.p] <- pmax(pctval.p[temp.p] - mult*sdest.p[temp.p], 0)
-         ubound.p[temp.p] <- pmin(pctval.p[temp.p] + mult*sdest.p[temp.p], 1)
-         warn.ind <- temp$warn.ind
-         warn.df <- temp$warn.df
-
-         if(!is.null(unitsize)) {
-            temp <- cdfvar.size.total(z, wgt, x, y, rslt[temp.u,7], pctval.u[temp.u], stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1, unitsize, vartype, warn.ind, warn.df, warn.vec)
-            sdest.u[temp.u] <- sqrt(temp$varest)
-            ubound.u[temp.u] <- pmin(pctval.u[temp.u] + mult*sdest.u[temp.u], unitsize)
-            warn.ind <- temp$warn.ind
-            warn.df <- temp$warn.df
-         } else {
-            temp <- cdfvar.size.total(z, wgt, x, y, rslt[temp.u,7], pctval.u[temp.u], stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1, unitsize, vartype, warn.ind, warn.df, warn.vec)
-            sdest.u[temp.u] <- sqrt(temp$varest)
-            ubound.u[temp.u] <- pctval.u[temp.u] + mult*sdest.u[temp.u]
-            warn.ind <- temp$warn.ind
-            warn.df <- temp$warn.df
-         }
-         lbound.u[temp.u] <- pmax(pctval.u[temp.u] - mult*sdest.u[temp.u], 0)
-      } else {
-         temp <- cdfvar.prop(z, wgt, x, y, rslt[temp.p,3], pctval.p[temp.p], stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+         temp <- cdfvar.size.prop(z, wgt, x, y, rslt[temp.p,3],
+            pctval.p[temp.p], stratum.ind, NULL, cluster.ind, cluster, wgt1, x1,
+            y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support, swgt,
+            swgt1, vartype, warn.ind, warn.df, warn.vec)
          sdest.p[temp.p] <- sqrt(temp$varest)
          lbound.p[temp.p] <- pmax(pctval.p[temp.p] - mult*sdest.p[temp.p], 0)
          ubound.p[temp.p] <- pmin(pctval.p[temp.p] + mult*sdest.p[temp.p], 1)
@@ -1027,13 +1066,52 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
          warn.df <- temp$warn.df
 
          if(!is.null(popsize)) {
-            temp <- cdfvar.total(z, wgt, x, y, rslt[temp.u,7], pctval.u[temp.u], stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+            temp <- cdfvar.size.total(z, wgt, x, y, rslt[temp.u,7],
+               pctval.u[temp.u], stratum.ind, NULL, cluster.ind, cluster, wgt1,
+               x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster, stage1size,
+               support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
             sdest.u[temp.u] <- sqrt(temp$varest)
-            ubound.u[temp.u] <- pmin(pctval.u[temp.u] + mult*sdest.u[temp.u], popsize)
+            ubound.u[temp.u] <- pmin(pctval.u[temp.u] + mult*sdest.u[temp.u],
+               popsize)
             warn.ind <- temp$warn.ind
             warn.df <- temp$warn.df
          } else {
-            temp <- cdfvar.total(z, wgt, x, y, rslt[temp.u,7], pctval.u[temp.u], stratum.ind, NULL, cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+            temp <- cdfvar.size.total(z, wgt, x, y, rslt[temp.u,7],
+               pctval.u[temp.u], stratum.ind, NULL, cluster.ind, cluster, wgt1,
+               x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster, stage1size,
+               support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
+            sdest.u[temp.u] <- sqrt(temp$varest)
+            ubound.u[temp.u] <- pctval.u[temp.u] + mult*sdest.u[temp.u]
+            warn.ind <- temp$warn.ind
+            warn.df <- temp$warn.df
+         }
+         lbound.u[temp.u] <- pmax(pctval.u[temp.u] - mult*sdest.u[temp.u], 0)
+      } else {
+         temp <- cdfvar.prop(z, wgt, x, y, rslt[temp.p,3], pctval.p[temp.p],
+            stratum.ind, NULL, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind,
+            pcfsize, N.cluster, stage1size, support, vartype, warn.ind, warn.df,
+            warn.vec)
+         sdest.p[temp.p] <- sqrt(temp$varest)
+         lbound.p[temp.p] <- pmax(pctval.p[temp.p] - mult*sdest.p[temp.p], 0)
+         ubound.p[temp.p] <- pmin(pctval.p[temp.p] + mult*sdest.p[temp.p], 1)
+         warn.ind <- temp$warn.ind
+         warn.df <- temp$warn.df
+
+         if(!is.null(popsize)) {
+            temp <- cdfvar.total(z, wgt, x, y, rslt[temp.u,7], pctval.u[temp.u],
+               stratum.ind, NULL, cluster.ind, cluster, wgt1, x1, y1, popsize,
+               pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype,
+               warn.ind, warn.df, warn.vec)
+            sdest.u[temp.u] <- sqrt(temp$varest)
+            ubound.u[temp.u] <- pmin(pctval.u[temp.u] + mult*sdest.u[temp.u],
+               popsize)
+            warn.ind <- temp$warn.ind
+            warn.df <- temp$warn.df
+         } else {
+            temp <- cdfvar.total(z, wgt, x, y, rslt[temp.u,7], pctval.u[temp.u],
+               stratum.ind, NULL, cluster.ind, cluster, wgt1, x1, y1, popsize,
+               pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype,
+               warn.ind, warn.df, warn.vec)
             sdest.u[temp.u] <- sqrt(temp$varest)
             ubound.u[temp.u] <- pctval.u[temp.u] + mult*sdest.u[temp.u]
             warn.ind <- temp$warn.ind
@@ -1045,57 +1123,69 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Calculate confidence bounds of the percentile estimates
 
       for(j in 1:npctval) {
-         high <- ifelse(length(nvec[cdfest.p >= lbound.p[j]]) > 0, min(nvec[cdfest.p >= lbound.p[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.p <= lbound.p[j]]) > 0, max(nvec[cdfest.p <= lbound.p[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.p >= lbound.p[j]]) > 0,
+            min(nvec[cdfest.p >= lbound.p[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.p <= lbound.p[j]]) > 0,
+            max(nvec[cdfest.p <= lbound.p[j]]), NA)
          if(is.na(high)) {
             rslt[j,5] <- NA
          } else if(is.na(low)) {
             rslt[j,5] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (lbound.p[j] - cdfest.p[low]) / (cdfest.p[high] - cdfest.p[low])
+               ival <- (lbound.p[j] - cdfest.p[low]) / (cdfest.p[high] -
+                  cdfest.p[low])
             else
                ival <- 1
             rslt[j,5] <- ival*cdfval[high] + (1-ival)*cdfval[low]
          }
 
-         high <- ifelse(length(nvec[cdfest.p >= ubound.p[j]]) > 0, min(nvec[cdfest.p >= ubound.p[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.p <= ubound.p[j]]) > 0, max(nvec[cdfest.p <= ubound.p[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.p >= ubound.p[j]]) > 0,
+            min(nvec[cdfest.p >= ubound.p[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.p <= ubound.p[j]]) > 0,
+            max(nvec[cdfest.p <= ubound.p[j]]), NA)
          if(is.na(high)) {
             rslt[j,6] <- NA
          } else if(is.na(low)) {
             rslt[j,6] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (ubound.p[j] - cdfest.p[low]) / (cdfest.p[high] - cdfest.p[low])
+               ival <- (ubound.p[j] - cdfest.p[low]) / (cdfest.p[high] -
+                  cdfest.p[low])
             else
                ival <- 1
             rslt[j,6] <- ival*cdfval[high] + (1-ival)*cdfval[low]
          }
 
-         high <- ifelse(length(nvec[cdfest.u >= lbound.u[j]]) > 0, min(nvec[cdfest.u >= lbound.u[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.u <= lbound.u[j]]) > 0, max(nvec[cdfest.u <= lbound.u[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.u >= lbound.u[j]]) > 0,
+            min(nvec[cdfest.u >= lbound.u[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.u <= lbound.u[j]]) > 0,
+            max(nvec[cdfest.u <= lbound.u[j]]), NA)
          if(is.na(high)) {
             rslt[j,9] <- NA
          } else if(is.na(low)) {
             rslt[j,9] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (lbound.u[j] - cdfest.u[low]) / (cdfest.u[high] - cdfest.u[low])
+               ival <- (lbound.u[j] - cdfest.u[low]) / (cdfest.u[high] -
+                  cdfest.u[low])
             else
                ival <- 1
             rslt[j,9] <- ival*cdfval[high] + (1-ival)*cdfval[low]
          }
 
-         high <- ifelse(length(nvec[cdfest.u >= ubound.u[j]]) > 0, min(nvec[cdfest.u >= ubound.u[j]]), NA)
-         low <- ifelse(length(nvec[cdfest.u <= ubound.u[j]]) > 0, max(nvec[cdfest.u <= ubound.u[j]]), NA)
+         high <- ifelse(length(nvec[cdfest.u >= ubound.u[j]]) > 0,
+            min(nvec[cdfest.u >= ubound.u[j]]), NA)
+         low <- ifelse(length(nvec[cdfest.u <= ubound.u[j]]) > 0,
+            max(nvec[cdfest.u <= ubound.u[j]]), NA)
          if(is.na(high)) {
             rslt[j,10] <- NA
          } else if(is.na(low)) {
             rslt[j,10] <- cdfval[high]
          } else {
             if(high > low)
-               ival <- (ubound.u[j] - cdfest.u[low]) / (cdfest.u[high] - cdfest.u[low])
+               ival <- (ubound.u[j] - cdfest.u[low]) / (cdfest.u[high] -
+                  cdfest.u[low])
             else
                ival <- 1
             rslt[j,10] <- ival*cdfval[high] + (1-ival)*cdfval[low]

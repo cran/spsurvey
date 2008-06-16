@@ -29,7 +29,7 @@
 **               Shape files to be open and read can not have a '(' or ')'
 **               character in them.
 **  Created:     August 20, 2004
-**  Revised:     January 22, 2007
+**  Revised:     March 30, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -353,10 +353,10 @@ int parsePoints( FILE * fptr, Shape * shape ) {
       }
       filePosition += 16;
 
-    /* we have a Null shape so ignore */
+    /* a Null record was encountered in the shapefile, so return an error */ 
     } else {
-      Rprintf( "Warning: Ignoring Null shape in C function parsePoints.\n" );
-      point = NULL;
+      Rprintf( "Error: A shapefile containing a Null record was encountered in C function \nparsePoints.\n" );
+      return -1;
     }
 
     ++(shape->numParts);
@@ -456,10 +456,10 @@ int parsePointsZ( FILE * fptr, Shape * shape ) {
       }
       filePosition += 16;
 
-    /* we have a Null shape so ignore */
+    /* a Null record was encountered in the shapefile, so return an error */ 
     } else {
-      Rprintf( "Warning: Ignoring Null shape in C function parsePointsZ.\n" );
-      pointZ = NULL;
+      Rprintf( "Error: A shapefile containing a Null record was encountered in C function \nparsePointsZ.\n" );
+      return -1;
     }
 
     ++(shape->numParts);
@@ -558,10 +558,10 @@ int parsePointsM( FILE * fptr, Shape * shape ) {
       }
       filePosition += 8;
 
-    /* we have a Null shape so ignore */
+    /* a Null record was encountered in the shapefile, so return an error */ 
     } else {
-      Rprintf( "Warning: Ignoring Null shape in C function parsePointsM.\n" );
-      pointM = NULL;
+      Rprintf( "Error: A shapefile containing a Null record was encountered in C function \nparsePointsM.\n" );
+      return -1;
     }
 
     ++(shape->numParts);
@@ -811,10 +811,10 @@ int parsePolygon( FILE * fptr, Shape * shape ) {
         poly->ringDirs[0] = 1;
       }         
 
-    /* we have a Null shape so ignore */ 
+    /* a Null record was encountered in the shapefile, so return an error */ 
     } else {
-      Rprintf( "Warning: Ignoring Null shape in C function parsePolygon.\n" );
-      poly = NULL;
+      Rprintf( "Error: A shapefile containing a Null record was encountered in C function \nparsePolygon.\n" );
+      return -1;
     }
 
     /* add new record to shape struct */
@@ -1096,10 +1096,10 @@ int parsePolygonZ( FILE * fptr, Shape * shape ) {
         filePosition += 8;
       } 
 
-    /* we have a Null shape so ignore */ 
+    /* a Null record was encountered in the shapefile, so return an error */ 
     } else {
-      Rprintf( "Warning: Ignoring Null shape in C function parsePolygonZ.\n" );
-      polyZ = NULL;
+      Rprintf( "Error: A shapefile containing a Null record was encountered in C function \nparsePolygonZ.\n" );
+      return -1;
     }
 
     /* add new record to shape struct */
@@ -1363,10 +1363,10 @@ int parsePolygonM( FILE * fptr, Shape * shape ) {
         filePosition += 8;
       } 
 
-    /* we have a Null shape so ignore */ 
+    /* a Null record was encountered in the shapefile, so return an error */ 
     } else {
-      Rprintf( "Warning: Ignoring Null shape in C function parsePolygonM.\n" );
-      polyM = NULL;
+      Rprintf( "Error: A shapefile containing a Null record was encountered in C function \nparsePolygonM.\n" );
+      return -1;
     }
 
     /* add new record to shape struct */
@@ -1704,7 +1704,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     if ( fptr == NULL ) {
       Rprintf( "Error: Opening shapefile in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
-      PROTECT( data = allocVector( VECSXP, 2 ) );
+      PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data;
     }
@@ -1713,7 +1713,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     if ( parseHeader( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading main file header in C function getRecordShapeSizes.\n" );
         deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
+        PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
         fclose ( fptr );
         return data;
@@ -1728,7 +1728,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
       Rprintf( "Error: Occured in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
       fclose( fptr );
-      PROTECT( data = allocVector( VECSXP, 2 ) );
+      PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data;
     }
@@ -1736,12 +1736,12 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     /* if we get a points file then return an error */
     if ( shape.shapeType == POINTS || shape.shapeType == POINTS_Z || 
     	                                    shape.shapeType == POINTS_M ) {
-      Rprintf( "Error: Invalid shape type found in %s.\n", shpFileName );
+      Rprintf( "Error: Invalid shape type found in file %s.\n", shpFileName );
       Rprintf( "Error: Shape type must be polygons or polylines,\n" );
       Rprintf( "Error: Occured in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
       fclose( fptr );
-      PROTECT( data = allocVector( VECSXP, 2 ) );
+      PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data; 
 
@@ -1749,10 +1749,9 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     } else if ( shape.shapeType == POLYGON || shape.shapeType == POLYLINE ) {
 
       if ( parsePolygon( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading Polygon or Polyline data from file i\
-                                 in C function getRecordShapeSizes.\n" );
+        Rprintf( "Error: Reading Polygon or Polyline data from file %s \nin C function getRecordShapeSizes.\n", shpFileName );
         deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
+        PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
         fclose ( fptr );
         return data; 
@@ -1762,10 +1761,9 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     } else if ( shape.shapeType == POLYGON_Z || shape.shapeType == POLYLINE_Z) {
 
       if ( parsePolygonZ( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading PolygonZ or PolylineZ data from file i\
-                                   in C function getRecordShapeSizes.\n" );
+        Rprintf( "Error: Reading PolygonZ or PolylineZ data from file %s \nin C function getRecordShapeSizes.\n", shpFileName );
         deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
+        PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
         fclose ( fptr );
         return data; 
@@ -1775,10 +1773,9 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     } else if ( shape.shapeType == POLYGON_M || shape.shapeType == POLYLINE_M) {
 
       if ( parsePolygonM( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading PolygonM or PolylineM data from file i\
-                                   in C function getRecordShapeSizes.\n" );
+        Rprintf( "Error: Reading PolygonM or PolylineM data from file %s \nin C function getRecordShapeSizes.\n", shpFileName );
         deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
+        PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
         fclose ( fptr );
         return data; 
@@ -1788,7 +1785,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     } else {
       Rprintf( "Error: Unrecognized shape type in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
-      PROTECT( data = allocVector( VECSXP, 2 ) );
+      PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       fclose ( fptr );
       return data; 
@@ -3403,7 +3400,7 @@ while ( done == FALSE ) {
     if ( shape.shapeType == POINTS || shape.shapeType == POLYLINE || 
             shape.shapeType == POINTS_Z || shape.shapeType == POLYLINE_Z ||
               shape.shapeType == POINTS_M || shape.shapeType == POLYLINE_M ) {
-        Rprintf( "Error: Invalid shape type found in %s.\n", shpFileName );
+        Rprintf( "Error: Invalid shape type found in file %s.\n", shpFileName );
         Rprintf( "Error: Shape type must be polygons.\n" );
         Rprintf( "Error: Occurred in C function getPartAreas.\n" );
         deallocateRecords( shape.records );
@@ -3416,8 +3413,7 @@ while ( done == FALSE ) {
     } else if ( shape.shapeType == POLYGON ) {
 
       if ( parsePolygon( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading Polygon data from file i\
-                           in C function getPartAreas.\n"  );
+        Rprintf( "Error: Reading Polygon data from file %s \nin C function getPartAreas.\n", shpFileName  );
         deallocateRecords( shape.records );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3429,8 +3425,7 @@ while ( done == FALSE ) {
     } else if ( shape.shapeType == POLYGON_Z ) {
 
       if ( parsePolygonZ( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading PolygonZ data from file i\
-                             in C function getPartArea.\n"  );
+        Rprintf( "Error: Reading PolygonZ data from file %s \nin C function getPartAreas.\n", shpFileName  );
         deallocateRecords( shape.records );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3442,8 +3437,7 @@ while ( done == FALSE ) {
     } else if ( shape.shapeType == POLYGON_M ) {
 
       if ( parsePolygonM( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading PolygonM data from file i\
-                             in C function getPartArea.\n"  );
+        Rprintf( "Error: Reading PolygonM data from file %s \nin C function getPartAreas.\n", shpFileName  );
         deallocateRecords( shape.records );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);

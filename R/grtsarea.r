@@ -16,7 +16,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 #   than one point per cell and then picks a point in selected cells.  
 # Arguments:
 #   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
-#     then the shapefile or shapefiles in the currrent directory are used.  The
+#     then the shapefile or shapefiles in the working directory are used.  The
 #     default is NULL.
 #   areaframe = a data frame containing id, mdcaty and mdm.
 #   samplesize = number of points to select in the sample.  The default is 100.

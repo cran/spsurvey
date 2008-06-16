@@ -1,17 +1,17 @@
 input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
    stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster,
-   cluster.levels, ncluster, N.cluster, wgt1, xcoord1, ycoord1, popsize,
-   stage1size, pcfactor.ind, support, swgt.ind, swgt, swgt1, unitsize, vartype,
+   cluster.levels, ncluster, wgt1, xcoord1, ycoord1, popsize, pcfactor.ind,
+   pcfsize, N.cluster, stage1size, support, swgt.ind, swgt, swgt1, vartype,
    conf, cdfval=NULL, pctval=NULL, subpop=NULL) {
 
 ################################################################################
 # Function: input.check
 # Programmer: Tom Kincaid
 # Date: September 25, 2003
-# Last Revised: October 31, 2006
+# Last Revised: June 16, 2008
 # Description:
 #   This function checks input values for errors, consistency, and compatibility
-#   with psurvey.analysis analytical functions.
+#   with analytical functions.
 #   Input:
 #      nresp = the number of response values.
 #      wgt = the final adjusted weights.
@@ -29,23 +29,23 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 #         stage sample, where TRUE = a two-stage sample and FALSE = not a two-
 #         stage sample.
 #      cluster = the stage one sampling unit codes.
-#      N.cluster = the number of stage one sampling units in the resource.
 #      ncluster = the number of stage one sampling units in the sample.
 #      wgt1 = the final adjusted stage one weights.
 #      xcoord1 = the stage one x-coordinates for location.
 #      ycoord1 = the stage one y-coordinates for location.
 #      popsize = the known size of the resource.
-#      stage1size = the known size of the stage one sampling units.
 #      pcfactor.ind = a logical value that indicates whether the population
 #         correction factor is used during variance estimation, where TRUE = use
 #         the population correction factor and FALSE = do not use the factor.
+#      pcfsize = 
+#      N.cluster = the number of stage one sampling units in the resource.
+#      stage1size = the known size of the stage one sampling units.
 #      support = the support for each sampling unit.
 #      swgt.ind = a logical value that indicates whether the sample is a size-
 #         weighted sample, where TRUE = a size-weighted sample and FALSE = not a
 #         size-weighted sample.
 #      swgt = the size-weight for each site.
 #      swgt1 = the stage one size-weight for each site.
-#      unitsize = the known sum of the size-weights of the resource.
 #      vartype = the choice of variance estimator, where "Local" = local mean
 #         estimator and "SRS" = SRS estimator.
 #      conf = the confidence level.
@@ -54,7 +54,7 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 #      subpop = a data frame describing sets of populations and subpopulations 
 #         for which estimates will be calculated.
 #   Output:
-#      A list consisting of N.cluster, popsize, stage1size, and unitsize.
+#      A list consisting of popsize, pcfsize, N.cluster, and stage1size.
 #   Other Functions Required:
 #      vecprint - takes an input vector and outputs a character string with
 #         line breaks inserted
@@ -139,10 +139,10 @@ if(vartype == "Local") {
    }
 }
 
-# Check the known size of the resource and the size-weight arguments
+# Check the known size of the resource argument
 
-if(stratum.ind) {
-   if(!swgt.ind && !is.null(popsize)) {
+if(!is.null(popsize)) {
+   if(stratum.ind) {
       if(is.list(popsize)) {
          npop <- dim(subpop)[2] - 1
          if(length(popsize) != npop)
@@ -195,81 +195,7 @@ if(stratum.ind) {
          if(any(popsize <= 0))
             stop("\nThe known size of the resource must be positive for each stratum.")
       }
-   } else if(swgt.ind) {
-      if(!is.null(popsize))
-         stop("\nThe known size of the resource and the sum of the size-weights cannot be provided \nsimultaneously.")
-      if(cluster.ind) {
-         if(length(swgt) != nresp)
-            stop("\nThe number of stage two size-weights does not match the number of response \nvalues.")
-         if(length(swgt1) != nresp)
-            stop("\nThe number of stage one size-weights does not match the number of response \nvalues.")
-         if(min(swgt) <= 0)
-            stop("\nStage two size-weights must be positive.")
-         if(min(swgt1) <= 0)
-            stop("\nStage one size-weights must be positive.")
-      } else {
-         if(length(swgt) != nresp)
-            stop("\nThe number of size-weights does not match the number of response values.")
-         if(min(swgt) <= 0)
-            stop("\nSize-weights must be positive.")
-      }
-      if(!is.null(unitsize)) {
-         if(is.list(unitsize)) {
-            npop <- dim(subpop)[2] - 1
-            if(length(unitsize) != npop)
-               stop("\nThe known sum of the size-weights must be provided for each population.")
-            if(is.null(names(unitsize)))
-               stop("\nThe vector of known sum of the size-weights for each population must be named.")
-            popnames <- names(subpop)[-1]
-            temp <- match(popnames, names(unitsize))
-            if(any(is.na(temp))) 
-               stop("\nThe names for the list of known sum of the size-weights for each population must \nmatch the population names.")
-           unitsize <- unitsize[temp]
-            for(ipop in 1:npop) {
-               if(!is.null(unitsize[[ipop]]) && is.list(unitsize[[ipop]])) {
-                  subpopnames <- levels(factor(subpop[,ipop+1]))
-                  if(is.null(names(unitsize[[ipop]])))
-                     stop(paste("\nThe list of known sum of the size-weights for each subpopulation of \npopulation ", popnames[ipop], " must be named.", sep=""))
-                  temp <- match(subpopnames, names(unitsize[[ipop]]))
-                  if(any(is.na(temp))) 
-                     stop(paste("\nThe names for the list of known sum of the size-weights for each subpopulation of \npopulation ", popnames[ipop], " must match the subpopulation codes.", sep=""))
-                  unitsize[[ipop]] <- unitsize[[ipop]][temp]
-                  for(isubpop in 1:length(subpopnames)) {
-                     if(is.null(names(unitsize[[ipop]][[isubpop]])))
-                        stop(paste("\nThe vector of known sum of the size-weights for each stratum for subpopulation ", subpopnames[isubpop], "\nof population ", popnames[ipop], " must be named.", sep=""))
-                     subpop.ind <- subpop[,ipop+1] == subpopnames[isubpop]
-                     temp <- match(levels(factor(stratum[subpop.ind])), names(unitsize[[ipop]][[isubpop]]))
-                     if(any(is.na(temp)))
-                        stop(paste("\nThe names for the vector of known sum of the size-weights for each stratum for \nsubpopulation ", subpopnames[isubpop], " of population ", popnames[ipop], "\nmust match the stratum codes for that subpopulation.", sep=""))
-                     unitsize[[ipop]][[isubpop]] <- unitsize[[ipop]][[isubpop]][temp]
-                     if(any(unitsize[[ipop]][[isubpop]] <= 0))
-                        stop(paste("\nThe known sum of the size-weights must be positive for each stratum for subpopulation\n", subpopnames[isubpop], " of population ", popnames[i], ".", sep=""))
-                  }
-               } else if(!is.null(unitsize[[ipop]])) {
-                  if(is.null(names(unitsize[[ipop]])))
-                     stop(paste("\nThe vector of known sum of the size-weights for each stratum in population\n", popnames[ipop], " must be named.", sep=""))
-                  temp <- match(stratum.levels, names(unitsize[[ipop]]))
-                  if(any(is.na(temp)))
-                     stop(paste("\nThe names for the vector of known sum of the size-weights for each stratum in \npopulation", popnames[ipop], " must match the stratum codes \nfor that population.", sep=""))
-                  unitsize[[ipop]] <- unitsize[[ipop]][temp]
-                  if(any(unitsize[[ipop]] <= 0))
-                     stop(paste("\nThe known sum of the size-weights must be positive for each stratum in population\n", popnames[i], ".", sep=""))
-               }
-            }
-         } else {
-            if(is.null(names(unitsize)))
-               stop("\nThe vector of known sum of the size-weights of the resource for each stratum \nmust be named.")
-            temp <- match(stratum.levels, names(unitsize))
-            if(any(is.na(temp)))
-               stop("\nThe names for the vector of known sum of the size-weights of the resource for \neach stratum must match the stratum codes.")
-            unitsize <- unitsize[temp]
-            if(min(unitsize) <= 0)
-               stop("\nThe known sum of the size-weights for the resource must be positive for each \nstratum.")
-         }
-      }
-   }
-} else {
-   if(!swgt.ind && !is.null(popsize)) {
+   } else {
       if(is.list(popsize)) {
          npop <- dim(subpop)[2] - 1
          if(length(popsize) != npop)
@@ -280,6 +206,7 @@ if(stratum.ind) {
          temp <- match(popnames, names(popsize))
          if(any(is.na(temp))) 
             stop("\nThe names for the list of known size of the resource for each population must \nmatch the population names.")
+         popsize <- popsize[temp]
          for(ipop in 1:npop) {
             if(!is.null(popsize[[ipop]]) && is.list(popsize[[ipop]])) {
                subpopnames <- levels(factor(subpop[,ipop+1]))
@@ -288,6 +215,7 @@ if(stratum.ind) {
                temp <- match(subpopnames, names(popsize[[ipop]]))
                if(any(is.na(temp))) 
                   stop("\nThe names for the list of known size of the resource for each subpopulation of \npopulation ", popnames[ipop], " must match the subpopulation codes.")
+               popsize[[ipop]] <- popsize[[ipop]][temp]
                for(isubpop in 1:length(subpopnames)) {
                   if(length(popsize[[ipop]][[isubpop]]) != 1)
                      stop(paste("\nOnly a single value should be provided for the  known size of the resource for \nsubpopulation ", subpopnames[isubpop], " of population ", popnames[i], ".", sep=""))
@@ -307,64 +235,6 @@ if(stratum.ind) {
          if(popsize <= 0)
             stop("\nThe known size of the resource must be positive.")
       }
-   } else if(swgt.ind) {
-      if(!is.null(popsize))
-         stop("\nThe known size of the resource and the sum of the size-weights cannot be provided \nsimultaneously.")
-      if(cluster.ind) {
-         if(length(swgt) != nresp)
-            stop("\nThe number of stage two size-weights does not match the number of response \nvalues.")
-         if(length(swgt1) != nresp)
-            stop("\nThe number of stage one size-weights does not match the number of response \nvalues.")
-         if(min(swgt) <= 0)
-            stop("\nStage two size-weights must be positive.")
-         if(min(swgt1) <= 0)
-            stop("\nStage one size-weights must be positive.")
-      } else {
-         if(length(swgt) != nresp)
-            stop("\nThe number of size-weights does not match the number of response values.")
-
-         if(min(swgt) <= 0)
-            stop("\nSize-weights must be positive.")
-      }
-      if(!is.null(unitsize)) {
-         if(is.list(unitsize)) {
-            npop <- dim(subpop)[2] - 1
-            if(length(unitsize) != npop)
-               stop("\nThe known sum of the size-weights must be provided for each population.")
-            if(is.null(names(unitsize)))
-               stop("\nThe vector of known sum of the size-weights for each population must be named.")
-            popnames <- names(subpop)[-1]
-            temp <- match(popnames, names(unitsize))
-            if(any(is.na(temp))) 
-               stop("\nThe names for the list of known sum of the size-weights for each population must \nmatch the population names.")
-            for(ipop in 1:npop) {
-               if(!is.null(unitsize[[ipop]]) && is.list(unitsize[[ipop]])) {
-                  subpopnames <- levels(factor(subpop[,ipop+1]))
-                  if(is.null(names(unitsize[[ipop]])))
-                     stop(paste("\nThe list of known sum of the size-weights for each subpopulation in \npopulation ", popnames[ipop], " must be named.", sep=""))
-                  temp <- match(subpopnames, names(unitsize[[ipop]]))
-                  if(any(is.na(temp))) 
-                     stop("\nThe names for the list of known sum of the size-weights for each subpopulation in \npopulation ", popnames[ipop], " must match the subpopulation codes.")
-                  for(isubpop in 1:length(subpopnames)) {
-                     if(length(unitsize[[ipop]][[isubpop]]) != 1)
-                        stop(paste("\nOnly a single value should be provided for the  known sum of the size-weights for \nsubpopulation ", subpopnames[isubpop], " in population ", popnames[i], ".", sep=""))
-                     if(unitsize[[ipop]][[isubpop]] <= 0)
-                        stop(paste("\nThe known sum of the size-weights must be positive for subpopulation ", subpopnames[isubpop], "\nin population ", popnames[i], ".", sep=""))
-                  }
-               } else if(!is.null(unitsize[[ipop]])) {
-                  if(length(unitsize[[ipop]]) != 1)
-                     stop(paste("\nOnly a single value should be provided for the  known sum of the size-weights for \npopulation ", popnames[ipop], ".", sep=""))
-                  if(any(unitsize[[ipop]] <= 0))
-                     stop(paste("\nThe known sum of the size-weights must be positive for population\n", popnames[i], ".", sep=""))
-               }
-            }
-         } else {
-            if(length(unitsize) != 1)
-               stop("\nOnly a single value should be provided for the known sum of the size-weights \nfor the resource.")
-            if(unitsize <= 0)
-               stop("\nThe known sum of the size-weights of the resource must be positive.")
-         }
-      }
    }
 }
 
@@ -373,6 +243,8 @@ if(stratum.ind) {
 if(pcfactor.ind) {
    if(length(support) != nresp)
       stop("\nThe number of support values does not match the number of response values.")
+   if(any(is.na(support)))
+      stop("\nMissing support values are not allowed.")
    if(stratum.ind) {
       if(cluster.ind) {
          if(is.null(N.cluster))
@@ -420,22 +292,22 @@ if(pcfactor.ind) {
             }
          }
       } else {
-         if(is.null(popsize))
+         if(is.null(pcfsize))
             stop("\nThe known size of the resource must be provided in order to calculate \nfinite and continuous population correction factors for variance estimation in \na single-stage sample.")
-         if(is.list(popsize)) {
+         if(is.list(pcfsize)) {
             for(ipop in 1:npop) {
-               if(!is.null(popsize[[ipop]]) && is.list(popsize[[ipop]])) {
+               if(!is.null(pcfsize[[ipop]]) && is.list(pcfsize[[ipop]])) {
                   subpopnames <- levels(factor(subpop[,ipop+1]))
                   for(isubpop in 1:length(subpopnames)) {
                      subpop.ind <- subpop[,ipop+1] == subpopnames[isubpop]
-                     temp <- tapply(support[subpop.ind], stratum[subpop.ind], sum) > popsize[[ipop]][[isubpop]]
+                     temp <- tapply(support[subpop.ind], stratum[subpop.ind], sum) > pcfsize[[ipop]][[isubpop]]
                      if(any(temp)) {
                         temp.str <- vecprint(stratum.levels[temp])
                         stop(paste("\nThe sum of support values exceeded the known size of the resource for subpopulation\n", subpopnames[isubpop], " of population ", popnames[ipop], "\nfor the following strata:\n", temp.str, sep=""))
                      }
                   }
-               } else if(!is.null(popsize[[ipop]])) {
-                  temp <- tapply(support, stratum, sum) > popsize[[ipop]]
+               } else if(!is.null(pcfsize[[ipop]])) {
+                  temp <- tapply(support, stratum, sum) > pcfsize[[ipop]]
                   if(any(temp)) {
                      temp.str <- vecprint(stratum.levels[temp])
                      stop(paste("\nThe sum of support values exceeded the known size of the resource for population\n", popnames[ipop], " for the following strata:\n", temp.str, sep=""))
@@ -443,7 +315,7 @@ if(pcfactor.ind) {
                }
             }
          } else {
-            temp <- tapply(support, stratum, sum) > popsize
+            temp <- tapply(support, stratum, sum) > pcfsize
             if(any(temp)) {
                temp.str <- vecprint(stratum.levels[temp])
                stop(paste("\nThe sum of support values exceeded the known size of the resource for the \nfollowing strata:\n", temp.str, sep=""))
@@ -477,41 +349,88 @@ if(pcfactor.ind) {
             stop(paste("\nThe sum of support values exceeded the known size of the stage one sampling \nunit for the following sampling units:\n", temp.str, sep=""))
          }
       } else {
-         if(is.null(popsize))
+         if(is.null(pcfsize))
             stop("\nThe known size of the resource must be provided in order to calculate \nfinite and continuous population correction factors for variance estimation in \na single-stage sample.")
-         if(is.list(popsize)) {
+         if(is.list(pcfsize)) {
             for(ipop in 1:npop) {
-               if(is.list(popsize[[ipop]])) {
+               if(is.list(pcfsize[[ipop]])) {
                   subpopnames <- levels(factor(subpop[,ipop+1]))
                   for(isubpop in 1:length(subpopnames)) {
                      subpop.ind <- subpop[,ipop+1] == subpopnames[isubpop]
-                     if(sum(support[subpop.ind]) > popsize[[ipop]][[isubpop]])
+                     if(sum(support[subpop.ind]) > pcfsize[[ipop]][[isubpop]])
                         stop(paste("\nThe sum of support values exceeded the known size of the resource for subpopulation \n", subpopnames[isubpop], " of population ", popnames[ipop], ".", sep=""))
                   }
                } else {
-                  if(sum(support) > popsize[[ipop]])
+                  if(sum(support) > pcfsize[[ipop]])
                      stop(paste("\nThe sum of support values exceeded the known size of the resource for population\n", popnames[ipop], ".", sep=""))
                }
             }
          } else {
-            if(sum(support) > popsize)
+            if(sum(support) > pcfsize)
                stop("\nThe sum of support values exceeded the known size of the resource.")
          }
       }
    }
 }
 
+# Check the size-weight arguments
+
+if(swgt.ind) {
+   if(stratum.ind) {
+      if(cluster.ind) {
+         if(length(swgt) != nresp)
+            stop("\nThe number of stage two size-weights does not match the number of response \nvalues.")
+         if(length(swgt1) != nresp)
+            stop("\nThe number of stage one size-weights does not match the number of response \nvalues.")
+         if(min(swgt) <= 0)
+            stop("\nStage two size-weights must be positive.")
+         if(min(swgt1) <= 0)
+            stop("\nStage one size-weights must be positive.")
+      } else {
+         if(length(swgt) != nresp)
+            stop("\nThe number of size-weights does not match the number of response values.")
+         if(min(swgt) <= 0)
+            stop("\nSize-weights must be positive.")
+      }
+
+   } else {
+      if(cluster.ind) {
+         if(length(swgt) != nresp)
+            stop("\nThe number of stage two size-weights does not match the number of response \nvalues.")
+         if(length(swgt1) != nresp)
+            stop("\nThe number of stage one size-weights does not match the number of response \nvalues.")
+         if(min(swgt) <= 0)
+            stop("\nStage two size-weights must be positive.")
+         if(min(swgt1) <= 0)
+            stop("\nStage one size-weights must be positive.")
+      } else {
+         if(length(swgt) != nresp)
+            stop("\nThe number of size-weights does not match the number of response values.")
+
+         if(min(swgt) <= 0)
+            stop("\nSize-weights must be positive.")
+      }
+   }
+}
+
+# Check the confidence level argument
+
 if(!is.numeric(conf))
    stop("\nThe confidence level must be a numeric value.")
 
+
+# Check the CDF values argument
+
 if(!is.null(cdfval) && !is.numeric(cdfval))
    stop("\nThe set of value at which the CDF is estimated must be numeric values.")
+
+
+# Check the percentile values argument
 
 if(!is.null(pctval) && !is.numeric(pctval))
    stop("\nThe set of value at which percentiles are estimated must be numeric values.")
 
 # Return the list
 
-list(N.cluster=N.cluster, popsize=popsize, stage1size=stage1size,
-   unitsize=unitsize)
+list(popsize=popsize, pcfsize=pcfsize, N.cluster=N.cluster, stage1size=stage1size)
 }

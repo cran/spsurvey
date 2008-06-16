@@ -1,13 +1,13 @@
 Package: spsurvey
-Version: 1.6.2
-Date: 2007-03-07
+Version: 2.0
+Date: 2008-06-16
 Title: Spatial Survey Design and Analysis
 Author: Tom Kincaid <Kincaid.Tom@epa.gov> and Tony Olsen <Olsen.Tony@epa.gov>
         with contributions from Don Stevens, Christian Platt, Denis White,
         and Richard Remington
 Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
 Depends: sp
-Imports: MASS
+Imports: MASS, foreign
 ZipData: no
 Description: This group of functions implements algorithms required for design
   and analysis of probability surveys such as those utilized by the U.S.
@@ -15,5 +15,5 @@ Description: This group of functions implements algorithms required for design
   Program (EMAP).
 License: GPL Version 2 or later
 URL: http://www.epa.gov/nheerl/arm/
-SaveImage: yes
-Packaged: Wed Mar  7 13:22:18 2007; tkincaid
+LazyLoad: yes
+Packaged: Fri Jun 20 12:51:00 2008; hornik

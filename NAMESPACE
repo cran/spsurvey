@@ -3,3 +3,5 @@ useDynLib(spsurvey, .registration = TRUE)
 exportPattern("^[^\\.]")
 
 importFrom(MASS, ginv)
+importFrom(foreign, read.xport)
+importFrom(foreign, read.ssd)

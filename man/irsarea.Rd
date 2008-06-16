@@ -9,7 +9,7 @@ irsarea(shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1, maxtry=1000)
 }
 \arguments{
   \item{shapefilename}{name of the input shapefile.  If shapefilename equals
-    NULL, then the shapefile or shapefiles in the currrent directory are used.
+    NULL, then the shapefile or shapefiles in the working directory are used.
     The default is NULL.}
   \item{areaframe}{a data frame containing id, mdcaty and mdm.}
   \item{samplesize}{number of points to select in the sample.  The default is

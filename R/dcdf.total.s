@@ -22,28 +22,31 @@ dcdf.total <- function(g, wgt, cluster.ind, cluster, wgt1, popsize) {
 #   discrete resource, size is the number of units in the resource.  For an 
 #   extensive resource, size is the measure of the resource, i.e., length, area, 
 #   or volume.  The function can accomodate single-stage and two-stage samples.
-#   Input:
-#      g = values of the deconvolution function g(.) evaluated at a specified
-#         value for the response value for each site.
-#      wgt = the final adjusted weight (inverse of the sample inclusion
-#         probability) for each site, which is either the weight for a single-
-#         stage sample or the stage two weight for a two-stage sample.
-#      cluster.ind = a logical value that indicates whether the sample is a two-
-#         stage sample, where TRUE = a two-stage sample and FALSE = not a two-
-#         stage sample.
-#      cluster = the stage one sampling unit (primary sampling unit or cluster) 
-#         code for each site.
-#      wgt1 = the final adjusted stage one weight for each site.
-#      popsize = the known size of the resource - the total number of sampling 
-#         units of a discrete resource or the measure of a continuous resource,
-#         which is required for calculation of finite and continuous population 
-#         correction factors for a single-stage sample.  This variable is also 
-#         used to adjust estimators for the known size of a resource.  For a
-#         stratified sample this variable must be a vector containing a value 
-#         for each stratum and must have the names attribute set to identify the
-#         stratum codes.
-#   Output is the deconvoluted CDF estimate
-#   Other Functions Required: None
+# Arguments:
+#   g = values of the deconvolution function g(.) evaluated at a specified value
+#     for the response value for each site.
+#   wgt = the final adjusted weight (inverse of the sample inclusion
+#     probability) for each site, which is either the weight for a single-
+#     stage sample or the stage two weight for a two-stage sample.
+#   cluster.ind = a logical value that indicates whether the sample is a two-
+#     stage sample, where TRUE = a two-stage sample and FALSE = not a two-stage
+#     sample.
+#   cluster = the stage one sampling unit (primary sampling unit or cluster) 
+#     code for each site.
+#   wgt1 = the final adjusted stage one weight for each site.
+#   popsize = known size of the resource, which is used to perform ratio
+#     adjustment to estimators expressed using measurement units for the
+#     resource.  For a finite resource, this argument is either the total number
+#     of sampling units or the known sum of size-weights.  For an extensive
+#     resource, this argument is the measure of the resource, i.e., either known
+#     total length for a linear resource or known total area for an areal
+#     resource.  For a stratified sample this variable must be a vector
+#     containing a value for each stratum and must have the names attribute set
+#     to identify the stratum codes.
+# Output:
+#   The deconvoluted CDF estimate.
+# Other Functions Required:
+#   None
 ################################################################################
 
 # Calculate additional required values

@@ -8,7 +8,7 @@
 **               how all the information is stored before being written to
 **               the R matrix.
 **  Created:     August 24, 2004
-**  Revised:     January 22, 2007
+**  Revised:     April 23, 2008
 ******************************************************************************/
 
 #include <stdio.h>
@@ -101,7 +101,7 @@ int parseFields( FILE * fptr, Dbf * dbf ) {
 
   if ( (dbf->fields = (Field *) malloc( sizeof(Field) * dbf->numFields )) 
         == NULL) {
-    Rprintf( "Error: Allocating memory in C function parseFields.\n" );
+    Rprintf( "Error: Allocating memory for fields in C function parseFields.\n" );
     return -1;
   }
 
@@ -112,6 +112,7 @@ int parseFields( FILE * fptr, Dbf * dbf ) {
     fread( &(dbf->fields[i].type), sizeof(char), 1, fptr );
     fseek( fptr, 4, SEEK_CUR ); 
     if ( fread( &byte, sizeof(char), 1, fptr ) == 0 ) {
+      Rprintf( "Error: Reading field attributes in C function parseFields.\n" );
       return -1;
     }
     dbf->fields[i].length = 0;
@@ -121,7 +122,7 @@ int parseFields( FILE * fptr, Dbf * dbf ) {
     /* allocate memory for array of data values for each field */
     if ((dbf->fields[i].data = (char **) malloc(sizeof(char *)*dbf->numRecords))
          == NULL ) {
-      Rprintf( "Error: Allocating memory in C function parseFields.\n" );
+      Rprintf( "Error: Allocating memory for data values in C function parseFields.\n" );
       return -1;
     }
   }
@@ -148,9 +149,9 @@ int parseFields( FILE * fptr, Dbf * dbf ) {
          dbf->fields[i].length+1); 
       tempStr = (char *) malloc( sizeof(char) * dbf->fields[i].length+1); 
       if ( fread(tempStr,sizeof(char), dbf->fields[i].length,fptr) == 0 ) {
+        Rprintf( "Error: Reading data values in C function parseFields.\n" );
         return -1;
       }
-
       tempStr[dbf->fields[i].length] = '\0';
 
       /* get rid of trailing white space */
@@ -487,8 +488,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
 
     if ( parseFields( fptr, dbf ) == -1 ) {
       /* an error has occured */
-      Rprintf( "Error: Reading dbf fields in C function.\n" );
-      Rprintf( "Error: Occured in C function readDbfFile.\n" );
+      Rprintf( "Error: Reading dbf fields in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
       free( fileName );
@@ -595,12 +595,14 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     for ( col = 0; col < dbf->numFields; ++col ) {
       idx = 0;
 
-      /* determine if it is a numeric or string */
+      /* as appropriate, assign fileds as real, character, or logical */
       if ( dbf->fields[col].type == 'F' || 
            dbf->fields[col].type == 'N' ) {
         PROTECT( tempVec = allocVector( REALSXP, numRecords ) );
-      } else {
+      } else if ( dbf->fields[col].type == 'C' ) {
         PROTECT( tempVec = allocVector( STRSXP, numRecords ) );
+      } else {
+        PROTECT( tempVec = allocVector( LGLSXP, numRecords ) );
       }
 
       tempDbf = headDbf;
@@ -608,9 +610,11 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
         for ( row = 0; row < dbf->numRecords; ++row ) {
           if ( dbf->fields[col].type == 'F' ||
                dbf->fields[col].type == 'N' ) {
-            REAL( tempVec )[idx] = atof( tempDbf->fields[col].data[row] );
+            REAL( tempVec )[idx] = asReal( mkChar( tempDbf->fields[col].data[row] ) );
+          } else if ( dbf->fields[col].type == 'C' ) {
+            SET_STRING_ELT(tempVec,idx,asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
           } else {
-            SET_STRING_ELT(tempVec,idx,mkChar( tempDbf->fields[col].data[row]));
+            LOGICAL( tempVec )[idx] = asLogical( mkChar( tempDbf->fields[col].data[row] ) );
           }
           ++idx;
         }
@@ -622,8 +626,15 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
 
     /* add the area_mdm or length_mdm values */
     PROTECT( sizesVec = getRecordShapeSizes( fileNamePrefix ) );
-    SET_VECTOR_ELT( data, col, sizesVec );
-    UNPROTECT( 1 );
+    if ( isVectorList(sizesVec) ) {
+      UNPROTECT( 2 );
+      PROTECT( data = allocVector( VECSXP, 1 ) );
+      UNPROTECT( 1 );
+      return data;
+    } else {
+      SET_VECTOR_ELT( data, col, sizesVec );
+      UNPROTECT( 1 );
+    }
 
 
     /* add field names (column names) to the R object */
@@ -647,12 +658,14 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     for ( col = 0; col < dbf->numFields; ++col ) {
       idx = 0;
 
-      /* determine if it is a numeric or string */
-      if ( dbf->fields[col].type == 'F' ||
+      /* as appropriate, assign fileds as real, character, or logical */
+      if ( dbf->fields[col].type == 'F' || 
            dbf->fields[col].type == 'N' ) {
         PROTECT( tempVec = allocVector( REALSXP, numRecords ) );
-      } else {
+      } else if ( dbf->fields[col].type == 'C' ) {
         PROTECT( tempVec = allocVector( STRSXP, numRecords ) );
+      } else {
+        PROTECT( tempVec = allocVector( LGLSXP, numRecords ) );
       }
 
       tempDbf = headDbf;
@@ -660,9 +673,11 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
         for ( row = 0; row < tempDbf->numRecords; ++row ) {
           if ( dbf->fields[col].type == 'F' ||
                dbf->fields[col].type == 'N' ) {
-            REAL( tempVec )[idx] = atof( tempDbf->fields[col].data[row] );
+            REAL( tempVec )[idx] = asReal( mkChar( tempDbf->fields[col].data[row] ) );
+          } else if ( dbf->fields[col].type == 'C' ) {
+            SET_STRING_ELT(tempVec,idx,asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
           } else {
-            SET_STRING_ELT(tempVec,idx,mkChar( tempDbf->fields[col].data[row]));
+            LOGICAL( tempVec )[idx] = asLogical( mkChar( tempDbf->fields[col].data[row] ) );
           }
           ++idx;
         }
@@ -949,41 +964,63 @@ void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
     byte = 0x20;
     fwrite( &byte, sizeof(char), 1, fptr );
 
-    /* go thrugh eac field */
+    /* go thrugh each field */
     for ( j = 0; j < length( fields ); ++j ) {
 
       if ( IS_CHARACTER( VECTOR_ELT(fields, j)) == 1 ) {
-        for(k=0; k<strlen( CHAR(STRING_ELT( VECTOR_ELT(fields,j) , i )) ); ++k){
-          byte = CHAR(STRING_ELT(VECTOR_ELT(fields,j),i))[k];
+      	if ( STRING_ELT(VECTOR_ELT(fields,j),i) == NA_STRING ) {
+          byte = 0x20;
           fwrite( &byte, sizeof(char), 1, fptr );
+          k = 1;
+        } else {
+          for(k=0; k<strlen( CHAR(STRING_ELT( VECTOR_ELT(fields,j),i))); ++k) {
+            byte = CHAR(STRING_ELT(VECTOR_ELT(fields,j),i))[k];
+            fwrite( &byte, sizeof(char), 1, fptr );
+          }
         }
-      
       } else if ( IS_INTEGER( VECTOR_ELT(fields, j)) == 1 ) {
-        snprintf(buffer, 255, "%d",INTEGER(VECTOR_ELT(fields,j))[i]);
-        for ( k = 0; k < strlen( buffer ); ++k){
-          byte = buffer[k];
+      	if ( INTEGER(VECTOR_ELT(fields,j))[i] == NA_INTEGER ) {
+          byte = 0x20;
           fwrite( &byte, sizeof(char), 1, fptr );
+          k = 1;
+        } else {
+          snprintf(buffer, 255, "%d",INTEGER(VECTOR_ELT(fields,j))[i]);
+          for ( k = 0; k < strlen( buffer ); ++k) {
+            byte = buffer[k];
+            fwrite( &byte, sizeof(char), 1, fptr );
+          }
         }
 
       } else if ( IS_NUMERIC( VECTOR_ELT(fields, j)) == 1 ) {
-        snprintf( buffer, 255, "%.15f", REAL(VECTOR_ELT(fields,j))[i]);
-        for ( k = 0; k < strlen( buffer ); ++k){
-          byte = buffer[k];
+      	if ( ISNA(REAL(VECTOR_ELT(fields,j))[i]) ) {
+          byte = 0x20;
           fwrite( &byte, sizeof(char), 1, fptr );
+          k = 1;
+        } else {
+          snprintf( buffer, 255, "%.15f", REAL(VECTOR_ELT(fields,j))[i]);
+          for ( k = 0; k < strlen( buffer ); ++k){
+            byte = buffer[k];
+            fwrite( &byte, sizeof(char), 1, fptr );
+          }
         }
 
       } else if ( IS_LOGICAL( VECTOR_ELT(fields, j)) == 1 ) {
-        snprintf( buffer, 255, "%d", LOGICAL(VECTOR_ELT(fields,j))[i]);
-        if ( buffer[0] == '0' ) {
-          byte = 'F';
-        } else if ( buffer[0] == '1' ) {
-          byte = 'T';
+      	if ( LOGICAL(VECTOR_ELT(fields,j))[i] == NA_LOGICAL ) {
+          byte = 0x20;
+          fwrite( &byte, sizeof(char), 1, fptr );
+          k = 1;
         } else {
-          byte = '?';
+          snprintf( buffer, 255, "%d", LOGICAL(VECTOR_ELT(fields,j))[i]);
+          if ( buffer[0] == '0' ) {
+            byte = 'F';
+          } else if ( buffer[0] == '1' ) {
+            byte = 'T';
+          } else {
+            byte = '?';
+          }
+          fwrite( &byte, sizeof(char), 1, fptr );
+          k = 1;
         }
-        fwrite( &byte, sizeof(char), 1, fptr );
-        k = 1;
-
       } else {
         k = 0;
       }
@@ -995,7 +1032,6 @@ void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
           fwrite( &byte, sizeof(char), 1, fptr );
         } 
       }
-
     }
   }
 

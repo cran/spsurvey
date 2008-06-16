@@ -16,7 +16,7 @@ grtspts(src.frame="shapefile", shapefilename=NULL, ptsframe, samplesize=100,
       ptsframe.  The default is "shapefile".}
   \item{shapefilename}{name of the input shapefile.  If src.frame equal
     "shapefile" and shapefilename equals NULL, then the shapefile or shapefiles
-    in the currrent directory are used.  The default is NULL.}
+    in the working directory are used.  The default is NULL.}
   \item{ptsframe}{a data frame containing id, x, y, mdcaty, and mdm.}
   \item{samplesize}{number of points to select in the sample.  The default is
     100.}

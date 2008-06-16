@@ -54,13 +54,13 @@ irs(design, DesignID="Site", SiteBegin=1, type.frame="finite",
     is included in att.frame.  The default is "shapefile".}
   \item{in.shape}{name (without any extension) of the input shapefile.  If
     src.frame equal "shapefile" and in.shape equals NULL, then the shapefile or
-    shapefiles in the currrent directory are used.  The default is NULL.}
+    shapefiles in the working directory are used.  The default is NULL.}
   \item{sp.object}{name of the sp package object when src.frame equals
     "sp.object".  The default is NULL.}
   \item{att.frame}{a data frame composed of attributes associated with elements
     in the frame, which must contain the columns used for stratum and mdcaty (if 
     required).  If src.frame equals "shapefile" and att.frame equals NULL, then
-    att.frame is created from the dbf file(s) in the current directory.  If
+    att.frame is created from the dbf file(s) in the working directory.  If
     src.frame equals "att.frame", then att.frame includes columns that contain
     x-coordinates and y-coordinates for each element in the frame.  The default
     is NULL.}

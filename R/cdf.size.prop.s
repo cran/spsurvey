@@ -1,11 +1,11 @@
-cdf.size.prop <- function(z, wgt, swgt, val, cluster.ind, cluster, wgt1,
+cdf.size.prop <- function(z, wgt, val, cluster.ind, cluster, wgt1, swgt,
    swgt1) {
 
 ################################################################################
 # Function: cdf.size.prop
 # Programmer: Tom Kincaid
 # Date: July 12, 2000
-# Last Revised: January 27, 2004
+# Last Revised: June 3, 2008
 # Description:
 #   This function calculates an estimate of the size-weighted cumulative
 #   distribution function (CDF) for the proportion of a finite resource. The 
@@ -16,23 +16,25 @@ cdf.size.prop <- function(z, wgt, swgt, val, cluster.ind, cluster, wgt1,
 #   specified value.  The denominator of the ratio estimates the sum of the
 #   size-weights for the resource.  The function can accomodate single-stage and 
 #   two-stage samples.
-#   Input:
-#      z = the response value for each site.
-#      wgt = the final adjusted weight (inverse of the sample inclusion
-#         probability) for each site, which is either the weight for a single-
-#         stage sample or the stage two weight for a two-stage sample.
-#      swgt = the size-weight for each site, which is the stage two size-weight 
-#         for a two-stage sample.
-#      val = the set of values at which the CDF is estimated.
-#      cluster.ind = a logical value that indicates whether the sample is a two-
-#         stage sample, where TRUE = a two-stage sample and FALSE = not a two-
-#         stage sample.
-#      cluster = the stage one sampling unit (primary sampling unit or cluster) 
-#         code for each site.
-#      wgt1 = the final adjusted stage one weight for each site.
-#      swgt1 = the stage one size-weight for each site.
-#   Output is the CDF estimate.
-#   Other Functions Required: None
+# Arguments:
+#   z = the response value for each site.
+#   wgt = the final adjusted weight (inverse of the sample inclusion
+#     probability) for each site, which is either the weight for a single-
+#     stage sample or the stage two weight for a two-stage sample.
+#   swgt = the size-weight for each site, which is the stage two size-weight for
+#     a two-stage sample.
+#   val = the set of values at which the CDF is estimated.
+#   cluster.ind = a logical value that indicates whether the sample is a two-
+#     stage sample, where TRUE = a two-stage sample and FALSE = not a two-stage
+#     sample.
+#   cluster = the stage one sampling unit (primary sampling unit or cluster) 
+#     code for each site.
+#   wgt1 = the final adjusted stage one weight for each site.
+#   swgt1 = the stage one size-weight for each site.
+# Output:
+#   The size-weighted CDF estimate.
+# Other Functions Required:
+#   None
 ################################################################################
 
 # Calculate additional required values

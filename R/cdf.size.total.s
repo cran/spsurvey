@@ -1,11 +1,11 @@
-cdf.size.total <- function(z, wgt, swgt, val, cluster.ind, cluster, wgt1,
-   swgt1, unitsize) {
+cdf.size.total <- function(z, wgt, val, cluster.ind, cluster, wgt1, popsize,
+   swgt, swgt1) {
 
 ################################################################################
 # Function: cdf.size.total
 # Programmer: Tom Kincaid
 # Date: July 12, 2000
-# Last Revised: January 27, 2004
+# Last Revised: June 3, 2008
 # Description:
 #   This function calculates an estimate of the size-weighted cumulative
 #   distribution function (CDF) for the total of a finite resource.  The set
@@ -22,26 +22,34 @@ cdf.size.total <- function(z, wgt, swgt, val, cluster.ind, cluster, wgt1,
 #   the resource equal to or less than a specified value is used to calculate
 #   the estimate.  The function can accomodate single-stage and two-stage 
 #   samples.
-#   Input:
-#      z = the response value for each site.
-#      wgt = the final adjusted weight (inverse of the sample inclusion
-#         probability) for each site, which is either the weight for a single-
-#         stage sample or the stage two weight for a two-stage sample.
-#      swgt = the size-weight for each site, which is the stage two size-weight 
-#         for a two-stage sample.
-#      val = the set of values at which the CDF is estimated.
-#      cluster.ind = a logical value that indicates whether the sample is a two-
-#         stage sample, where TRUE = a two-stage sample and FALSE = not a two-
-#         stage sample.
-#      cluster = the stage one sampling unit (primary sampling unit or cluster) 
-#         code for each site.
-#      wgt1 = the final adjusted stage one weight for each site.
-#      swgt1 = the stage one size-weight for each site.
-#      unitsize = the known sum of the size-weights of the resource, which for a 
-#         stratified sample must be a vector containing a value for each stratum 
-#         and must have the names attribute set to identify the stratum codes.  
-#   Output is the CDF estimate.
-#   Other Functions Required: None
+# Arguments:
+#   z = the response value for each site.
+#   wgt = the final adjusted weight (inverse of the sample inclusion
+#     probability) for each site, which is either the weight for a single-
+#     stage sample or the stage two weight for a two-stage sample.
+#   val = the set of values at which the CDF is estimated.
+#   cluster.ind = a logical value that indicates whether the sample is a two-
+#     stage sample, where TRUE = a two-stage sample and FALSE = not a two-stage
+#     sample.
+#   cluster = the stage one sampling unit (primary sampling unit or cluster) 
+#     code for each site.
+#   wgt1 = the final adjusted stage one weight for each site.
+#   popsize = known size of the resource, which is used to perform ratio
+#     adjustment to estimators expressed using measurement units for the
+#     resource.  For a finite resource, this argument is either the total number
+#     of sampling units or the known sum of size-weights.  For an extensive
+#     resource, this argument is the measure of the resource, i.e., either known
+#     total length for a linear resource or known total area for an areal
+#     resource.  For a stratified sample this variable must be a vector
+#     containing a value for each stratum and must have the names attribute set
+#     to identify the stratum codes.
+#   swgt = the size-weight for each site, which is the stage two size-weight for
+#     a two-stage sample.
+#   swgt1 = the stage one size-weight for each site.
+# Output:
+#   The size-weighted CDF estimate.
+# Other Functions Required:
+#   None
 ################################################################################
 
 # Calculate additional required values
@@ -76,11 +84,11 @@ cdf.size.total <- function(z, wgt, swgt, val, cluster.ind, cluster, wgt1,
 
 # Adjust the estimate when the sum of the size-weights of the resource is known
 
-   if(!is.null(unitsize)) {
+   if(!is.null(popsize)) {
       if(cluster.ind)
-         cdf <- unitsize*(cdf/sum(wgt1*wgt))
+         cdf <- popsize*(cdf/sum(wgt1*wgt))
       else
-         cdf <- unitsize*(cdf/sum(wgt))
+         cdf <- popsize*(cdf/sum(wgt))
    }
 
 # Return the estimate

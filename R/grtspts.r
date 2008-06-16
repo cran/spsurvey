@@ -9,7 +9,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: February 8, 2007
+# Last Revised: May 14, 2007
 # Description:
 #   This function select a GRTS sample of a finite resource.  This function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -20,7 +20,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 #     ptsframe.  The default is "shapefile".
 #   shapefilename = name of the input shapefile. If src.frame equals "shapefile"
 #     and shapefilename equals NULL, then the shapefile or shapefiles in the
-#     currrent directory are used.  The default is NULL.
+#     working directory are used.  The default is NULL.
 #   ptsframe = a data frame containing id, x, y, mdcaty, and mdm.
 #   samplesize = number of points to select in the sample.  The default is 100.
 #   SiteBegin = first number to start siteID numbering.  The default is 1.
@@ -87,9 +87,10 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
          nlev <- startlev
       }
       cel.wt <- 99999
-      celmax <- 100000
+      celmax.ind <- 0
       sint <- 1
-      while (any(cel.wt/sint > 1) && max(cel.wt) != celmax && nlev <= maxlev) {
+      while (any(cel.wt/sint > 1) && celmax.ind < 2 && nlev <= maxlev) {
+         cat( "Current number of levels:", nlev, "\n");
          celmax <- max(cel.wt)
          nlv2 <- 2^nlev
          dx <- dy <- grid.extent/nlv2
@@ -105,11 +106,18 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
             yc <- rep(yc, rep(nlv2+1, nlv2+1))
          }
          
-# Determine total inclusion probability in cell      
+# Determine total inclusion probability for each grid cell and, as necessary, 
+# adjust the indicator for whether maximum of the total inclusion probabilities
+# is changing   
 
          cel.wt <- sapply(1:length(xc), cell.wt, xc, yc, dy, dx, ptsframe)
+         if(max(cel.wt) == celmax) {
+            celmax.ind <- celmax.ind + 1
+    	       if(celmax.ind == 2)
+    	          warning("\nSince the maximum value of total inclusion probability for the grid cells was \nnot changing, the algorithm for determining the number of levels for \nhierarchical randomization was terminated.\n")
+         }
 
-# Adjust cell weights and number of hierarchical levels
+# Adjust sampling interval and number of hierarchical levels
 
          sint <- sum(cel.wt)/samplesize
          ifelse(nlev == maxlev,
@@ -117,6 +125,10 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
             nlev <- as.integer(nlev + max(1, ceiling(logb(cel.wt[cel.wt > 0]/
                sint, 4)))))
       }
+
+#  Print the final number of levels
+
+      cat( "Final number of levels:", nlev-1, "\n");
    }
 
 # Assign the final number of levels

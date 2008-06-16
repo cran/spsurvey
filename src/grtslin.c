@@ -1,14 +1,14 @@
 /****************************************************************************** 
-**  File:        grtslin.c
+**  File:         grtslin.c
 ** 
-**  Purpose:     This file contains the code for the lintFcn() and linSample()
-**               functions and pertain to polyline shape types.  lintFcn() is 
-**               called from the numLevels() function found in grts.c.  The
-**               lineSample() function is used to pick sample points from 
-**               the cells.
-**  Programmers: Christian Platt, Tom Kincaid
-**  Created:     October 18, 2004
-**  Revised:     December 1, 2006
+**  Purpose:      This file contains the code for the lintFcn() and linSample()
+**                functions and pertain to polyline shape types.  lintFcn() is 
+**                called from the numLevels() function found in grts.c.  The
+**                lineSample() function is used to pick sample points from 
+**                the cells.
+**  Programmers:  Christian Platt, Tom Kincaid
+**  Created:      October 18, 2004
+**  Last Revised: October 18, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -317,6 +317,8 @@ int lintFcn ( double ** celWts, double * xc, double * yc, double dx, double dy,
 
       /* add new polygon to the record struct */
       record.poly = poly;
+      record.polyZ = NULL;
+      record.polyM = NULL;
 
     } else if ( shape->shapeType == POLYLINE_Z ) {
 
@@ -405,6 +407,8 @@ int lintFcn ( double ** celWts, double * xc, double * yc, double dx, double dy,
 
       /* add new polygon to the record struct */
       record.polyZ = polyZ;
+      record.poly = NULL;
+      record.polyM = NULL;
 
     } else {
 
@@ -476,6 +480,8 @@ int lintFcn ( double ** celWts, double * xc, double * yc, double dx, double dy,
 
       /* add new polygon to the record struct */
       record.polyM = polyM;
+      record.poly = NULL;
+      record.polyZ = NULL;
 
     }
 
@@ -958,6 +964,8 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
         /* add new polygon to the record struct */
         record.poly = poly;
+        record.polyZ = NULL;
+        record.polyM = NULL;
 
       } else if ( shape.shapeType == POLYLINE_Z ) {
 
@@ -1070,6 +1078,8 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
         /* add new polygon to the record struct */
         record.polyZ = polyZ;
+        record.poly = NULL;
+        record.polyM = NULL;
 
       } else {
 
@@ -1161,6 +1171,8 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
         /* add new polygon to the record struct */
         record.polyM = polyM;
+        record.poly = NULL;
+        record.polyZ = NULL;
 
       }
 

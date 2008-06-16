@@ -1,6 +1,6 @@
 relrisk.var <- function(response, stressor, response.levels, stressor.levels,
-   wgt, x, y, stratum.ind, stratum.level, cluster.ind, cluster, N.cluster, wgt1,
-   x1, y1, popsize, pcfactor.ind, stage1size, support, vartype, warn.ind,
+   wgt, x, y, stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1,
+   pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype, warn.ind,
    warn.df, warn.vec) {
 
 ################################################################################
@@ -9,7 +9,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 #          risk estimate
 # Programmer: Tom Kincaid
 # Date: March 9, 2005
-# Last Revised: February 15, 2007
+# Last Revised: June 9, 2008
 # Description:
 #   This function calculates the variance-covariance estimate for the cell and
 #   marginal totals used to calculate the relative risk estimate.  Either the
@@ -50,35 +50,33 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 #     sample.
 #   cluster = the stage one sampling unit (primary sampling unit or cluster) 
 #     code for each site.
-#   N.cluster = the number of stage one sampling units in the resource, which is 
-#     required for calculation of finite and continuous population correction 
-#     factors for a two-stage sample.  For a stratified sample this variable 
-#     must be a vector containing a value for each stratum and must have the 
-#     names attribute set to identify the stratum codes.
 #   wgt1 = the final adjusted stage one weight for each site.
 #   x1 = the stage one x-coordinate for location for each site.
 #   y1 = the stage one y-coordinate for location for each site.
-#   popsize = the known size of the resource - the total number of sampling 
-#     units of a finite resource or the measure of a continuous resource, which 
-#     is required for calculation of finite and continuous population correction 
-#     factors for a single-stage sample.  This variable is also used to adjust 
-#     estimators for the known size of a resource.  For a stratified sample this 
-#     variable must be a vector containing a value for each stratum and must 
-#     have the names attribute set to identify the stratum codes.
-#   pcfactor.ind = a logical value that indicates whether the population 
-#     correction factor is used during variance estimation, where TRUE = use the 
+#   pcfactor.ind = a logical value that indicates whether the population
+#     correction factor is used during variance estimation, where TRUE = use the
 #     population correction factor and FALSE = do not use the factor.
-#   stage1size = the known size of the stage one sampling units of a two-stage 
-#     sample, which is required for calculation of finite and continuous 
-#     population correction factors for a two-stage sample and must have the 
-#     names attribute set to identify the stage one sampling  unit codes.  For a 
-#     stratified sample, the names attribute must be set to identify both 
-#     stratum codes and stage one sampling unit codes using a convention where 
-#     the two codes are separated by the # symbol, e.g., "Stratum 1#Cluster 1".
-#   support = the support value for each site - the value one (1) for a site 
-#     from a finite resource or the measure of the sampling unit associated with 
-#     a site from a continuous resource, which is required for calculation of 
-#     finite and continuous population correction  factors.
+#   pcfsize = size of the resource, which is required for calculation of finite
+#     and continuous population correction factors for a single-stage sample.
+#     For a stratified sample this argument must be a vector containing a value
+#     for each stratum and must have the names attribute set to identify the
+#     stratum codes.
+#   N.cluster = the number of stage one sampling units in the resource, which is
+#     required for calculation of finite and continuous population correction
+#     factors for a two-stage sample.  For a stratified sample this variable
+#     must be a vector containing a value for each stratum and must have the
+#     names attribute set to identify the stratum codes.
+#   stage1size = size of the stage one sampling units of a two-stage sample,
+#     which is required for calculation of finite and continuous population
+#     correction factors for a two-stage sample and must have the names
+#     attribute set to identify the stage one sampling unit codes.  For a
+#     stratified sample, the names attribute must be set to identify both
+#     stratum codes and stage one sampling unit codes using a convention where
+#     the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
+#   support = the support value for each site - the value one (1) for a site
+#     from a finite resource or the measure of the sampling unit associated with
+#     a site from a continuous resource, which is required for calculation of
+#     finite and continuous population correction factors.
 #   vartype = the choice of variance estimator, where "Local" = local mean 
 #     estimator and "SRS" = SRS estimator.
 #   warn.ind = a logical value that indicates whether warning messages were
@@ -262,7 +260,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 
 # Calculate the population correction factor
 
-      pcfactor <- ifelse(pcfactor.ind, (popsize - sum(support))/popsize, 1)
+      pcfactor <- ifelse(pcfactor.ind, (pcfsize - sum(support))/pcfsize, 1)
 
 # Adjust the variance-covariance estimator for small sample size
 

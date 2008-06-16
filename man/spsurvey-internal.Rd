@@ -51,6 +51,8 @@
 \alias{dcdfvar.size.total}
 \alias{isotonic}
 \alias{sorted}
+\alias{cdf.test.prop}
+\alias{cdf.test.size.prop}
 \alias{cdfvar.test}
 \alias{total.var}
 \alias{relrisk.var}
@@ -61,6 +63,8 @@
 \alias{wnas}
 \alias{input.format}
 \alias{warnprnt}
+\alias{interp.cdf}
+\alias{interp.axis}
 \title{Internal spsurvey Functions}
 \description{
   These functions are internal spsurvey functions.
@@ -100,80 +104,67 @@ linSampleIRS(fileNamePrefix, lenCumSumVec, sampPosVec, dsgnIDVec, dsgnLenVec,
 dframe.check(sites, design, subpop, data.cat, data.cont,
    design.names)
 input.check(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
-  stratum.ind, stratum, stratum.levels, nstrata, cluster.ind,
-  cluster, cluster.levels, ncluster, N.cluster, wgt1, xcoord1,
-  ycoord1, popsize, stage1size, pcfactor.ind, support,
-  swgt.ind, swgt, swgt1, unitsize, vartype, conf, cdfval=NULL,
-  pctval=NULL, subpop=NULL)
+   stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster,
+   cluster.levels, ncluster, wgt1, xcoord1, ycoord1, popsize, pcfactor.ind,
+   pcfsize, N.cluster, stage1size, support, swgt.ind, swgt, swgt1, vartype,
+   conf, cdfval=NULL, pctval=NULL, subpop=NULL)
 vecprint(x, n.char=78)
 uniqueID(siteID)
-catvar.prop(z, wgt, x, y, prop, stratum.ind, stratum.level,
-  cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize,
-  pcfactor.ind, stage1size, support, vartype, warn.ind,
-  warn.df, warn.vec)
-catvar.size(z, wgt, x, y, size, stratum.ind, stratum.level,
-  cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize,
-  pcfactor.ind, stage1size, support, vartype, warn.ind,
-  warn.df, warn.vec)
+catvar.prop(z, wgt, x, y, prop, stratum.ind, stratum.level, cluster.ind,
+  cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support,
+  vartype, warn.ind, warn.df, warn.vec)
+catvar.size(z, wgt, x, y, size, stratum.ind, stratum.level, cluster.ind,
+  cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support,
+  vartype, warn.ind, warn.df, warn.vec)
 cdf.nresp(z, val)
 cdf.prop(z, wgt, val, cluster.ind, cluster, wgt1)
 cdf.total(z, wgt, val, cluster.ind, cluster, wgt1, popsize)
-cdf.size.prop(z, wgt, swgt, val, cluster.ind, cluster,
-  wgt1, swgt1)
-cdf.size.total(z, wgt, swgt, val, cluster.ind, cluster, 
-  wgt1, swgt1, unitsize)
-cdfvar.prop(z, wgt, x, y, val, cdfest, stratum.ind,
-  stratum.level, cluster.ind, cluster, N.cluster, wgt1, x1,
-  y1, popsize, pcfactor.ind, stage1size, support, vartype,
-  warn.ind, warn.df, warn.vec)
-cdfvar.total(z, wgt, x, y, val, cdfest, stratum.ind,
-  stratum.level, cluster.ind, cluster, N.cluster, wgt1, x1,
-  y1, popsize, pcfactor.ind, stage1size, support, vartype,
-  warn.ind, warn.df, warn.vec)
-cdfvar.size.prop(z, wgt, x, y, val, cdfest, stratum.ind,
-  stratum.level, cluster.ind, cluster, N.cluster, wgt1, x1,
-  y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1,
+cdf.size.prop(z, wgt, val, cluster.ind, cluster, wgt1, swgt, swgt1)
+cdf.size.total(z, wgt, val, cluster.ind, cluster, wgt1, popsize, swgt, swgt1)
+cdfvar.prop(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level, cluster.ind,
+  cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support,
   vartype, warn.ind, warn.df, warn.vec)
-cdfvar.size.total(z, wgt, x, y, val, cdfest, stratum.ind,
-  stratum.level, cluster.ind, cluster, N.cluster, wgt1, x1,
-  y1, popsize, pcfactor.ind, stage1size, support, swgt, swgt1,
-  unitsize, vartype, warn.ind, warn.df, warn.vec)
-cdfvar.test (sampl, bounds, vartype)
+cdfvar.total(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level, cluster.ind,
+  cluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster, stage1size,
+  support, vartype, warn.ind, warn.df, warn.vec)
+cdfvar.size.prop(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level,
+  cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster,
+  stage1size, support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
+cdfvar.size.total(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level,
+  cluster.ind, cluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster,
+  stage1size, support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
 simex(z, val, sigma, var.sigma, cluster.ind, cluster)
 dcdf.prop(g, wgt, cluster.ind, cluster, wgt1)
 dcdf.total(g, wgt, cluster.ind, cluster, wgt1, popsize)
-dcdf.size.prop(g, wgt, swgt, cluster.ind, cluster, wgt1,
-  swgt1)
-dcdf.size.total(g, wgt, swgt, cluster.ind, cluster, wgt1,
-  swgt1, unitsize)
-dcdfvar.prop(g, dg, var.sigma, wgt, x, y, cdfest,
-   stratum.ind, stratum.level, cluster.ind, cluster,
-   N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size,
-   support, vartype, warn.ind, warn.df, warn.vec)
-dcdfvar.total(g, dg, var.sigma, wgt, x, y, cdfest,
-   stratum.ind, stratum.level, cluster.ind, cluster,
-   N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size,
-   support, vartype, warn.ind, warn.df, warn.vec)
-dcdfvar.size.prop(g, dg, var.sigma, wgt, x, y, cdfest,
-   stratum.ind, stratum.level, cluster.ind, cluster,
-   N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size,
-   support, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
-dcdfvar.size.total(g, dg, var.sigma, wgt, x, y, cdfest,
-   stratum.ind, stratum.level, cluster.ind, cluster,
-   N.cluster, wgt1, x1, y1, popsize, pcfactor.ind, stage1size,
-   support, swgt, swgt1, unitsize, vartype, warn.ind, warn.df,
-   warn.vec)
+dcdf.size.prop(g, wgt, cluster.ind, cluster, wgt1, swgt, swgt1)
+dcdf.size.total(g, wgt, cluster.ind, cluster, wgt1, popsize, swgt, swgt1)
+dcdfvar.prop(g, dg, var.sigma, wgt, x, y, cdfest, stratum.ind, stratum.level,
+  cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster,
+  stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+dcdfvar.total(g, dg, var.sigma, wgt, x, y, cdfest, stratum.ind, stratum.level,
+  cluster.ind, cluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster,
+  stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+dcdfvar.size.prop(g, dg, var.sigma, wgt, x, y, cdfest, stratum.ind,
+  stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize,
+  N.cluster, stage1size, support, swgt, swgt1, vartype, warn.ind, warn.df,
+  warn.vec)
+dcdfvar.size.total(g, dg, var.sigma, wgt, x, y, cdfest, stratum.ind,
+  stratum.level, cluster.ind, cluster, wgt1, x1, y1, popsize, pcfactor.ind,
+  pcfsize, N.cluster, stage1size, support, swgt, swgt1, vartype, warn.ind,
+  warn.df, warn.vec)
 isotonic(y, minval, maxval)
 sorted(x)
-total.var (z, wgt, x, y, mean.est, var.est, sd.est,
-  stratum.ind, stratum.level, cluster.ind, cluster, N.cluster,
-  wgt1, x1, y1, popsize, pcfactor.ind, stage1size, support,
-  vartype, warn.ind, warn.df, warn.vec)
-relrisk.var(response, stressor, response.levels,
-   stressor.levels, wgt, x, y, stratum.ind, stratum.level,
-   cluster.ind, cluster, N.cluster, wgt1, x1, y1, popsize,
-   pcfactor.ind, stage1size, support, vartype, warn.ind,
-   warn.df, warn.vec)
+cdf.test.prop(z, wgt, bounds, cluster.ind, cluster, wgt1)
+cdf.test.size.prop(z, wgt, bounds, cluster.ind, cluster, wgt1, swgt, swgt1)
+cdfvar.test(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level, cluster.ind,
+  cluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize, N.cluster, stage1size,
+  support, swgt.ind, swgt, swgt1, vartype, warn.ind, warn.df, warn.vec)
+total.var (z, wgt, x, y, mean.est, var.est, sd.est, stratum.ind, stratum.level,
+  cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster,
+  stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+relrisk.var(response, stressor, response.levels, stressor.levels, wgt, x, y,
+  stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind,
+  pcfsize, N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
 localmean.weight(x, y, prb, nbh)
 localmean.var(z, weight.lst)
 localmean.cov(zmat, weight.lst)
@@ -181,6 +172,8 @@ localmean.df(weight.lst)
 wnas(data)
 input.format(x, n.digits, miss="NA")
 warnprnt(warn.df, m=1:nrow(warn.df))
+interp.cdf(pctval, cdfest.p, cdf.value)
+interp.axis(yl.lab, cdfest.l, cdfest.r)
 }
 \details{
   These functions are not to be called by the user.

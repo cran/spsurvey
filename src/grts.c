@@ -12,7 +12,7 @@
 **               polylines shapefile, and cWtFcn is called for a points
 **               shapefile.
 **  Created:     October 19, 2004
-**  Revised:     February 8, 2007
+**  Revised:     May 3, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -1237,8 +1237,8 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   double * tempYc = NULL;
   double * celWts = NULL;   /* cell weights */
   int celWtsSize = 0;       /* size of cell weights array */
-  double celMax = 3.0;      /* maximum cell value to see if it is changing */
-                            /* from one iteration to the next */
+  double celMax = 0.0;      /* maximum cell total inclusion probability */
+  int celMaxInd = 0;        /* indicator for whether celMax is unchanged */
 
   /* C versions of sent vars */
   int nsmp;
@@ -1427,11 +1427,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   }
   Rprintf( "Initial number of levels: %i \n", nlev );
   celWts[0] = 99999.0;
-  celMax = 100000.0;
   sint = 1.0;
   while ( any( celWts, celWtsSize, sint, 1 ) && 
-          ( maxWt(celWts, celWtsSize) != celMax ) &&
-          ( nlev <= maxlev ) ) {
+        ( celMaxInd < 2 ) &&
+        ( nlev <= maxlev ) ) {
     Rprintf( "Current number of levels: %i \n", nlev );
     celMax = maxWt( celWts, celWtsSize );
     nlv2 = pow( 2, nlev );
@@ -1560,6 +1559,14 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       return results;
     }
     sint = sum( celWts, celWtsSize ) / nsmp; 
+
+    /* as, necessary, increment celMaxInd */
+    if ( maxWt( celWts, celWtsSize ) == celMax ) {
+    	 ++celMaxInd;
+    	 if ( celMaxInd == 2 ) {
+    	   Rprintf( "Since the maximum value of total inclusion probability for the grid cells was \nnot changing, the algorithm for determining the number of levels for \nhierarchical randomization was terminated.\n" );
+      }
+    }
 
     /* determine the increment for nlev */
     inc = 1;

@@ -13,10 +13,11 @@
 }
 \usage{
 cdf.decon(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL, stratum=NULL,
-   cluster=NULL, N.cluster=NULL, wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL,
-   stage1size=NULL, support=NULL, swgt=NULL, swgt1=NULL, unitsize=NULL,
-   vartype="Local", conf=95, cdfval=NULL, pctval=c(5,10,25,50,75,90,95),
-   check.ind=TRUE, warn.ind=NULL, warn.df=NULL, warn.vec=NULL)
+   cluster=NULL, wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL, popcorrect=FALSE,
+   pcfsize=NULL, N.cluster=NULL, stage1size=NULL, support=NULL,
+   sizeweight=FALSE, swgt=NULL, swgt1=NULL, vartype="Local", conf=95,
+   cdfval=NULL, pctval=c(5,10,25,50,75,90,95), check.ind=TRUE, warn.ind=NULL,
+   warn.df=NULL, warn.vec=NULL)
 }
 \arguments{
   \item{z}{the response value for each site.}
@@ -35,46 +36,54 @@ cdf.decon(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL, stratum=NULL,
   \item{stratum}{the stratum for each site.  The default is NULL.}
   \item{cluster}{the stage one sampling unit (primary sampling unit or cluster) 
     code for each site.  The default is NULL.}
-  \item{N.cluster}{the number of stage one sampling units in the resource, which 
-    is required for calculation of finite and continuous population 
-    correction factors for a two-stage sample.  For a stratified sample 
-    this variable must be a vector containing a value for each stratum and
-    must have the names attribute set to identify the stratum codes.  The
-    default is NULL.}
   \item{wgt1}{the final adjusted stage one weight for each site.  The default
     is NULL.}
   \item{x1}{the stage one x-coordinate for location for each site.  The default
     is NULL.}
   \item{y1}{the stage one y-coordinate for location for each site.  The default
     is NULL.}
-  \item{popsize}{the known size of the resource - the total number of sampling 
-    units of a finite resource or the measure of an extensive resource,
-    which is required for calculation of finite and continuous population 
-    correction factors for a single-stage sample.  This variable is also 
-    used to adjust estimators for the known size of a resource.  For a
-    stratified sample this variable must be a vector containing a value 
-    for each stratum and must have the names attribute set to identify the
-    stratum codes.  The default is NULL.}
-  \item{stage1size}{the known size of the stage one sampling units of a two-
-    stage sample, which is required for calculation of finite and  
-    continuous population correction factors for a two-stage sample and 
-    must have the names attribute set to identify the stage one sampling 
-    unit codes.  For a stratified sample, the names attribute must be set
-    to identify both stratum codes and stage one sampling unit codes using
-    a convention where the two codes are separated by the \# symbol, e.g.,
-    "Stratum 1\#Cluster 1".  The default is NULL.}
-  \item{support}{the support value for each site - the value one (1) for a 
-    site from a finite resource or the measure of the sampling unit  
-    associated with a site from an extensive resource, which is required  
-    for calculation of finite and continuous population correction  
-    factors.  The default is NULL.}
+  \item{popsize}{known size of the resource, which is used to perform ratio
+    adjustment to estimators expressed using measurement units for the
+    resource.  For a finite resource, this argument is either the total number
+    of sampling units or the known sum of size-weights.  For an extensive
+    resource, this argument is the measure of the resource, i.e., either known
+    total length for a linear resource or known total area for an areal
+    resource.  For a stratified sample this variable must be a vector
+    containing a value for each stratum and must have the names attribute set
+    to identify the stratum codes.  The default is NULL.}
+  \item{popcorrect}{a logical value that indicates whether finite or continuous 
+    population correction factors should be employed during variance 
+    estimation, where TRUE = use the correction factors and FALSE = do not 
+    use the correction factors.  The default is FALSE.}
+  \item{pcfsize}{size of the resource, which is required for calculation of
+    finite and continuous population correction factors for a single-stage
+    sample.  For a stratified sample this argument must be a vector containing a
+    value for each stratum and must have the names attribute set to identify the
+    stratum codes.  The default is NULLL.}
+  \item{N.cluster}{the number of stage one sampling units in the resource, which 
+    is required for calculation of finite and continuous population 
+    correction factors for a two-stage sample.  For a stratified sample 
+    this variable must be a vector containing a value for each stratum and
+    must have the names attribute set to identify the stratum codes.  The
+    default is NULL.}
+  \item{stage1size}{size of the stage one sampling units of a two-stage sample,
+    which is required for calculation of finite and continuous population
+    correction factors for a two-stage sample and must have the names
+    attribute set to identify the stage one sampling unit codes.  For a
+    stratified sample, the names attribute must be set to identify both
+    stratum codes and stage one sampling unit codes using a convention where
+    the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
+    The default is NULL.}
+  \item{support}{the support value for each site - the value one (1) for a site
+    from a finite resource or the measure of the sampling unit associated with
+    a site from an extensive resource, which is required for calculation of
+    finite and continuous population correction factors.  The default is NULL.}
+  \item{sizeweight}{a logical value that indicates whether size-weights should 
+    be used in the analysis, where TRUE = use the size-weights and FALSE = 
+    do not use the size-weights.  The default is FALSE.}
   \item{swgt}{the size-weight for each site, which is the stage two size-weight 
     for a two-stage sample.  The default is NULL.}
   \item{swgt1}{the stage one size-weight for each site.  The default is NULL.}
-  \item{unitsize}{the known sum of the size-weights of the resource, which for a 
-    stratified sample must be a vector containing a value for each stratum 
-    and must have the names attribute set to identify the stratum codes.  
-    The default is NULL.}
   \item{vartype}{the choice of variance estimator, where "Local" = local mean
     estimator and "SRS" = SRS estimator.  The default is "Local".}
   \item{conf}{the confidence level.  The default is 95\%.}

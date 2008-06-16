@@ -8,7 +8,7 @@ irs <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Purpose: Select an independent random sample (IRS)
 # Programmer: Tom Kincaid
 # Date: November 28, 2005
-# Last Revised: February 15, 2007
+# Last Revised: May 13, 2008
 # Description:
 #   Select an independent random sample from a point, linear, or areal frame.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -53,13 +53,13 @@ irs <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #     is included in att.frame.  The default is "shapefile".
 #   in.shape = name (without any extension) of the input shapefile.  If
 #     src.frame equal "shapefile" and in.shape equals NULL, then the shapefile
-#     or shapefiles in the currrent directory are used.  The default is NULL.
+#     or shapefiles in the working directory are used.  The default is NULL.
 #   sp.object = name of the sp package object when src.frame equals "sp.object".
 #     The default is NULL.
 #   att.frame = a data frame composed of attributes associated with elements in
 #     the frame, which must contain the columns used for stratum and mdcaty (if
 #     required).  If src.frame equals "shapefile" and att.frame equals NULL,
-#     then att.frame is created from the dbf file(s) in the current directory.
+#     then att.frame is created from the dbf file(s) in the working directory.
 #     If src.frame equals "att.frame", then att.frame includes columns that
 #     contain x-coordinates and y-coordinates for each element in the frame.
 #     The default is NULL.
@@ -265,18 +265,6 @@ if(type.frame == "finite") {
       ycoord <- "y"
       att.frame$x <- temp$x
       att.frame$y <- temp$y
- 
-# If src.frame equals "att.frame", ensure that att.frame includes columns
-# containing x-coordinates and y-coordinates
-
-   } else if(src.frame == "att.frame") {
-      if(is.null(xcoord))
-         xcoord <- "x"
-      if(is.null(ycoord))
-         ycoord <- "y"
-      temp <- match(c(xcoord, ycoord), names(att.frame), nomatch=0)
-      if(any(temp == 0))
-         stop(paste("\nThe names for the columns containing the x-coordinates and y-coordinates,\n\"", xcoord, "\" and \"", ycoord, "\", do not occur among the column names in att.frame.\n", sep=""))
    }
 
 # Begin the loop for strata
@@ -486,13 +474,13 @@ if(type.frame == "finite") {
    SiteBegin <- SiteBegin
 
 # Ensure that att.frame includes a variable named length_mdm that provides the
-# length for each record of the shapefile(s) in the current directory and create
+# length for each record of the shapefile(s) in the working directory and create
 # the variable when necessary
 
    if(is.null(att.frame$length_mdm)) {
       temp <- .Call("getRecordShapeSizes", in.shape)
       if(length(temp) != nrow(att.frame))
-         stop("\nThe number of rows in the attribute data frame does not equal the number of \nrecords in the shapefile(s) in the current directory.")
+         stop("\nThe number of rows in the attribute data frame does not equal the number of \nrecords in the shapefile(s) in the working directory.")
       att.frame$length_mdm <- temp
    }
    elmsize <- "length_mdm"
@@ -665,13 +653,13 @@ if(type.frame == "finite") {
    SiteBegin <- SiteBegin
 
 # Ensure that att.frame includes a variable named area_mdm that provides the
-# area for each record of the shapefile(s) in the current directory and create
+# area for each record of the shapefile(s) in the working directory and create
 # the variable when necessary
 
    if(is.null(att.frame$area_mdm)) {
       temp <- .Call("getRecordShapeSizes", in.shape)
       if(length(temp) != nrow(att.frame))
-         stop("\nThe number of rows in the attribute data frame does not equal the number of \nrecords in the shapefile(s) in the current directory.")
+         stop("\nThe number of rows in the attribute data frame does not equal the number of \nrecords in the shapefile(s) in the working directory.")
       att.frame$area_mdm <- temp
    }
    elmsize <- "area_mdm"
@@ -949,8 +937,13 @@ if(shapefile == TRUE) {
    temp <- sapply(sites, is.factor)
    if(any(temp)) {
       sites.tmp <- sites
-      for(i in seq(ncol(sites.tmp))[temp])
+      for(i in seq(ncol(sites.tmp))[temp]) {
          sites.tmp[,i] <- as.character(sites.tmp[,i])
+         temp <- sites.tmp[,i] == "" & !is.na(sites.tmp[,i])
+         if(any(temp)) {
+            sites.tmp[temp,i] <- " "
+         }
+      }
       .Call("writeShapeFilePoint", sites.tmp$xcoord, sites.tmp$ycoord,
          prjfilename, names(sites.tmp), sites.tmp, out.shape)
    } else {

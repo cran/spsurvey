@@ -9,7 +9,7 @@
 **               pointInPolygonFile().
 **  Programmers: Christian Platt, Tom Kincaid
 **  Created:     September 7, 2004
-**  Revised:     May 10, 2006
+**  Revised:     November 9, 2007
 ******************************************************************************/
 
 #include <stdio.h>
@@ -716,10 +716,15 @@ double polygonArea( Point * polygon, int size ) {
 }
 
 
-Point intersect( Cell * cell, Point * p1, Point * p2, int side, Point * z ) {
+Point intersect( Cell * cell, Point * p1, Point * p2, int side ) {
 
   Point newPoint;
+  Point * z;
   double slope = 0.0;
+
+   newPoint.X = 0.0;
+   newPoint.Y = 0.0;
+   z = &newPoint;
 
   if ( p2->X != p1->X ) {
     slope = (p2->Y - p1->Y) / ( p2->X - p1->X );
@@ -752,6 +757,7 @@ Point intersect( Cell * cell, Point * p1, Point * p2, int side, Point * z ) {
                break;
 
   } 
+
 
   return newPoint;
 }
@@ -817,7 +823,7 @@ double clipPolygonArea( Cell * cell, Point * points, int start, int end ) {
   
       if ( (inside(cell, &(clippedPoly[i]), side) == 0)  &&
            (inside(cell, &(clippedPoly[i+1]), side) == 1 ) ) {
-        intersect( cell, &(clippedPoly[i]), &(clippedPoly[i+1]), side, &z);
+        z = intersect( cell, &(clippedPoly[i]), &(clippedPoly[i+1]), side );
         tempPoly[++cou].X = z.X;
         tempPoly[cou].Y = z.Y;
         tempPoly[++cou].X = clippedPoly[i+1].X;
@@ -828,7 +834,7 @@ double clipPolygonArea( Cell * cell, Point * points, int start, int end ) {
         tempPoly[cou].Y = clippedPoly[i+1].Y;
       } else if ((inside(cell, &(clippedPoly[i]), side) == 1 ) &&
                  (inside(cell, &(clippedPoly[i+1]), side)  == 0 ) ) {
-        intersect( cell, &(clippedPoly[i]), &(clippedPoly[i+1]), side, &z );
+        z = intersect( cell, &(clippedPoly[i]), &(clippedPoly[i+1]), side );
         tempPoly[++cou].X = z.X;
         tempPoly[cou].Y = z.Y;
       }

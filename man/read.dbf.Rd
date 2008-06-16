@@ -11,7 +11,7 @@ read.dbf(filename=NULL)
 \arguments{
   \item{filename}{name of the dbf file without any extension.  If filename 
     equals a dbf file name, then that dbf file is read.  If filename 
-    equals NULL, then all of the dbf files in the current directory are 
+    equals NULL, then all of the dbf files in the working directory are 
     read.  The default is NULL.}
 }
 \details{
@@ -20,7 +20,7 @@ read.dbf(filename=NULL)
 }
 \value{
   A data frame composed of either the contents of the single dbf file, when
-  filename is provided, or the contents of the dbf file(s) in the current
+  filename is provided, or the contents of the dbf file(s) in the working
   directory, when filename is NULL.  The data frame is assigned class
   "SurveyFrame".
 }

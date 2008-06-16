@@ -5,7 +5,7 @@ read.shape <- function(filename=NULL) {
 # Purpose: Read an ESRI shapefile
 # Programmer: Tom Kincaid
 # Date: March 1, 2005
-# Last Revised: May 24, 2006
+# Last Revised: March 30, 2007
 # Description:
 #   This function reads either a single shapefile or multiple shapefiles.  For 
 #   multiple shapefiles, all of the shapefiles must be the same type, i.e., 
@@ -13,7 +13,7 @@ read.shape <- function(filename=NULL) {
 # Arguments:
 #   filename = name of the shapefile without any extension.  If filename equals
 #     a shapefile name, then that shapefile is read.  If filename equals NULL,
-#     then all of the shapefiles in the current directory are read.  The default
+#     then all of the shapefiles in the working directory are read.  The default
 #     is NULL.
 # Results:
 #   An sp package object containing information in the shapefile.  The object is
@@ -42,7 +42,7 @@ read.shape <- function(filename=NULL) {
 
    sfile <- .Call("readShapeFile", filename)
    if(is.null(sfile[[1]]))
-      stop("\nNo shapefile(s) were found in the current directory")
+      stop("\nAn error occurred while reading the shapefile(s) in the working directory.")
 
 # Convert character vectors to factors in the attributes data frame
 
