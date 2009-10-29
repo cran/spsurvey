@@ -1441,7 +1441,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     if ( tempXc ) {
       free( tempXc );
     }
-    if ( (tempXc = (double *) malloc( sizeof(double) * nlv2+1 )) == NULL ) {
+    if ( (tempXc = (double *) malloc( sizeof(double) * (nlv2+1) )) == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -1453,7 +1453,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     if ( tempYc ) {
       free( tempYc );
     }
-    if ( (tempYc = (double *) malloc( sizeof(double) * nlv2+1 )) == NULL ) {
+    if ( (tempYc = (double *) malloc( sizeof(double) * (nlv2+1) )) == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);

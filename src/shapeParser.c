@@ -4448,7 +4448,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
     }
 
     free( fileName );
-    fclose( fptr );
+//    fclose( fptr );
   }
 
   /* close the current directory */
