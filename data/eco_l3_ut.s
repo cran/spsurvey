@@ -3,7 +3,7 @@
 # Purpose: Example GRTS Survey Designs for an Area Resource
 # Programmers: Tony Olsen, Tom Kincaid
 # Date: April 29, 2005
-# Last Revised: May 9, 2006
+# Last Revised: July 17, 2008
 # Description: This demonstration provides example GRTS survey designs for an
 #   area resource - Omernik level 3 ecoregions within Utah.
 ################################################################################
@@ -78,7 +78,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Equalsites@data@att)))
+print(head(Equalsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 
@@ -150,7 +150,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Unequalsites@data@att)))
+print(head(Unequalsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 
@@ -232,7 +232,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Stratsites@data@att)))
+print(head(Stratsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 
@@ -309,7 +309,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Panelsites@data@att)))
+print(head(Panelsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 

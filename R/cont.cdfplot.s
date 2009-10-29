@@ -9,7 +9,7 @@ cont.cdfplot <- function(pdffile="cdf2x2.pdf", cdfest, units.cdf="Percent",
 # Programmers: Tony Olsen
 #              Tom Kincaid
 # Date: March 26, 2007
-# Last Revised: November 1, 2007
+# Last Revised: March 6, 2009
 # Description:
 #   This function creates CDF plots.  Input data for the plots is provided by a
 #   data frame utilizing the same structure as the data frame named "CDF" that
@@ -120,8 +120,9 @@ for(itype in 1:length(typenames)) {
 	    tstind <- tstsub & cdfest$Indicator == indnames[kin]
          cdf.plot(cdfest[tstind,], units.cdf=units.cdf, type.cdf=ind.type[kin],
             logx=logx[kin], xlbl=xlbl[indnames[kin]], ylbl=ylbl, ylbl.r=ylbl.r, 
-            figlab=paste(subnames[jsub], ": ", indnames[kin], sep=""),
-            legloc="BR", confcut=confcut, conflev=conflev)
+            figlab=paste(typenames[itype], " - ", subnames[jsub], ": ",
+            indnames[kin], sep=""), legloc="BR", confcut=confcut,
+            conflev=conflev)
       }
    }
 }

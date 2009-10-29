@@ -4,7 +4,7 @@
 **               functions in the DLL of the spsurvey library.
 **  Programmer:  Tom Kincaid
 **  Created:     May 4, 2006
-**  Revised:     June 6, 2006
+**  Revised:     September 24, 2009
 ******************************************************************************/
 
 #include <R.h>
@@ -24,6 +24,7 @@ static const R_CallMethodDef callMethods[] = {
    {"readShapeFile", (DL_FUNC) &readShapeFile, 1},
    {"readShapeFilePts", (DL_FUNC) &readShapeFilePts, 1},
    {"getRecordShapeSizes", (DL_FUNC) &getRecordShapeSizes, 1},
+   {"writeDbfFile", (DL_FUNC) &writeDbfFile, 3},
    {"writeShapeFilePoint", (DL_FUNC) &writeShapeFilePoint, 6},
    {"writeShapeFilePolygon", (DL_FUNC) &writeShapeFilePolygon, 12},
    {"pointInPolygonObj", (DL_FUNC) &pointInPolygonObj, 4},

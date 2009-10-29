@@ -45,8 +45,7 @@ framesum <- function(att.frame, design, type.frame="finite", stratum=NULL,
 #     "linear", or "area".  The default is "finite".
 #   stratum = name of the column from att.frame that identifies stratum
 #     membership for each element in the frame.  If stratum equals NULL, the
-#     design is unstratified and a column named stratum with all its elements
-#     equal to "None" is added to att.frame.  The default is NULL.
+#     design is unstratified.  The default is NULL.
 #   mdcaty = name of the column from att.frame that identifies the unequal
 #     probability category for each element in the frame.  The default is NULL.
 #   auxvar = a vector containing the names of columns from att.frame that

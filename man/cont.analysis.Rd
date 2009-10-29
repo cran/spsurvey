@@ -132,7 +132,7 @@ cont.analysis(sites=NULL, subpop=NULL, design=NULL, data.cont=NULL, sigma=NULL,
     estimator and "SRS" = SRS estimator.  The default is "Local".}
   \item{conf}{the confidence level.  The default is 95\%.}
   \item{pctval}{the set of values at which percentiles are estimated.  The
-    default set is: {5, 10, 25, 50, 75, 90, 95}.}
+    default set is: \{5, 10, 25, 50, 75, 90, 95\}.}
   \item{spsurvey.obj}{A list of class spsurvey.analysis that was produced by the
     function spsurvey.analysis.  Depending on input to that function,
     some elements of the list may be NULL.  The default is NULL.}

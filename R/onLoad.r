@@ -1,3 +1,3 @@
 .onLoad <- function(lib, pkg) {
-   cat("\nVersion 2.0 of the spsurvey library was loaded successfully.\n\n")
+   cat("\nVersion 2.1 of the spsurvey package was loaded successfully.\n\n")
 }

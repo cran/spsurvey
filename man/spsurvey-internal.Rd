@@ -13,6 +13,7 @@
 \alias{readShapeFile}
 \alias{readShapeFilePts}
 \alias{getRecordShapeSizes}
+\alias{writeDbfFile}
 \alias{writeShapeFilePoint}
 \alias{writeShapeFilePolygon}
 \alias{pointInPolygonObj}
@@ -102,7 +103,7 @@ linSampleIRS(fileNamePrefix, lenCumSumVec, sampPosVec, dsgnIDVec, dsgnLenVec,
    dsgnMdmVec)
 
 dframe.check(sites, design, subpop, data.cat, data.cont,
-   design.names)
+   data.rr, design.names)
 input.check(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
    stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster,
    cluster.levels, ncluster, wgt1, xcoord1, ycoord1, popsize, pcfactor.ind,

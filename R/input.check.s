@@ -8,7 +8,7 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 # Function: input.check
 # Programmer: Tom Kincaid
 # Date: September 25, 2003
-# Last Revised: June 16, 2008
+# Last Revised: November 5, 2008
 # Description:
 #   This function checks input values for errors, consistency, and compatibility
 #   with analytical functions.
@@ -37,7 +37,11 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 #      pcfactor.ind = a logical value that indicates whether the population
 #         correction factor is used during variance estimation, where TRUE = use
 #         the population correction factor and FALSE = do not use the factor.
-#      pcfsize = 
+#      pcfsize = size of the resource, which is required for calculation of
+#         finite and continuous population correction factors for a single-stage
+#         sample.  For a stratified sample this argument must be a vector
+#         containing a value for each stratum and must have the names attribute
+#         set to identify the stratum codes.
 #      N.cluster = the number of stage one sampling units in the resource.
 #      stage1size = the known size of the stage one sampling units.
 #      support = the support for each sampling unit.
@@ -294,32 +298,18 @@ if(pcfactor.ind) {
       } else {
          if(is.null(pcfsize))
             stop("\nThe known size of the resource must be provided in order to calculate \nfinite and continuous population correction factors for variance estimation in \na single-stage sample.")
-         if(is.list(pcfsize)) {
-            for(ipop in 1:npop) {
-               if(!is.null(pcfsize[[ipop]]) && is.list(pcfsize[[ipop]])) {
-                  subpopnames <- levels(factor(subpop[,ipop+1]))
-                  for(isubpop in 1:length(subpopnames)) {
-                     subpop.ind <- subpop[,ipop+1] == subpopnames[isubpop]
-                     temp <- tapply(support[subpop.ind], stratum[subpop.ind], sum) > pcfsize[[ipop]][[isubpop]]
-                     if(any(temp)) {
-                        temp.str <- vecprint(stratum.levels[temp])
-                        stop(paste("\nThe sum of support values exceeded the known size of the resource for subpopulation\n", subpopnames[isubpop], " of population ", popnames[ipop], "\nfor the following strata:\n", temp.str, sep=""))
-                     }
-                  }
-               } else if(!is.null(pcfsize[[ipop]])) {
-                  temp <- tapply(support, stratum, sum) > pcfsize[[ipop]]
-                  if(any(temp)) {
-                     temp.str <- vecprint(stratum.levels[temp])
-                     stop(paste("\nThe sum of support values exceeded the known size of the resource for population\n", popnames[ipop], " for the following strata:\n", temp.str, sep=""))
-                  }
-               }
-            }
-         } else {
-            temp <- tapply(support, stratum, sum) > pcfsize
-            if(any(temp)) {
-               temp.str <- vecprint(stratum.levels[temp])
-               stop(paste("\nThe sum of support values exceeded the known size of the resource for the \nfollowing strata:\n", temp.str, sep=""))
-            }
+         if(is.null(names(pcfsize)))
+            stop("\nThe vector of known size of the resource for each stratum must be named.")
+         temp <- match(stratum.levels, names(pcfsize))
+         if(any(is.na(temp)))
+            stop("\nThe names for the vector of known size of the resource for each stratum must \nmatch the stratum codes.")
+         pcfsize <- pcfsize[temp]
+         if(any(pcfsize <= 0))
+            stop("\nThe known size of the resource must be positive for each stratum.")
+         temp <- tapply(support, stratum, sum) > pcfsize
+         if(any(temp)) {
+            temp.str <- vecprint(stratum.levels[temp])
+            stop(paste("\nThe sum of support values exceeded the known size of the resource for the \nfollowing strata:\n", temp.str, sep=""))
          }
       }
    } else {
@@ -351,24 +341,12 @@ if(pcfactor.ind) {
       } else {
          if(is.null(pcfsize))
             stop("\nThe known size of the resource must be provided in order to calculate \nfinite and continuous population correction factors for variance estimation in \na single-stage sample.")
-         if(is.list(pcfsize)) {
-            for(ipop in 1:npop) {
-               if(is.list(pcfsize[[ipop]])) {
-                  subpopnames <- levels(factor(subpop[,ipop+1]))
-                  for(isubpop in 1:length(subpopnames)) {
-                     subpop.ind <- subpop[,ipop+1] == subpopnames[isubpop]
-                     if(sum(support[subpop.ind]) > pcfsize[[ipop]][[isubpop]])
-                        stop(paste("\nThe sum of support values exceeded the known size of the resource for subpopulation \n", subpopnames[isubpop], " of population ", popnames[ipop], ".", sep=""))
-                  }
-               } else {
-                  if(sum(support) > pcfsize[[ipop]])
-                     stop(paste("\nThe sum of support values exceeded the known size of the resource for population\n", popnames[ipop], ".", sep=""))
-               }
-            }
-         } else {
-            if(sum(support) > pcfsize)
-               stop("\nThe sum of support values exceeded the known size of the resource.")
-         }
+         if(length(pcfsize) != 1)
+            stop("\nOnly a single value should be provided for the known size of the resource.")
+         if(pcfsize <= 0)
+            stop("\nThe known size of the resource must be positive.")
+         if(sum(support) > pcfsize)
+            stop("\nThe sum of support values exceeded the known size of the resource.")
       }
    }
 }

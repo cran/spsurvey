@@ -169,8 +169,7 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
   second order corrected (Satterthwaite corrected) test statistics.  Both
   standard versions of the three statistics, which are distributed as
   Chi-squared random variables, and alternate version of the statistics, which
-  are distributed as F random variables, are available.  The default test
-  statistic is the F distribution version of the Wald statistic.  The user
+  are distributed as F random variables, are available.  The user
   supplies the set of upper bounds for defining the classes for the  CDFs.  The
   Horvitz-Thompson ratio estimator, i.e., the ratio of two Horvitz-Thompson
   estimators, is used to calculate estimates of the class proportions for the

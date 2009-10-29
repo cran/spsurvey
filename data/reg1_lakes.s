@@ -3,7 +3,7 @@
 # Purpose: Example GRTS Survey Designs for a Finite Resource
 # Programmers: Tony Olsen, Tom Kincaid
 # Date: April 29, 2005
-# Last Revised: May 9, 2006
+# Last Revised: July 17, 2008
 # Description: This demonstration provides example GRTS survey designs for a
 #   finite resource: New England lakes.  Lake locations are given by their
 #   centroid.  Data is originally from the National Hydrology Database.
@@ -119,7 +119,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Equalsites@data@att)))
+print(head(Equalsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 
@@ -186,7 +186,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Stratsites@data@att)))
+print(head(Stratsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 
@@ -239,7 +239,7 @@ Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
 dsgntime <- proc.time()[3]
 set.seed(1524726) # Use set seed so that the same sample always is selected
 cat("The call to function 'grts' follows:\n
-Unequalsites <- grts(design=Areadsgn,
+Unequalsites <- grts(design=Unequaldsgn,
                    DesignID='UNEQUAL',
                    type.frame='finite',
                    src.frame='shapefile',
@@ -249,7 +249,7 @@ Unequalsites <- grts(design=Areadsgn,
                    shapefile=FALSE)\n\n")
 invisible(readline(prompt="Press Enter to continue."))
 cat("\nThe following information is printed by 'grts' while it is executing:\n")
-Unequalsites <- grts(design=Areadsgn,
+Unequalsites <- grts(design=Unequaldsgn,
                    DesignID='UNEQUAL',
                    type.frame='finite',
                    src.frame='shapefile',
@@ -264,7 +264,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Unequalsites@data@att)))
+print(head(Unequalsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 
@@ -344,7 +344,7 @@ invisible(readline(prompt="Press Enter to continue."))
 # Print the initial six lines of the survey design
 
 cat("\nThe initial six lines of the survey design follow:\n\n")
-print(head(as.data.frame(Panelsites@data@att)))
+print(head(Panelsites@data))
 cat("\n")
 invisible(readline(prompt="Press Enter to continue."))
 

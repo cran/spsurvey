@@ -5,7 +5,7 @@ dsgnsum <- function(sp.obj, auxvar=NULL) {
 # Purpose: Summarize the sites selected for a survey design
 # Programmers: Tony Olsen, Tom Kincaid
 # Date: April 26, 2005
-# Last Revised: October 5, 2006
+# Last Revised: October 15, 2008
 # Description:
 #   This function summarizes the sites selected for a survey design by producing
 #   contingency tables containing the cross-tabluation of number of sites for
@@ -49,6 +49,13 @@ dsgnsum <- function(sp.obj, auxvar=NULL) {
    sites <- sp.obj@data
    design <- attributes(sp.obj@data)$design
 
+# Determine whether multiple multidensity categories are present, whether the
+# design is stratified, and whether multiple panels are present
+
+   mdcaty.ind <- ifelse(length(unique(sites$mdcaty)) > 1, TRUE, FALSE)
+   stratum.ind <- ifelse(length(unique(sites$stratum)) > 1, TRUE, FALSE)
+   panel.ind <- ifelse(length(unique(sites$panel)) > 1, TRUE, FALSE)
+
 # Determine whether the type of random selection is "Continuous" for any stratum
 
    seltype.ind <- FALSE
@@ -57,23 +64,64 @@ dsgnsum <- function(sp.obj, auxvar=NULL) {
          seltype.ind <- TRUE
    }
 
+# AS nesessary, adjust the indicator variable for presence of multidensity
+# categories to account for any strata with "Continuous" type of random
+# selection
+
+   mdcaty.ind <- mdcaty.ind && !seltype.ind
+
 # Produce tables for the design variables
 
-   if(!seltype.ind) { 
-      comb1 <- addmargins(table(sites$mdcaty, sites$stratum, dnn=c("mdcaty",
-         "stratum")))
-      cat("Design Summary: Number of Sites Classified by mdcaty (Multidensity Category) \nand stratum\n\n")
-      print(comb1)
-   }
-   comb2 <- addmargins(table(sites$panel, sites$stratum, dnn=c("panel",
-      "stratum")))
-   cat("\n\nDesign Summary: Number of Sites Classified by panel, and stratum\n\n")
-   print(comb2)
-   if(!seltype.ind) {
-      comb3 <- addmargins(table(sites$mdcaty, sites$panel, sites$stratum,
-         dnn=c("mdcaty", "panel", "stratum")))
-      cat("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category) \npanel, and stratum\n\n")
-      print(comb3)
+   if(mdcaty.ind) {
+      if(panel.ind) {
+         if(stratum.ind) {
+            comb1 <- addmargins(table(sites$mdcaty, sites$stratum,
+               dnn=c("mdcaty", "stratum")))
+            cat("Design Summary: Number of Sites Classified by mdcaty (Multidensity Category) \nand stratum\n\n")
+            print(comb1)
+            comb2 <- addmargins(table(sites$panel, sites$stratum, dnn=c("panel",
+               "stratum")))
+            cat("\n\nDesign Summary: Number of Sites Classified by panel and stratum\n\n")
+            print(comb2)
+            comb3 <- addmargins(table(sites$mdcaty, sites$panel, sites$stratum,
+               dnn=c("mdcaty", "panel", "stratum")))
+            cat("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category), \npanel, and stratum\n\n")
+            print(comb3)
+         } else {
+            comb3 <- addmargins(table(sites$mdcaty, sites$panel,
+               dnn=c("mdcaty", "panel")))
+            cat("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category) \n and panel\n\n")
+            print(comb3)
+         }
+      } else {
+         if(stratum.ind) {
+            comb1 <- addmargins(table(sites$mdcaty, sites$stratum,
+               dnn=c("mdcaty", "stratum")))
+            cat("Design Summary: Number of Sites Classified by mdcaty (Multidensity Category) \nand stratum\n\n")
+            print(comb1)
+         } else {
+            comb1 <- addmargins(table(sites$mdcaty, dnn=c("mdcaty")))
+            cat("Design Summary: Number of Sites Classified by mdcaty (Multidensity Category)\n\n")
+            print(comb1)
+         }
+      }
+   } else {
+      if(panel.ind) {
+         if(stratum.ind) {
+            comb2 <- addmargins(table(sites$panel, sites$stratum, dnn=c("panel",
+               "stratum")))
+            cat("\n\nDesign Summary: Number of Sites Classified by panel and stratum\n\n")
+            print(comb2)
+         } else {
+            comb2 <- addmargins(table(sites$panel, dnn=c("panel")))
+            cat("\n\nDesign Summary: Number of Sites Classified by panel\n\n")
+            print(comb2)
+         }
+      } else {
+         comb3 <- addmargins(table(sites$stratum, dnn=c("stratum")))
+         cat("\n\nDesign Summary: Number of Sites\n\n")
+         print(comb3)
+      }
    }
 
 # Produce tables for the auxiliary variables
@@ -108,13 +156,38 @@ dsgnsum <- function(sp.obj, auxvar=NULL) {
 
 # Create the output list
 
-   if(seltype.ind) { 
-      rslt <- list(DesignSum=list("panel by stratum"=comb2),
-         AuxVarSum=AuxVarSum)
+   if(mdcaty.ind) { 
+      if(panel.ind) {
+         if(stratum.ind) {
+            rslt <- list(DesignSum=list("mdcaty by stratum"=comb1,
+               "panel by stratum"=comb2, "mdcaty by panel by stratum"=comb3),
+                AuxVarSum=AuxVarSum)
+         } else {
+            rslt <- list(DesignSum=list("mdcaty by panel"=comb3),
+               AuxVarSum=AuxVarSum)
+         }
+      } else {
+         if(stratum.ind) {
+            rslt <- list(DesignSum=list("mdcaty by stratum"=comb1),
+               AuxVarSum=AuxVarSum)
+         } else {
+            rslt <- list(DesignSum=list("mdcaty"=comb1),
+               AuxVarSum=AuxVarSum)
+         }
+      }
    } else {
-      rslt <- list(DesignSum=list("mdcaty by stratum"=comb1,
-         "panel by stratum"=comb2, "mdcaty by panel by stratum"=comb3),
-          AuxVarSum=AuxVarSum)
+      if(panel.ind) {
+         if(stratum.ind) {
+            rslt <- list(DesignSum=list("panel by stratum"=comb2),
+               AuxVarSum=AuxVarSum)
+         } else {
+            rslt <- list(DesignSum=list("panel"=comb2),
+               AuxVarSum=AuxVarSum)
+         }
+      } else {
+         rslt <- list(DesignSum=list("stratum"=comb3),
+            AuxVarSum=AuxVarSum)
+      }
    }
 
 # Return the list

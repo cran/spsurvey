@@ -1,7 +1,7 @@
 \name{luck.ash}
 \alias{luck.ash}
 \docType{data}
-\title{Example Polygons Dataset}
+\title{Example Polylines Dataset}
 \description{
   This dataset is a list composed of two element, each of which is a matrix
   containing the x-coordinates and y-coordinates for a polyline.

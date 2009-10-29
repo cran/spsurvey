@@ -16,4 +16,4 @@ invisible(sourcefile <- paste(Sys.getenv("R_HOME"),
 
 # Source the file
 
-invisible(source(sourcefile))
+invisible(source(sourcefile, print.eval=TRUE))

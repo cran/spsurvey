@@ -11,47 +11,47 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
 # Purpose: Create an Object of Class spsurvey.analysis
 # Programmer: Tom Kincaid
 # Date: September 29, 2003
-# Last Revised: June 10, 2008
+# Last Revised: March 24, 2009
 # Description:
 #   This function creates an object of class spsurvey.analysis that contains all 
 #   of the information necessary to use the analysis functions in the 
 #   spsurvey package.
 # Arguments:
 #   sites = a data frame consisting of two variables: the first variable is site
-#     IDs, and the second variable is a logical vector indicating which sites to
-#     use in the analysis.  If psurvey.obj is not provided, then this argument
-#     is required.  The default is NULL.
+#     IDs and the second variable is a logical vector indicating which sites to
+#     use in the analysis.  If this data frame is not provided, then the data
+#     frame will be created, where (1) site IDs are obtained either from the
+#     design argument, the siteID argument, or both (when siteID is a formula);
+#     and (2) a variable named use.sites that contains the value TRUE for all
+#     sites is created.  The default is NULL.
 #   subpop = a data frame describing sets of populations and subpopulations for
-#     which estimates will be calculated.  The first variable is site IDs.  Each
-#     subsequent variable identifies a Type of population, where the variable
-#     name is used to identify Type.  A Type variable identifies each site with
-#     one of the subpopulations of that Type.  If psurvey.obj is not provided,
-#     then this argument is required.  The default is NULL.
-#   design = a data frame consisting of design variables.  If psurvey.obj is not
-#     provided, then this argument is required.  The default is NULL.  Variables
-#     should be named as follows:
+#     which estimates will be calculated.  The first variable is siteIDs and
+#     each subsequent variable identifies a Type of population, where the
+#     variable name is used to identify Type.  A Type variable identifies each
+#     site with one of the subpopulations of that Type.  If this data frame is
+#     not provided, then the data frame will be created, where (1) site IDs are
+#     obtained either from the design argument, the siteID argument, or both
+#     (when siteID is a formula); and (2) a single Type variable named all.sites
+#     that contains the value "All Sites" for all sites is created.  The default
+#     is NULL.
+#   design = a data frame consisting of design variables.  If variable names are
+#     provided as formulas in the corresponding arguments, then the formulas are
+#     interpreted using this data frame.  If this data frame is not provided,
+#     then the data frame will be created from inputs to the design variables in
+#     the argument list.  The default is NULL.  If variable names are not
+#     provided as formulas, then variables should be named as follows:
 #       siteID = site IDs
-#       wgt = final adjusted weights, which are either the weights for a single-
-#         stage sample or the stage two weights for a two-stage sample
-#       xcoord = x-coordinates for location, which are either the x-coordinates
-#         for a single-stage sample or the stage two x-coordinates for a two-
-#         stage sample
-#       ycoord = y-coordinates for location, which are either the y-coordinates
-#         for a single-stage sample or the stage two y-coordinates for a two-
-#         stage sample
-#       stratum = the stratum codes
-#       cluster = the stage one sampling unit (primary sampling unit or cluster)
-#         codes
+#       wgt = final adjusted weights
+#       xcoord = x-coordinates for location
+#       ycoord = y-coordinates for location
+#       stratum = stratum codes
+#       cluster = stage one sampling unit codes
 #       wgt1 = final adjusted stage one weights
-#       xcoord1 = the stage one x-coordinates for location
-#       ycoord1 = the stage one y-coordinates for location
-#       support = support values - the value one (1) for a site from a finite
-#         resource or the measure of the sampling unit associated with a site
-#         from an extensive resource, which is required for calculation of
-#         finite and continuous population correction factors.
-#       swgt = size-weights, which is the stage two size-weight for a two-stage
-#         sample.
-#       swgt1 = stage one size-weights.
+#       xcoord1 = stage one x-coordinates for location
+#       ycoord1 = stage one y-coordinates for location
+#       support = support values
+#       swgt = size-weights
+#       swgt1 = stage one size-weights
 #   data.cat = a data frame of categorical response variables.  The first
 #     variable is site IDs.  Subsequent variables are response variables.
 #     Missing data (NA) is allowed.  If psurvey.obj is not provided, then this
@@ -543,7 +543,7 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
 # Check the sites data frame, the design data frame, the subpop data frame, and
 # the data.cont data frame to assure valid contents
 
-   temp <- dframe.check(sites, design, subpop, data.cat, data.cont,
+   temp <- dframe.check(sites, design, subpop, data.cat, data.cont, NULL,
       design.names)
    sites <- temp$sites
    design <- temp$design

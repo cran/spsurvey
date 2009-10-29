@@ -59,12 +59,13 @@ grts(design, DesignID="Site", SiteBegin=1, type.frame="finite",
   \item{sp.object}{name of the sp package object when src.frame equals
     "sp.object".  The default is NULL.}
   \item{att.frame}{a data frame composed of attributes associated with elements
-    in the frame, which must contain the columns used for stratum and mdcaty (if 
+    in the frame, which must contain the columns used for stratum and mdcaty (if
     required).  If src.frame equals "shapefile" and att.frame equals NULL, then
     att.frame is created from the dbf file(s) in the working directory.  If
-    src.frame equals "att.frame", then att.frame includes columns that contain
-    x-coordinates and y-coordinates for each element in the frame.  The default
-    is NULL.}
+    src.frame equals "sp.object" and att.frame equals NULL, then att.frame is
+    created from the sp object.  If src.frame equals "att.frame", then att.frame
+    must include columns that contain x-coordinates and y-coordinates for each
+    element in the frame.  The default is NULL.}
   \item{id}{name of the column from att.frame that identifies the ID value for
     each element in the frame.  If id equals NULL, a column named "id" that
     contains values from one through the number of rows in att.frame is added to

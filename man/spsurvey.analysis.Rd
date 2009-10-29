@@ -4,7 +4,7 @@
 \description{
   This function creates an object of class spsurvey.analysis that contains all 
   of the information necessary to use the analysis functions in the 
-  spsurvey.analysis library.
+  spsurvey library.
 }
 \usage{
 spsurvey.analysis(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
@@ -170,7 +170,7 @@ spsurvey.analysis(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
     estimator and "SRS" = SRS estimator.  The default is "Local".}
   \item{conf}{the confidence level.  The default is 95\%.}
   \item{pctval}{the set of values at which percentiles are estimated.  The 
-    default set is: {5, 10, 25, 50, 75, 90, 95}.}
+    default set is: \{5, 10, 25, 50, 75, 90, 95\}.}
 }
 \section{Value}{
   Value is a list of class spsurvey.analysis.  Only those sites indicated by the 

@@ -41,7 +41,6 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 #   compatibility of input values and removes missing values.
 # Arguments:
 #   z = the response value for each site.
-#     for each site.
 #   wgt = the final adjusted weight (inverse of the sample inclusion
 #     probability) for each site, which is either the weight for a single-stage
 #     sample or the stage two weight for a two-stage sample.

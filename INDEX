@@ -1,5 +1,6 @@
 adjwgt                  Adjust Initial Survey Design Weights
-albersgeod              Project Albers Projection in Plane to Spheroid
+albersgeod              Project Albers Projection in Plane to Latitude
+                        and Longitude (Spheroid)
 cat.analysis            Categorical Data Analysis for Probability
                         Survey Data
 category.est            Category Proportion and Size Estimates
@@ -18,6 +19,8 @@ dsgnsum                 Summarize the Sites Selected for a Survey
                         Design
 eco.l3.ut               Example Polygons Dataset
 framesum                Summarize Frame Size for a Survey Design
+geodalbers              Project Latitude and Longitude (Spheroid) to
+                        Albers Projection in Plane
 grts                    Generalized Random-Tessellation Stratified
                         (GRTS) Survey Design
 grtsarea                Select GRTS Sample of an Area Resource
@@ -30,7 +33,7 @@ irslin                  Select an Independent Random Sample (IRS) of a
                         Linear Resource
 irspts                  Select an Independent Random Sample (IRS) of a
                         Finite Resource
-luck.ash                Example Polygons Dataset
+luck.ash                Example Polylines Dataset
 marinus                 Convert Coordinates from Latitude/Longitude to
                         the Equidistant, Cylindric Map Projection
 read.dbf                Read the Attribute (dbf) File of an ESRI
@@ -46,4 +49,6 @@ sp2shape                Convert an sp Package Object to an ESRI
 spsurvey.analysis       Create an Object of Class spsurvey.analysis
 total.est               Population Total, Mean, Variance, and Standard
                         Deviation Estimates
+write.dbf               Write a Data Frame to the Attribute (dbf) File
+                        of an ESRI Shapefile
 write.object            Write an Object to a Plot

@@ -27,6 +27,7 @@ SEXP readDbfFile(SEXP fileNamePrefix);
 SEXP readShapeFile(SEXP fileNamePrefix);
 SEXP readShapeFilePts(SEXP fileNamePrefix);
 SEXP getRecordShapeSizes(SEXP fileNamePrefix);
+SEXP writeDbfFile(SEXP fieldNames, SEXP fields, SEXP filePrefix);
 void writeShapeFilePoint(SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
    SEXP dbfFieldNames, SEXP dbfFields, SEXP filePrefix);
 void writeShapeFilePolygon(SEXP shapeTypeVal, SEXP fileLengthVal,

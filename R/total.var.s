@@ -16,8 +16,7 @@ total.var <- function(z, wgt, x, y, mean.est, var.est, sd.est, stratum.ind,
 #   calculate joint inclusion probabilities.  The function can  accomodate 
 #   single-stage and two-stage samples.
 # Arguments:
-#   z = the value of the categorical response variable or the site status for
-#     each site.
+#   z = the response value for each site.
 #   wgt = the final adjusted weight (inverse of the sample inclusion
 #     probability) for each site, which is either the weight for a single-stage
 #     sample or the stage two weight for a two-stage sample.

@@ -66,9 +66,10 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #     the frame, which must contain the columns used for stratum and mdcaty (if
 #     required).  If src.frame equals "shapefile" and att.frame equals NULL,
 #     then att.frame is created from the dbf file(s) in the working directory.
-#     If src.frame equals "att.frame", then att.frame includes columns that
-#     contain x-coordinates and y-coordinates for each element in the frame.
-#     The default is NULL.
+#     If src.frame equals "sp.object" and att.frame equals NULL, then att.frame
+#     is created from the sp object.  If src.frame equals "att.frame", then
+#     att.frame must include columns that contain x-coordinates and
+#     y-coordinates for each element in the frame.  The default is NULL.
 #   id = name of the column from att.frame that identifies the ID value for each
 #     element in the frame.  If id equals NULL, a column named "id" that
 #     contains values from one through the number of rows in att.frame is added
@@ -440,7 +441,7 @@ if(type.frame == "finite") {
             over.n <- design[[s]]$over * design[[s]]$caty.n /
                sum(design[[s]]$caty.n)
             if(any(over.n != floor(over.n))) 
-               warning(paste("\nOversample size is not proportional to category sample sizes for stratum, \n\"", s, "\".\n", sep=""))
+               warning(paste("\nOversample size is not proportional to category sample sizes for stratum\n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
          }
       }
@@ -660,7 +661,7 @@ if(type.frame == "finite") {
             over.n <- design[[s]]$over * design[[s]]$caty.n /
                sum(design[[s]]$caty.n)
             if(any(over.n != floor(over.n))) 
-               warning(paste("\nOversample size is not proportional to category sample sizes for stratum, \n\"", s, "\".\n", sep=""))
+               warning(paste("\nOversample size is not proportional to category sample sizes for stratum\n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
          }
       }
@@ -842,7 +843,7 @@ if(type.frame == "finite") {
             over.n <- design[[s]]$over * design[[s]]$caty.n /
                sum(design[[s]]$caty.n)
             if(any(over.n != floor(over.n))) 
-               warning(paste("\nOversample size is not proportional to category sample sizes for stratum, \n\"", s, "\".\n", sep=""))
+               warning(paste("\nOversample size is not proportional to category sample sizes for stratum\n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
          }
       }

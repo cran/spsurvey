@@ -8,7 +8,7 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Function: category.est
 # Programmer: Tom Kincaid
 # Date: August 4, 2000
-# Last Revised: June 13, 2008
+# Last Revised: August 8, 2008
 # Description:
 #   This function estimates proportion (expressed as percent) and size of a
 #   resource in each of a set of categories and can also be used to estimate
@@ -708,7 +708,6 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Calculate the number of values and the proportion of each category
 
    z <- factor(catvar)
-   n <- length(z)
    if(cluster.ind) {
       w2 <- wgt
       w1 <- wgt1

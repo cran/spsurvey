@@ -85,7 +85,7 @@ cdf.est(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL, wgt1=NULL, x1=NULL,
     values is not provided, then the sorted set of unique values of the
     response variable is used.  The default is NULL.}
   \item{pctval}{the set of values at which percentiles are estimated.  The
-    default set is: {5, 10, 25, 50, 75, 90, 95}.}
+    default set is: \{5, 10, 25, 50, 75, 90, 95\}.}
   \item{check.ind}{a logical value that indicates whether compatability
     checking of the input values is conducted, where TRUE = conduct 
     compatibility checking and FALSE = do not conduct compatibility 
