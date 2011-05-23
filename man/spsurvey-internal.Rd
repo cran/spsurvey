@@ -5,7 +5,6 @@
 \alias{cell.wt}
 \alias{selectpts}
 \alias{selectframe}
-\alias{ftnt.inv.fcn}
 \alias{vecprint}
 \alias{shape2spList}
 \alias{ranho}
@@ -20,7 +19,11 @@
 \alias{numLevels}
 \alias{constructAddr}
 \alias{pickGridCells}
+\alias{insideAreaGridCell}
+\alias{insideLinearGridCell}
 \alias{pointInPolygonFile}
+\alias{pickAreaSamplePoints}
+\alias{pickLinearSamplePoints}
 \alias{linSample}
 \alias{getRecordIDs}
 \alias{getShapeBox}
@@ -57,6 +60,7 @@
 \alias{cdfvar.test}
 \alias{total.var}
 \alias{relrisk.var}
+\alias{attrisk.var}
 \alias{localmean.weight}
 \alias{localmean.var}
 \alias{localmean.cov}
@@ -66,6 +70,7 @@
 \alias{warnprnt}
 \alias{interp.cdf}
 \alias{interp.axis}
+\alias{selectrecordID}
 \title{Internal spsurvey Functions}
 \description{
   These functions are internal spsurvey functions.
@@ -77,7 +82,6 @@ mdmarea(area, mdcaty, n.desired)
 cell.wt(cel, xc, yc, dx, dy, pts)
 selectpts(rdx, xc, yc, dx, dy, pts)
 selectframe(rord, xc, yc, dx, dy, pts)
-ftnt.inv.fcn(y, a=1)
 vecprint(x, n.char=78)
 shape2spList(shape, shp.type, ID)
 ranho(adr, size)
@@ -95,7 +99,15 @@ numLevels(fileNamePrefix, nsmpVec, shiftGridVec,
    startLevVec, maxLevVec, dsgnmdIDVec, dsgnmdVec)
 constructAddr(xcVec, ycVec, dxVec, dyVec, nlevVec)
 pickGridCells(samplesize, idxVec)
+insideAreaGridCell(fileNamePrefix, dsgnmdIDVec, cellIDsVec, xcsVec, ycsVec,
+   dxVal, dyVal)
+insideLinearGridCell(fileNamePrefix, dsgnmdIDVec, cellIDsVec, xcsVec, ycsVec,
+   dxVal, dyVal)
 pointInPolygonFile(fileNamePrefix, xcsVec, ycsVec, dsgnmdIDVec, dsgnmdVec)
+pickAreaSamplePoints(fileNamePrefix, shpIDsVec, recordIDsVec, xcVec, ycVec,
+   dxVal, dyVal, maxTryVal)
+pickLinearSamplePoints(fileNamePrefix, shpIDsVec, recordIDsVec, xcVec, ycVec,
+   dxVal, dyVal)
 linSample(fileNamePrefix, xcVec, ycVec, dxVec, dyVec, dsgnmdIDVec, dsgnmdVec)
 getRecordIDs(areaCumSumVec, sampPosVec, dsgnIDVec)
 getShapeBox(fileNamePrefix, dsgnIDVec)
@@ -103,7 +115,7 @@ linSampleIRS(fileNamePrefix, lenCumSumVec, sampPosVec, dsgnIDVec, dsgnLenVec,
    dsgnMdmVec)
 
 dframe.check(sites, design, subpop, data.cat, data.cont,
-   data.rr, design.names)
+   data.risk, design.names)
 input.check(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
    stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster,
    cluster.levels, ncluster, wgt1, xcoord1, ycoord1, popsize, pcfactor.ind,
@@ -166,15 +178,19 @@ total.var (z, wgt, x, y, mean.est, var.est, sd.est, stratum.ind, stratum.level,
 relrisk.var(response, stressor, response.levels, stressor.levels, wgt, x, y,
   stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind,
   pcfsize, N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+attrisk.var(response, stressor, response.levels, stressor.levels, wgt, x, y,
+  stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind,
+  pcfsize, N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
 localmean.weight(x, y, prb, nbh)
 localmean.var(z, weight.lst)
 localmean.cov(zmat, weight.lst)
 localmean.df(weight.lst)
 wnas(data)
-input.format(x, n.digits, miss="NA")
+input.format(x, n.digits=2, miss="NA")
 warnprnt(warn.df, m=1:nrow(warn.df))
 interp.cdf(pctval, cdfest.p, cdf.value)
 interp.axis(yl.lab, cdfest.l, cdfest.r)
+selectrecordID(rdx, cellID, recordMeasure, recordID, mdm, id)
 }
 \details{
   These functions are not to be called by the user.

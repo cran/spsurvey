@@ -9,8 +9,8 @@
 relrisk.analysis(sites, subpop, design, data.rr, response.var, stressor.var,
    response.levels=rep(list(c("Poor","Good")), length(response.var)),
    stressor.levels=rep(list(c("Poor","Good")), length(stressor.var)),
-   popsize=NULL, popcorrect=FALSE, pcfsize=NULL, N.cluster=NULL,
-   stage1size=NULL, sizeweight=FALSE, vartype="Local", conf=95)
+   popcorrect=FALSE, pcfsize=NULL, N.cluster=NULL, stage1size=NULL,
+   sizeweight=FALSE, vartype="Local", conf=95)
 }
 \arguments{
   \item{sites}{a data frame consisting of two variables: the first variable is 
@@ -77,45 +77,6 @@ relrisk.analysis(sites, subpop, design, data.rr, response.var, stressor.var,
     denominator of the estimate.  The default is a list containing the values 
     "Poor" and "Good" for the first and second levels, respectively, of each 
     element in the stressor.var argument.}
-  \item{popsize}{known size of the resource, which is used to perform ratio
-    adjustment to estimators expressed using measurement units for the
-    resource.  For a finite resource, this argument is either the total number
-    of sampling units or the known sum of size-weights.  For an extensive
-    resource, this argument is the measure of the resource, i.e., either known
-    total length for a linear resource or known total area for an areal
-    resource.  The argument must be in the form of a list containing an
-    element for each population Type in the subpop data frame, where NULL is a
-    valid choice for a population Type.  The list must be named using the
-    column names for the population Types in subpop. If a population Type
-    doesn't contain subpopulations, then each element of the list is either a
-    single value for an unstratified sample or a vector containing a value for
-    each stratum for a stratified sample, where elements of the vector are
-    named using the stratum codes.  If a population Type contains
-    subpopulations, then each element of the list is a list containing an
-    element for each subpopulation, where the list is named using the
-    subpopulation names.  The element for each subpopulation will be either a
-    single value for an unstratified sample or a named vector of values for a
-    stratified sample.  The default is NULL.\cr\cr
-    Example popsize for a stratified sample:\cr
-      popsize = list("Pop 1"=c("Stratum 1"=750,\cr
-                               "Stratum 2"=500,\cr
-                               "Stratum 3"=250),\cr
-                     "Pop 2"=list("SubPop 1"=c("Stratum 1"=350,\cr
-                                               "Stratum 2"=250,\cr
-                                               "Stratum 3"=150),\cr
-                                  "SubPop 2"=c("Stratum 1"=250,\cr
-                                               "Stratum 2"=150,\cr
-                                               "Stratum 3"=100),\cr
-                                  "SubPop 3"=c("Stratum 1"=150,\cr
-                                               "Stratum 2"=150,\cr
-                                               "Stratum 3"=75)),\cr
-                     "Pop 3"=NULL)\cr\cr
-    Example popsize for an unstratified sample:\cr
-      popsize = list("Pop 1"=1500,\cr
-                     "Pop 2"=list("SubPop 1"=750,\cr
-                                  "SubPop 2"=500,\cr
-                                  "SubPop 3"=375),\cr
-                     "Pop 3"=NULL)\cr}
   \item{popcorrect}{a logical value that indicates whether finite or continuous 
     population correction factors should be employed during variance 
     estimation, where TRUE = use the correction factors and FALSE = do not 
@@ -173,12 +134,9 @@ mydata.rr <- data.frame(siteID=mysiteID, RespVar1=sample(c("Poor", "Good"),
   100, replace=TRUE), RespVar2=sample(c("Poor", "Good"), 100, replace=TRUE),
   StressVar=sample(c("Poor", "Good"), 100, replace=TRUE), wgt=runif(100, 10,
   100))
-mypopsize <- list(All.Sites=c(Stratum1=3500, Stratum2=2000),
-  Resource.Class=list(Agr=c(Stratum1=2500, Stratum2=1500),
-  Forest=c(Stratum1=1000, Stratum2=500)))
 relrisk.analysis(sites=mysites, subpop=mysubpop, design=mydesign,
   data.rr=mydata.rr, response.var=c("RespVar1", "RespVar2"),
-  stressor.var=rep("StressVar", 2), popsize=mypopsize)
+  stressor.var=rep("StressVar", 2))
 }
 \keyword{survey}
 \keyword{survival}

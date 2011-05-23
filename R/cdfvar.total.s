@@ -6,7 +6,7 @@ cdfvar.total <- function(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level,
 # Function: cdfvar.total
 # Programmer: Tom Kincaid
 # Date: July 12, 2000
-# Last Revised: June 3, 2008
+# Last Revised: August 18, 2010
 # Description:
 #   This function calculates variance estimates of the estimated cumulative
 #   distribution function (CDF) for the total of a finite or a continuous
@@ -129,6 +129,7 @@ cdfvar.total <- function(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level,
       } else {
          support.lst <- NULL
       }
+      var.ind <- sapply(split(cluster, cluster), length) > 1
 
 # Calculate estimates of the total of the stage two sampling unit residuals 
 # and the variance of those totals for each stage one sampling unit
@@ -182,14 +183,25 @@ cdfvar.total <- function(z, wgt, x, y, val, cdfest, stratum.ind, stratum.level,
 
 # Calculate variance estimates for the stage one sampling unit
 
-         if(vartype == "Local") {
-            weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]],
-               1/wgt2.lst[[i]])
-            var2est[i,] <- pcfactor*apply(rm, 2, localmean.var, weight.lst)
-         } else {
-            var2est[i,] <- pcfactor*n*apply(rm, 2, var)
-            if(SRSind)
-               vartype <- "Local"
+         if(var.ind[i]) {
+            if(vartype == "Local") {
+               weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]], 1/wgt2.lst[[i]])
+               var2est[i,] <- pcfactor*apply(rm, 2, localmean.var, weight.lst)
+            } else {
+               var2est[i,] <- pcfactor*n*apply(rm, 2, var)
+               if(SRSind)
+                  vartype <- "Local"
+            }
+         }
+      }
+
+# Assign the mean variance to stage one sampling units with a single stage two
+# sampling unit
+      for(j in 1:m) {
+         ind <- var2est[,j] == 0
+         if(sum(ind) > 0) {
+            var.mean <- mean(var2est[!ind,j])
+            var2est[ind,j] <- var.mean
          }
       }
 

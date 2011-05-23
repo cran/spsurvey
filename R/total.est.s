@@ -8,7 +8,7 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Function: total.est
 # Programmer: Tom Kincaid
 # Date: December 18, 2000
-# Last Revised: June 13, 2008
+# Last Revised: April 6, 2011
 # Description:
 #   This function calculates estimates of the population total, mean, variance, 
 #   and standard deviation of a response variable, where the response variable
@@ -416,14 +416,21 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
    if(length(z) == 0)
       stop("\nEstimates cannot be calculated since the vector of response values is empty.")
 
-# If the sample has two stages, determine whether there are a sufficient number
-# of sites in each stage one sampling unit to allow variance calculation
+# If the sample has two stages, determine whether there are any stage one
+# sampling units with a sufficient number of sites to allow variance calculation
 
    if(cluster.ind) {
       temp <- sapply(split(cluster, cluster), length) == 1
+      if(all(temp)) {
+         stop("\nA variance estimate cannot be calculated since all of the stage one sampling \nunit(s) contain a single stage two sampling unit.")
+      }
       if(any(temp)) {
          temp.str <- vecprint(names(temp)[temp])
-         stop(paste("\nA variance estimate cannot be calculated since the following stage one sampling \nunit(s) contain a single site:\n", temp.str, sep=""))
+         warn <- paste("Since the following stage one sampling units contain a single stage two \nsampling unit, a variance estimate cannot be calculated and the mean of the \nvariance estimates for stage one sampling units with two or more sites will \nbe used:\n", temp.str, sep="")
+         act <- "The mean of the variance estimates will be used.\n"
+         warn.df <- rbind(warn.df, data.frame(func=I(fname), subpoptype=NA,
+            subpop=NA, indicator=NA, stratum=NA, warning=I(warn),
+            action=I(act)))
       }
    }
 
@@ -433,21 +440,40 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
 # Calculate additional required values
 
-   if(!is.null(popsize))
-      sum.popsize <- sum(popsize)
-   if(stratum.ind) {
-      if(cluster.ind) {
-         popsize.hat <- tapply(wgt*wgt1, stratum, sum)
-         sum.popsize.hat <- sum(wgt*wgt1)
+   if(swgt.ind) {
+      if(!is.null(popsize))
+         sum.popsize <- sum(popsize)
+      if(stratum.ind) {
+         if(cluster.ind) {
+            popsize.hat <- tapply(wgt*swgt*wgt1*swgt1, stratum, sum)
+            sum.popsize.hat <- sum(wgt*swgt*wgt1*swgt1)
+         } else {
+            popsize.hat <- tapply(wgt*swgt, stratum, sum)
+            sum.popsize.hat <- sum(wgt*swgt)
+         }
       } else {
-         popsize.hat <- tapply(wgt, stratum, sum)
-         sum.popsize.hat <- sum(wgt)
+         if(cluster.ind)
+            popsize.hat <- sum(wgt*swgt*wgt1*swgt1)
+         else
+            popsize.hat <- sum(wgt*swgt)
       }
    } else {
-      if(cluster.ind)
-         popsize.hat <- sum(wgt*wgt1)
-      else
-         popsize.hat <- sum(wgt)
+      if(!is.null(popsize))
+         sum.popsize <- sum(popsize)
+      if(stratum.ind) {
+         if(cluster.ind) {
+            popsize.hat <- tapply(wgt*wgt1, stratum, sum)
+            sum.popsize.hat <- sum(wgt*wgt1)
+         } else {
+            popsize.hat <- tapply(wgt, stratum, sum)
+            sum.popsize.hat <- sum(wgt)
+         }
+      } else {
+         if(cluster.ind)
+            popsize.hat <- sum(wgt*wgt1)
+         else
+            popsize.hat <- sum(wgt)
+      }
    }
 
 # Branch to handle stratified and unstratified data

@@ -4,7 +4,7 @@
 **               functions in the DLL of the spsurvey library.
 **  Programmer:  Tom Kincaid
 **  Created:     May 4, 2006
-**  Revised:     June 23, 2006
+**  Revised:     February 11, 2010
 ******************************************************************************/
 
 #ifndef R_SPSURVEY_H
@@ -40,8 +40,17 @@ SEXP numLevels(SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
 SEXP constructAddr(SEXP xcVec, SEXP ycVec, SEXP dxVec, SEXP dyVec,
    SEXP nlevVec);
 SEXP pickGridCells(SEXP samplesize, SEXP idxVec);
+SEXP insideAreaGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec,
+     SEXP xcsVec, SEXP ycsVec, SEXP dxVal, SEXP dyVal);
+SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec,
+     SEXP xcsVec, SEXP ycsVec, SEXP dxVal, SEXP dyVal);
 SEXP pointInPolygonFile(SEXP fileNamePrefix, SEXP xcsVec, SEXP ycsVec, 
    SEXP dsgnmdIDVec, SEXP dsgnmdVec);
+SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, 
+   SEXP recordIDsVec, SEXP xcVec, SEXP ycVec, SEXP dxVal, SEXP dyVal, 
+   SEXP maxTryVal);
+SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, 
+   SEXP recordIDsVec, SEXP xcVec, SEXP ycVec, SEXP dxVal, SEXP dyVal);
 SEXP linSample(SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec, 
    SEXP dyVec, SEXP dsgnmdIDVec, SEXP dsgnmdVec);
 SEXP getRecordIDs(SEXP areaCumSumVec, SEXP sampPosVec, SEXP dsgnIDVec);

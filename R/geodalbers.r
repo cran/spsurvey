@@ -1,4 +1,4 @@
-geodalbers <- function(lon, lat, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
+geodalbers <- function(lon, lat, sph="GRS80", clon=-96, clat=23, sp1=29.5,
    sp2=45.5) {
 
 ################################################################################
@@ -11,7 +11,7 @@ geodalbers <- function(lon, lat, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
 #	  lon = longitude (decimal degrees) vector to be projected using Albers.
 # 	lat = latitude (decimal degrees) vector to be projected using Albers.
 #   sph = Spheroid options: Clarke1866, GRS80, WGS84.  The default is
-#     Clarke1866.
+#     GRS80.
 #   clon = Center longitude (decimal degrees).  The default is -96.
 #   clat = Origin latitude (decimal degrees).  The default is 23.
 #   sp1 = Standard parallel 1 (decimal degrees).  The default is 29.5.
@@ -36,7 +36,6 @@ geodalbers <- function(lon, lat, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
   }
 
 # Do calculations for selected spheroid
-  RADDEG <- (180/pi)
   DEGRAD <- (pi/180)
   clat <- clat*DEGRAD 
   clon <- clon*DEGRAD
@@ -44,7 +43,6 @@ geodalbers <- function(lon, lat, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
   sp2 <- sp2*DEGRAD
   e2 <- 1.0 - (b*b) / (a*a)
   e4 <- e2 * e2 
-  e6 <- e4 * e2 
   e <- sqrt(e2)
   t1 <- 1.0 - e2
   t2 <- 1.0 / (2.0*e)
@@ -70,7 +68,6 @@ geodalbers <- function(lon, lat, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
   lat <- lat*DEGRAD
   lon <- lon*DEGRAD
   sinlat <- sin(lat) 
-  coslat <- cos(lat)
   q <- sinlat / (1.0 - e2 * sinlat*sinlat)
   q <- t1 * (q - t2 * log ((1.0 - e*sinlat)/(1.0 + e*sinlat)))
   rho <- a * sqrt(C - n*q) / n

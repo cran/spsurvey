@@ -8,7 +8,7 @@
 }
 \usage{
 grtsarea(shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
-   shift.grid=TRUE, startlev=NULL, maxlev=11, maxtry=1000, acept=1)
+   shift.grid=TRUE, startlev=NULL, maxlev=11, maxtry=1000)
 }
 \arguments{
   \item{shapefilename}{name of the input shapefile.  If shapefilename equals
@@ -30,10 +30,6 @@ grtsarea(shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
     which cannot be greater than 11.  The default is 11.}
   \item{maxtry}{maximum number of iterations for randomly generating a point
     The default is 1000.}
-  \item{acept}{parameter that controls peakedness of a center-peaked
-    distribution, which must be between 0 and 1.  A value of 0 gives a
-    triangular distribution, and a value of 1 gives a uniform
-    distribution.  The default is 1.}
 }
 \value{
   A data frame of GRTS sample points containing: SiteID, id, x, y, mdcaty,
@@ -41,7 +37,7 @@ grtsarea(shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
 }
 \references{
   Stevens, D.L., Jr., and A.R. Olsen. (2004). Spatially-balanced sampling of
-  natural resources. \emph{Journal of the American Statistical Association}, \bold{99},
+  natural resources. \emph{Journal of the American Statistical Association} \bold{99},
   262-278.
 }
 \author{

@@ -8,7 +8,7 @@ cdf.plot <- function(cdfest, units.cdf="Percent", type.cdf="Continuous",
 # Programmers: Tony Olsen
 #              Tom Kincaid
 # Date: March 26, 2007
-# Last Revised: November 8, 2007
+# Last Revised: April 26, 2011
 # Description:
 #   This function creates a CDF plot.  Input data for the plots is provided by a
 #   data frame utilizing the same structure as the data frame named "CDF" that
@@ -134,9 +134,9 @@ if(type.cdf == "Continuous") {
 } else if(type.cdf == "Ordinal") {
    x <- rep(cdfdata[,1], each=2)[-1]
    y <- rep(cdfdata[,2], each=2)
-   tmp <- cbind(matrix(c(x,x[length(x)]),nc=2,byrow=TRUE),rep(NA,nrow(cdfdata)))
+   tmp <- cbind(matrix(c(x,x[length(x)]),ncol=2,byrow=TRUE),rep(NA,nrow(cdfdata)))
    x <- as.vector(t(tmp))
-   tmp <- cbind(matrix(y,nc=2,byrow=TRUE),rep(NA,nrow(cdfdata)))
+   tmp <- cbind(matrix(y,ncol=2,byrow=TRUE),rep(NA,nrow(cdfdata)))
    y <- as.vector(t(tmp))
    plot(x, y, type="l", ylim=ylimit, xlab=xlbl, ylab=ylbl, ...)
 
@@ -145,16 +145,16 @@ if(type.cdf == "Continuous") {
    len <- length(cdfdata[,1][tvalue])
    if(len > 1) {
       value <- rep(cdfdata[,1][tvalue], each=2)[-1]
-      tmp <- cbind(matrix(c(value,value[length(value)]),nc=2,byrow=TRUE),
+      tmp <- cbind(matrix(c(value,value[length(value)]),ncol=2,byrow=TRUE),
                    rep(NA,len))
       value <- as.vector(t(tmp))
       len <- length(cdfdata[,4][tvalue])
       if(len > 1) {
          lower <- rep(cdfdata[,3][tvalue], each=2)
-         tmp <- cbind(matrix(lower,nc=2,byrow=TRUE),rep(NA,len))
+         tmp <- cbind(matrix(lower,ncol=2,byrow=TRUE),rep(NA,len))
          lower <- as.vector(t(tmp))
          upper <- rep(cdfdata[,4][tvalue], each=2)
-         tmp <- cbind(matrix(upper,nc=2,byrow=TRUE),rep(NA,len))
+         tmp <- cbind(matrix(upper,ncol=2,byrow=TRUE),rep(NA,len))
          upper <- as.vector(t(tmp))
          lines(value,lower,lty=3, lwd=1.5)
          lines(value,upper,lty=3, lwd=1.5)

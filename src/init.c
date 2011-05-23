@@ -4,7 +4,7 @@
 **               functions in the DLL of the spsurvey library.
 **  Programmer:  Tom Kincaid
 **  Created:     May 4, 2006
-**  Revised:     September 24, 2009
+**  Revised:     February 11, 2010
 ******************************************************************************/
 
 #include <R.h>
@@ -31,7 +31,11 @@ static const R_CallMethodDef callMethods[] = {
    {"numLevels", (DL_FUNC) &numLevels, 7},
    {"constructAddr", (DL_FUNC) &constructAddr, 5},
    {"pickGridCells", (DL_FUNC) &pickGridCells, 2},
+   {"insideAreaGridCell", (DL_FUNC) &insideAreaGridCell, 7},
+   {"insideLinearGridCell", (DL_FUNC) &insideLinearGridCell, 7},
    {"pointInPolygonFile", (DL_FUNC) &pointInPolygonFile, 5},
+   {"pickAreaSamplePoints", (DL_FUNC) &pickAreaSamplePoints, 8},
+   {"pickLinearSamplePoints", (DL_FUNC) &pickLinearSamplePoints, 7},
    {"linSample", (DL_FUNC) &linSample, 7},
    {"getRecordIDs", (DL_FUNC) &getRecordIDs, 3},
    {"getShapeBox", (DL_FUNC) &getShapeBox, 2},

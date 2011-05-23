@@ -1,4 +1,4 @@
-albersgeod <- function(x, y, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
+albersgeod <- function(x, y, sph="GRS80", clon=-96, clat=23, sp1=29.5,
    sp2=45.5) {
 
 ################################################################################
@@ -11,7 +11,7 @@ albersgeod <- function(x, y, sph="Clarke1866", clon=-96, clat=23, sp1=29.5,
 #   x = Albers x-coordinate vector to be projected to latitude/longitude.
 #   y = Albers y-coordinate vector to be projected to latitude/longitude.
 #   sph = Spheroid options: Clarke1866, GRS80, WGS84.  The default is
-#     Clarke1866.
+#     GRS80.
 #   clon = Center longitude (decimal degrees).  The default is -96.
 #   clat = Origin latitude (decimal degrees).  The default is 23.
 #   sp1 = Standard parallel 1 (decimal degrees).  The default is 29.5.

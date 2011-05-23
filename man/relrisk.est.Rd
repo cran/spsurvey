@@ -17,10 +17,9 @@
 relrisk.est(response, stressor, response.levels=c("Poor", "Good"),
    stressor.levels=c("Poor", "Good"), wgt, xcoord=NULL, ycoord=NULL,
    stratum=NULL, cluster=NULL, wgt1=NULL, xcoord1=NULL, ycoord1=NULL,
-   popsize=NULL, popcorrect=FALSE, pcfsize=NULL, N.cluster=NULL,
-   stage1size=NULL, support=NULL, sizeweight=FALSE, swgt=NULL, swgt1=NULL,
-   vartype="Local", conf=95, check.ind=TRUE, warn.ind=NULL, warn.df=NULL,
-   warn.vec=NULL)
+   popcorrect=FALSE, pcfsize=NULL, N.cluster=NULL, stage1size=NULL,
+   support=NULL, sizeweight=FALSE, swgt=NULL, swgt1=NULL, vartype="Local",
+   conf=95, check.ind=TRUE, warn.ind=NULL, warn.df=NULL, warn.vec=NULL)
 }
 \arguments{
   \item{response}{the categorical response variable values.}
@@ -55,15 +54,6 @@ relrisk.est(response, stressor, response.levels=c("Poor", "Good"),
     default is NULL.}
   \item{ycoord1}{the stage one y-coordinate for location for each site.  The
     default is NULL.}
-  \item{popsize}{known size of the resource, which is used to perform ratio
-    adjustment to estimators expressed using measurement units for the
-    resource.  For a finite resource, this argument is either the total number
-    of sampling units or the known sum of size-weights.  For an extensive
-    resource, this argument is the measure of the resource, i.e., either known
-    total length for a linear resource or known total area for an areal
-    resource.  For a stratified sample this variable must be a vector
-    containing a value for each stratum and must have the names attribute set
-    to identify the stratum codes.  The default is NULL.}
   \item{popcorrect}{a logical value that indicates whether finite or continuous 
     population correction factors should be employed during variance 
     estimation, where TRUE = use the correction factors and FALSE = do not 
@@ -116,17 +106,17 @@ relrisk.est(response, stressor, response.levels=c("Poor", "Good"),
   The relative risk estimate is computed using the ratio of a numerator
   probability to a denominator probability, which are estimated using cell and
   marginal totals from a 2x2 table of cell counts defined by a categorical
-  response variable and a categorical stressor variable. An estimate of the
-  numerator probability is provided by the ratio of the cell total defined by
-  the first level of the response variable and the first level of the stressor
-  variable to the marginal total for the first level of the stressor variable.
-  An estimate of the denominator probability is provided by the ratio of the
-  cell total defined by the first level of response variable and the second
-  level of the stressor variable to the marginal total for the second level of
-  the stressor variable.  Cell and marginal totals are estimated using the
-  Horvitz-Thompson estimator. The standard error of the base e log of the
-  relative risk estimate is calculated using a first-order Taylor series
-  linearization (Sarndal et al., 1992).
+  response variable and a categorical stressor variable (Van Sickle and Paulsen,
+  2008). An estimate of the numerator probability is provided by the ratio of
+  the cell total defined by the first level of the response variable and the
+  first level of the stressor variable to the marginal total for the first level
+  of the stressor variable.  An estimate of the denominator probability is
+  provided by the ratio of the cell total defined by the first level of response
+  variable and the second level of the stressor variable to the marginal total
+  for the second level of the stressor variable.  Cell and marginal totals are
+  estimated using the Horvitz-Thompson estimator. The standard error of the base
+  e log of the relative risk estimate is calculated using a first-order Taylor
+  series linearization (Sarndal et al., 1992).
 }
 \section{Value}{
   If the function was called by the relrisk.analysis function, then value is a 
@@ -155,6 +145,9 @@ relrisk.est(response, stressor, response.levels=c("Poor", "Good"),
   }
 }
 \references{
+  Van Sickle, J. and S. G. Paulsen. (2008). Assessing the attributable risks,
+  relative risks, and regional extent of aquatic stressors. \emph{Journal of the
+  North American Benthological Society} \bold{27}, 920-931.\cr
   Sarndal, C.E., B. Swensson, and J. Wretman. (1992). \emph{Model Assisted
   Survey Sampling}. Springer-Verlag, New York.
 }

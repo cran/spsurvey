@@ -8,7 +8,7 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 # Function: input.check
 # Programmer: Tom Kincaid
 # Date: September 25, 2003
-# Last Revised: November 5, 2008
+# Last Revised: January 12, 2011
 # Description:
 #   This function checks input values for errors, consistency, and compatibility
 #   with analytical functions.
@@ -126,6 +126,18 @@ if(cluster.ind) {
 } else {
    if(min(wgt) <= 0)
       stop("\nWeights must be positive.")
+}
+
+# Check vartype argument
+
+if(!(vartype %in% c("Local", "local", "SRS", "srs"))) {
+   stop(paste("\nThe value provided for argument vartype must equal either \"Local\" or \"SRS\".  \nThe value provided was: \"", vartype, "\".", sep=""))
+}
+if(vartype == "local") {
+   vartype <- "Local"
+}
+if(vartype == "srs") {
+   vartype <- "SRS"
 }
 
 # Check coordinate arguments

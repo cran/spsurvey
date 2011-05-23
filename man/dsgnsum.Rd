@@ -45,16 +45,15 @@ Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }
 \examples{
 \dontrun{
-test.design <- list(Stratum1=list(panel=c(PanelOne=50),
-   seltype="Equal", over=10), Stratum2=list(panel=c(PanelOne=50,
-   PanelTwo=50), seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25,
-   CatyThree=25, CatyFour=25), over=75)
-test.attframe <- read.dbf("test.shapefile")
-test.sample <- grts(design=test.design, DesignID="Test.Site", type.frame="area",
-   src.frame="shapefile", in.shape="test.shapefile", att.frame=test.attframe,
-   stratum="test.stratum", mdcaty="test.mdcaty", shapefile=TRUE,
-   shapefilename="test.sample")
-dsgnsum(test.sample, auxvar=c("test.ecoregion", "test.state"))
+design <- list(Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
+   Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
+   caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
+attframe <- read.dbf("shapefile")
+samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
+   src.frame="shapefile", in.shape="shapefile", att.frame=attframe,
+   stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
+   shapefilename="sample")
+dsgnsum(samp, auxvar=c("ecoregion", "state"))
 }
 }
 \keyword{survey}

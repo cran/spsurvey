@@ -29,7 +29,7 @@
 **               Shape files to be open and read can not have a '(' or ')'
 **               character in them.
 **  Created:     August 20, 2004
-**  Revised:     March 30, 2007
+**  Revised:     April 26, 2011
 ******************************************************************************/
 
 #include <stdio.h>
@@ -4416,10 +4416,12 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
         return data; 
       }
     }
+
+    /* close the shapefile */
     fclose( fptr );
 
     /* get the next .shp file */
-    if ( singleFile == TRUE )  {
+    if ( singleFile == TRUE ) {
       done = TRUE;
     } else {
       ptrShp = 0;
@@ -4448,7 +4450,6 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
     }
 
     free( fileName );
-//    fclose( fptr );
   }
 
   /* close the current directory */

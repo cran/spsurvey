@@ -9,7 +9,7 @@ cdf.decon <- function(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL,
 # Function: cdf.decon
 # Programmer: Tom Kincaid
 # Date: December 3, 2002
-# Last Revised: June 13, 2008
+# Last Revised: May 13, 2011
 # Description:
 #   This function calculates an estimate of the deconvoluted cumulative 
 #   distribution function (CDF) for the proportion (expressed as percent) and
@@ -994,9 +994,10 @@ cdf.decon <- function(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL,
       warn.df <- temp$warn.df
 
       cdfest.u <- dcdf.total(simex$g, wgt, cluster.ind, cluster, wgt1, popsize)
-      temp <- cdfvar.total(z, wgt, x, y, cdfval, cdfest.u, stratum.ind, NULL,
-         cluster.ind, cluster, wgt1, x1, y1, popsize, pcfactor.ind, pcfsize,
-         N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+      temp <- dcdfvar.total(simex$g, simex$dg, var.sigma, wgt, x, y, cdfest.u,
+         stratum.ind, NULL, cluster.ind, cluster, wgt1, x1, y1, popsize,
+         pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype,
+         warn.ind, warn.df, warn.vec)
       sdest.u <- sqrt(temp$varest)
       if(!is.null(popsize)) {
          cdfest.u <- isotonic(cdfest.u, 0, popsize)

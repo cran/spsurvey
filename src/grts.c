@@ -12,7 +12,7 @@
 **               polylines shapefile, and cWtFcn is called for a points
 **               shapefile.
 **  Created:     October 19, 2004
-**  Revised:     May 3, 2007
+**  Revised:     May 18, 2011
 ******************************************************************************/
 
 #include <stdio.h>

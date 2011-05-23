@@ -9,7 +9,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: May 14, 2007
+# Last Revised: February 12, 2010
 # Description:
 #   This function select a GRTS sample of a finite resource.  This function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -110,7 +110,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # adjust the indicator for whether maximum of the total inclusion probabilities
 # is changing   
 
-         cel.wt <- sapply(1:length(xc), cell.wt, xc, yc, dy, dx, ptsframe)
+         cel.wt <- sapply(1:length(xc), cell.wt, xc, yc, dx, dy, ptsframe)
          if(max(cel.wt) == celmax) {
             celmax.ind <- celmax.ind + 1
     	       if(celmax.ind == 2)
@@ -150,8 +150,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 
    ranhadr <- .C("ranho", hadr, as.integer(length(hadr)))[[1]]
 
-# Determine the reverse hierarchical ordering for the randomized hierarchical
-# addresses
+# Determine order of the randomized hierarchical addresses
 
    rord <- order(ranhadr)
 
@@ -186,7 +185,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Construct sample hierarchical address
 
    np <- nrow(rho)
-   nlev <- trunc(logb(np,4))
+   nlev <- max(1, trunc(logb(np,4)))
    ifelse(np == 4^nlev, nlev, nlev <- nlev + 1)
    ad <- matrix(0, 4^nlev, nlev)
    rv4 <- 0:3

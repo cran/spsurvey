@@ -8,7 +8,7 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Function: category.est
 # Programmer: Tom Kincaid
 # Date: August 4, 2000
-# Last Revised: August 8, 2008
+# Last Revised: April 6, 2011
 # Description:
 #   This function estimates proportion (expressed as percent) and size of a
 #   resource in each of a set of categories and can also be used to estimate
@@ -416,14 +416,21 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
    if(length(catvar) == 0)
       stop("\nEstimates cannot be calculated since the vector of categorical variable values \nis empty.")
 
-# If the sample has two stages, determine whether there are a sufficient number
-# of sites in each stage one sampling unit to allow variance calculation
+# If the sample has two stages, determine whether there are any stage one
+# sampling units with a sufficient number of sites to allow variance calculation
 
    if(cluster.ind) {
       temp <- sapply(split(cluster, cluster), length) == 1
+      if(all(temp)) {
+         stop("\nA variance estimate cannot be calculated since all of the stage one sampling \nunit(s) contain a single stage two sampling unit.")
+      }
       if(any(temp)) {
          temp.str <- vecprint(names(temp)[temp])
-         stop(paste("\nA variance estimate cannot be calculated since the following stage one sampling \nunit(s) contain a single site:\n", temp.str, sep=""))
+         warn <- paste("Since the following stage one sampling units contain a single stage two \nsampling unit, a variance estimate cannot be calculated and the mean of the \nvariance estimates for stage one sampling units with two or more sites will \nbe used:\n", temp.str, sep="")
+         act <- "The mean of the variance estimates will be used.\n"
+         warn.df <- rbind(warn.df, data.frame(func=I(fname), subpoptype=NA,
+            subpop=NA, indicator=NA, stratum=NA, warning=I(warn),
+            action=I(act)))
       }
    }
 
@@ -438,21 +445,40 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 
 # Calculate additional required values
 
-   if(!is.null(popsize))
-      sum.popsize <- sum(popsize)
-   if(stratum.ind) {
-      if(cluster.ind) {
-         popsize.hat <- tapply(wgt*wgt1, stratum, sum)
-         sum.popsize.hat <- sum(wgt*wgt1)
+   if(swgt.ind) {
+      if(!is.null(popsize))
+         sum.popsize <- sum(popsize)
+      if(stratum.ind) {
+         if(cluster.ind) {
+            popsize.hat <- tapply(wgt*swgt*wgt1*swgt1, stratum, sum)
+            sum.popsize.hat <- sum(wgt*swgt*wgt1*swgt1)
+         } else {
+            popsize.hat <- tapply(wgt*swgt, stratum, sum)
+            sum.popsize.hat <- sum(wgt*swgt)
+         }
       } else {
-         popsize.hat <- tapply(wgt, stratum, sum)
-         sum.popsize.hat <- sum(wgt)
+         if(cluster.ind)
+            popsize.hat <- sum(wgt*swgt*wgt1*swgt1)
+         else
+            popsize.hat <- sum(wgt*swgt)
       }
    } else {
-      if(cluster.ind)
-         popsize.hat <- sum(wgt*wgt1)
-      else
-         popsize.hat <- sum(wgt)
+      if(!is.null(popsize))
+         sum.popsize <- sum(popsize)
+      if(stratum.ind) {
+         if(cluster.ind) {
+            popsize.hat <- tapply(wgt*wgt1, stratum, sum)
+            sum.popsize.hat <- sum(wgt*wgt1)
+         } else {
+            popsize.hat <- tapply(wgt, stratum, sum)
+            sum.popsize.hat <- sum(wgt)
+         }
+      } else {
+         if(cluster.ind)
+            popsize.hat <- sum(wgt*wgt1)
+         else
+            popsize.hat <- sum(wgt)
+      }
    }
 
 # Branch to handle stratified and unstratified data
@@ -489,15 +515,28 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
    z <- factor(catvar[stratum.i])
    z.levels <- levels(z)
    m <- length(z.levels)
-   if(cluster.ind) {
-      w2 <- wgt[stratum.i]
-      w1 <- wgt1[stratum.i]
-      prop <- tapply(w2*w1, z, sum) / popsize.hat[i]
-      nval <- tapply(w2, z, length)
+   if(swgt.ind) {
+      if(cluster.ind) {
+         w2 <- wgt[stratum.i]*swgt[stratum.i]
+         w1 <- wgt1[stratum.i]*swgt1[stratum.i]
+         prop <- tapply(w2*w1, z, sum) / popsize.hat[i]
+         nval <- tapply(w2, z, length)
+      } else {
+         w <- wgt[stratum.i]*swgt[stratum.i]
+         prop <- tapply(w, z, sum) / popsize.hat[i]
+         nval <- tapply(w, z, length)
+      }
    } else {
-      w <- wgt[stratum.i]
-      prop <- tapply(w, z, sum) / popsize.hat[i]
-      nval <- tapply(w, z, length)
+      if(cluster.ind) {
+         w2 <- wgt[stratum.i]
+         w1 <- wgt1[stratum.i]
+         prop <- tapply(w2*w1, z, sum) / popsize.hat[i]
+         nval <- tapply(w2, z, length)
+      } else {
+         w <- wgt[stratum.i]
+         prop <- tapply(w, z, sum) / popsize.hat[i]
+         nval <- tapply(w, z, length)
+      }
    }
 
 # Calculate the variance estimates
@@ -594,16 +633,31 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
    z <- factor(catvar[stratum.i])
    z.levels <- levels(z)
    m <- length(z.levels)
-   if(!is.null(popsize)) {
-      size <- c(popsize[i]*prop.popsize[,i], popsize[i])
-   } else {
-      if(cluster.ind) {
-         w2 <- wgt[stratum.i]
-         w1 <- wgt1[stratum.i]
-         size <- c(tapply(w2*w1, z, sum), popsize.hat[i])
+   if(swgt.ind) {
+      if(!is.null(popsize)) {
+         size <- c(popsize[i]*prop.popsize[,i], popsize[i])
       } else {
-         w <- wgt[stratum.i]
-         size <- c(tapply(w, z, sum), popsize.hat[i])
+         if(cluster.ind) {
+            w2 <- wgt[stratum.i]*swgt[stratum.i]
+            w1 <- wgt1[stratum.i]*swgt1[stratum.i]
+            size <- c(tapply(w2*w1, z, sum), popsize.hat[i])
+         } else {
+            w <- wgt[stratum.i]*swgt[stratum.i]
+            size <- c(tapply(w, z, sum), popsize.hat[i])
+         }
+      }
+   } else {
+      if(!is.null(popsize)) {
+         size <- c(popsize[i]*prop.popsize[,i], popsize[i])
+      } else {
+         if(cluster.ind) {
+            w2 <- wgt[stratum.i]
+            w1 <- wgt1[stratum.i]
+            size <- c(tapply(w2*w1, z, sum), popsize.hat[i])
+         } else {
+            w <- wgt[stratum.i]
+            size <- c(tapply(w, z, sum), popsize.hat[i])
+         }
       }
    }
 
@@ -708,15 +762,28 @@ category.est <- function(catvar, wgt, x=NULL, y=NULL, stratum=NULL,
 # Calculate the number of values and the proportion of each category
 
    z <- factor(catvar)
-   if(cluster.ind) {
-      w2 <- wgt
-      w1 <- wgt1
-      prop <- tapply(w2*w1, z, sum) / popsize.hat
-      nval <- tapply(w2, z, length)
+   if(swgt.ind) {
+      if(cluster.ind) {
+         w2 <- wgt*swgt
+         w1 <- wgt1*swgt1
+         prop <- tapply(w2*w1, z, sum) / popsize.hat
+         nval <- tapply(w2, z, length)
+      } else {
+         w <- wgt*swgt
+         prop <- tapply(w, z, sum) / popsize.hat
+         nval <- tapply(w, z, length)
+      }
    } else {
-      w <- wgt
-      prop <- tapply(w, z, sum) / popsize.hat
-      nval <- tapply(w, z, length)
+      if(cluster.ind) {
+         w2 <- wgt
+         w1 <- wgt1
+         prop <- tapply(w2*w1, z, sum) / popsize.hat
+         nval <- tapply(w2, z, length)
+      } else {
+         w <- wgt
+         prop <- tapply(w, z, sum) / popsize.hat
+         nval <- tapply(w, z, length)
+      }
    }
 
 # Calculate the standard error estimates

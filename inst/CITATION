@@ -1,0 +1,12 @@
+citHeader("To cite the spsurvey package in publications use:")
+
+citEntry(
+   entry="misc",
+   author="Thomas M. Kincaid and Anthony R. Olsen",
+   year=2011,
+   title="spsurvey: Spatial Survey Design and Analysis",
+   note="R package version 2.2",
+   textVersion=paste("Thomas M. Kincaid and Anthony R. Olsen (2011).",
+                      "spsurvey: Spatial Survey Design and Analysis.",
+                      "R package version 2.2.")
+)

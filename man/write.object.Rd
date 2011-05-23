@@ -2,8 +2,9 @@
 \alias{write.object}
 \title{Write an Object to a Plot}
 \description{
-  This function writes the contents of an object, which may be either a data frame
-  or a matrix, to a plot.
+  This function writes the contents of an object to a plot.  The object may be
+  either a data frame or a matrix.  Values in the input data frame or matrix
+  must be of class numeric, character, or factor.
 }
 \usage{
 write.object(obj, n.digits=2, r.names=TRUE, c.names=TRUE, r.cex=1, c.cex=1,
@@ -27,7 +28,8 @@ write.object(obj, n.digits=2, r.names=TRUE, c.names=TRUE, r.cex=1, c.cex=1,
     default is "NA".}
 }
 \value{
-  NULL
+  The function returns NULL.  Side effect of the function is to write contents
+  of the input object to a plot.
 }
 \author{Tom Kincaid \email{Kincaid.Tom@epa.gov}}
 \examples{

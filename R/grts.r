@@ -10,7 +10,7 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: April 23, 2008
+# Last Revised: November 8, 2010
 # Description:
 #   This function select a GRTS sample of a finite, linear, or area resource.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -217,13 +217,18 @@ if(is.null(id)) {
       if(is.factor(att.frame[, id]))
          att.frame[, id] <- as.character(att.frame[, id])
    } else {
+      if(sp.ind) {
+         src.temp <- "sp.object"
+      } else {
+         src.temp <- "shapefile"
+      }
       if(!is.numeric(att.frame[, id]))
-         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must be numeric when argument \nsrc.frame equals \"", src.frame, "\".", sep=""))
+         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must be numeric when argument \nsrc.frame equals \"", src.temp, "\".", sep=""))
       if(any(att.frame[, id] < 1))
-         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must be positive integers when \nargument src.frame equals \"", src.frame, "\".", sep=""))
+         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must be positive integers when \nargument src.frame equals \"", src.temp, "\".", sep=""))
       att.temp <- read.dbf(in.shape)
       if(any(att.frame[, id] > nrow(att.temp)))
-         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must not exceed the number of \nrecords when argument src.frame equals \"", src.frame, "\".", sep=""))
+         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must not exceed the number of \nrecords when argument src.frame equals \"", src.temp, "\".", sep=""))
       rm(att.temp)
       if(!is.integer(att.frame[, id]))
          att.frame[, id] <- as.integer(att.frame[, id])
@@ -303,8 +308,8 @@ if(type.frame == "finite") {
       temp <- .Call("readShapeFilePts", in.shape)
       xcoord <- "x"
       ycoord <- "y"
-      att.frame$x <- temp$x
-      att.frame$y <- temp$y
+      att.frame$x <- temp$x[att.frame[,id]]
+      att.frame$y <- temp$y[att.frame[,id]]
 
 # If src.frame equals "att.frame", ensure that att.frame includes columns
 # containing x-coordinates and y-coordinates
@@ -583,7 +588,8 @@ if(type.frame == "finite") {
             len=att.frame[temp, elmsize])
       } else if(design[[s]]$seltype == "Continuous") {
          sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=att.frame[temp, mdcaty])
+            mdcaty=att.frame[temp, mdcaty],
+            len=att.frame[temp, elmsize])
       } else {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
@@ -673,7 +679,8 @@ if(type.frame == "finite") {
       else if(design[[s]]$seltype == "Unequal")
          sframe$mdm <- mdmlin(sframe$len, sframe$mdcaty, n.desired)
       else
-         sframe$mdm <- n.desired * sframe$mdcaty / sum(sframe$mdcaty)
+         sframe$mdm <- n.desired * sframe$mdcaty /
+                       sum(sframe$len * sframe$mdcaty)
 
 # Select the sample
 
@@ -765,7 +772,8 @@ if(type.frame == "finite") {
             area=att.frame[temp, elmsize])
       } else if(design[[s]]$seltype == "Continuous") {
          sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=att.frame[temp, mdcaty])
+            mdcaty=att.frame[temp, mdcaty],
+            area=att.frame[temp, elmsize])
       } else {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
@@ -855,7 +863,8 @@ if(type.frame == "finite") {
       else if(design[[s]]$seltype == "Unequal") 
          sframe$mdm <- mdmarea(sframe$area, sframe$mdcaty, n.desired)
       else
-         sframe$mdm <- n.desired * sframe$mdcaty / sum(sframe$mdcaty)
+         sframe$mdm <- n.desired * sframe$mdcaty /
+                       sum(sframe$area * sframe$mdcaty)
 
 # Select the sample
 

@@ -5,13 +5,13 @@
   Project spheroid models of the globe to Albers projection in the plane.
 }
 \usage{
-geodalbers(lon, lat, sph="Clarke1866", clon=-96, clat=23, sp1=29.5, sp2=45.5)
+geodalbers(lon, lat, sph="GRS80", clon=-96, clat=23, sp1=29.5, sp2=45.5)
 }
 \arguments{
   \item{lon}{longitude (decimal degrees) vector to be projected using Albers.}
   \item{lat}{latitude (decimal degrees) vector to be projected using Albers.}
   \item{sph}{spheroid options: Clarke1866, GRS80, WGS84.  The default is 
-    Clarke1866.}
+    GRS80.}
   \item{clon}{center longitude (decimal degrees).  The default is -96.}
   \item{clat}{origin latitude (decimal degrees).  The default is 23.}
   \item{sp1}{standard parallel 1 (decimal degrees).  The default is 29.5.}

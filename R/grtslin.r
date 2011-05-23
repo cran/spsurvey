@@ -8,7 +8,7 @@ grtslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: May 19, 2004
-# Last Revised: December 18, 2006
+# Last Revised: November 15, 2010
 # Description:      
 #   This function select a GRTS sample of a linear resource.  The function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -38,7 +38,10 @@ grtslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
 #   ranho - C function to construct the randomized hierarchical address for all
 #     points
 #   pickGridCells - C function to select grid cells that get a sample point
-#   linSample - C function to pick sample point(s) from selected cells
+#   insideLinearGridCell - C function to determine ID value and clipped polyline
+#     length for shapefile records contained in the selected grid cells
+#   pickLinearSamplePoints - C function to pick sample points in the selected grid
+#     cells
 ################################################################################
 
 # Determine the number of levels for hierarchical randomization
@@ -70,8 +73,7 @@ grtslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
 
    ranhadr <- .C("ranho", hadr, as.integer(length(hadr)))[[1]]
 
-# Determine the reverse hierarchical ordering for the randomized hierarchical
-# addresses
+# Determine order of the randomized hierarchical addresses
 
    rord <- order(ranhadr)
 
@@ -88,18 +90,30 @@ grtslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
       warning(paste("\nOf the ", n.cells, " grid cells from which sample points were selected,\n", temp, " (", round(100*temp/n.cells, 1), "%) of the cells contained more than one sample point.\n", sep=""))
    }
 
+# Determine shapefile record IDs and clipped polyline lengths for each selected
+# cell
+
+   rdx.u <- unique(rdx)
+   cell.df <- .Call("insideLinearGridCell", shapefilename, linframe$id, rdx.u,
+      xc[rdx.u], yc[rdx.u], dx, dy)
+
 # Pick a sample point in selected cells
 
-   temp <- .Call("linSample", shapefilename, xc[rdx], yc[rdx], dx, dy,
-      linframe$id, linframe$mdm)
-   xcs <- temp$x
-   ycs <- temp$y
-   id <- temp$lid
+   id <- integer(samplesize)
+   for(i in 1:samplesize) {
+      id[i] <- selectrecordID(rdx[i], cell.df$cellID, cell.df$recordLength,
+         cell.df$recordID, linframe$mdm, linframe$id)
+   }
    prb <- linframe$mdm[match(id, linframe$id)]
+   shp.id <- sort(unique(id))
+   temp <- .Call("pickLinearSamplePoints", shapefilename, shp.id, id, xc[rdx],
+      yc[rdx], dx, dy)
+   xcs <- temp$xcs
+   ycs <- temp$ycs
 
 # Construct sample line in reverse hierarchical order
  
-   nlv4 <- ceiling(logb(samplesize, 4))
+   nlv4 <- max(1, ceiling(logb(samplesize, 4)))
    rho <- matrix(0, 4^nlv4, nlv4)
    rv4 <- 0:3
    pwr4 <- 4^(0:(nlv4 - 1))

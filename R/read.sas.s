@@ -6,6 +6,7 @@ read.sas <- function(filename, libname=NULL, xport=FALSE,
 # Purpose: Read SAS datasets or a SAS XPORT (transport) file
 # Programmer: Tom Kincaid
 # Date: May 9, 2007
+# Revised: March 9, 2010
 # Description:
 #   This function reads either a SAS dataset or a SAS XPORT (transport) file and
 #   creates a data frame.
@@ -45,7 +46,7 @@ read.sas <- function(filename, libname=NULL, xport=FALSE,
 # Read the SAS dataset(s)
 
    } else if(is.null(libname)) {
-      df <- read.ssd(attr(.GlobalEnv, "path"), filename, sascmd=sascmd)
+      df <- read.ssd(getwd(), filename, sascmd=sascmd)
 
    } else {
       df <- read.ssd(libname, filename, sascmd=sascmd)

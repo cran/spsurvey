@@ -10,7 +10,7 @@ cdfvar.test <- function(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level,
 #          (CDFs)
 # Programmer: Tom Kincaid
 # Date: November 2, 2000
-# Last Revised: June 5, 2008
+# Last Revised: April 26, 2011
 # Description:
 #   This function calculates estimates of the variance-covariance matrix
 #   of the population proportions in a set of intervals (classes).  The set of
@@ -147,6 +147,7 @@ cdfvar.test <- function(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level,
       } else {
          support.lst <- NULL
       }
+      var.ind <- sapply(split(cluster, cluster), length) > 1
 
 # Calculate estimates of the total of the stage two sampling unit residuals 
 # and the variance/covariance of those totals for each stage one sampling unit
@@ -202,16 +203,25 @@ cdfvar.test <- function(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level,
 
 # Calculate variance/covariance estimates for the stage one sampling unit
 
-         if(vartype == "Local") {
-            weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]],
-               1/wgt2.lst[[i]])
-            var2est[i,] <- as.vector(pcfactor*localmean.cov(rm, weight.lst))
-            df <- df + localmean.df(weight.lst)
-         } else {
-            var2est[i,] <- as.vector(pcfactor*n*var(rm))
-            df <- df + (n-1)
-            if(SRSind)
-               vartype <- "Local"
+         if(var.ind[i]) {
+            if(vartype == "Local") {
+               weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]], 1/wgt2.lst[[i]])
+               var2est[i,] <- as.vector(pcfactor*localmean.cov(rm, weight.lst))
+            } else {
+               var2est[i,] <- as.vector(pcfactor*n*var(rm))
+               if(SRSind)
+                  vartype <- "Local"
+            }
+         }
+      }
+
+# Assign the mean variance to stage one sampling units with a single stage two
+# sampling unit
+      for(j in 1:m) {
+         ind <- var2est[,j] == 0
+         if(sum(ind) > 0) {
+            var.mean <- mean(var2est[!ind,j])
+            var2est[ind,j] <- var.mean
          }
       }
 
@@ -308,7 +318,7 @@ cdfvar.test <- function(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level,
 
        if(vartype == "Local") {
          weight.lst <- localmean.weight(x, y, 1/wgt)
-         varest <- pcfactor*localmean.cov(z=rm, weight.lst) / tw2
+         varest <- pcfactor*localmean.cov(rm, weight.lst) / tw2
          df <- localmean.df(weight.lst)
       } else {
          varest <- pcfactor*n*var(rm) / tw2

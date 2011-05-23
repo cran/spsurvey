@@ -35,7 +35,7 @@ grtslin(shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
 }
 \references{
   Stevens, D.L., Jr., and A.R. Olsen. (2004). Spatially-balanced sampling of
-  natural resources. \emph{Journal of the American Statistical Association}, \bold{99},
+  natural resources. \emph{Journal of the American Statistical Association} \bold{99},
   262-278.
 }
 \author{

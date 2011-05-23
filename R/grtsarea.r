@@ -1,6 +1,5 @@
 grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
-   SiteBegin=1, shift.grid=TRUE, startlev=NULL, maxlev=11, maxtry=1000,
-   acept=1){
+   SiteBegin=1, shift.grid=TRUE, startlev=NULL, maxlev=11, maxtry=1000){
 
 ################################################################################
 # Function: grtsarea
@@ -9,7 +8,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: May 19, 2004
-# Last Revised: December 18, 2006
+# Last Revised: November 15, 2010
 # Description:      
 #   This function select a GRTS sample of an area resource.  The function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -31,10 +30,6 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 #   maxtry = maximum number of iterations for randomly generating a point within
 #     a grid cell to select a site when type.frame equals "area".  The default
 #     is 1000.
-#   acept = parameter in function ftnt.inv.fcn that controls peakedness of a
-#     center-peaked distribution, which must be between 0 and 1.  A value of 0
-#     gives a triangular distribution, and a value of 1 gives a uniform
-#     distribution.  The default is 1.
 # Results: 
 #   A data frame of sample points containing: siteID, id, x, y, mdcaty,
 #     and weight.
@@ -47,11 +42,11 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 #     points
 #   ranho - C function to construct the randomized hierarchical address for all
 #     points
-#   ftnt.inv.fcn - calculates the inverse distribution function
 #   pickGridCells - C function to select grid cells that get a sample point
-#   pointInPolygonFile - C function to determine the polygon IDs and the
-#     probability values associated with a set of point, where polygons are
-#     specified by a shapefile
+#   insideAreaGridCell - C function to determine ID value and clipped polygon area
+#     for shapefile records contained in the selected grid cells
+#   pickAreaSamplePoints - C function to pick sample points in the selected grid
+#     cells
 ################################################################################
 
 # Determine the number of levels for hierarchical randomization
@@ -83,8 +78,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 
    ranhadr <- .C("ranho", hadr, as.integer(length(hadr)))[[1]]
 
-# Determine the reverse hierarchical ordering for the randomized hierarchical
-# addresses
+# Determine order of the randomized hierarchical addresses
 
    rord <- order(ranhadr)
 
@@ -101,21 +95,26 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
       warning(paste("\nOf the ", n.cells, " grid cells from which sample points were selected,\n", temp, " (", round(100*temp/n.cells, 1), "%) of the cells contained more than one sample point.\n", sep=""))
    }
 
+# Determine shapefile record IDs and clipped polygon areas for each selected
+# cell
+   rdx.u <- unique(rdx)
+   cell.df <- .Call("insideAreaGridCell", shapefilename, areaframe$id, rdx.u,
+      xc[rdx.u], yc[rdx.u], dx, dy)
+
 # Pick a sample point in selected cells
 
-   xcs <- ycs <- id <- prb <-numeric(samplesize)
-   bp <- !logical(samplesize)
-   ntry <- 0    
-   while(any(bp) & ntry < maxtry) {
-      xcs[bp] <- xc[rdx[bp]] - ftnt.inv.fcn(runif(sum(bp)), acept)*dx
-      ycs[bp] <- yc[rdx[bp]] - ftnt.inv.fcn(runif(sum(bp)), acept)*dy
-      temp <- .Call("pointInPolygonFile", shapefilename, xcs[bp], ycs[bp],
-         areaframe$id, areaframe$mdm)
-      id[bp] <- temp$id
-      prb[bp] <- temp$mdm
-      ntry <- ntry + 1
-      bp <- prb == 0
+   id <- integer(samplesize)
+   for(i in 1:samplesize) {
+      id[i] <- selectrecordID(rdx[i], cell.df$cellID, cell.df$recordArea,
+         cell.df$recordID, areaframe$mdm, areaframe$id)
    }
+   prb <- areaframe$mdm[match(id, areaframe$id)]
+   shp.id <- sort(unique(id))
+   temp <- .Call("pickAreaSamplePoints", shapefilename, shp.id, id, xc[rdx],
+      yc[rdx], dx, dy, as.integer(maxtry))
+   bp <- temp$bp
+   xcs <- temp$xcs
+   ycs <- temp$ycs
 
 # When the achieved sample size is less than the desired sample size, remove
 # values from the output vectors
@@ -130,7 +129,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 
 # Construct sample line in reverse hierarchical order
  
-   nlv4 <- ceiling(logb(samplesize, 4))
+   nlv4 <- max(1, ceiling(logb(samplesize, 4)))
    rho <- matrix(0, 4^nlv4, nlv4)
    rv4 <- 0:3
    pwr4 <- 4^(0:(nlv4 - 1))

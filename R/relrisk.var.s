@@ -9,7 +9,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 #          risk estimate
 # Programmer: Tom Kincaid
 # Date: March 9, 2005
-# Last Revised: June 9, 2008
+# Last Revised: November 2, 2010
 # Description:
 #   This function calculates the variance-covariance estimate for the cell and
 #   marginal totals used to calculate the relative risk estimate.  Either the
@@ -127,10 +127,11 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
       } else {
          support.lst <- NULL
       }
+      var.ind <- sapply(split(cluster, cluster), length) > 1
 
 # Calculate estimates of the total of the stage two sampling unit response
-# values  
-# or residuals and the variance of those totals for each stage one sampling unit
+# values or residuals and the variance of those totals for each stage one
+# sampling unit
 
       total2est <- matrix(0, ncluster, 4)
       var2est <- array(0, c(4, 4, ncluster))
@@ -141,7 +142,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
          nresp <- length(response.lst[[i]])
 
 # Create indicator variables for required cells and margins
-   
+
          Ind1 <- (response.lst[[i]] == response.levels[1])*(stressor.lst[[i]] ==
             stressor.levels[1])
          Ind2 <- (stressor.lst[[i]] == stressor.levels[1])
@@ -187,14 +188,25 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
 
 # Calculate the variance-covariance estimate for the stage one sampling unit
 
-         if(vartype == "Local") {
-            weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]],
-               1/wgt2.lst[[i]])
-            var2est[,,i] <- pcfactor*localmean.cov(rm, weight.lst)
-         } else {
-            var2est[,,i] <- pcfactor*nresp*var(rm)
-            if(SRSind)
-               vartype <- "Local"
+         if(var.ind[i]) {
+            if(vartype == "Local") {
+               weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]], 1/wgt2.lst[[i]])
+               var2est[i,] <- pcfactor*localmean.cov(rm, weight.lst)
+            } else {
+               var2est[i,] <- pcfactor*nresp*var(rm)
+               if(SRSind)
+                  vartype <- "Local"
+            }
+         }
+      }
+
+# Assign the mean variance to stage one sampling units with a single stage two
+# sampling unit
+      for(j in 1:4) {
+         ind <- var2est[,j] == 0
+         if(sum(ind) > 0) {
+            var.mean <- mean(var2est[!ind,j])
+            var2est[ind,j] <- var.mean
          }
       }
 
@@ -237,7 +249,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
             nrow=ncluster)) + temp
       }
 
-# End of section for a two-stage sample
+# End the section for a two-stage sample
 
    } else {
 
@@ -248,7 +260,7 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
       nresp <- length(response)
 
 # Create indicator variables for required cells and margins
-   
+
       Ind1 <- (response == response.levels[1])*(stressor == stressor.levels[1])
       Ind2 <- (stressor == stressor.levels[1])
       Ind3 <- (response == response.levels[1])*(stressor == stressor.levels[2])
@@ -291,7 +303,8 @@ relrisk.var <- function(response, stressor, response.levels, stressor.levels,
       } else {
          varest <- pcfactor*nresp*var(rm)
       }
-# End section for a single-stage sample
+
+# End the section for a single-stage sample
 
    }
 

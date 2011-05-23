@@ -81,14 +81,14 @@ framesum <- function(att.frame, design, type.frame="finite", stratum=NULL,
 #   vecprint - takes an input vector and outputs a character string with
 #     line breaks inserted
 # Examples:
-#   test.attframe <- read.dbf("test.shapefile")
-#   test.design <- list(Stratum1=list(panel=c(PanelOne=50),
-#      seltype="Equal", over=10), Stratum2=list(panel=c(PanelOne=50,
-#      PanelTwo=50), seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25,
-#      CatyThree=25, CatyFour=25), over=75)
-#   framesum(att.frame=test.attframe, design=test.design, type.frame="area",
-#      stratum="test.stratum", mdcaty="test.mdcaty", auxvar=c("test.ecoregion",
-#      "test.state"), units.in="Meters", scale=1000, units.out="Kilometers")
+#   attframe <- read.dbf("shapefile")
+#   design <- list(Stratum1=list(panel=c(PanelOne=50), seltype="Equal",
+#      over=10), Stratum2=list(panel=c(PanelOne=50, PanelTwo=50),
+#      seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
+#      CatyFour=25), over=75))
+#   framesum(att.frame=attframe, design=design, type.frame="area",
+#      stratum="stratum", mdcaty="mdcaty", auxvar=c("ecoregion",
+#      "state"), units.in="Meters", scale=1000, units.out="Kilometers")
 ################################################################################
 
 # Determine whether stratum and mdcaty are present

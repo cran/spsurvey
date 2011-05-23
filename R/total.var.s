@@ -6,7 +6,7 @@ total.var <- function(z, wgt, x, y, mean.est, var.est, sd.est, stratum.ind,
 # Function: total.var
 # Programmer: Tom Kincaid
 # Date: September 27, 2002
-# Last Revised: June 9, 2008
+# Last Revised: August 18, 2010
 # Description:
 #   This function calculates variance estimates of the estimated population 
 #   total, mean, variance, and standard deviation of a response variable.
@@ -114,6 +114,7 @@ total.var <- function(z, wgt, x, y, mean.est, var.est, sd.est, stratum.ind,
       } else {
          support.lst <- NULL
       }
+      var.ind <- sapply(split(cluster, cluster), length) > 1
 
 # Calculate estimates of the total of the stage two sampling unit response values  
 # or residuals and the variance of those totals for each stage one sampling unit
@@ -169,20 +170,32 @@ total.var <- function(z, wgt, x, y, mean.est, var.est, sd.est, stratum.ind,
 
 # Calculate variance estimates for the stage one sampling unit
 
-         if(vartype == "Local") {
-            weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]], 1/wgt2.lst[[i]])
-            var2est[i,1] <- pcfactor*localmean.var(rv.total, weight.lst)
-            var2est[i,2] <- pcfactor*localmean.var(rv.mean, weight.lst)
-            var2est[i,3] <- pcfactor*localmean.var(rv.var, weight.lst)
-            var2est[i,4] <- pcfactor*localmean.var(rv.sd, weight.lst)
-         } else {
-            var2est[i,1] <- pcfactor*n*var(rv.total)
-            var2est[i,2] <- pcfactor*n*var(rv.mean)
-            var2est[i,3] <- pcfactor*n*var(rv.var)
-            var2est[i,4] <- pcfactor*n*var(rv.sd)
-            if(SRSind)
-               vartype <- "Local"
+         if(var.ind[i]) {
+            if(vartype == "Local") {
+               weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]], 1/wgt2.lst[[i]])
+               var2est[i,1] <- pcfactor*localmean.var(rv.total, weight.lst)
+               var2est[i,2] <- pcfactor*localmean.var(rv.mean, weight.lst)
+               var2est[i,3] <- pcfactor*localmean.var(rv.var, weight.lst)
+               var2est[i,4] <- pcfactor*localmean.var(rv.sd, weight.lst)
+            } else {
+               var2est[i,1] <- pcfactor*n*var(rv.total)
+               var2est[i,2] <- pcfactor*n*var(rv.mean)
+               var2est[i,3] <- pcfactor*n*var(rv.var)
+               var2est[i,4] <- pcfactor*n*var(rv.sd)
+               if(SRSind)
+                  vartype <- "Local"
+            }
          }
+      }
+
+# Assign the mean variance to stage one sampling units with a single stage two
+# sampling unit
+      ind <- var2est[,1] == 0
+      if(sum(ind) > 0) {
+         var2est[ind,1] <- mean(var2est[!ind,1])
+         var2est[ind,2] <- mean(var2est[!ind,2])
+         var2est[ind,3] <- mean(var2est[!ind,3])
+         var2est[ind,4] <- mean(var2est[!ind,4])
       }
 
 # Adjust the variance estimator for small sample size

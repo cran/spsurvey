@@ -1,24 +1,25 @@
 dframe.check <- function(sites, design, subpop, data.cat, data.cont,
-   data.rr, design.names) {
+   data.risk, design.names) {
 
 ################################################################################
 # Function: dframe.check
 # Programmer: Tom Kincaid
 # Date: September 26, 2003
-# Last Revised: January 20, 2009
+# Last Revised: November 2, 2010
 # Description:
-#   This function checks site IDs, the sites data frame, the subpop data
-#      frame, the data.cat data frame, the data.cont data frame, and the data.rr
-#      data frame to assure valid contents.  If they do not exist, then the
-#      sites data frame and the subpop data frame are created.
+#   This function checks site IDs, the sites data frame, the subpop data frame,
+#      the data.cat data frame, the data.cont data frame, the data.ar data
+#      frame, and the data.rr data frame to assure valid contents.  If they do
+#      not exist, then the sites data frame and the subpop data frame are
+#      created.
 #   Input:
 #      design = the design data frame.
 #      sites = the sites data frame.
 #      subpop = the subpop data frame.
 #      data.cat = the data.cat data frame of categorical response variables.
 #      data.cont = the data.cont data frame of continuous response variables.
-#      data.rr = the data.rr data frame of categorical response and stressor
-#                variables.
+#      data.risk = the data.ar or data.rr data frame of categorical response and
+#                  stressor variables.
 #      design.names = names for the design data frame.
 #   Output:
 #      A list consisting of the sites data frame, design data frame, subpop data
@@ -41,6 +42,11 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
       if(any(temp)) {
          temp.str <- vecprint(seq(nrow(sites))[temp])
          stop(paste("\nThe following rows in the sites data frame contain missing site ID values:\n", temp.str, sep=""))
+      }
+      temp <- is.na(sites[,2])
+      if(any(temp)) {
+         temp.str <- vecprint(seq(nrow(sites))[temp])
+         stop(paste("\nThe following rows in the sites data frame contain missing logical variable values:\n", temp.str, sep=""))
       }
       temp <- sapply(split(sites[,1], sites[,1]), length)
       if(any(temp > 1)) {
@@ -149,32 +155,32 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
       names(data.cont)[1] <- design.names[1]
    }
 
-# Check the data.rr data frame for contents
+# Check the data.risk data frame for contents
 
-   if(!is.null(data.rr)) {
-      if(!is.data.frame(data.rr))
-         stop("\nThe data.rr argument must be a data frame.")
-      temp <- is.na(data.rr[,1])
+   if(!is.null(data.risk)) {
+      if(!is.data.frame(data.risk))
+         stop("\nThe data.risk argument must be a data frame.")
+      temp <- is.na(data.risk[,1])
       if(any(temp)) {
-         temp.str <- vecprint(seq(nrow(data.rr))[temp])
-         stop(paste("\nThe following rows in the data.rr data frame contain missing site ID values:\n", temp.str, sep=""))
+         temp.str <- vecprint(seq(nrow(data.risk))[temp])
+         stop(paste("\nThe following rows in the data.risk data frame contain missing site ID values:\n", temp.str, sep=""))
       }
-      temp <- sapply(split(data.rr[,1], data.rr[,1]), length)
+      temp <- sapply(split(data.risk[,1], data.risk[,1]), length)
       if(any(temp > 1)) {
          temp.str <- vecprint(names(temp)[temp > 1])
-         stop(paste("The following site ID values in the data.rr data frame occur more than \nonce:\n", temp.str, sep=""))
+         stop(paste("The following site ID values in the data.risk data frame occur more than \nonce:\n", temp.str, sep=""))
       }
-      temp <- match(siteID, data.rr[,1], nomatch=0)
+      temp <- match(siteID, data.risk[,1], nomatch=0)
       if(any(temp == 0)) {
          temp.str <- vecprint(unique(siteID[temp == 0]))
-         stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the data.rr data frame:\n", temp.str, sep=""))
+         stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the data.risk data frame:\n", temp.str, sep=""))
       }
-      data.rr <- data.rr[temp,]
-      names(data.rr)[1] <- design.names[1]
+      data.risk <- data.risk[temp,]
+      names(data.risk)[1] <- design.names[1]
    }
 
 # Return the list
 
    list(sites=sites[sites[,2],], design=design, subpop=subpop,
-        data.cat=data.cat, data.cont=data.cont, data.rr=data.rr)
+        data.cat=data.cat, data.cont=data.cont, data.risk=data.risk)
 }

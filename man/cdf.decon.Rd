@@ -178,6 +178,10 @@ cdf.decon(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL, stratum=NULL,
   Environmental Protection Agency, Office of Research and Development, National
   Health Effects and Environmental Research Laboratory, Western Ecology
   Division.
+  
+  Stefanski, F.A. and J.M. Bay. (1996). Simulation extrapolation deconvolution
+  of finite population cumulative distribution function estimators,
+  \emph{Biometrika} \bold{83}, 407-417.
 }
 \author{Tom Kincaid \email{Kincaid.Tom@epa.gov}}
 \examples{

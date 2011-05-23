@@ -10,7 +10,7 @@
 \usage{
 cont.analysis(sites=NULL, subpop=NULL, design=NULL, data.cont=NULL, sigma=NULL,
    var.sigma=NULL, popsize=NULL, popcorrect=FALSE, pcfsize=NULL, N.cluster=NULL,
-   stage1size=NULL, sizeweight=FALSE, vartype="Local", conf=95,
+   stage1size=NULL, sizeweight=FALSE, total=FALSE, vartype="Local", conf=95,
    pctval=c(5,10,25,50,75,90,95), spsurvey.obj=NULL)
 }
 \arguments{
@@ -128,6 +128,9 @@ cont.analysis(sites=NULL, subpop=NULL, design=NULL, data.cont=NULL, sigma=NULL,
   \item{sizeweight}{a logical value that indicates whether size-weights should 
     be used in the analysis, where TRUE = use the size-weights and FALSE = 
     do not use the size-weights.  The default is FALSE.}
+  \item{total}{a logical value that indicates whether the population total estimate
+    should be included in the output Pct data frame, where TRUE = include the
+    total estimate and FALSE = do not include the estimate.  The default is FALSE.}
   \item{vartype}{the choice of variance estimator, where "Local" = local mean
     estimator and "SRS" = SRS estimator.  The default is "Local".}
   \item{conf}{the confidence level.  The default is 95\%.}
