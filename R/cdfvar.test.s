@@ -10,7 +10,7 @@ cdfvar.test <- function(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level,
 #          (CDFs)
 # Programmer: Tom Kincaid
 # Date: November 2, 2000
-# Last Revised: April 26, 2011
+# Last Revised: June 17, 2011
 # Description:
 #   This function calculates estimates of the variance-covariance matrix
 #   of the population proportions in a set of intervals (classes).  The set of
@@ -207,8 +207,10 @@ cdfvar.test <- function(z, wgt, x, y, bounds, phat, stratum.ind, stratum.level,
             if(vartype == "Local") {
                weight.lst <- localmean.weight(x2.lst[[i]], y2.lst[[i]], 1/wgt2.lst[[i]])
                var2est[i,] <- as.vector(pcfactor*localmean.cov(rm, weight.lst))
+               df <- df + localmean.df(weight.lst)
             } else {
                var2est[i,] <- as.vector(pcfactor*n*var(rm))
+               df <- df + (n-1)
                if(SRSind)
                   vartype <- "Local"
             }

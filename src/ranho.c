@@ -27,10 +27,10 @@
 **               in each address node would of been a waste of memory.
 **  Notes:       The perm array (in permFcn) can be changed to be only 4 
 **               chars in length. It is at 5 so that the '\0' could be 
-**               added so that they could be printed out using either 
-**               Rprintf or printf.
+**               added so that they could be printed out using Rprintf.
 **  Created:     August 11, 2004
 **  Revised:     April 24, 2006
+**  Revised:     January 27, 2012
 ******************************************************************************/
 
 #include <stdio.h>
@@ -207,44 +207,6 @@ void deallocateColCharList( colCharNode * head ) {
     temp = head->next;
     free( head ); 
     head = temp;
-  }
-
-  return;
-}
-
-
-/**********************************************************
-** Function:   printAddrList  (ONLY USED FOR DEBUGGING CODE)
-**
-** Purpose:    Prints to stdout the addresses held by each node
-**             in the linked list pointed to by the sent pointer.
-** Arguments:  head, head pointer to beginning of the list
-** Return:     void
-***********************************************************/
-void printAddrList( addrNode * head ) {
-  
-  while( head ) {
-    printf( "%s\n", head->addr );
-    head = head->next;
-  }
-
-  return;
-}
-
-
-/**********************************************************
-** Function:   printColCharList  (ONLY USED FOR DEBUGGING CODE)
-**
-** Purpose:    Prints to stdout the character held by each node
-**             in the linked list pointed to by the sent pointer.
-** Arguments:  head, head pointer to beginning of the list
-** Return:     void
-***********************************************************/
-void printColCharList( colCharNode * head ) {
-  
-  while( head ) {
-    printf( "%c\n", head->colChar );
-    head = head->next;
   }
 
   return;

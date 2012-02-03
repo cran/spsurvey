@@ -9,6 +9,7 @@
 **               the R matrix.
 **  Created:     August 24, 2004
 **  Revised:     April 23, 2008
+**  Revised:     January 27, 2012
 ******************************************************************************/
 
 #include <stdio.h>
@@ -16,6 +17,7 @@
 #include <string.h>
 #include <R.h>
 #include <Rdefines.h>
+#include <libintl.h>
 #include <time.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -237,52 +239,6 @@ int parseDbfHeader( FILE * fptr, Dbf * dbf ) {
   }
 
   return 1;
-}
-
-
-/**********************************************************
-** Function:   printDbf  (ONLY USED FOR DEBUGGING CODE)
-**
-** Purpose:    Prints to stdout all the information and data
-**             stored in the sent dbf struct.
-** Arguments:  dbf,   pointer to Dbf struct that stores the
-**                    dbf file info and data
-** Return:     void
-***********************************************************/
-void printDbf( Dbf * dbf ) {
-  int i, j;
-  int row;
-
-  /* dbf file header info */
-  printf( "Version: %d\n", dbf->version );
-  printf( "Year: %d\n", dbf->year );
-  printf( "Month: %d\n", dbf->month );
-  printf( "Day: %d\n", dbf->day );
-  printf( "Num of Records: %d\n", dbf->numRecords );
-  printf( "Header length: %d\n", dbf->headerLength );
-  printf( "Record length: %d\n", dbf->recordLength );
-
-  printf( "\n" );
-
-  /* field info */
-  for ( i=0; i < dbf->numFields; ++i ) {
-    printf( "%d - Name: %s\n", i+1, dbf->fields[i].name );
-    printf( "  Type: %c\n", dbf->fields[i].type );
-    printf( "  Length: %d\n", dbf->fields[i].length );
-  }
-
-  /* records data */
-  for ( row = 0; row < dbf->numRecords; ++row ) {
-    printf( "NEW RECORD:\n" );
-    for ( i=0; i < dbf->numFields; ++i ) {
-      for ( j=0; j < dbf->fields[i].length; ++j ) {
-        printf( "%c", dbf->fields[i].data[row][j] );
-      }
-      printf( "\n" );
-    }
-  }
-
-  return;
 }
 
 

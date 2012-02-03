@@ -61,6 +61,8 @@
 \alias{total.var}
 \alias{relrisk.var}
 \alias{attrisk.var}
+\alias{changevar.prop}
+\alias{changevar.mean}
 \alias{localmean.weight}
 \alias{localmean.var}
 \alias{localmean.cov}
@@ -71,6 +73,9 @@
 \alias{interp.cdf}
 \alias{interp.axis}
 \alias{selectrecordID}
+\alias{bin1.wgt}
+\alias{wgt.lim}
+\alias{nicerange}
 \title{Internal spsurvey Functions}
 \description{
   These functions are internal spsurvey functions.
@@ -181,6 +186,13 @@ relrisk.var(response, stressor, response.levels, stressor.levels, wgt, x, y,
 attrisk.var(response, stressor, response.levels, stressor.levels, wgt, x, y,
   stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind,
   pcfsize, N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+changevar.prop(catvar.levels, catvar1, catvar2, wgt, x, y, revisitwgt, prop1,
+   prop2, stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1,
+   pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype, warn.ind,
+   warn.df, warn.vec)
+changevar.mean(z1, z2, wgt, x, y, revisitwgt, mean1, mean2, stratum.ind,
+   stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize,
+   N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
 localmean.weight(x, y, prb, nbh)
 localmean.var(z, weight.lst)
 localmean.cov(zmat, weight.lst)
@@ -191,6 +203,10 @@ warnprnt(warn.df, m=1:nrow(warn.df))
 interp.cdf(pctval, cdfest.p, cdf.value)
 interp.axis(yl.lab, cdfest.l, cdfest.r)
 selectrecordID(rdx, cellID, recordMeasure, recordID, mdm, id)
+bin1.wgt(x, wgt=rep(1,length(x)), nbin=50, ab=nicerange(x),
+  support="Continuous")
+wgt.lim(i, m, mlow=(1-m), mhi=(m-1))
+nicerange(x, beta = 0.1)
 }
 \details{
   These functions are not to be called by the user.

@@ -1,12 +1,14 @@
 citHeader("To cite the spsurvey package in publications use:")
 
 citEntry(
-   entry="misc",
-   author="Thomas M. Kincaid and Anthony R. Olsen",
-   year=2011,
+   entry="Manual",
    title="spsurvey: Spatial Survey Design and Analysis",
-   note="R package version 2.2",
-   textVersion=paste("Thomas M. Kincaid and Anthony R. Olsen (2011).",
+   author="Thomas M. Kincaid and Anthony R. Olsen",
+   year=2012,
+   note="R package version 2.3",
+   url="http://www.epa.gov/nheerl/arm/",
+   textVersion=paste("Kincaid, T. M. and Olsen, A. R. (2012).",
                       "spsurvey: Spatial Survey Design and Analysis.",
-                      "R package version 2.2.")
+                      "R package version 2.3.",
+                      "URL: http://www.epa.gov/nheerl/arm/.")
 )

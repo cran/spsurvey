@@ -2,7 +2,7 @@ localmean.weight <- function(x, y, prb, nbh=4) {
 
 ################################################################################
 # Function: localmean.weight
-# Programmer: Tom Kincaid
+# Programmers: Don Stevens and Tom Kincaid
 # Date: September 5, 2001
 # Last Revised: May 5, 2006
 # Description:

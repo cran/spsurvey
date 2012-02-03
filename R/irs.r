@@ -8,7 +8,7 @@ irs <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Purpose: Select an independent random sample (IRS)
 # Programmer: Tom Kincaid
 # Date: November 28, 2005
-# Last Revised: May 13, 2008
+# Last Revised: August 17, 2011
 # Description:
 #   Select an independent random sample from a point, linear, or areal frame.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -939,7 +939,7 @@ if(shapefile == TRUE) {
       sites.tmp <- sites
       for(i in seq(ncol(sites.tmp))[temp]) {
          sites.tmp[,i] <- as.character(sites.tmp[,i])
-         temp <- sites.tmp[,i] == "" & !is.na(sites.tmp[,i])
+         temp <- sites.tmp[,i] == "" | is.na(sites.tmp[,i])
          if(any(temp)) {
             sites.tmp[temp,i] <- " "
          }

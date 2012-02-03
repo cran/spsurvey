@@ -5,7 +5,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
 # Function: dframe.check
 # Programmer: Tom Kincaid
 # Date: September 26, 2003
-# Last Revised: November 2, 2010
+# Last Revised: November 18, 2011
 # Description:
 #   This function checks site IDs, the sites data frame, the subpop data frame,
 #      the data.cat data frame, the data.cont data frame, the data.ar data
@@ -32,11 +32,11 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
 # Check the sites data frame for contents
 
    if(is.null(sites)) {
-      sites <- data.frame(siteID=design$siteID, use.sites=rep(TRUE, dim(design)[1]))
+      sites <- data.frame(siteID=design$siteID, use.sites=rep(TRUE, nrow(design)))
    } else {
       if(!is.data.frame(sites))
          stop("\nThe sites argument must be a data frame.")
-      if(dim(sites)[2] != 2)
+      if(ncol(sites) != 2)
          stop("\nThe sites argument must contain exactly two variables.")
       temp <- is.na(sites[,1])
       if(any(temp)) {
@@ -86,7 +86,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
    } else {
       if(!is.data.frame(subpop))
          stop("\nThe subpop argument must be a data frame.")
-      if(dim(subpop)[2] < 2)
+      if(ncol(subpop) < 2)
          stop("\nThe subpop argument must contain at least two variables.")
       temp <- is.na(subpop[,1])
       if(any(temp)) {

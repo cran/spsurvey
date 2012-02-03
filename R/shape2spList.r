@@ -2,7 +2,7 @@ shape2spList <- function (shape, shp.type, ID) {
 
 ################################################################################
 # Function: shape2spList
-# Purpose: Create an object of class Slines or class Srings
+# Purpose: Create an object of class Lines or class Polygons
 # Programmer: Tom Kincaid
 # Date: July 21, 2005
 # Last Revised: January 18, 2006
@@ -15,8 +15,8 @@ shape2spList <- function (shape, shp.type, ID) {
 #      shapefile or "poly" for a Polygon shapefile.
 #   ID - the shape ID value, i.e., the shapefile record number.
 # Results:
-#   An object of class Slines for a lines shapefile or class Srings for a
-#   polygons shapefile - see documentation for the sp package for further
+#   An object of class Lines for a Polyline shapefile or class Polygons for a
+#   Polygon shapefile - see documentation for the sp package for further
 #   details.
 # Other Functions Required:
 #   Line - sp package function to create an object of class Line

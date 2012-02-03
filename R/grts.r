@@ -10,7 +10,7 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: November 8, 2010
+# Last Revised: November 3, 2011
 # Description:
 #   This function select a GRTS sample of a finite, linear, or area resource.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -110,7 +110,7 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #     information,  where TRUE equals create a shapefile and FALSE equals do
 #     not create a shapefile.  The default is TRUE.
 #   prjfilename = name (without any extension) of the projection file for the
-#     input shapefile, which is use to name the projection file for the output
+#     input shapefile, which is used to name the projection file for the output
 #     shapefile.  The default is NULL.
 #   out.shape = name (without any extension) of the output shapefile containing
 #     the survey design information.  The default is "sample".
@@ -493,7 +493,7 @@ if(type.frame == "finite") {
             i <- 1
             while(sum(n.temp) != n.short) {
                i <- i+1
-               ntemp[i] <- n.temp[i] + 1
+               n.temp[i] <- n.temp[i] + 1
             }
          }
          np <- c(0, cumsum(design[[s]]$panel - n.temp))
@@ -1038,7 +1038,7 @@ if(shapefile == TRUE) {
       sites.tmp <- sites
       for(i in seq(ncol(sites.tmp))[temp]) {
          sites.tmp[,i] <- as.character(sites.tmp[,i])
-         temp <- sites.tmp[,i] == "" & !is.na(sites.tmp[,i])
+         temp <- sites.tmp[,i] == "" | is.na(sites.tmp[,i])
          if(any(temp)) {
             sites.tmp[temp,i] <- " "
          }

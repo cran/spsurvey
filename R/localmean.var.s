@@ -2,7 +2,7 @@ localmean.var <- function(z, weight.lst) {
 
 ################################################################################
 # Function: localmean.var
-# Programmer: Tom Kincaid
+# Programmers: Don Stevens and Tom Kincaid
 # Date: October 17, 2000
 # Last Revised: September 5, 2001
 # Description:

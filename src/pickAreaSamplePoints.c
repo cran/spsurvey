@@ -2,6 +2,7 @@
 **  Function:    pickAreaSamplePoints
 **  Programmer:  Tom Kincaid
 **  Date:        May 19, 2010
+**  Revised:     November 3, 2011
 **  Description:
 **    For each value in the set of shapefile record IDs, select a sample point
 **    from the shapefile record 
@@ -742,7 +743,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
             }
           }
 
-          if((check % 2) == 0) {
+          if((check % 2) == 1) {
             bp[i] = FALSE;
             xcs[i] = xtemp;
             ycs[i] = ytemp;
@@ -837,7 +838,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
             }
           }
 
-          if((check % 2) == 0) {
+          if((check % 2) == 1) {
             bp[i] = FALSE;
             xcs[i] = xtemp;
             ycs[i] = ytemp;

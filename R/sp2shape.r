@@ -5,7 +5,7 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
 # Purpose: Create an ESRI shapefile from an sp package object
 # Programmer: Tom Kincaid
 # Date: June 6, 2006
-# Last Revised: April 23, 2008
+# Last Revised: August 17, 2011
 # Description:
 #   This function creates an ESRI shapefile from an sp package object.  The type 
 #   of shapefile, i.e., point, polyline, or polygon, is determined by the class 
@@ -32,7 +32,7 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
       if(any(temp)) {
          for(i in seq(ncol(att.data))[temp]) {
             att.data[,i] <- as.character(att.data[,i])
-            temp <- att.data[,i] == "" & !is.na(att.data[,i])
+            temp <- att.data[,i] == "" | is.na(att.data[,i])
             if(any(temp)) {
                att.data[temp,i] <- " "
             }
@@ -49,7 +49,7 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
       if(any(temp)) {
          for(i in seq(ncol(att.data))[temp]) {
             att.data[,i] <- as.character(att.data[,i])
-            temp <- att.data[,i] == "" & !is.na(att.data[,i])
+            temp <- att.data[,i] == "" | is.na(att.data[,i])
             if(any(temp)) {
                att.data[temp,i] <- " "
             }
@@ -92,7 +92,7 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
       if(any(temp)) {
          for(i in seq(ncol(att.data))[temp]) {
             att.data[,i] <- as.character(att.data[,i])
-            temp <- att.data[,i] == "" & !is.na(att.data[,i])
+            temp <- att.data[,i] == "" | is.na(att.data[,i])
             if(any(temp)) {
                att.data[temp,i] <- " "
             }
