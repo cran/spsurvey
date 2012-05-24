@@ -1,4 +1,4 @@
-change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
+change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
    data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL, popsize_2=NULL,
    popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL, pcfsize_2=NULL,
    N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL, stage1size_2=NULL,
@@ -10,27 +10,27 @@ change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
 # Purpose: Change Analysis for Probability Survey Data
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
+# Last Revised: May 16, 2012
 # Description:
 #   This function organizes input and output for estimation of change between
 #   two probability surveys.
 # Arguments:
-#   sites = a data frame consisting of five variables: the first variable is
+#   sites = a data frame consisting of three variables: the first variable is
 #     site IDs, and the other variables are logical vectors indicating which
 #     sites to use in the analysis.  The first logical vector indicates the
 #     complete set of sites for the first survey.  The second logical vector
-#     indicates the complete set of sites for the second survey.  The third
-#     logical vector indicates the set of repeat visit sites for the first
-#     survey.  The fourth logical vector indicates the set of repeat visit sites
-#     for the second survey.  For the repeat revisit sites, the order of survey
-#     sites for survey one must match the order of survey sites for survey two.
-#     The default is NULL.
+#     indicates the complete set of sites for the second survey.
+#   repeats = a data frame that identifies site IDs for repeat visit sites from
+#     the two surveys.   The first variable is site IDs for survey one. The
+#     second variable is site IDs for survey two.  For each row of the data
+#     frame, the two site IDs must correspond to the same site.
 #   subpop = a data frame describing sets of populations and subpopulations for
 #     which estimates will be calculated.  The first variable is site IDs.  Each
 #     subsequent variable identifies a Type of population, where the variable
 #     name is used to identify Type.  A Type variable identifies each site with
 #     one of the subpopulations of that Type.  The default is NULL.
-#   design = a data frame consisting of design variables.  The default is NULL.
-#     Variables should be named as follows:
+#   design = a data frame consisting of design variables.  Variables should be
+#     named as follows:
 #       siteID = site IDs
 #       wgt = final adjusted weights, which are either the weights for a single-
 #         stage sample or the stage two weights for a two-stage sample
@@ -56,10 +56,13 @@ change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
 #   data.cat = a data frame of categorical response variables.  The first
 #     variable is site IDs.  Subsequent variables are response variables.
 #     Missing data (NA) is allowed.  The default is NULL.
-#   revisitwgt = a logical value that indicates whether the revisited sites in
-#     the two surveys have the same survey design weights, where TRUE = the
+#   data.cont = a data frame of continuous response variables.  The first
+#     variable is site IDs.  Subsequent variables are response variables.
+#     Missing data (NA) is allowed.  The default is NULL.
+#   revisitwgt = a logical value that indicates whether the repeat visit sites
+#     in the two surveys have the same survey design weights, where TRUE = the
 #     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the revisited sites are assigned equal weights.  The
+#     argument is FALSE, the repeat visit sites are assigned equal weights.  The
 #     default is FALSE.
 #   popsize_1 = known size of the resource for survey one, which is used to
 #     perform ratio adjustment to estimators expressed using measurement units
@@ -191,6 +194,8 @@ change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
 
    if(is.null(sites))
       stop("\nThe sites data frame must be provided.")
+   if(is.null(repeats))
+      stop("\nThe repeats data frame must be provided.")
    if(is.null(design))
       stop("\nThe design data frame must be provided.")
    if(!is.data.frame(design))
@@ -200,10 +205,23 @@ change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
 
 # Check the sites data frame for missing values in the logical vectors
 
-   temp <- apply(sites[,2:5], 1, function(x) any(is.na(x)))
+   temp <- apply(sites[,2:3], 1, function(x) any(is.na(x)))
    if(any(temp)) {
       temp.str <- vecprint(seq(nrow(sites))[temp])
       stop(paste("\nThe following rows in the sites data frame contain missing logical variable \nvalues:\n", temp.str, sep=""))
+   }
+
+# Check the repeats data frame for missing values
+
+   temp <- any(is.na(repeats[,1]))
+   if(any(temp)) {
+      temp.str <- vecprint(seq(nrow(sites))[temp])
+      stop(paste("\nThe following rows in the repeats data frame contain missing for site IDs \nin survey one:\n", temp.str, sep=""))
+   }
+   temp <- any(is.na(repeats[,2]))
+   if(any(temp)) {
+      temp.str <- vecprint(seq(nrow(sites))[temp])
+      stop(paste("\nThe following rows in the repeats data frame contain missing for site IDs \nin survey two:\n", temp.str, sep=""))
    }
 
 # Assign some required values from the subpop data frame
@@ -222,8 +240,7 @@ change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
       stop(paste("\nThe following names used in the design data frame do not match the required names:\n", temp.str))
    }
 
-# Create data frames for the two surveys and assign the repeat visit sites
-# logical vectors
+# Create data frames for the two surveys
 
    sites_1 <- sites[sites[,2],c(1,2)]
    sites_2 <- sites[sites[,3],c(1,3)]
@@ -235,8 +252,26 @@ change.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
    data.cat_2 <- data.cat[sites[,3],]
    data.cont_1 <- data.cont[sites[,2],]
    data.cont_2 <- data.cont[sites[,3],]
-   repeat_1 <- sites[sites[,2],4]
-   repeat_2 <- sites[sites[,3],5]
+
+# Assign the repeat visit sites logical vectors
+
+   temp <- match(sites_1[,1], repeats[,1], nomatch=0)
+   repeat_1 <- temp > 0
+   temp <- match(repeats[,1], sites_1[,1], nomatch=0)
+   if(any(temp == 0)) {
+      temp.str <- vecprint(repeats[,1][temp == 0])
+      stop(paste("\nThe following site IDs for survey one in the repeats data frame do not have \nmatching site IDs for survey one in the sites data frame:\n", temp.str, sep=""))
+   }
+   sites_1[repeat_1,] <- sites_1[temp,]
+
+   temp <- match(sites_2[,1], repeats[,2], nomatch=0)
+   repeat_2 <- temp > 0
+   temp <- match(repeats[,2], sites_2[,1], nomatch=0)
+   if(any(temp == 0)) {
+      temp.str <- vecprint(repeats[,1][temp == 0])
+      stop(paste("\nThe following site IDs for survey two in the repeats data frame do not have \nmatching site IDs for survey two in the sites data frame:\n", temp.str, sep=""))
+   }
+   sites_2[repeat_2,] <- sites_2[temp,]
 
 # Check the logical variables for repeat visit sites
    if(!is.logical(repeat_1))
@@ -657,13 +692,6 @@ if(!is.null(data.cat)) {
 # Determine whether the subpopulation is empty
 
             if(all(is.na(data.cat_1[subpop.ind_1,ivar]))) {
-               warn.ind <- TRUE
-               warn <- paste("Subpopulation", subpopnames[isubpop], "of population type", typenames[itype], "for indicator", varnames[ivar], "\nin survey one contains no data.\n")
-               act <- "None.\n"
-               warn.df <- rbind(warn.df, data.frame(func=I(fname),
-                  subpoptype=I(typenames[itype]),
-                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
-                  stratum=NA,  warning=I(warn), action=I(act)))
                next
             }
 
@@ -689,13 +717,6 @@ if(!is.null(data.cat)) {
 # Determine whether the subpopulation is empty
 
             if(all(is.na(data.cat_2[subpop.ind_2,ivar]))) {
-               warn.ind <- TRUE
-               warn <- paste("Subpopulation", subpopnames[isubpop], "of population type", typenames[itype], "for indicator", varnames[ivar], "\nin survey two contains no data.\n")
-               act <- "None.\n"
-               warn.df <- rbind(warn.df, data.frame(func=I(fname),
-                  subpoptype=I(typenames[itype]),
-                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
-                  stratum=NA,  warning=I(warn), action=I(act)))
                next
             }
 
@@ -881,13 +902,6 @@ if(!is.null(data.cont)) {
 # Determine whether the subpopulation is empty
 
             if(all(is.na(data.cont_1[subpop.ind_1,ivar]))) {
-               warn.ind <- TRUE
-               warn <- paste("Subpopulation", subpopnames[isubpop], "of population type", typenames[itype], "for indicator", varnames[ivar], "\nin survey one contains no data.\n")
-               act <- "None.\n"
-               warn.df <- rbind(warn.df, data.frame(func=I(fname),
-                  subpoptype=I(typenames[itype]),
-                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
-                  stratum=NA,  warning=I(warn), action=I(act)))
                next
             }
 
@@ -913,13 +927,6 @@ if(!is.null(data.cont)) {
 # Determine whether the subpopulation is empty
 
             if(all(is.na(data.cont_2[subpop.ind_2,ivar]))) {
-               warn.ind <- TRUE
-               warn <- paste("Subpopulation", subpopnames[isubpop], "of population type", typenames[itype], "for indicator", varnames[ivar], "\nin survey two contains no data.\n")
-               act <- "None.\n"
-               warn.df <- rbind(warn.df, data.frame(func=I(fname),
-                  subpoptype=I(typenames[itype]),
-                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
-                  stratum=NA,  warning=I(warn), action=I(act)))
                next
             }
 
@@ -1081,7 +1088,14 @@ if(!is.null(data.cont)) {
          cat(paste("During execution of the program,", nrow(warn.df), "warning messages were generated.  The warning \nmessages are stored in a data frame named 'warn.df'.  Enter the following \ncommand to view the warning messages: warnprnt() \nTo view a subset of the warning messages (say, messages number 1, 3, and 5), \nenter the following command: warnprnt(m=c(1,3,5))\n"))
    }
 
-# Return results
+# Assign consecutive numbers to the row names of the output data frames
+
+   if(!is.null(catsum))
+      row.names(catsum) <- 1:nrow(catsum)
+   if(!is.null(contsum))
+      row.names(contsum) <- 1:nrow(contsum)
+
+# Return the data frames as a list
 
    list(catsum=catsum, contsum=contsum)
 }

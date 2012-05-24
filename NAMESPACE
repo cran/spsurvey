@@ -2,6 +2,9 @@ useDynLib(spsurvey, .registration = TRUE)
 
 exportPattern("^[^\\.]")
 
-importFrom(MASS, ginv)
-importFrom(foreign, read.xport)
+importFrom(deldir, deldir)
+importFrom(deldir, tile.list)
 importFrom(foreign, read.ssd)
+importFrom(foreign, read.xport)
+importFrom(MASS, ginv)
+importFrom(rgeos, gIntersection)

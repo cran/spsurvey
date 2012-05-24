@@ -8,7 +8,7 @@ changevar.mean <- function(z1, z2, wgt, x, y, revisitwgt, mean1, mean2,
 # Purpose: Calculate the covariance or correlation estimate of the estimated
 #          change in means between two probability surveys
 # Programmer: Tom Kincaid
-# Date: January 27, 2012
+# Date: May 23, 2012
 # Description:
 #   This function calculates estimates of the variance-covariance matrix
 #   of the population proportions in a set of intervals (classes).  The set of
@@ -32,10 +32,11 @@ changevar.mean <- function(z1, z2, wgt, x, y, revisitwgt, mean1, mean2,
 #   y = y-coordinate for location for each site, which is either the y-
 #     coordinate for a single-stage sample or the stage two y-coordinate for a
 #     two-stage sample.
-#   revisitwgt = a logical value that indicates whether the revisited sites in
-#     the two surveys have the same survey design weights, where TRUE = the
+#   revisitwgt = a logical value that indicates whether the repeat visit sites
+#     in the two surveys have the same survey design weights, where TRUE = the
 #     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the revisited sites have been assigned equal weights.
+#     argument is FALSE, the repeat visit sites have been assigned equal
+#     weights.
 #   mean1 = the estimated mean for survey one.
 #   mean2 = the estimated mean for survey two.
 #   stratum.ind = a logical value that indicates whether the sample is
@@ -129,22 +130,21 @@ if(cluster.ind) {
 # Determine whether the mean could be calculated for both surveys
    if(is.na(mean1) | is.na(mean2)) {
       warn.ind <- TRUE
-      act <- "Covariance among the revisited sites was not included in calculation of \nthe standard error estimate.\n"
+      act <- "Covariance among the repeat visit sites was not included in calculation of \nthe standard error estimate.\n"
       if(stratum.ind) {
-         warn <- paste("The revisit sites mean in stratum \"", stratum.level, "\" \ncould not be calculated in one of the surveys.\n", sep="")
+         warn <- paste("The repeat visit sites mean in stratum \"", stratum.level, "\" \ncould not be calculated in one of the surveys.\n", sep="")
          warn.df <- rbind(warn.df, data.frame(func=I(fname),
             subpoptype=warn.vec[1], subpop=warn.vec[2],
             indicator=warn.vec[3], stratum=I(stratum.level), warning=I(warn),
             action=I(act)))
       } else {
-         warn <- paste("The revisit sites mean could not be calculated in one of the surveys.\n", sep="")
+         warn <- paste("The repeat visit sites mean could not be calculated in one of the surveys.\n", sep="")
          warn.df <- rbind(warn.df, data.frame(func=I(fname),
             subpoptype=warn.vec[1], subpop=warn.vec[2],
             indicator=warn.vec[3], stratum=NA, warning=I(warn),
             action=I(act)))
       }
       rslt <- NA
-      next
    } else {
 
 # Calculate estimates of the total of the stage two sampling unit residuals 
@@ -170,13 +170,13 @@ if(cluster.ind) {
             warn.ind <- TRUE
             act <- "The simple random sampling variance estimator was used.\n"
             if(stratum.ind) {
-               warn <- paste("There are less than four response values for stage one sampling unit ", cluster.levels[i], "\nin stratum ", stratum.level, ", the simple random sampling variance estimator \nwas used to calculate variance of the estimate.\n", sep="")
+               warn <- paste("There are less than four response values for stage one sampling unit ", cluster.levels[i], "\nin stratum ", stratum.level, ", the simple random sampling variance estimator \nwas used to calculate covariance of the estimate.\n", sep="")
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
                   subpoptype=warn.vec[1], subpop=warn.vec[2],
                   indicator=warn.vec[3], stratum=I(stratum.level),
                   warning=I(warn), action=I(act)))
             } else {
-               warn <- paste("There are less than four response values for stage one sampling unit ", cluster.levels[i], ", \nthe simple random sampling variance estimator was used to calculate variance of \nthe estimate.\n", sep="")
+               warn <- paste("There are less than four response values for stage one sampling unit ", cluster.levels[i], ", \nthe simple random sampling variance estimator was used to calculate covariance of \nthe estimate.\n", sep="")
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
                   subpoptype=warn.vec[1], subpop=warn.vec[2],
                   indicator=warn.vec[3], stratum=NA, warning=I(warn),
@@ -218,13 +218,13 @@ if(cluster.ind) {
          warn.ind <- TRUE
          act <- "The simple random sampling variance estimator was used.\n"
          if(stratum.ind) {
-            warn <- paste("There are less than four stage one sampling units in stratum ", stratum.level, ", \nthe simple random sampling variance estimator was used to calculate variance of \nthe estimate.\n", sep="")
+            warn <- paste("There are less than four stage one sampling units in stratum ", stratum.level, ", \nthe simple random sampling variance estimator was used to calculate covariance of \nthe estimate.\n", sep="")
             warn.df <- rbind(warn.df, data.frame(func=I(fname),
                subpoptype=warn.vec[1], subpop=warn.vec[2],
                indicator=warn.vec[3], stratum=I(stratum.level), warning=I(warn),
                action=I(act)))
          } else {
-            warn <- paste("There are less than four stage one sampling units, the simple random sampling \nvariance estimator was used to calculate variance of the estimate.\n", sep="")
+            warn <- paste("There are less than four stage one sampling units, the simple random sampling \nvariance estimator was used to calculate covariance of the estimate.\n", sep="")
             warn.df <- rbind(warn.df, data.frame(func=I(fname),
                subpoptype=warn.vec[1], subpop=warn.vec[2],
                indicator=warn.vec[3], stratum=NA, warning=I(warn),
@@ -252,22 +252,21 @@ if(cluster.ind) {
       } else {
          if(varest[1,1] == 0 | varest[2,2] == 0) {
             warn.ind <- TRUE
-            act <- "Covariance among the revisited sites was not included in calculation of \nthe standard error estimate.\n"
+            act <- "Covariance among the repeat visit sites was not included in calculation of \nthe standard error estimate.\n"
             if(stratum.ind) {
-               warn <- paste("The variance estimate for the revisit sites mean in stratum \"", stratum.level, "\" \nwas equal to zero for at least one of the surveys.\n", sep="")
+               warn <- paste("The variance estimate for the repeat visit sites mean in stratum \"", stratum.level, "\" \nwas equal to zero for at least one of the surveys.\n", sep="")
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
                   subpoptype=warn.vec[1], subpop=warn.vec[2],
                   indicator=warn.vec[3], stratum=I(stratum.level),
                   warning=I(warn), action=I(act)))
             } else {
-               warn <- paste("The variance estimate for the revisit sites mean was equal to zero \nfor at least \none of the surveys.\n", sep="")
+               warn <- paste("The variance estimate for the repeat visit sites mean was equal to zero \nfor at least \none of the surveys.\n", sep="")
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
                   subpoptype=warn.vec[1], subpop=warn.vec[2],
                   indicator=warn.vec[3], stratum=NA, warning=I(warn),
                   action=I(act)))
             }
             rslt <- NA
-            next
          }
          rslt <- varest[1,2]/sqrt(varest[1,1]*varest[2,2])
       }
@@ -285,22 +284,21 @@ if(cluster.ind) {
 # Determine whether the mean could be calculated for both surveys
    if(is.na(mean1) | is.na(mean2)) {
       warn.ind <- TRUE
-      act <- "Covariance among the revisited sites was not included in calculation of \nthe standard error estimate.\n"
+      act <- "Covariance among the repeat visit sites was not included in calculation of \nthe standard error estimate.\n"
       if(stratum.ind) {
-         warn <- paste("The revisit sites mean in stratum \"", stratum.level, "\" \ncould not be calculated in one of the surveys.\n", sep="")
+         warn <- paste("The repeat visit sites mean in stratum \"", stratum.level, "\" \ncould not be calculated in one of the surveys.\n", sep="")
          warn.df <- rbind(warn.df, data.frame(func=I(fname),
             subpoptype=warn.vec[1], subpop=warn.vec[2],
             indicator=warn.vec[3], stratum=I(stratum.level), warning=I(warn),
             action=I(act)))
       } else {
-         warn <- paste("The revisit sites mean could not be calculated in one of the surveys.\n", sep="")
+         warn <- paste("The repeat visit sites mean could not be calculated in one of the surveys.\n", sep="")
          warn.df <- rbind(warn.df, data.frame(func=I(fname),
             subpoptype=warn.vec[1], subpop=warn.vec[2],
             indicator=warn.vec[3], stratum=NA, warning=I(warn),
             action=I(act)))
       }
       rslt <- NA
-      next
    } else {
 
 # Calculate the weighted residuals matrix
@@ -313,13 +311,13 @@ if(cluster.ind) {
          warn.ind <- TRUE
          act <- "The simple random sampling variance estimator was used.\n"
          if(stratum.ind) {
-            warn <- paste("There are less than four response values in stratum ", stratum.level, ", \nthe simple random sampling variance estimator was used to calculate variance of \nthe estimate.\n", sep="")
+            warn <- paste("There are less than four response values in stratum ", stratum.level, ", \nthe simple random sampling variance estimator was used to calculate covariance of \nthe estimate.\n", sep="")
             warn.df <- rbind(warn.df, data.frame(func=I(fname),
                subpoptype=warn.vec[1], subpop=warn.vec[2],
                indicator=warn.vec[3], stratum=I(stratum.level), warning=I(warn),
                action=I(act)))
          } else {
-            warn <- "\nThere are less than four response values, the simple random sampling variance \nestimator was used to calculate variance of the estimate.\n"
+            warn <- "\nThere are less than four response values, the simple random sampling variance \nestimator was used to calculate covariance of the estimate.\n"
             warn.df <- rbind(warn.df, data.frame(func=I(fname),
                subpoptype=warn.vec[1], subpop=warn.vec[2],
                indicator=warn.vec[3], stratum=NA, warning=I(warn),
@@ -343,22 +341,21 @@ if(cluster.ind) {
       } else {
          if(varest[1,1] == 0 | varest[2,2] == 0) {
             warn.ind <- TRUE
-            act <- "Covariance among the revisited sites was not included in calculation of \nthe standard error estimate.\n"
+            act <- "Covariance among the repeat visit sites was not included in calculation of \nthe standard error estimate.\n"
             if(stratum.ind) {
-               warn <- paste("The variance estimate for the revisit sites mean in stratum \"", stratum.level, "\" \nwas equal to zero for at least one of the surveys.\n", sep="")
+               warn <- paste("The variance estimate for the repeat visit sites mean in stratum \"", stratum.level, "\" \nwas equal to zero for at least one of the surveys.\n", sep="")
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
                   subpoptype=warn.vec[1], subpop=warn.vec[2],
                   indicator=warn.vec[3], stratum=I(stratum.level),
                   warning=I(warn), action=I(act)))
             } else {
-               warn <- paste("The variance estimate for the revisit sites mean was equal to zero \nfor at least \none of the surveys.\n", sep="")
+               warn <- paste("The variance estimate for the repeat visit sites mean was equal to zero \nfor at least \none of the surveys.\n", sep="")
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
                   subpoptype=warn.vec[1], subpop=warn.vec[2],
                   indicator=warn.vec[3], stratum=NA, warning=I(warn),
                   action=I(act)))
             }
             rslt <- NA
-            next
          }
          rslt <- varest[1,2]/sqrt(varest[1,1]*varest[2,2])
       }

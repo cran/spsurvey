@@ -62,7 +62,10 @@
 \alias{relrisk.var}
 \alias{attrisk.var}
 \alias{changevar.prop}
+\alias{changevar.size}
 \alias{changevar.mean}
+\alias{sbcframe}
+\alias{sbcsamp}
 \alias{localmean.weight}
 \alias{localmean.var}
 \alias{localmean.cov}
@@ -190,9 +193,15 @@ changevar.prop(catvar.levels, catvar1, catvar2, wgt, x, y, revisitwgt, prop1,
    prop2, stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1,
    pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype, warn.ind,
    warn.df, warn.vec)
+changevar.size(catvar.levels, catvar1, catvar2, wgt, x, y, revisitwgt, size1,
+   size2, stratum.ind, stratum.level, cluster.ind, cluster, wgt1, x1, y1,
+   pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype, warn.ind,
+   warn.df, warn.vec)
 changevar.mean(z1, z2, wgt, x, y, revisitwgt, mean1, mean2, stratum.ind,
    stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize,
    N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
+sbcframe(shapefilename=NULL, nrows=5, dxdy=TRUE)
+sbcsamp(sp.sample, sbc.frame=NULL, dx=NULL, dy=NULL, xc=NULL, yc=NULL)
 localmean.weight(x, y, prb, nbh)
 localmean.var(z, weight.lst)
 localmean.cov(zmat, weight.lst)

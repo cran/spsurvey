@@ -1,20 +1,26 @@
 Package: spsurvey
-Version: 2.3
-Date: 2012-02-03
+Version: 2.4
+Date: 2012-05-24
 Title: Spatial Survey Design and Analysis
+Authors@R: c(person("Tom", "Kincaid", role=c("aut", "cre"), email =
+        "Kincaid.Tom@epa.gov"), person("Tony", "Olsen", role="aut",
+        email = "Olsen.Tony@epa.gov"), person("Don", "Stevens",
+        role="ctb"), person("Christian", "Platt", role="ctb"),
+        person("Denis", "White", role="ctb"), person("Richard",
+        "Remington", role="ctb"))
 Author: Tom Kincaid <Kincaid.Tom@epa.gov> and Tony Olsen
         <Olsen.Tony@epa.gov> with contributions from Don Stevens,
         Christian Platt, Denis White, and Richard Remington
 Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
-Depends: utils, sp, deldir, rgeos, stringr
-Imports: MASS, foreign
-LazyLoad: yes
+Depends: sp, utils
+Imports: deldir, foreign, MASS, rgeos
+ByteCompile: yes
 Description: This group of functions implements algorithms for design
         and analysis of probability surveys.  The functions are
         tailored for Generalized Random Tesselation Stratified (GRTS)
         survey designs.
 License: GPL (>= 2)
 URL: http://www.epa.gov/nheerl/arm/
-Packaged: 2012-02-03 19:20:16 UTC; tkincaid
+Packaged: 2012-05-24 20:15:34 UTC; tkincaid
 Repository: CRAN
-Date/Publication: 2012-02-04 08:39:50
+Date/Publication: 2012-05-30 06:55:08

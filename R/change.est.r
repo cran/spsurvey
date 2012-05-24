@@ -14,6 +14,7 @@ change.est <- function(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
 # Purpose: Estimate change between two probability surveys
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
+# Last Revised: May 17, 2012
 # Description:
 #   This function estimates change between two probability surveys.  The
 #   function can accommodate both categorical and continuous response variables.
@@ -235,7 +236,7 @@ if(resp.ind == "cat") {
       swgt=swgt_1, swgt1=swgt1_1, vartype=vartype_1, conf=conf,
       check.ind=check.ind, warn.ind=warn.ind, warn.df=warn.df,
       warn.vec=warn.vec)
-   temp.cat_1 <- temp$Results[temp$Results$Category != "Total",1:6]
+   temp.cat_1 <- temp$Results[temp$Results$Category != "Total",]
    tw_1 <- temp$Results$Estimate.U[temp$Results$Category == "Total"]
    warn.ind <- temp$warn.ind
    warn.df <- temp$warn.df
@@ -248,7 +249,7 @@ if(resp.ind == "cat") {
       swgt=swgt_2, swgt1=swgt1_2, vartype=vartype_2, conf=conf,
       check.ind=check.ind, warn.ind=warn.ind, warn.df=warn.df,
       warn.vec=warn.vec)
-   temp.cat_2 <- temp$Results[temp$Results$Category != "Total",1:6]
+   temp.cat_2 <- temp$Results[temp$Results$Category != "Total",]
    tw_2 <- temp$Results$Estimate.U[temp$Results$Category == "Total"]
    warn.ind <- temp$warn.ind
    warn.df <- temp$warn.df
@@ -258,7 +259,8 @@ if(resp.ind == "cat") {
       all=TRUE)
 
 # Calculate the change estimates
-   Results$Estimate <- (Results$Estimate.P_1 - Results$Estimate.P_2)/100
+   Results$DiffEst.P <- (Results$Estimate.P_2 - Results$Estimate.P_1)/100
+   Results$DiffEst.U <- Results$Estimate.U_2 - Results$Estimate.U_1
 
 # Express the standard error estimates for the two surveys on the proportion
 # scale
@@ -274,9 +276,31 @@ if(resp.ind == "cat") {
 
 # Section for surveys with no repeat visit sites
    if(sum(repeat_1) == 0) {
-      Results$StdError <- sqrt(Results$StdError.P_1^2 + Results$StdError.P_2^2)
-      eval(parse(text=paste("Results$LCB", conf, "Pct <- 100*pmax(Results$Estimate - mult*Results$StdError, 0)", sep="")))
-      eval(parse(text=paste("Results$LCB", conf, "Pct <- 100*pmin(Results$Estimate + mult*Results$StdError, 1)", sep="")))
+      Results$StdError.P <- sqrt(Results$StdError.P_1^2 + Results$StdError.P_2^2)
+      Results$StdError.U <- sqrt(Results$StdError.U_1^2 + Results$StdError.U_2^2)
+      eval(parse(text=paste("Results$LCB", conf, "Pct.P <- 100*pmax(Results$DiffEst.P - mult*Results$StdError.P, -1)", sep="")))
+      eval(parse(text=paste("Results$UCB", conf, "Pct.P <- 100*pmin(Results$DiffEst.P + mult*Results$StdError.P, 1)", sep="")))
+      Results$DiffEst.P <- 100*Results$DiffEst.P
+      Results$StdError.P <- 100*Results$StdError.P
+      Results$StdError.P_1 <- 100*Results$StdError.P_1
+      Results$StdError.P_2 <- 100*Results$StdError.P_2
+      if(!is.null(popsize_1)) {
+         if(!is.null(popsize_2)) {
+            eval(parse(text=paste("Results$LCB", conf, "Pct.U <- pmax(Results$DiffEst.U - mult*Results$StdError.U, -popsize_1)", sep="")))
+            eval(parse(text=paste("Results$UCB", conf, "Pct.U <- pmin(Results$DiffEst.U + mult*Results$StdError.U, popsize_2)", sep="")))
+         } else {
+            eval(parse(text=paste("Results$LCB", conf, "Pct.U <- pmax(Results$DiffEst.U - mult*Results$StdError.U, -popsize_1)", sep="")))
+            eval(parse(text=paste("Results$UCB", conf, "Pct.U <- Results$DiffEst.U + mult*Results$StdError.U", sep="")))
+         }
+      } else {
+         if(!is.null(popsize_2)) {
+            eval(parse(text=paste("Results$LCB", conf, "Pct.U <- Results$DiffEst.U - mult*Results$StdError.U", sep="")))
+            eval(parse(text=paste("Results$UCB", conf, "Pct.U <- pmin(Results$DiffEst.U + mult*Results$StdError.U, popsize_2)", sep="")))
+         } else {
+            eval(parse(text=paste("Results$LCB", conf, "Pct.U <- Results$DiffEst.U - mult*Results$StdError.U", sep="")))
+            eval(parse(text=paste("Results$UCB", conf, "Pct.U <- Results$DiffEst.U + mult*Results$StdError.U", sep="")))
+         }
+      }
 
    } else {
 
@@ -600,7 +624,8 @@ if(resp.ind == "cat") {
 
 # Create the vector of covariance or correlation estimates for all strata
 # combined
-   rslt <- rep(NA, nlevels)
+   rslt.p <- rep(NA, nlevels)
+   rslt.u <- rep(NA, nlevels)
 
 # Check whether the vectors of categorical variable values for revisit sites
 # are empty or contain a single value
@@ -684,11 +709,48 @@ if(resp.ind == "cat") {
 
 # Add estimates to the vector for all strata combined
          if(!is.null(popsize)) {
-            rslt[!is.na(correst)] <- rslt[!is.na(correst)] +
+            rslt.p[!is.na(correst)] <- rslt.p[!is.na(correst)] +
                (popsize[i]/sum.popsize)*correst[!is.na(correst)]
          } else {
-            rslt[!is.na(correst)] <- rslt[!is.na(correst)] +
+            rslt.p[!is.na(correst)] <- rslt.p[!is.na(correst)] +
                (popsize.hat[i]/sum.popsize.hat)*correst[!is.na(correst)]
+         }
+
+# Estimate the size of each category
+         if(!is.null(popsize)) {
+            size1 <- popsize[i]*prop1
+            size2 <- popsize[i]*prop2
+         } else {
+            size1 <- popsize.hat[i]*prop1
+            size2 <- popsize.hat[i]*prop2
+         }
+
+# Calculate covariance or correlation estimates
+         if(cluster.ind) {
+            temp <- changevar.size(catvar.levels, z1, z2, w2, x[stratum.i],
+               y[stratum.i], revisitwgt, size1, size2, stratum.ind,
+               stratum.levels[i], cluster.ind, cluster[stratum.i], w1,
+               x1[stratum.i], y1[stratum.i], pcfactor.ind, NULL, N.cluster[i],
+               stage1size[[i]], support[stratum.i], vartype, warn.ind, warn.df,
+               warn.vec)
+         } else {
+            temp <- changevar.size(catvar.levels, z1, z2, w, x[stratum.i],
+               y[stratum.i], revisitwgt, size1, size2, stratum.ind,
+               stratum.levels[i], cluster.ind, pcfactor.ind=pcfactor.ind,
+               pcfsize=pcfsize[i], support=support[stratum.i], vartype=vartype,
+               warn.ind=warn.ind, warn.df=warn.df, warn.vec=warn.vec)
+         }
+         correst <- temp$rslt
+         warn.ind <- temp$warn.ind
+         warn.df <- temp$warn.df
+
+# Add estimates to the vector for all strata combined
+         if(!is.null(popsize)) {
+            rslt.u[!is.na(correst)] <- rslt.u[!is.na(correst)] +
+               correst[!is.na(correst)]
+         } else {
+            rslt.u[!is.na(correst)] <- rslt.u[!is.na(correst)] +
+               correst[!is.na(correst)]
          }
 
 # End the section for nonempty vectors of categorical variables values for
@@ -710,7 +772,8 @@ if(resp.ind == "cat") {
 # Check whether the vectors of categorical variable values for revisit sites
 # are empty or contain a single value
    if(length(catvar_1) <= 1) {
-      rslt <- rep(NA, nlevels)
+      rslt.p <- rep(NA, nlevels)
+      rslt.u <- rep(NA, nlevels)
       warn.ind <- TRUE
       act <- "Covariance among the revisited sites was not included in calculation of \nthe standard error estimate.\n"
       warn <- paste("The number of nonmissing repeat visit sites was less than two in one of the \nsurveys.\n", sep="")
@@ -762,7 +825,33 @@ if(resp.ind == "cat") {
             vartype=vartype, warn.ind=warn.ind, warn.df=warn.df,
             warn.vec=warn.vec)
       }
-      rslt <- temp$rslt
+      rslt.p <- temp$rslt
+      warn.ind <- temp$warn.ind
+      warn.df <- temp$warn.df
+
+# Estimate the size of each category
+      if(!is.null(popsize)) {
+         size1 <- popsize*prop1
+         size2 <- popsize*prop2
+      } else {
+         size1 <- popsize.hat*prop1
+         size2 <- popsize.hat*prop2
+      }
+
+# Calculate covariance or correlation estimates
+      if(cluster.ind) {
+         temp <- changevar.size(catvar.levels, z1, z2, w2, x, y, revisitwgt,
+            size1, size2, stratum.ind, NULL, cluster.ind, cluster, w1, x1, y1,
+            pcfactor.ind, NULL, N.cluster, stage1size, support, vartype,
+            warn.ind, warn.df, warn.vec)
+      } else {
+         temp <- changevar.size(catvar.levels, z1, z2, w, x, y, revisitwgt,
+            size1, size2, stratum.ind, NULL, cluster.ind,
+            pcfactor.ind=pcfactor.ind, pcfsize=pcfsize, support=support,
+            vartype=vartype, warn.ind=warn.ind, warn.df=warn.df,
+            warn.vec=warn.vec)
+      }
+      rslt.u <- temp$rslt
       warn.ind <- temp$warn.ind
       warn.df <- temp$warn.df
 
@@ -773,25 +862,34 @@ if(resp.ind == "cat") {
 # End the section for unstratified data
    }
 
-# Calculate standard errors and confidence bounds
-   Results$StdError <- rep(NA, nlevels)
-   ind <- is.na(rslt)
-   Results$StdError[ind] <- sqrt(Results$StdError.P_1[ind]^2 +
+# Calculate standard errors
+   Results$StdError.P <- rep(NA, nlevels)
+   Results$StdError.U <- rep(NA, nlevels)
+   ind <- is.na(rslt.p)
+   Results$StdError.P[ind] <- sqrt(Results$StdError.P_1[ind]^2 +
       Results$StdError.P_2[ind]^2)
+   Results$StdError.U[ind] <- sqrt(Results$StdError.U_1[ind]^2 +
+      Results$StdError.U_2[ind]^2)
    if(any(!ind)) {
+      tw_1r <- sum(wgt_1[repeat_1])
+      tw_2r <- sum(wgt_2[repeat_2])
       if(revisitwgt) {
-         tw_1r <- sum(wgt_1[repeat_1])
-         tw_2r <- sum(wgt_2[repeat_2])
          temp <- Results$StdError.P_1^2 + Results$StdError.P_2^2 -
-            ((2*tw_1r*tw_2r)/(tw_1*tw_2))*rslt
-         ind <- !is.na(rslt) & temp <= 0
-         Results$StdError[ind] <- sqrt(Results$StdError.P_1[ind]^2 +
+            ((2*tw_1r*tw_2r)/(tw_1*tw_2))*rslt.p
+         ind <- !is.na(rslt.p) & temp <= 0
+         Results$StdError.P[ind] <- sqrt(Results$StdError.P_1[ind]^2 +
             Results$StdError.P_2[ind]^2)
-         ind <- !is.na(rslt) & temp > 0
-         Results$StdError[ind] <- sqrt(temp[ind])
+         ind <- !is.na(rslt.p) & temp > 0
+         Results$StdError.P[ind] <- sqrt(temp[ind])
+         temp <- Results$StdError.U_1^2 + Results$StdError.U_2^2 -2*rslt.u
+         ind <- !is.na(rslt.u) & temp <= 0
+         Results$StdError.U[ind] <- sqrt(Results$StdError.U_1[ind]^2 +
+            Results$StdError.U_2[ind]^2)
+         Results$StdError.U[ind] <- sqrt(Results$StdError.U_1[ind]^2 +
+            Results$StdError.U_2[ind]^2)
+         ind <- !is.na(rslt.u) & temp > 0
+         Results$StdError.U[ind] <- sqrt(temp[ind])
       } else {
-         tw_1r <- sum(wgt_1[repeat_1])
-         tw_2r <- sum(wgt_2[repeat_2])
          temp <- category.est(catvar=z_1[repeat_1], wgt=wgt_1[repeat_1],
             x=x_1[repeat_1], y=y_1[repeat_1], stratum=stratum_1[repeat_1],
             cluster=cluster_1[repeat_1], wgt1=wgt1_1[repeat_1],
@@ -802,10 +900,12 @@ if(resp.ind == "cat") {
             swgt1=swgt1_1[repeat_1], vartype=vartype_1, conf=conf,
             check.ind=check.ind, warn.ind=warn.ind, warn.df=warn.df,
             warn.vec=warn.vec)
-         se_1 <- rep(NA, nlevels)
+         se_1.p <- rep(NA, nlevels)
+         se_1.u <- rep(NA, nlevels)
          temp$Results <- temp$Results[temp$Results$Category != "Total",]
          ind <- match(temp$Results$Category, catvar.levels, nomatch=0)
-         se_1[ind] <- temp$Results$StdError.P/100
+         se_1.p[ind] <- temp$Results$StdError.P/100
+         se_1.u[ind] <- temp$Results$StdError.U
          temp <- category.est(catvar=z_2[repeat_2], wgt=wgt_2[repeat_2],
             x=x_2[repeat_2], y=y_2[repeat_2], stratum=stratum_2[repeat_2],
             cluster=cluster_2[repeat_2], wgt1=wgt1_2[repeat_2],
@@ -816,29 +916,60 @@ if(resp.ind == "cat") {
             swgt1=swgt1_2[repeat_2], vartype=vartype_2, conf=conf,
             check.ind=check.ind, warn.ind=warn.ind, warn.df=warn.df,
             warn.vec=warn.vec)
-         se_2 <- rep(NA, nlevels)
+         se_2.p <- rep(NA, nlevels)
+         se_2.u <- rep(NA, nlevels)
          temp$Results <- temp$Results[temp$Results$Category != "Total",]
          ind <- match(temp$Results$Category, catvar.levels, nomatch=0)
-         se_2[ind] <- temp$Results$StdError.P/100
-         covest <- rslt * se_1 * se_2
+         se_2.p[ind] <- temp$Results$StdError.P/100
+         se_2.u[ind] <- temp$Results$StdError.U
+         covest <- rslt.p * se_1.p * se_2.p
          temp <- Results$StdError.P_1^2 + Results$StdError.P_2^2 -
             ((2*tw_1r*tw_2r)/(tw_1*tw_2))*covest
-         ind <- !is.na(rslt) & temp <= 0
-         Results$StdError[ind] <- sqrt(Results$StdError.P_1[ind]^2 +
+         ind <- !is.na(rslt.p) & temp <= 0
+         Results$StdError.P[ind] <- sqrt(Results$StdError.P_1[ind]^2 +
             Results$StdError.P_2[ind]^2)
-         ind <- !is.na(rslt) & temp > 0
-         Results$StdError[ind] <- sqrt(temp[ind])
+         ind <- !is.na(rslt.p) & temp > 0
+         Results$StdError.P[ind] <- sqrt(temp[ind])
+         covest <- rslt.u * se_1.u * se_2.u
+         temp <- Results$StdError.U_1^2 + Results$StdError.U_2^2 -2*covest
+         ind <- !is.na(rslt.u) & temp <= 0
+         Results$StdError.U[ind] <- sqrt(Results$StdError.U_1[ind]^2 +
+            Results$StdError.U_2[ind]^2)
+         ind <- !is.na(rslt.u) & temp > 0
+         Results$StdError.U[ind] <- sqrt(temp[ind])
       }
    }
-   eval(parse(text=paste("Results$LCB", conf, "Pct <- 100*pmax(Results$Estimate - mult*Results$StdError, -1)", sep="")))
-   eval(parse(text=paste("Results$UCB", conf, "Pct <- 100*pmin(Results$Estimate + mult*Results$StdError, 1)", sep="")))
-   Results$Estimate <- 100*Results$Estimate
+
+# Calculate confidence bounds
+   eval(parse(text=paste("Results$LCB", conf, "Pct.P <- 100*pmax(Results$DiffEst.P - mult*Results$StdError.P, -1)", sep="")))
+   eval(parse(text=paste("Results$UCB", conf, "Pct.P <- 100*pmin(Results$DiffEst.P + mult*Results$StdError.P, 1)", sep="")))
+   Results$DiffEst.P <- 100*Results$DiffEst.P
+   Results$StdError.P <- 100*Results$StdError.P
    Results$StdError.P_1 <- 100*Results$StdError.P_1
    Results$StdError.P_2 <- 100*Results$StdError.P_2
-   Results$StdError <- 100*Results$StdError
+   if(!is.null(popsize_1)) {
+      if(!is.null(popsize_2)) {
+         eval(parse(text=paste("Results$LCB", conf, "Pct.U <- pmax(Results$DiffEst.U - mult*Results$StdError.U, -popsize_1)", sep="")))
+         eval(parse(text=paste("Results$UCB", conf, "Pct.U <- pmin(Results$DiffEst.U + mult*Results$StdError.U, popsize_2)", sep="")))
+      } else {
+         eval(parse(text=paste("Results$LCB", conf, "Pct.U <- pmax(Results$DiffEst.U - mult*Results$StdError.U, -popsize_1)", sep="")))
+         eval(parse(text=paste("Results$UCB", conf, "Pct.U <- Results$DiffEst.U + mult*Results$StdError.U", sep="")))
+      }
+   } else {
+      if(!is.null(popsize_2)) {
+         eval(parse(text=paste("Results$LCB", conf, "Pct.U <- Results$DiffEst.U - mult*Results$StdError.U", sep="")))
+         eval(parse(text=paste("Results$UCB", conf, "Pct.U <- pmin(Results$DiffEst.U + mult*Results$StdError.U, popsize_2)", sep="")))
+      } else {
+         eval(parse(text=paste("Results$LCB", conf, "Pct.U <- Results$DiffEst.U - mult*Results$StdError.U", sep="")))
+         eval(parse(text=paste("Results$UCB", conf, "Pct.U <- Results$DiffEst.U + mult*Results$StdError.U", sep="")))
+      }
+   }
 
 # End the section for surveys with repeat visit sites
    }
+
+# Rearrange columns of the Results data frame
+   Results <- Results[,c(1, 20, 22, 24:25, 21, 23, 26:27, 2:19)]
 
 #
 # End the section for a categorical variable
@@ -880,7 +1011,7 @@ if(resp.ind == "cat") {
    Results <- merge(temp.cont_1, temp.cont_2, by="Statistic", suffix=c("_1", "_2"))
 
 # Calculate the change estimates
-   Results$Estimate <- Results$Estimate_1 - Results$Estimate_2
+   Results$DiffEst <- Results$Estimate_2 - Results$Estimate_1
 
 # Calculate confidence bound multiplier
    mult <- qnorm(0.5 + (conf/100)/2)
@@ -892,9 +1023,8 @@ if(resp.ind == "cat") {
 # Section for surveys with no repeat visit sites
    if(sum(repeat_1) == 0) {
       Results$StdError <- sqrt(Results$StdError_1^2 + Results$StdError_2^2)
-      eval(parse(text=paste("Results$LCB", conf, "Pct <- 100*pmax(Results$Estimate - mult*Results$StdError, 0)", sep="")))
-      eval(parse(text=paste("Results$LCB", conf, "Pct <- 100*pmin(Results$Estimate + mult*Results$StdError, 1)", sep="")))
-
+      eval(parse(text=paste("Results$LCB", conf, "Pct <- Results$DiffEst - mult*Results$StdError", sep="")))
+      eval(parse(text=paste("Results$UCB", conf, "Pct <- Results$DiffEst + mult*Results$StdError", sep="")))
    } else {
 
 # Section for surveys with repeat visit sites
@@ -1386,13 +1516,13 @@ if(resp.ind == "cat") {
 # End the section for unstratified data
    }
 
-# Calculate standard errors and confidence bounds
+# Calculate standard errors
    if(is.na(rslt)) {
       Results$StdError <- sqrt(Results$StdError_1^2 + Results$StdError_2^2)
    } else {
+      tw_1r <- sum(wgt_1[repeat_1])
+      tw_2r <- sum(wgt_2[repeat_2])
       if(revisitwgt) {
-         tw_1r <- sum(wgt_1[repeat_1])
-         tw_2r <- sum(wgt_2[repeat_2])
          temp <- Results$StdError_1^2 + Results$StdError_2^2 -
             ((2*tw_1r*tw_2r)/(tw_1*tw_2))*rslt
          if(temp <= 0) {
@@ -1413,7 +1543,6 @@ if(resp.ind == "cat") {
             check.ind=check.ind, warn.ind=warn.ind, warn.df=warn.df,
             warn.vec=warn.vec)
          se_1 <- temp$Results$StdError[temp$Results$Statistic == "Mean"]
-         tw_1r <- sum(wgt_1[repeat_1])
          temp <- total.est(z=z_2[repeat_2], wgt=wgt_2[repeat_2],
             x=x_2[repeat_2], y=y_2[repeat_2], stratum=stratum_2[repeat_2],
             cluster=cluster_2[repeat_2], wgt1=wgt1_2[repeat_2],
@@ -1425,7 +1554,6 @@ if(resp.ind == "cat") {
             check.ind=check.ind, warn.ind=warn.ind, warn.df=warn.df,
             warn.vec=warn.vec)
          se_2 <- temp$Results$StdError[temp$Results$Statistic == "Mean"]
-         tw_2r <- sum(wgt_2[repeat_2])
          covest <- rslt * se_1 * se_2
          temp <- Results$StdError_1^2 + Results$StdError_2^2 -
             ((2*tw_1r*tw_2r)/(tw_1*tw_2))*covest
@@ -1437,15 +1565,16 @@ if(resp.ind == "cat") {
          }
       }
    }
-   eval(parse(text=paste("Results$LCB", conf, "Pct <- Results$Estimate - mult*Results$StdError", sep="")))
-   eval(parse(text=paste("Results$UCB", conf, "Pct <- Results$Estimate + mult*Results$StdError", sep="")))
-   Results$Estimate <- Results$Estimate
-   Results$StdError_1 <- Results$StdError_1
-   Results$StdError_2 <- Results$StdError_2
-   Results$StdError <- Results$StdError
+
+# Calculate confidence bounds
+   eval(parse(text=paste("Results$LCB", conf, "Pct <- Results$DiffEst - mult*Results$StdError", sep="")))
+   eval(parse(text=paste("Results$UCB", conf, "Pct <- Results$DiffEst + mult*Results$StdError", sep="")))
 
 # End the section for surveys with repeat visit sites
    }
+
+# Rearrange columns of the Results data frame
+   Results <- Results[,c(1, 12:15, 2:11)]
 
 #
 # End the section for a continuous variable

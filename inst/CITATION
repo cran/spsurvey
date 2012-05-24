@@ -5,7 +5,7 @@ citEntry(
    title="spsurvey: Spatial Survey Design and Analysis",
    author="Thomas M. Kincaid and Anthony R. Olsen",
    year=2012,
-   note="R package version 2.3",
+   note="R package version 2.4",
    url="http://www.epa.gov/nheerl/arm/",
    textVersion=paste("Kincaid, T. M. and Olsen, A. R. (2012).",
                       "spsurvey: Spatial Survey Design and Analysis.",

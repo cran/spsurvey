@@ -6,7 +6,7 @@
   probability surveys.
 }
 \usage{
-change.analysis(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
+change.analysis(sites, repeats, subpop=NULL, design, data.cat=NULL,
    data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL, popsize_2=NULL,
    popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL, pcfsize_2=NULL,
    N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL, stage1size_2=NULL,
@@ -14,26 +14,23 @@ change.analysis(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
    conf=95)
 }
 \arguments{
-  \item{sites}{a data frame consisting of five variables: the first variable is
+  \item{sites}{a data frame consisting of three variables: the first variable is
     site IDs, and the other variables are logical vectors indicating which
     sites to use in the analysis.  The first logical vector indicates the
     complete set of sites for the first survey.  The second logical vector
-    indicates the complete set of sites for the second survey.  The third
-    logical vector indicates the set of repeat visit sites for the first
-    survey.  The fourth logical vector indicates the set of repeat visit sites
-    for the second survey.  For the repeat revisit sites, the order of survey
-    sites for survey one must match the order of survey sites for survey two.
-    The default is NULL.}
+    indicates the complete set of sites for the second survey.}
+  \item{repeats}{a data frame that identifies site IDs for repeat visit sites
+   from the two surveys.   The first variable is site IDs for survey one. The
+   second variable is site IDs for survey two.  For each row of the data frame,
+   the two site IDs must correspond to the same site.}
   \item{subpop}{a data frame describing sets of populations and subpopulations 
     for which estimates will be calculated.  The first variable is site  
     IDs.  Each subsequent variable identifies a Type of population, where
     the variable name is used to identify Type.  A Type variable
-    identifies each site with one of the subpopulations of that Type.  If
-    spsurvey.obj is not provided, then this argument is required.  The
+    identifies each site with one of the subpopulations of that Type.  The
     default is NULL.}
-  \item{design}{a data frame consisting of design variables.  If spsurvey.obj is
-    not provided, then this argument is required.  The default is NULL.
-    Variables should be named as follows:\cr
+  \item{design}{a data frame consisting of design variables.  Variables should
+   be named as follows:\cr
        siteID = site IDs\cr
        wgt = final adjusted weights, which are either the weights for a
          single-stage sample or the stage two weights for a two-stage sample\cr
@@ -59,19 +56,17 @@ change.analysis(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
        swgt1 = stage one size-weights}
   \item{data.cat}{a data frame of categorical response variables.  The first 
     variable is site IDs.  Subsequent variables are response variables.
-    Missing data (NA) is allowed.  If spsurvey.obj is not provided, then
-    this argument is required.  The default is NULL.}
+    Missing data (NA) is allowed.  The default is NULL.}
   \item{data.cont}{a data frame of continuous response variables.  The first 
     variable is site IDs.  Subsequent variables are response variables.
-    Missing data (NA) is allowed.  If spsurvey.obj is not provided, then
-    this argument is required.  The default is NULL.}
-  \item{revisitwgt}{a logical value that indicates whether the revisited sites
-    in the two surveys have the same survey design weights, where TRUE = the
-    weights are the same and FALSE = the weights are not the same.  When this
-    argument is FALSE, the revisited sites are assigned equal weights.  The
-    default is FALSE.}
-  \item{popsize_1}{known size of the resource for survey one, which is used to perform ratio
-    adjustment to estimators expressed using measurement units for the
+    Missing data (NA) is allowed.  The default is NULL.}
+  \item{revisitwgt}{a logical value that indicates whether the repeat visit
+    sites in the two surveys have the same survey design weights, where TRUE =
+    the weights are the same and FALSE = the weights are not the same.  When
+    this argument is FALSE, the repeat visit sites are assigned equal weights.
+    The default is FALSE.}
+  \item{popsize_1}{known size of the resource for survey one, which is used to
+    perform ratio adjustment to estimators expressed using measurement units for the
     resource.  For a finite resource, this argument is either the total number
     of sampling units or the known sum of size-weights.  For an extensive
     resource, this argument is the measure of the resource, i.e., either known
@@ -175,25 +170,25 @@ Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }
 \examples{
 # Categorical variable example for three resource classes:
-mysiteID <- paste("Site", 1:100, sep="")
+mysiteID <- paste("Site", 1:200, sep="")
 mysites <- data.frame(siteID=mysiteID,
-                      Survey1=rep(c(TRUE, FALSE), c(50,50)),
-                      Survey2=rep(c(FALSE, TRUE), c(50,50)),
-                      Repeat1=rep(c(TRUE, FALSE), c(20,80)),
-                      Repeat2=rep(c(FALSE, TRUE, FALSE), c(50,20,30)))
+                      Survey1=rep(c(TRUE, FALSE), c(100,100)),
+                      Survey2=rep(c(FALSE, TRUE), c(100,100)))
+myrepeats <- data.frame(siteID_1=paste("Site", 1:40, sep=""),
+                        siteID_2=paste("Site", 101:140, sep=""))
 mysubpop <- data.frame(siteID=mysiteID,
-                       All_Sites=rep("All Sites", 100),
-                       Region=rep(c("North","South"), 50))
+                       All_Sites=rep("All Sites", 200),
+                       Region=rep(c("North","South"), 100))
 mydesign <- data.frame(siteID=mysiteID,
-                       wgt=runif(100, 10, 100),
-                       xcoord=runif(100),
-                       ycoord=runif(100),
-                       stratum=sample(c("Stratum1", "Stratum2"), 100, TRUE))
+                       wgt=runif(200, 10, 100),
+                       xcoord=runif(200),
+                       ycoord=runif(200),
+                       stratum=rep(rep(c("Stratum1", "Stratum2"), c(2,2)), 50))
 mydata.cat <- data.frame(siteID=mysiteID,
                          Resource_Class=sample(c("Good","Fair","Poor"),
-                            100, replace=TRUE))
-change.analysis(sites=mysites, subpop=mysubpop, design=mydesign,
-   data.cat=mydata.cat)
+                            200, replace=TRUE))
+change.analysis(sites=mysites, repeats=myrepeats, subpop=mysubpop,
+   design=mydesign, data.cat=mydata.cat, data.cont=NULL)
 }
 \keyword{survey}
 \keyword{univar}

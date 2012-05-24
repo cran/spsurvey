@@ -1,18 +1,18 @@
-changevar.prop <- function(catvar.levels, catvar1, catvar2, wgt, x, y,
-   revisitwgt, prop1, prop2, stratum.ind, stratum.level, cluster.ind, cluster,
+changevar.size <- function(catvar.levels, catvar1, catvar2, wgt, x, y,
+   revisitwgt, size1, size2, stratum.ind, stratum.level, cluster.ind, cluster,
    wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype,
    warn.ind, warn.df, warn.vec) {
 
 ################################################################################
-# Function: changevar.prop
+# Function: changevar.size
 # Purpose: Calculate covariance or correlation estimates of the estimated change
-#          in class proportion estimates between two probability surveys
+#          in class resource size estimates between two probability surveys
 # Programmer: Tom Kincaid
-# Date: January 10, 2012
+# Date: March 8, 2012
 # Description:
 #   This function uses the repeat visit sites for two probability surveys to
 #   calculate either covariance or correlation estimates of estimated change in
-#   the  proportion in each of a set of categories.  Covariance estimates are
+#   resource size in each of a set of categories.  Covariance estimates are
 #   calculated when the resivit sites have the same survey design weight in both
 #   surveys.  Correlation estimates are calculated when the revisit sites do not
 #   have the same weight in both surveys, in which case the sites are assigned
@@ -43,8 +43,8 @@ changevar.prop <- function(catvar.levels, catvar1, catvar2, wgt, x, y,
 #     weights are the same and FALSE = the weights are not the same.  When this
 #     argument is FALSE, the repeat visit sites have been assigned equal
 #     weights.
-#   prop1 = the set of category proportion estimates for survey one.
-#   prop2 = the set of category proportion estimates for survey two.
+#   size1 = the set of category size estimates for survey one.
+#   size2 = the set of category size estimates for survey two.
 #   stratum.ind = a logical value that indicates whether the sample is
 #     stratified, where TRUE = a stratified sample and FALSE = not a stratified
 #     sample.
@@ -102,7 +102,7 @@ changevar.prop <- function(catvar.levels, catvar1, catvar2, wgt, x, y,
 ################################################################################
 
 # Assign the function name
-fname <- "changevar.prop"
+fname <- "changevar.size"
 
 #
 # Calculate covariance or correlation using the repeat visit sites
@@ -139,7 +139,7 @@ if(cluster.ind) {
    for(k in 1:m) {
 
 # Determine whether the categorical level is present in both surveys
-      if(is.na(prop1[k]) | is.na(prop2[k])) {
+      if(is.na(size1[k]) | is.na(size2[k])) {
          warn.ind <- TRUE
          act <- "Covariance among the repeat visit sites was not included in calculation of \nthe standard error estimate.\n"
          if(stratum.ind) {
@@ -162,18 +162,16 @@ if(cluster.ind) {
 # and the variance/covariance of those totals for each stage one sampling unit
       total2est <- matrix(0, ncluster, 2)
       var2est <- matrix(0, ncluster, 4)
-      phat <- c(prop1[k], prop2[k])
       for(i in 1:ncluster) {
 
 # Calculate the weighted residuals matrix
          n <- length(catvar1.lst[[i]])
          z1 <- catvar1.lst[[i]] == catvar.levels[k]
          z2 <- catvar2.lst[[i]] == catvar.levels[k]
-         rm <- (cbind(z1, z2) - matrix(rep(phat, n), nrow=n, byrow=TRUE)) *
-            matrix(rep(wgt2.lst[[i]], 2), nrow=n)
+         im <- cbind(z1, z2) * matrix(rep(wgt2.lst[[i]], 2), nrow=n)
 
 # Calculate total estimates for the stage one sampling unit
-         total2est[i,] <- apply(rm, 2, sum)
+         total2est[i,] <- apply(im, 2, sum)
 
 # Adjust the variance/covariance estimator for small sample size
          SRSind <- FALSE
@@ -252,11 +250,11 @@ if(cluster.ind) {
          weight.lst <- localmean.weight(x1.u, y1.u, 1/wgt1.u)
          varest <- (pcfactor*localmean.cov(total2est * matrix(rep(wgt1.u, 2),
             nrow = ncluster), weight.lst) + matrix(apply(var2est *
-            matrix(rep(wgt1.u, 4), nrow=ncluster), 2, sum), nrow=2)) / tw2
+            matrix(rep(wgt1.u, 4), nrow=ncluster), 2, sum), nrow=2))
       } else {
          varest <- (pcfactor*ncluster*var(total2est * matrix(rep(wgt1.u, 2),
             nrow=ncluster)) + matrix(apply(var2est * matrix(rep(wgt1.u, 4),
-            nrow=ncluster), 2, sum), nrow=m))/ tw2
+            nrow=ncluster), 2, sum), nrow=m))
       }
       if(revisitwgt) {
          rslt[k] <- varest[1,2]
@@ -275,14 +273,13 @@ if(cluster.ind) {
 # Calculate additional required values
    n <- length(catvar1)
    m <- length(catvar.levels)
-   tw2 <- (sum(wgt))^2
 
 # Loop through each category level
    rslt <- rep(NA, m)
    for(i in 1:m) {
 
 # Determine whether the categorical level is present in both surveys
-      if(is.na(prop1[i]) | is.na(prop2[i])) {
+      if(is.na(size1[i]) | is.na(size2[i])) {
          warn.ind <- TRUE
          act <- "Covariance among the repeat visit sites was not included in calculation of \nthe standard error estimate.\n"
          if(stratum.ind) {
@@ -304,9 +301,7 @@ if(cluster.ind) {
 # Calculate the weighted residuals matrix
       z1 <- catvar1 == catvar.levels[i]
       z2 <- catvar2 == catvar.levels[i]
-      phat <- c(prop1[i], prop2[i])
-      rm <- (cbind(z1, z2) - matrix(rep(phat, n), nrow=n, byrow=TRUE)) *
-         matrix(rep(wgt, 2), nrow=n)
+      im <- cbind(z1, z2)  * matrix(rep(wgt, 2), nrow=n)
 
 # Adjust the variance estimator for small sample size
       if(vartype == "Local" && n < 4) {
@@ -334,9 +329,9 @@ if(cluster.ind) {
 # Calculate covariance or correlation estimates
       if(vartype == "Local") {
          weight.lst <- localmean.weight(x, y, 1/wgt)
-         varest <- pcfactor*localmean.cov(rm, weight.lst) / tw2
+         varest <- pcfactor*localmean.cov(im, weight.lst)
       } else {
-         varest <- pcfactor*n*var(rm) / tw2
+         varest <- pcfactor*n*var(im)
       }
       if(revisitwgt) {
          rslt[i] <- varest[1,2]
