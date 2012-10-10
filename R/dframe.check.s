@@ -5,7 +5,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
 # Function: dframe.check
 # Programmer: Tom Kincaid
 # Date: September 26, 2003
-# Last Revised: November 18, 2011
+# Last Revised: October 10, 2012
 # Description:
 #   This function checks site IDs, the sites data frame, the subpop data frame,
 #      the data.cat data frame, the data.cont data frame, the data.ar data
@@ -32,12 +32,8 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
 # Check the sites data frame for contents
 
    if(is.null(sites)) {
-      sites <- data.frame(siteID=design$siteID, use.sites=rep(TRUE, nrow(design)))
-   } else {
-      if(!is.data.frame(sites))
-         stop("\nThe sites argument must be a data frame.")
-      if(ncol(sites) != 2)
-         stop("\nThe sites argument must contain exactly two variables.")
+      sites <- data.frame(siteID=design$siteID,
+                          use.sites=rep(TRUE, nrow(design)))
       temp <- is.na(sites[,1])
       if(any(temp)) {
          temp.str <- vecprint(seq(nrow(sites))[temp])
@@ -53,11 +49,33 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
          temp.str <- vecprint(names(temp)[temp > 1])
          stop(paste("The following site ID values in the sites data frame occur more than \nonce:\n", temp.str, sep=""))
       }
+      siteID <- sites$siteID
+   } else {
+      if(!is.data.frame(sites))
+         stop("\nThe sites argument must be a data frame.")
+      if(ncol(sites) != 2)
+         stop("\nThe sites argument must contain exactly two variables.")
+      temp <- is.na(sites[,1])
+      if(any(temp)) {
+         temp.str <- vecprint(seq(nrow(sites))[temp])
+         stop(paste("\nThe following rows in the sites data frame contain missing site ID values:\n", temp.str, sep=""))
+      }
+      temp <- is.na(sites[,2])
+      if(any(temp)) {
+         temp.str <- vecprint(seq(nrow(sites))[temp])
+         stop(paste("\nThe following rows in the sites data frame contain missing logical variable values:\n", temp.str, sep=""))
+      }
       if(!is.logical(sites[,2]))
          stop("\nThe second variable in the sites data frame is not a logical variable.")
+      siteID <- uniqueID(sites[,1])[sites[,2]]
+      sites <- sites[sites[,2],]
+      temp <- sapply(split(sites[,1], sites[,1]), length)
+      if(any(temp > 1)) {
+         temp.str <- vecprint(names(temp)[temp > 1])
+         stop(paste("The following site ID values in the sites data frame occur more than \nonce:\n", temp.str, sep=""))
+      }
    }
    names(sites)[1] <- design.names[1]
-   siteID <- sites$siteID[sites[,2]]
 
 # Check the design data frame for contents
 
@@ -66,12 +84,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
       temp.str <- vecprint(seq(nrow(design))[temp])
       stop(paste("\nThe following rows in the design data frame contain missing site ID values:\n", temp.str, sep=""))
    }
-   temp <- sapply(split(design$siteID, design$siteID), length)
-   if(any(temp > 1)) {
-      temp.str <- vecprint(names(temp)[temp > 1])
-      stop(paste("The following site ID values in the design data frame occur more than \nonce:\n", temp.str, sep=""))
-   }
-   temp <- match(siteID, design$siteID, nomatch=0)
+   temp <- match(siteID, uniqueID(design$siteID), nomatch=0)
    if(any(temp == 0)) {
       temp.str <- vecprint(unique(siteID[temp == 0]))
       stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the design data frame:\n", temp.str, sep=""))
@@ -81,8 +94,8 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
 # Check the subpop data frame for contents
 
    if(is.null(subpop)) {
-      subpop <- data.frame(siteID=sites$siteID[sites[,2]],
-        all.sites=factor(rep("All Sites", sum(sites[,2]))))
+      subpop <- data.frame(siteID=siteID,
+         all.sites=rep("All Sites", nrow(sites)))
    } else {
       if(!is.data.frame(subpop))
          stop("\nThe subpop argument must be a data frame.")
@@ -93,12 +106,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
          temp.str <- vecprint(seq(nrow(subpop))[temp])
          stop(paste("\nThe following rows in the subpop data frame contain missing site ID values:\n", temp.str, sep=""))
       }
-      temp <- sapply(split(subpop[,1], subpop[,1]), length)
-      if(any(temp > 1)) {
-         temp.str <- vecprint(names(temp)[temp > 1])
-         stop(paste("The following site ID values in the subpop data frame occur more than \nonce:\n", temp.str, sep=""))
-      }
-      temp <- match(siteID, subpop[,1], nomatch=0)
+      temp <- match(siteID, uniqueID(subpop[,1]), nomatch=0)
       if(any(temp == 0)) {
          temp.str <- vecprint(unique(siteID[temp == 0]))
          stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the subpop data frame:\n", temp.str, sep=""))
@@ -117,12 +125,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
          temp.str <- vecprint(seq(nrow(data.cat))[temp])
          stop(paste("\nThe following rows in the data.cat data frame contain missing site ID values:\n", temp.str, sep=""))
       }
-      temp <- sapply(split(data.cat[,1], data.cat[,1]), length)
-      if(any(temp > 1)) {
-         temp.str <- vecprint(names(temp)[temp > 1])
-         stop(paste("The following site ID values in the data.cat data frame occur more than \nonce:\n", temp.str, sep=""))
-      }
-      temp <- match(siteID, data.cat[,1], nomatch=0)
+      temp <- match(siteID, uniqueID(data.cat[,1]), nomatch=0)
       if(any(temp == 0)) {
          temp.str <- vecprint(unique(siteID[temp == 0]))
          stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the data.cat data frame:\n", temp.str, sep=""))
@@ -141,12 +144,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
          temp.str <- vecprint(seq(nrow(data.cont))[temp])
          stop(paste("\nThe following rows in the data.cont data frame contain missing site ID values:\n", temp.str, sep=""))
       }
-      temp <- sapply(split(data.cont[,1], data.cont[,1]), length)
-      if(any(temp > 1)) {
-         temp.str <- vecprint(names(temp)[temp > 1])
-         stop(paste("The following site ID values in the data.cont data frame occur more than \nonce:\n", temp.str, sep=""))
-      }
-      temp <- match(siteID, data.cont[,1], nomatch=0)
+      temp <- match(siteID, uniqueID(data.cont[,1]), nomatch=0)
       if(any(temp == 0)) {
          temp.str <- vecprint(unique(siteID[temp == 0]))
          stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the data.cont data frame:\n", temp.str, sep=""))
@@ -165,12 +163,7 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
          temp.str <- vecprint(seq(nrow(data.risk))[temp])
          stop(paste("\nThe following rows in the data.risk data frame contain missing site ID values:\n", temp.str, sep=""))
       }
-      temp <- sapply(split(data.risk[,1], data.risk[,1]), length)
-      if(any(temp > 1)) {
-         temp.str <- vecprint(names(temp)[temp > 1])
-         stop(paste("The following site ID values in the data.risk data frame occur more than \nonce:\n", temp.str, sep=""))
-      }
-      temp <- match(siteID, data.risk[,1], nomatch=0)
+      temp <- match(siteID, uniqueID(data.risk[,1]), nomatch=0)
       if(any(temp == 0)) {
          temp.str <- vecprint(unique(siteID[temp == 0]))
          stop(paste("\nThe following site ID values in the sites data frame do not occur among the \nsite ID values in the data.risk data frame:\n", temp.str, sep=""))
@@ -181,6 +174,6 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
 
 # Return the list
 
-   list(sites=sites[sites[,2],], design=design, subpop=subpop,
-        data.cat=data.cat, data.cont=data.cont, data.risk=data.risk)
+   list(sites=sites, design=design, subpop=subpop, data.cat=data.cat,
+        data.cont=data.cont, data.risk=data.risk)
 }

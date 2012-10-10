@@ -12,7 +12,7 @@
 **               polylines shapefile, and cWtFcn is called for a points
 **               shapefile.
 **  Created:     October 19, 2004
-**  Revised:     May 18, 2011
+**  Revised:     October 10, 2012
 ******************************************************************************/
 
 #include <stdio.h>
@@ -1428,6 +1428,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   Rprintf( "Initial number of levels: %i \n", nlev );
   celWts[0] = 99999.0;
   sint = 1.0;
+  if ( shiftGrid == 1 ) {
+    roffX = runif( 0.0, 1.0 );
+    roffY = runif( 0.0, 1.0 );
+  }
   while ( any( celWts, celWtsSize, sint, 1 ) && 
         ( celMaxInd < 2 ) &&
         ( nlev <= maxlev ) ) {
@@ -1492,10 +1496,8 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
 
     /* as necessary, do the random shift of the grid */
     if ( shiftGrid == 1 ) {
-      roffX = runif( 0.0, dx );
-      roffY = runif( 0.0, dy );
-      rep( &xc, tempXc, nlv2+1, roffX ); 
-      rep2( &yc, tempYc, nlv2+1, roffY );
+      rep( &xc, tempXc, nlv2+1, roffX*dx ); 
+      rep2( &yc, tempYc, nlv2+1, roffY*dy );
     } else {
       rep( &xc, tempXc, nlv2+1, 0 ); 
       rep2( &yc, tempYc, nlv2+1, 0 );

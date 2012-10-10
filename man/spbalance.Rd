@@ -13,7 +13,7 @@
 }
 \usage{
 spbalance(sp.sample, shapefilename=NULL, tess.ind=TRUE, sbc.ind=FALSE, nrows=5,
-   dxdy=TRUE, vartype="Local")
+   dxdy=TRUE)
 }
 \arguments{
   \item{sp.sample}{the sp package object of class "SpatialPointsDataFrame"
@@ -35,8 +35,6 @@ spbalance(sp.sample, shapefilename=NULL, tess.ind=TRUE, sbc.ind=FALSE, nrows=5,
   \item{dxdy}{indicator for equal x-coordinate and y-coordinate grid cell
    increments, where TRUE means the increments are equal and FALSE means the
    increments are not equal.  The default is TRUE.}
-  \item{vartype}{the choice of variance estimator, where "Local" = local mean
-   estimator and "SRS" = SRS estimator.  The default is "Local".}
 }
 \value{
   A list containing the following components:

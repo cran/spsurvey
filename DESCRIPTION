@@ -1,6 +1,6 @@
 Package: spsurvey
-Version: 2.4
-Date: 2012-05-24
+Version: 2.5
+Date: 2012-10-10
 Title: Spatial Survey Design and Analysis
 Authors@R: c(person("Tom", "Kincaid", role=c("aut", "cre"), email =
         "Kincaid.Tom@epa.gov"), person("Tony", "Olsen", role="aut",
@@ -12,7 +12,7 @@ Author: Tom Kincaid <Kincaid.Tom@epa.gov> and Tony Olsen
         <Olsen.Tony@epa.gov> with contributions from Don Stevens,
         Christian Platt, Denis White, and Richard Remington
 Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
-Depends: sp, utils
+Depends: sp
 Imports: deldir, foreign, MASS, rgeos
 ByteCompile: yes
 Description: This group of functions implements algorithms for design
@@ -21,6 +21,6 @@ Description: This group of functions implements algorithms for design
         survey designs.
 License: GPL (>= 2)
 URL: http://www.epa.gov/nheerl/arm/
-Packaged: 2012-05-24 20:15:34 UTC; tkincaid
+Packaged: 2012-10-11 16:23:17 UTC; tkincaid
 Repository: CRAN
-Date/Publication: 2012-05-30 06:55:08
+Date/Publication: 2012-10-12 05:37:27

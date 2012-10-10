@@ -257,8 +257,7 @@ The print function is used to display results for dissolved oxygen of the statis
 <<Quanteval>>=
 # Print results of the statistical tests for difference between CDFs from
 # basins for dissolved oxygen
-options(digits=3)
-print(CDF_Tests)
+print(CDF_Tests, digits=3)
 
 @
 \newpage

@@ -10,7 +10,7 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 # Purpose: Change Analysis for Probability Survey Data
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
-# Last Revised: May 16, 2012
+# Last Revised: June 20, 2012
 # Description:
 #   This function organizes input and output for estimation of change between
 #   two probability surveys.
@@ -688,6 +688,7 @@ if(!is.null(data.cat)) {
 #
 
             subpop.ind_1 <- subpop_1[,itype] == subpopnames[isubpop]
+            subpop.ind_1[is.na(subpop.ind_1)] <- FALSE
 
 # Determine whether the subpopulation is empty
 
@@ -713,6 +714,7 @@ if(!is.null(data.cat)) {
 #
 
             subpop.ind_2 <- subpop_2[,itype] == subpopnames[isubpop]
+            subpop.ind_2[is.na(subpop.ind_2)] <- FALSE
 
 # Determine whether the subpopulation is empty
 
@@ -898,6 +900,7 @@ if(!is.null(data.cont)) {
 #
 
             subpop.ind_1 <- subpop_1[,itype] == subpopnames[isubpop]
+            subpop.ind_1[is.na(subpop.ind_1)] <- FALSE
 
 # Determine whether the subpopulation is empty
 
@@ -923,6 +926,7 @@ if(!is.null(data.cont)) {
 #
 
             subpop.ind_2 <- subpop_2[,itype] == subpopnames[isubpop]
+            subpop.ind_2[is.na(subpop.ind_2)] <- FALSE
 
 # Determine whether the subpopulation is empty
 

@@ -81,13 +81,15 @@ mypopsize <- list(All.Sites=c(Stratum1=3500, Stratum2=2000),
    Poor=c(Stratum1=1000, Stratum2=500)))
 myanalysis <- cont.analysis(sites=mysites, subpop=mysubpop, design=mydesign,
    data.cont=mydata.cont, popsize=mypopsize)
+par(mfrow=c(2,1))       
 keep <- myanalysis$CDF$Type == "Resource.Class" & 
         myanalysis$CDF$Subpopulation == "Good"       
-par(mfrow=c(2,1))       
 cdf.plot(myanalysis$CDF[keep,], xlbl="ContVar", ylbl="Percent of Stream Length",
    ylbl.r="Stream Length (km)", figlab="Estimates for Resource Class: Good")
+keep <- myanalysis$CDF$Type == "Resource.Class" & 
+        myanalysis$CDF$Subpopulation == "Poor"       
 cdf.plot(myanalysis$CDF[keep,], xlbl="ContVar", ylbl="Percent of Stream Length",
-   ylbl.r="Same", figlab="Estimates for Resource Class: Good")
+   ylbl.r="Same", figlab="Estimates for Resource Class: Poor")
 }
 \keyword{survey}
 \keyword{distribution}

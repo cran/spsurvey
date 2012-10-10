@@ -32,7 +32,6 @@
 \alias{dframe.check}
 \alias{input.check}
 \alias{vecprint}
-\alias{uniqueID}
 \alias{catvar.prop}
 \alias{catvar.size}
 \alias{cdf.nresp}
@@ -130,7 +129,6 @@ input.check(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
    pcfsize, N.cluster, stage1size, support, swgt.ind, swgt, swgt1, vartype,
    conf, cdfval=NULL, pctval=NULL, subpop=NULL)
 vecprint(x, n.char=78)
-uniqueID(siteID)
 catvar.prop(z, wgt, x, y, prop, stratum.ind, stratum.level, cluster.ind,
   cluster, wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support,
   vartype, warn.ind, warn.df, warn.vec)

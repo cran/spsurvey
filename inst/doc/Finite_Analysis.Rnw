@@ -31,7 +31,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.2 of the spsurvey package was loaded successfully.
+Version 2.5 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Read the survey design and analytical variables data file}
@@ -206,16 +206,14 @@ The extent estimates for all basins combined are displayed using the print funct
 print(Extent_Estimates[c(1:7, 45:47),])
 
 @
-The write.table function is used to store the extent estimates as a comma-separated value (csv) file.  Files in csv format can be read by programs such as Microsoft Excel.
+The write.csv function is used to store the extent estimates as a comma-separated value (csv) file.  Files in csv format can be read by programs such as Microsoft Excel.
 \begin{verbatim}
-> write.table(Extent_Estimates, file="Extent_Estimates.csv", sep=",", 
-+             row.names=FALSE)
+> write.csv(Extent_Estimates, file="Extent_Estimates.csv")
 \end{verbatim}
 
 <<Statuseval, echo=FALSE>>=
 # Write results as a comma-separated value (csv) file
-write.table(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(Extent_Estimates, file="Extent_Estimates.csv")
 
 @
 \section{Analysis of lake condition variables}
@@ -297,16 +295,14 @@ Print the lake condition estimates for all basins combined.
 print(Condition_Estimates[c(1:4, 28:32),])
 
 @
-Use the write.table function to write the condition estimates as a csv file.
+Use the write.csv function to write the condition estimates as a csv file.
 \begin{verbatim}
-> write.table(Condition_Estimates, file="Condition_Estimates.csv", sep=",", 
-+             row.names=FALSE)
+> write.csv(Condition_Estimates, file="Condition_Estimates.csv")
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
 # Write results as a csv file
-write.table(Condition_Estimates, file="Condition_Estimates.csv", sep=",", 
-            row.names=FALSE)
+write.csv(Condition_Estimates, file="Condition_Estimates.csv")
 
 @
 \section{Analysis of lake condition variables correcting for population size}
@@ -353,16 +349,14 @@ Print the lake condition estimates for all basins combined.
 print(Condition_Estimates_popsize[c(1:4, 28:32),])
 
 @
-Use the write.table function to write the condition estimates as a csv file.
+Use the write.csv function to write the condition estimates as a csv file.
 \begin{verbatim}
-> write.table(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv",
-+             sep=",", row.names=FALSE)
+> write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 \end{verbatim}
 
 <<Conditionevalpop, echo=FALSE>>=
 # Write results as a csv file
-write.table(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv",
-            sep=",", row.names=FALSE)
+write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 
 @
 \section{Analysis of quantitative variables}
@@ -431,17 +425,15 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 @
 The object produced by cont.analysis is a list containing two objects: (1) CDF, a data frame containing the CDF estimates and (2) Pct, a data frame containing percentile estimates plus estimates of population values for mean, variance, and standard deviation.  Format for the CDF data frame is analogous to the data frame produced by cat.analysis.  For the CDF data frame, however, the fourth column is labeled Value and contains the value at which the CDF was evaluated.  Unlike the data frames produced by the other analysis functions we have examined, the Pct data frame contains only nine columns since there is a single set of estimates rather than two sets of estimates.  In addition, the fourth column is labeled Statistic and identifies either a percentile or the mean, variance, or standard deviation.  Finally, since percentile estimates are obtained by inverting the CDF estimate, the percentile estimates do not have a standard error value associated with them.
 
-Use the write.table function to write the CDF estimates as a csv file.
+Use the write.csv function to write the CDF estimates as a csv file.
 
 \begin{verbatim}
-> write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-+             row.names=FALSE)
+> write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Write CDF estimates as a csv file
-write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
 
 @
 The cont.cdfplot function in spsurvey can be used to produce a PDF file containing plots of the CDF estimates.  The primary arguments to cont.cdfplot are a character string containing a name for the PDF file and the CDF data frame in the CDF\_Estimates object.  In addition, we make use of the logx argument to cont.cdfplot, which controls whether the CDF estimate is displayed using a logarithmic scale for the x-axis.  The logx argument accepts two values: (1) "", do not use a logarithmic scale and (2) "x" - use a logarithmic scale.  For this analysis, dissolved oxygen is displayed using the original response scale and turbidity is displayed using a logarithmic scale.
@@ -459,17 +451,15 @@ Print the percentile estimates for dissolved oxygen for all basins combined.
 print(CDF_Estimates$Pct[1:10,])
 
 @
-Use the write.table function to write the percentile estimates as a csv file.
+Use the write.csv function to write the percentile estimates as a csv file.
 
 \begin{verbatim}
-> write.table(CDF_Estimates$Pct, file="Percentile_Estimates.csv", sep=",",
-+             row.names=FALSE)
+> write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Write percentile estimates as a csv file
-write.table(CDF_Estimates$Pct, file="Percentile_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
 
 @
 The cont.cdftest function in spsurvey can be used to test for statistical difference between the CDFs from subpopulations.  For this analysis we will test for statistical difference between the CDFs from the six basins.  The cont.cdftest function will test all possible pairs of basins.  Arguments to cont.cdftest are the same as arguments to cont.analysis. Since we are interested only in testing among basins, the subpop data frame is subsetted to include only the siteID and Basin variables.  Note that the popsize argument was modified from prior examples to include only the entry for Basin.
@@ -490,14 +480,14 @@ The print function is used to display results for dissolved oxygen of the statis
 <<Quanteval>>=
 # Print results of the statistical tests for difference between CDFs from
 # basins for dissolved oxygen
-print(CDF_Tests[1:15,])
+print(CDF_Tests, digits=3)
 
 @
-Use the write.table function to write CDF test results as a csv file.
+Use the write.csv function to write CDF test results as a csv file.
 
 <<Quanteval>>=
 # Write CDF test results as a csv file
-write.table(CDF_Tests, file="CDF_Tests.csv", sep=",", row.names=FALSE)
+write.csv(CDF_Tests, file="CDF_Tests.csv")
 
 @
 \end{document}

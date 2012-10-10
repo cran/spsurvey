@@ -1,11 +1,12 @@
 spbalance <- function(sp.sample, shapefilename=NULL, tess.ind=TRUE,
-   sbc.ind=FALSE, nrows=5, dxdy=TRUE, vartype="Local") {
+   sbc.ind=FALSE, nrows=5, dxdy=TRUE) {
 
 ################################################################################
 # Function: spbalance
 # Purpose: Calculate spatial balance metrics for a survey design
 # Programmer: Tom Kincaid
 # Date: February 17, 2012
+# Last Revised: July 25, 2012
 # Description:      
 #   This function calculates spatial balance metrics for a survey design.    Two
 #  options for calculation of spatial balance metrics are available: (1) use
@@ -35,8 +36,6 @@ spbalance <- function(sp.sample, shapefilename=NULL, tess.ind=TRUE,
 #   dxdy = indicator for equal x-coordinate and y-coordinate grid cell
 #     increments, where TRUE means the increments are equal and FALSE means the
 #     increments are not equal.  The default is TRUE.
-#   vartype = the choice of variance estimator, where "Local" = local mean
-#     estimator and "SRS" = SRS estimator.  The default is "Local".
 # Results: 
 #   A list containing the following components:
 #     (1) tess - results for spatial balance metrics using tesselation polygons
@@ -160,7 +159,6 @@ if(tess.ind) {
 # Calculate the spatial balance metrics
    prob <- wgt/sum(wgt)
    J_subp <- sum(prop * log(prop))/sum(prob * log(prob))
-   J_subp <- min(J_subp, 1)
    chi_sq <- sum(((prop - prob)^2)/prob)
 
 # Create the output list
@@ -184,19 +182,18 @@ if(sbc.ind) {
    sbc.sample <- sbcsamp(sp.sample, sbc.frame)      
 
 # Calculate the spatial balance metrics
-   ind <- sbc.sample$prop != 0
-   prop_f <- sbc.frame$prop[ind]
-   prop_s <- sbc.sample$prop[ind]
+   prop_f <- sbc.frame$prop[sbc.frame$prop != 0]
+   prop_s <- sbc.sample$prop[sbc.sample$prop != 0]
    J_subp <- sum(prop_s * log(prop_s))/sum(prop_f * log(prop_f))
-   J_subp <- min(J_subp, 1)
    ind <- sbc.frame$prop != 0
    prop_f <- sbc.frame$prop[ind]
    prop_s <- sbc.sample$prop[ind]
    chi_sq <- sum(((prop_s - prop_f)^2)/prop_f)
 
 # Create the output list
-   sbc <- list(J_subp=J_subp, chi_sq=chi_sq, extent=sbc.sample$extent,
-               prop=sbc.sample$prop)
+   sbc <- list(J_subp=J_subp, chi_sq=chi_sq, extent_f=sbc.frame$extent,
+               prop_f=sbc.frame$prop, extent_s=sbc.sample$extent,
+               prop_s=sbc.sample$prop)
 
 # Metrics calculated using a rectangular grid were not requested
 } else {

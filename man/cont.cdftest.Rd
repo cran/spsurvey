@@ -125,9 +125,10 @@ cont.cdftest(sites=NULL, subpop=NULL, design=NULL, data.cont=NULL, popsize=NULL,
     estimator and "SRS" = SRS estimator.  The default is "Local".}
   \item{testname}{name of the test statistic to be reported in the output data
     frame.  Choices for the name are: "Wald", "Wald\_F", "Mean\_Eigenvalue",
-    "Mean\_Eigenvalue\_F", "Satterthwaite", and "Satterthwaite\_F".  The default is
-    "Wald\_F".}
-  \item{nclass}{number of classes for the CDF.  The default is 3.}
+    "Mean\_Eigenvalue\_F", "Satterthwaite", and "Satterthwaite\_F".  The default
+    is "Wald\_F".}
+  \item{nclass}{number of classes into which the CDFs will be divided (binned),
+    which must equal at least three.  The default is 3.}
   \item{spsurvey.obj}{A list of class spsurvey.analysis that was produced by the
     function spsurvey.analysis.  Depending on input to that function, some
     elements of the list may be NULL.  The default is NULL.}

@@ -19,7 +19,7 @@
 
 \section{Preliminaries}
 
-This document presents example GRTS survey designs for a finite resource.  The finite resource used in the designs is lakes in the New England region of the U.S.  Four survey designs will be presented: (1) an unstratified, equal probability design; (2) a stratified, equal probability design; (3) an unstratified, unequal probability design with an oversample; and (4) an unstratified, unequal probability design with an oversample and a panel structure for survey over time.  The sampling frame used for the survey designs is contained in either an ESRI shapefile, a data frame, or an sp package object.  The frame contains the coordinates for a set of points that define the finite resource in addition to attribute data associated with the points.  The coordinate system for the set of points in the sampling frame is an equal area projection rather than latitude and longitude.  An equal area projection is used so that calculation of distance between points is valid.  Use of the three sources for the sampling frame will be illustrated in the example survey designs.
+This document presents example GRTS survey designs for a finite resource.  The finite resource used in the designs is lakes in the southern New England region of the U.S.  Four survey designs will be presented: (1) an unstratified, equal probability design; (2) a stratified, equal probability design; (3) an unstratified, unequal probability design with an oversample; and (4) an unstratified, unequal probability design with an oversample and a panel structure for survey over time.  The sampling frame used for the survey designs is contained in either an ESRI shapefile, a data frame, or an sp package object.  The frame contains the coordinates for a set of points that define the finite resource in addition to attribute data associated with the points.  The coordinate system for the set of points in the sampling frame is an equal area projection rather than latitude and longitude.  An equal area projection is used so that calculation of distance between points is valid.  Use of the three sources for the sampling frame will be illustrated in the example survey designs.
 
 The initial step is to use the library function to load the spsurvey package.  After the package is loaded, a message is printed to the R console indicating that the spsurvey package was loaded successfully.
 
@@ -31,20 +31,20 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.1 of the spsurvey package was loaded successfully.
+Version 2.5 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Shapefile attribute data}
 
 The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The initial six lines in the att data frame are printed using the head function.
 
-Two attributes, state name and lake area category, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  State name is contained in a variable named "state", and lake area category is contained in a variable named "area\_cat".  For lake area category, lakes are classified by surface area measured in hectares.  The table and addmargin functions are used to produce a table displaying number of lakes for each combination of values for the strata and multidensity category variables.
+Two attributes, state name and lake area category, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  State name is contained in a variable named "state", and lake area category is contained in a variable named "area\_cat".  For lake area category, lakes are classified by surface area measured in hectares.  The lake area categories are coded using values such as "(5,10]", which indicates that lake area is greater than five hectares but less than or equal to ten hectares.  The table and addmargin functions are used to produce a table displaying number of lakes for each combination of values for the strata and multidensity category variables.
 
 Read the attribute table from the shapefile
 
 <<att>>=
 # Read the attribute table from the shapefile
-att <- read.dbf("reg1_lakes")
+att <- read.dbf("NE_lakes")
 
 @
 Display the initial six lines in the attribute data frame
@@ -54,15 +54,15 @@ Display the initial six lines in the attribute data frame
 head(att)
 
 @
-Display number of lakes cross-classified by the  strata and multidensity category variables
+Display number of lakes cross-classified by strata and multidensity category
 
 <<att>>=
-# Display number of lakes cross-classified by the  strata and multidensity
-# category variables
+# Display number of lakes cross-classified by strata and multidensity
+# category
 addmargins(table("State"=att$state, "Lake Area Category"=att$area_cat))
 
 @
-Lakes in the New England region are displayed in Figure~\ref{fig:Finite}.  The plot function is used to produce the figure.
+Lakes in the southern New England region are displayed in Figure~\ref{fig:Finite}.  The plot function is used to produce the figure.
 \begin{verbatim}
 > plot(att$xcoord, att$ycoord, xlab="x-coordinate", ylab="y-coordinate", pch=20,
 +      cex=0.1, col="red")
@@ -72,12 +72,12 @@ Lakes in the New England region are displayed in Figure~\ref{fig:Finite}.  The p
 \centering
 
 <<figure, fig=TRUE, echo=FALSE>>=
-# Plot lakes in the New England region
+# Plot lakes in the southern New England region
 plot(att$xcoord, att$ycoord, xlab="x-coordinate", ylab="y-coordinate", pch=20,
      cex=0.1, col="red")
 
 @
-\caption{Lakes in the New England Region.}
+\caption{Lakes in the Southern New England Region.}
 \label{fig:Finite}
 \end{figure}
 
@@ -111,7 +111,7 @@ Select the sample
 +                    DesignID="EQUAL",
 +                    type.frame="finite",
 +                    src.frame="shapefile",
-+                    in.shape="reg1_lakes", 
++                    in.shape="NE_lakes", 
 +                    att.frame=att,
 +                    shapefile=FALSE)
 \end{verbatim}
@@ -122,7 +122,7 @@ Equalsites <- grts(design=Equaldsgn,
                    DesignID="EQUAL",
                    type.frame="finite",
                    src.frame="shapefile",
-                   in.shape="reg1_lakes", 
+                   in.shape="NE_lakes", 
                    att.frame=att,
                    shapefile=FALSE)
 
@@ -149,22 +149,16 @@ For this survey design, a data frame will be used as the sampling frame.  Since 
 
 Create the design list
 \begin{verbatim}
-> Stratdsgn <- list(CT=list(panel=c(PanelOne=50), seltype="Equal"),
-+                   MA=list(panel=c(PanelOne=50), seltype="Equal"),
-+                   ME=list(panel=c(PanelOne=50), seltype="Equal"),
-+                   NH=list(panel=c(PanelOne=50), seltype="Equal"),
-+                   RI=list(panel=c(PanelOne=50), seltype="Equal"),
-+                   VT=list(panel=c(PanelOne=50), seltype="Equal"))
+> Stratdsgn <- list(CT=list(panel=c(PanelOne=125), seltype="Equal"),
++                   MA=list(panel=c(PanelOne=125), seltype="Equal"),
++                   RI=list(panel=c(PanelOne=50), seltype="Equal"))
 \end{verbatim}
 
 <<Stratsites, echo=FALSE>>=
 # Create the design list
-Stratdsgn <- list(CT=list(panel=c(PanelOne=50), seltype="Equal"),
-                  MA=list(panel=c(PanelOne=50), seltype="Equal"),
-                  ME=list(panel=c(PanelOne=50), seltype="Equal"),
-                  NH=list(panel=c(PanelOne=50), seltype="Equal"),
-                  RI=list(panel=c(PanelOne=50), seltype="Equal"),
-                  VT=list(panel=c(PanelOne=50), seltype="Equal"))
+Stratdsgn <- list(CT=list(panel=c(PanelOne=125), seltype="Equal"),
+                  MA=list(panel=c(PanelOne=125), seltype="Equal"),
+                  RI=list(panel=c(PanelOne=50), seltype="Equal"))
 
 @
 Select the sample
@@ -217,9 +211,9 @@ Create the design list
 \begin{verbatim}
 > Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
 +                               seltype="Unequal",
-+                               caty.n=c("[0,1]"=50, "(1,5]"=50, "(5,10]"=50,
-+                                        "(10,50]"=50, "(50,500]"=50,
-+                                        "(500,7e+04]"=50),
++                               caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
++                                        "(10,50]"=50, "(50,500]"=25,
++                                        "(500,7e+04]"=5),
 +                               over=120))
 \end{verbatim}
 
@@ -227,9 +221,9 @@ Create the design list
 # Create the design list
 Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
                               seltype="Unequal",
-                              caty.n=c("[0,1]"=50, "(1,5]"=50, "(5,10]"=50,
-                                       "(10,50]"=50, "(50,500]"=50,
-                                       "(500,7e+04]"=50),
+                              caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
+                                       "(10,50]"=50, "(50,500]"=25,
+                                       "(500,7e+04]"=5),
                               over=120))
 
 @
@@ -237,7 +231,7 @@ Read the shapefile
 
 <<Unequalsites>>=
 # Read the shapefile
-shp <- read.shape("reg1_lakes")
+shp <- read.shape("NE_lakes")
 
 @
 Select the sample
@@ -289,9 +283,9 @@ Create the design list
 > Paneldsgn <- list(None=list(panel=c(Annual=50, Year1=50, Year2=50, Year3=50,
 +                                     Year4=50, Year5=50),
 +                             seltype="Unequal",
-+                             caty.n=c("[0,1]"=50, "(1,5]"=50, "(5,10]"=50,
-+                                      "(10,50]"=50, "(50,500]"=50,
-+                                      "(500,7e+04]"=50),
++                             caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
++                                      "(10,50]"=50, "(50,500]"=25,
++                                      "(500,7e+04]"=5),
 +                             over=100))
 \end{verbatim}
 
@@ -300,9 +294,9 @@ Create the design list
 Paneldsgn <- list(None=list(panel=c(Annual=50, Year1=50, Year2=50, Year3=50,
                                     Year4=50, Year5=50),
                             seltype="Unequal",
-                            caty.n=c("[0,1]"=50, "(1,5]"=50, "(5,10]"=50,
-                                     "(10,50]"=50, "(50,500]"=50,
-                                     "(500,7e+04]"=50),
+                            caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
+                                     "(10,50]"=50, "(50,500]"=25,
+                                     "(500,7e+04]"=5),
                             over=100))
 
 @
@@ -312,7 +306,7 @@ Select the sample
 +                    DesignID="UNEQUAL",
 +                    type.frame="finite",
 +                    src.frame="shapefile",
-+                    in.shape="reg1_lakes",
++                    in.shape="NE_lakes",
 +                    att.frame=att,
 +                    mdcaty="area_cat",
 +                    shapefile=FALSE)
@@ -324,7 +318,7 @@ Panelsites <- grts(design=Paneldsgn,
                    DesignID="UNEQUAL",
                    type.frame="finite",
                    src.frame="shapefile",
-                   in.shape="reg1_lakes",
+                   in.shape="NE_lakes",
                    att.frame=att,
                    mdcaty="area_cat",
                    shapefile=FALSE)

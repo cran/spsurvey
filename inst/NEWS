@@ -3,6 +3,35 @@ NEWS                                                    R Documentation
 spsurvey News
 
 
+CHANGES IN spsurvey VERSION 2.5 (Released 2012-10-10)
+
+NEW FEATURES
+
+         • Modified function 'grtspts' and C function 'numLevels' to
+           calculate the sampling grid random shift values only once
+           rather than each time the number of hierarchical levels is
+           incremented.
+
+BUG FIXES
+
+         • Modified functions 'attrisk.analysis', 'cat.analysis',
+           'change.analysis', 'cont.analysis', and 'relrisk.analysis'
+           to replace NA values with FALSE in the indicator variables
+           for subpopulations.
+
+         • Modified function 'spbalance' to include all grid cells with
+           nonzero extent for the frame when calculating the Pielou
+           evenness measure for a rectangular grid.
+
+         • Modified function 'localmean.weight' to ensure that the
+           initial set of weights are inversely proportional to
+           distance.
+
+         • Modified functions 'cont.cdftest' and 'cdf.test' to ensure
+           that the number of classes into which the CDFs will be
+           divided (binned) is at least three.
+
+
 CHANGES IN spsurvey VERSION 2.4 (Released 2012-05-23)
 
 NEW FEATURES

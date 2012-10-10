@@ -4,7 +4,7 @@ localmean.weight <- function(x, y, prb, nbh=4) {
 # Function: localmean.weight
 # Programmers: Don Stevens and Tom Kincaid
 # Date: September 5, 2001
-# Last Revised: May 5, 2006
+# Last Revised: August 22, 2012
 # Description:
 #   This function calculates the index values of neighboring points and
 #   associated weights required by the local mean variance estimator.
@@ -23,14 +23,15 @@ localmean.weight <- function(x, y, prb, nbh=4) {
 
 # Calculate indices of nearest neighbors
 
-   idx <- apply(as.matrix(dist(cbind(x, y), diag = TRUE, upper = TRUE)), 2, order)[1:nbh,]
+   dst <- as.matrix(dist(cbind(x, y), diag = TRUE, upper = TRUE))
+   idx <- apply(dst, 2, order)[1:nbh,]
 
 # Make neighbors symmetric
 
    jdx <- rep(1:n, rep(nbh, n))
    kdx <- unique(c((jdx - 1) * n + idx, (idx - 1) * n + jdx)) - 1
    ij <- cbind((kdx) %/% n + 1, (kdx) %% n + 1)
-   ij <- ij[order(ij[, 1]),  ] 
+   ij <- ij[order(ij[, 1], dst[ij]),]
 
 # Apply linear taper to the  inverse probability weights
 

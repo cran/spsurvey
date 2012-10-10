@@ -9,7 +9,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: February 12, 2010
+# Last Revised: October 10, 2012
 # Description:
 #   This function select a GRTS sample of a finite resource.  This function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -89,6 +89,10 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
       cel.wt <- 99999
       celmax.ind <- 0
       sint <- 1
+      if(shift.grid) {
+         roff.x <- runif(1, 0, 1)
+         roff.y <- runif(1, 0, 1)
+      }
       while (any(cel.wt/sint > 1) && celmax.ind < 2 && nlev <= maxlev) {
          cat( "Current number of levels:", nlev, "\n");
          celmax <- max(cel.wt)
@@ -97,10 +101,8 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
          xc <- seq(grid.xmin, grid.xmax, length=nlv2+1)
          yc <- seq(grid.ymin, grid.ymax, length=nlv2+1)
          if(shift.grid) {
-            roff.x <- runif(1, 0, dx)
-            xc <- rep(xc, nlv2+1) + roff.x
-            roff.y <- runif(1, 0, dy)
-            yc <- rep(yc, rep(nlv2+1, nlv2+1)) + roff.y
+            xc <- rep(xc, nlv2+1) + (roff.x * dx)
+            yc <- rep(yc, rep(nlv2+1, nlv2+1)) + (roff.y * dy)
          } else {
             xc <- rep(xc, nlv2+1)
             yc <- rep(yc, rep(nlv2+1, nlv2+1))

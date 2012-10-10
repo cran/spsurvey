@@ -31,7 +31,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.1 of the spsurvey package was loaded successfully.
+Version 2.5 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Shapefile attribute data}
@@ -315,28 +315,28 @@ dsgnsum(Unequalsites)
 @
 \section{Stratified, unequal probability, GRTS survey design with an oversample and a panel structure for survey over time}
 
-The fourth survey design is a stratified, unequal probability design with an oversample and a panel structure for survey over time.  List Paneldsgn is assigned design specifications.  Analogous to the stratified, unequal probability design, Paneldsgn includes two lists named "Perennial" and "Intermittent".  For the "Perennial" stratum, a vector identifying sample sizes for three panels is assigned to panel.  For the "Intermittent" stratum, the sample size for a single panel named "YearOnce" is assigned to panel.  The value "Unequal" is assigned to seltype for both lists, which indicates unequal selection probabilities.  For both lists, the third item, caty.n, assigns sample sizes for each of the three multidensity categories.  Again, note that the sum of sample sizes provided in caty.n must equal the sum of sample sizes in panel.  For the "Perennial" stratum, the value 50 is assigned to over, which specifies an oversample of 50 sites.  No oversample is specified for the "Intermittent" stratum, and so over is not included in the list.  The grts function attempts to distribute the oversample proportionately among sample sizes for the multidensity categories.  If the oversample proportion for one or more categories is not a whole number, a warning message is printed and the proportion is rounded to the next higher integer.  For the "Perennial" stratum, the oversample is not proportionate to the multidensity category sample sizes, and the warning message is printed by calling the warnings function.
+The fourth survey design is a stratified, unequal probability design with an oversample and a panel structure for survey over time.  List Paneldsgn is assigned design specifications.  Analogous to the stratified, unequal probability design, Paneldsgn includes two lists named "Perennial" and "Intermittent".  For the "Perennial" stratum, a vector identifying sample sizes for three panels is assigned to panel.  For the "Intermittent" stratum, the sample size for a single panel named "Annual" is assigned to panel.  The value "Unequal" is assigned to seltype for both lists, which indicates unequal selection probabilities.  For both lists, the third item, caty.n, assigns sample sizes for each of the three multidensity categories.  Again, note that the sum of sample sizes provided in caty.n must equal the sum of sample sizes in panel.  For the "Perennial" stratum, the value 50 is assigned to over, which specifies an oversample of 50 sites.  No oversample is specified for the "Intermittent" stratum, and so over is not included in the list.  The grts function attempts to distribute the oversample proportionately among sample sizes for the multidensity categories.  If the oversample proportion for one or more categories is not a whole number, a warning message is printed and the proportion is rounded to the next higher integer.
 
 For this survey design, a shapefile will be used as the sampling frame.  The following arguments are included in the call to grts: (1) design: assigned the Paneldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "shapefile"; (5) in.shape: assigned the value "luck\_ash"; (6) att.frame: assigned the att data frame; 7) stratum: assigned the value "perint"; (8) mdcaty: assigned the value "strahcat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
 Create the design list
 \begin{verbatim}
-> Paneldsgn <- list(Perennial=list(panel=c(Year1=17, Year2=17, YearAll=16),
+> Paneldsgn <- list(Perennial=list(panel=c(Annual=16, Year1=17, Year2=17),
 +                                  seltype="Unequal",
 +                                  caty.n=c("1st"=15, "2nd"=15, "3rd+"=20),
 +                                  over=50),
-+                   Intermittent=list(panel=c(YearOnce=27),
++                   Intermittent=list(panel=c(Annual=27),
 +                                     seltype="Unequal",
 +                                     caty.n=c("1st"=20, "2nd"=5, "3rd+"=2)))
 \end{verbatim}
 
 <<Panelsites, echo=FALSE>>=
 # Create the design list
-Paneldsgn <- list(Perennial=list(panel=c(Year1=17, Year2=17, YearAll=16),
+Paneldsgn <- list(Perennial=list(panel=c(Annual=16, Year1=17, Year2=17),
                                  seltype="Unequal",
                                  caty.n=c("1st"=15, "2nd"=15, "3rd+"=20),
                                  over=50),
-                  Intermittent=list(panel=c(YearOnce=27),
+                  Intermittent=list(panel=c(Annual=27),
                                     seltype="Unequal",
                                     caty.n=c("1st"=20, "2nd"=5, "3rd+"=2)))
 
@@ -367,21 +367,6 @@ Panelsites <- grts(design=Paneldsgn,
                    shapefile=FALSE)
 
 @
-Print the warning message
-
-<<Panelsites, eval=FALSE>>=
-# Print the warning message
-warnings()
-
-@
-\begin{verbatim}
-Warning message:
-In grts(design = Paneldsgn, DesignID = "UNEQUAL", type.frame = "linear",  :
-  
-Oversample size is not proportional to category sample sizes for stratum
-"Perennial".
-\end{verbatim}
-
 Print the initial six lines of the survey design
 
 <<Panelsites>>=

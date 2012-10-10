@@ -8,7 +8,7 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Function: cdf.est
 # Programmer: Tom Kincaid
 # Date: July 12, 2000
-# Last Revised: April 6, 2011
+# Last Revised: October 10, 2012
 # Description:
 #   This function calculates an estimate of the cumulative distribution function
 #   (CDF) for the proportion (expressed as percent) and the total of a response 
@@ -653,10 +653,10 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Create the data frame for percentile estimates
 
    rslt <- data.frame(array(0, c(npctval, 10)))
-   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate",
-      "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct",
-      sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""),
-      paste("UCB", conf, "Pct.U", sep="")))
+   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf,
+      "Pct.P", sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U",
+      sep=""), paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- paste(pctval, "Pct", sep="")
    rslt[,4] <- I(character(npctval))
    rslt[,8] <- I(character(npctval))
@@ -1002,8 +1002,8 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Create the data frame for percentile estimates
 
    rslt <- data.frame(array(0, c(npctval, 10)))
-   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate",
-      "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct",
+   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P",
       sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""),
       paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- paste(pctval, "Pct", sep="")
@@ -1256,6 +1256,8 @@ cdf.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 # Return the Results data frame, the warn.ind logical value, and the warn.df
 # data frame
 
+      names(Results$Pct)[3:6] <- substr(names(Results$Pct)[3:6], 1,
+         nchar(names(Results$Pct)[3:6])-2)
       list(Results=Results, warn.ind=warn.ind, warn.df=warn.df)
    }
 }

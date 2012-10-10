@@ -31,12 +31,12 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.1 of the spsurvey package was loaded successfully.
+Version 2.5 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Shapefile attribute data}
 
-The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The initial six lines in the att data frame are printed using the head function.
+The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The att data frame is printed by entering the data frame name at the R prompt.
 
 The ecoregion attribute will be used to define stratum codes and unequal selection probability (multidensity) categories for the survey designs.  Ecoregion is contained in a variable named "level3\_nam" and includes seven unique values.  Frame area is summarized for the ecoregion attribute.  Note that ecoregion area measured in hectares is contained in the variable named "area\_ha".  The tapply function is used to calculate total area for each ecoregion.  The addmargins function is applied to the output from tapply to calculate total area for all all ecoregions, and the round function is used to round value to whole numbers.  Finally, the resulting table is displayed.
 
@@ -47,11 +47,11 @@ Read the attribute table from the shapefile
 att <- read.dbf("eco_l3_ut")
 
 @
-Display the initial six lines in the attribute data frame
+Display the attribute data frame
 
 <<att>>=
-# Display the initial six lines in the attribute data frame
-head(att)
+# Display the attribute data frame
+att
 
 @
 Summarize frame area by ecoregion
@@ -297,8 +297,8 @@ For this survey design, a shapefile will be used as the sampling frame.  The fol
 
 Create the design list
 \begin{verbatim}
-> Paneldsgn <- list(None=list(panel=c(Panel_1=50, Panel_2=50, Panel_3=50,
-+                                     Panel_4=50, Panel_5=50),
+> Paneldsgn <- list(None=list(panel=c(Year1=50, Year2=50, Year3=50,
++                                     Year4=50, Year5=50),
 +                             seltype="Unequal",
 +                             caty.n=c("Central Basin and Range"=64,
 +                                      "Colorado Plateaus"=63,
@@ -312,8 +312,8 @@ Create the design list
 
 <<Panelsites, echo=FALSE>>=
 # Create the design list
-Paneldsgn <- list(None=list(panel=c(Panel_1=50, Panel_2=50, Panel_3=50,
-                                    Panel_4=50, Panel_5=50),
+Paneldsgn <- list(None=list(panel=c(Year1=50, Year2=50, Year3=50,
+                                    Year4=50, Year5=50),
                             seltype="Unequal",
                             caty.n=c("Central Basin and Range"=64,
                                      "Colorado Plateaus"=63,

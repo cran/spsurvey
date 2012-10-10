@@ -9,7 +9,7 @@ cdf.decon <- function(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL,
 # Function: cdf.decon
 # Programmer: Tom Kincaid
 # Date: December 3, 2002
-# Last Revised: May 13, 2011
+# Last Revised: October 10, 2012
 # Description:
 #   This function calculates an estimate of the deconvoluted cumulative 
 #   distribution function (CDF) for the proportion (expressed as percent) and
@@ -654,8 +654,8 @@ cdf.decon <- function(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL,
 # Create the data frame for percentile estimates
 
    rslt <- data.frame(array(0, c(npctval, 10)))
-   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate",
-      "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct",
+   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P",
       sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""),
       paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- paste(pctval, "Pct", sep="")
@@ -1032,8 +1032,8 @@ cdf.decon <- function(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL,
 # Create the data frame for percentile estimates
 
    rslt <- data.frame(array(0, c(npctval, 10)))
-   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate",
-      "StdError", paste("LCB", conf, "Pct", sep=""), paste("UCB", conf, "Pct",
+   dimnames(rslt) <- list(1:npctval, c("Statistic", "NResp", "Estimate.P",
+      "StdError.P", paste("LCB", conf, "Pct.P", sep=""), paste("UCB", conf, "Pct.P",
       sep=""), "Estimate.U", "StdError.U", paste("LCB", conf, "Pct.U", sep=""),
       paste("UCB", conf, "Pct.U", sep="")))
    rslt[,1] <- paste(pctval, "Pct", sep="")
@@ -1294,6 +1294,8 @@ cdf.decon <- function(z, wgt, sigma, var.sigma=NULL, x=NULL, y=NULL,
 # Return the Results data frame, the warn.ind logical value, and the warn.df
 # data frame
 
+      names(Results$Pct)[3:6] <- substr(names(Results$Pct)[3:6], 1,
+         nchar(names(Results$Pct)[3:6])-2)
       list(Results=Results, warn.ind=warn.ind, warn.df=warn.df)
    }
 }

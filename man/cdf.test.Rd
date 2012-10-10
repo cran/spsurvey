@@ -18,7 +18,8 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
   warn.df=NULL, warn.vec=NULL)
 }
 \arguments{
-  \item{bounds}{vector of upper bounds of the classes for the CDF.}
+  \item{bounds}{vector of upper bounds that define classes for the CDFs, which must
+    contain at least three values.}
   \item{z_1}{response value for each sample one site.}
   \item{wgt_1}{final adjusted weight (inverse of the sample inclusion
     probability) for each sample one site, which is either the weight for a
@@ -169,8 +170,9 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
   second order corrected (Satterthwaite corrected) test statistics.  Both
   standard versions of the three statistics, which are distributed as
   Chi-squared random variables, and alternate version of the statistics, which
-  are distributed as F random variables, are available.  The user
-  supplies the set of upper bounds for defining the classes for the  CDFs.  The
+  are distributed as F random variables, are available.  The user supplies the
+  set of upper bounds that define the intervals (classes) into which the CDFs
+  are divided (binned). The minimum number of classes is three.  The
   Horvitz-Thompson ratio estimator, i.e., the ratio of two Horvitz-Thompson
   estimators, is used to calculate estimates of the class proportions for the
   CDFs.  Variance estimates for the test statistics are calculated using either

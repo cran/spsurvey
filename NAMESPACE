@@ -1,7 +1,11 @@
-useDynLib(spsurvey, .registration = TRUE)
+# Register spsurvey as a dynamic library
+useDynLib(spsurvey, .registration=TRUE)
 
-exportPattern("^[^\\.]")
+# Export all names
+exportPattern(".")
 
+# Import all packages listed as Depends or Imports
+import(sp)
 importFrom(deldir, deldir)
 importFrom(deldir, tile.list)
 importFrom(foreign, read.ssd)

@@ -31,7 +31,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.2 of the spsurvey package was loaded successfully.
+Version 2.5 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Read the survey design and analytical variables data file}
@@ -89,7 +89,7 @@ for(i in 1:2) {
           col=cols[i])
    }
 legend(x="bottomright", inset=0.05, legend=stratum, pch=20, cex=0.8, col=cols)
-title("Plot of South Carolina Estuary Sites Color-Coded by Stratum")
+title("Plot of South Carolina Estuary Sites Color-Coded by Stratum", cex=0.95)
 
 @
 \caption{South Carolina Estuary Sample Sites.}
@@ -190,16 +190,14 @@ The extent estimates are displayed using the print function.  The object produce
 print(Extent_Estimates)
 
 @
-The write.table function is used to store the extent estimates as a comma-separated value (csv) file.  Files in csv format can be read by programs such as Microsoft Excel.
+The write.csv function is used to store the extent estimates as a comma-separated value (csv) file.  Files in csv format can be read by programs such as Microsoft Excel.
 \begin{verbatim}
-> write.table(Extent_Estimates, file="Extent_Estimates.csv", sep=",", 
-+             row.names=FALSE)
+> write.csv(Extent_Estimates, file="Extent_Estimates.csv")
 \end{verbatim}
 
 <<Statuseval, echo=FALSE>>=
 # Write results as a comma-separated value (csv) file
-write.table(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(Extent_Estimates, file="Extent_Estimates.csv")
 
 @
 \section{Analysis of estuary condition variables}
@@ -277,19 +275,17 @@ Print the estuary condition estimates for all sites combined.
 
 <<Conditioneval>>=
 # Print the condition estimates for all basins combined
-print(Condition_Estimates[c(1:3, 16:19),])
+print(Condition_Estimates[c(1:4, 13:16),])
 
 @
-Use the write.table function to write the condition estimates as a csv file.
+Use the write.csv function to write the condition estimates as a csv file.
 \begin{verbatim}
-> write.table(Condition_Estimates, file="Condition_Estimates.csv", sep=",", 
-+             row.names=FALSE)
+> write.csv(Condition_Estimates, file="Condition_Estimates.csv")
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
 # Write results as a csv file
-write.table(Condition_Estimates, file="Condition_Estimates.csv", sep=",", 
-            row.names=FALSE)
+write.csv(Condition_Estimates, file="Condition_Estimates.csv")
 
 @
 \section{Analysis of estuary condition variables correcting for population size}
@@ -333,19 +329,17 @@ Print the estuary condition estimates for IBI status.
 
 <<Conditionevalpop>>=
 # Print the estuary condition estimates for all sites combined
-print(Condition_Estimates_popsize[1:12,])
+print(Condition_Estimates_popsize[c(1:4, 13:16),])
 
 @
-Use the write.table function to write the condition estimates as a csv file.
+Use the write.csv function to write the condition estimates as a csv file.
 \begin{verbatim}
-> write.table(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv",
-+             sep=",", row.names=FALSE)
+> write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 \end{verbatim}
 
 <<Conditionevalpop, echo=FALSE>>=
 # Write results as a csv file
-write.table(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv",
-            sep=",", row.names=FALSE)
+write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 
 @
 \section{Analysis of quantitative variables}
@@ -414,17 +408,15 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 @
 The object produced by cont.analysis is a list containing two objects: (1) CDF, a data frame containing the CDF estimates and (2) Pct, a data frame containing percentile estimates plus estimates of population values for mean, variance, and standard deviation.  Format for the CDF data frame is analogous to the data frame produced by cat.analysis.  For the CDF data frame, however, the fourth column is labeled Value and contains the value at which the CDF was evaluated.  Unlike the data frames produced by the other analysis functions we have examined, the Pct data frame contains only nine columns since there is a single set of estimates rather than two sets of estimates.  In addition, the fourth column is labeled Statistic and identifies either a percentile or the mean, variance, or standard deviation.  Finally, since percentile estimates are obtained by inverting the CDF estimate, the percentile estimates do not have a standard error value associated with them.
 
-Use the write.table function to write the CDF estimates as a csv file.
+Use the write.csv function to write the CDF estimates as a csv file.
 
 \begin{verbatim}
-> write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-+             row.names=FALSE)
+> write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Write CDF estimates as a csv file
-write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
 
 @
 The cont.cdfplot function in spsurvey can be used to produce a PDF file containing plots of the CDF estimates.  The primary arguments to cont.cdfplot are a character string containing a name for the PDF file and the CDF data frame in the CDF\_Estimates object.
@@ -442,17 +434,15 @@ Print the percentile estimates for IBI score for all sites combined.
 print(CDF_Estimates$Pct[1:10,])
 
 @
-Use the write.table function to write the percentile estimates as a csv file.
+Use the write.csv function to write the percentile estimates as a csv file.
 
 \begin{verbatim}
-> write.table(CDF_Estimates$Pct, file="Percentile_Estimates.csv", sep=",",
-+             row.names=FALSE)
+> write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Write percentile estimates as a csv file
-write.table(CDF_Estimates$Pct, file="Percentile_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
 
 @
 The cont.cdftest function in spsurvey can be used to test for statistical difference between the CDFs from subpopulations.  For this analysis we will use the cont.cdftest function to test for statistical difference between the CDFs from the two strata.  Arguments to cont.cdftest are the same as arguments to cont.analysis. Since we are interested only in testing among strata, the subpop data frame is subsetted to include only the siteID and Estuary\_Type variables.  Note that the popsize argument was modified from prior examples to include only the entry for Estuary\_Type.
@@ -473,14 +463,14 @@ The print function is used to display results for IBI score of the statistical t
 <<Quanteval>>=
 # Print results of the statistical tests for difference between strata CDFs for
 # IBI score and WQ score
-print(CDF_Tests)
+print(CDF_Tests, digits=3)
 
 @
-Use the write.table function to write CDF test results as a csv file.
+Use the write.csv function to write CDF test results as a csv file.
 
 <<Quanteval>>=
 # Write CDF test results as a csv file
-write.table(CDF_Tests, file="CDF_Tests.csv", sep=",", row.names=FALSE)
+write.csv(CDF_Tests, file="CDF_Tests.csv")
 
 @
 \end{document}
