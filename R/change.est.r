@@ -14,7 +14,7 @@ change.est <- function(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
 # Purpose: Estimate change between two probability surveys
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
-# Last Revised: May 17, 2012
+# Last Revised: December 7, 2012
 # Description:
 #   This function estimates change between two probability surveys.  The
 #   function can accommodate both categorical and continuous response variables.
@@ -67,10 +67,11 @@ change.est <- function(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
 #     NULL.
 #   repeat_2 = a logical variable that identifies repeat visit sites for survey
 #     two.
-#   revisitwgt = a logical value that indicates whether the revisited sites in
-#     the two surveys have the same survey design weights, where TRUE = the
+#   revisitwgt = a logical value that indicates whether the repeat visit sites
+#     in the two surveys have the same survey design weights, where TRUE = the
 #     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the revisited sites are assigned equal weights.  The
+#     argument is FALSE, the repeat visit sites are assigned equal weights when
+#     calculating the covariance component of the change estimate variance.  The
 #     default is FALSE.
 #   stratum_1 = the stratum for each survey one site.  The default is NULL.
 #   stratum_2 = the stratum for each survey two site.  The default is NULL.
@@ -256,7 +257,7 @@ if(resp.ind == "cat") {
 
 # Merge results for the two surveys
    Results <- merge(temp.cat_1, temp.cat_2, by="Category", suffix=c("_1", "_2"),
-      all=TRUE)
+      all=TRUE, sort=FALSE)
 
 # Calculate the change estimates
    Results$DiffEst.P <- (Results$Estimate.P_2 - Results$Estimate.P_1)/100

@@ -64,11 +64,12 @@ cont.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cont=NULL,
 #     data (NA) is allowed.  The default is NULL.
 #   popsize = known size of the resource, which is used to perform ratio
 #     adjustment to estimators expressed using measurement units for the
-#     resource.  For a finite resource, this argument is either the total number
-#     of sampling units or the known sum of size-weights.  For an extensive
-#     resource, this argument is the measure of the resource, i.e., either known
-#     total length for a linear resource or known total area for an areal
-#     resource.  The argument must be in the form of a list containing an
+#     resource and to calculate strata proportions for calculating estimates for
+#     a stratified sample.  For a finite resource, this argument is either the
+#     total number of sampling units or the known sum of size-weights.  For an
+#     extensive resource, this argument is the measure of the resource, i.e.,
+#     either known total length for a linear resource or known total area for an
+#     areal resource.  The argument must be in the form of a list containing an
 #     element for each population Type in the subpop data frame, where NULL is a
 #     valid choice for a population Type.  The list must be named using the
 #     column names for the population Types in subpop. If a population Type

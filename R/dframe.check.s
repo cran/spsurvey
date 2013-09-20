@@ -39,11 +39,6 @@ dframe.check <- function(sites, design, subpop, data.cat, data.cont,
          temp.str <- vecprint(seq(nrow(sites))[temp])
          stop(paste("\nThe following rows in the sites data frame contain missing site ID values:\n", temp.str, sep=""))
       }
-      temp <- is.na(sites[,2])
-      if(any(temp)) {
-         temp.str <- vecprint(seq(nrow(sites))[temp])
-         stop(paste("\nThe following rows in the sites data frame contain missing logical variable values:\n", temp.str, sep=""))
-      }
       temp <- sapply(split(sites[,1], sites[,1]), length)
       if(any(temp > 1)) {
          temp.str <- vecprint(names(temp)[temp > 1])

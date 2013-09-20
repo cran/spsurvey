@@ -8,7 +8,7 @@ irs <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Purpose: Select an independent random sample (IRS)
 # Programmer: Tom Kincaid
 # Date: November 28, 2005
-# Last Revised: August 17, 2011
+# Last Revised: November 3, 2011
 # Description:
 #   Select an independent random sample from a point, linear, or areal frame.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -596,7 +596,8 @@ if(type.frame == "finite") {
       else if(design[[s]]$seltype == "Unequal")
          sframe$mdm <- mdmlin(sframe$len, sframe$mdcaty, n.desired)
       else
-         sframe$mdm <- n.desired * sframe$mdcaty / sum(sframe$mdcaty)
+         sframe$mdm <- n.desired * sframe$mdcaty /
+                       sum(sframe$len * sframe$mdcaty)
 
 # Select the sample
 
@@ -775,7 +776,8 @@ if(type.frame == "finite") {
       else if(design[[s]]$seltype == "Unequal") 
          sframe$mdm <- mdmarea(sframe$area, sframe$mdcaty, n.desired)
       else
-         sframe$mdm <- n.desired * sframe$mdcaty / sum(sframe$mdcaty)
+         sframe$mdm <- n.desired * sframe$mdcaty /
+                       sum(sframe$area * sframe$mdcaty)
 
 # Select the sample
 

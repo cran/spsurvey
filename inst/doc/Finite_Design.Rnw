@@ -38,7 +38,7 @@ Version 2.5 of the spsurvey package was loaded successfully.
 
 The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The initial six lines in the att data frame are printed using the head function.
 
-Two attributes, state name and lake area category, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  State name is contained in a variable named "state", and lake area category is contained in a variable named "area\_cat".  For lake area category, lakes are classified by surface area measured in hectares.  The lake area categories are coded using values such as "(5,10]", which indicates that lake area is greater than five hectares but less than or equal to ten hectares.  The table and addmargin functions are used to produce a table displaying number of lakes for each combination of values for the strata and multidensity category variables.
+Two attributes, state name and lake area category, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  State code is contained in a variable named "state", and lake area category is contained in a variable named "area\_cat".  For lake area category, lakes are classified by surface area measured in hectares.  The lake area categories are coded using values such as "(5,10]", which indicates that lake area is greater than five hectares but less than or equal to ten hectares.  The table and addmargin functions are used to produce a table displaying number of lakes for each combination of values for the strata and multidensity category variables.
 
 Read the attribute table from the shapefile
 
@@ -59,7 +59,7 @@ Display number of lakes cross-classified by strata and multidensity category
 <<att>>=
 # Display number of lakes cross-classified by strata and multidensity
 # category
-addmargins(table("State"=att$state, "Lake Area Category"=att$area_cat))
+addmargins(table("State"=att$State, "Lake Area Category"=att$Area_Cat))
 
 @
 Lakes in the southern New England region are displayed in Figure~\ref{fig:Finite}.  The plot function is used to produce the figure.
@@ -170,7 +170,7 @@ Select the sample
 +                    att.frame=att,
 +                    xcoord="xcoord",
 +                    ycoord="ycoord",
-+                    stratum="state",
++                    stratum="State",
 +                    shapefile=FALSE)
 \end{verbatim}
 
@@ -183,7 +183,7 @@ Stratsites <- grts(design=Stratdsgn,
                    att.frame=att,
                    xcoord="xcoord",
                    ycoord="ycoord",
-                   stratum="state",
+                   stratum="State",
                    shapefile=FALSE)
 
 @
@@ -213,7 +213,7 @@ Create the design list
 +                               seltype="Unequal",
 +                               caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
 +                                        "(10,50]"=50, "(50,500]"=25,
-+                                        "(500,7e+04]"=5),
++                                        "(500,1e+04]"=5),
 +                               over=120))
 \end{verbatim}
 
@@ -223,7 +223,7 @@ Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
                               seltype="Unequal",
                               caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
                                        "(10,50]"=50, "(50,500]"=25,
-                                       "(500,7e+04]"=5),
+                                       "(500,1e+04]"=5),
                               over=120))
 
 @
@@ -242,7 +242,7 @@ Select the sample
 +                      src.frame="sp.object",
 +                      sp.object=shp,
 +                      att.frame=att,
-+                      mdcaty="area_cat",
++                      mdcaty="Area_Cat",
 +                      shapefile=FALSE)
 \end{verbatim}
 
@@ -254,7 +254,7 @@ Unequalsites <- grts(design=Unequaldsgn,
                      src.frame="sp.object",
                      sp.object=shp,
                      att.frame=att,
-                     mdcaty="area_cat",
+                     mdcaty="Area_Cat",
                      shapefile=FALSE)
 
 @
@@ -274,7 +274,7 @@ dsgnsum(Unequalsites)
 @
 \section{Unstratified, unequal probability, GRTS survey design with an oversample and a panel structure for survey over time}
 
-The fourth survey design is an unstratified, unequal probability design with an oversample and a panel structure for survey over time.  List Paneldsgn is assigned design specifications.  Since the survey design is unstratified, Paneldsgn includes a single list named "None" that contains four items: panel, seltype, caty.n, and over.  A vector identifying sample sizes for five panels is assigned to panel.  The value "Unequal" is assigned seltype, which indicates unequal selection probabilities.  The third item, caty.n, assigns sample sizes for each of six multidensity categories, where lake area classes are used as the categories.  The value 100 is assigned to over, which specifies an oversample of 100 sites.  For this example, the oversample is not proportionate to the category sample sizes, and the warning message is printed by calling the warnings function.
+The fourth survey design is an unstratified, unequal probability design with an oversample and a panel structure for survey over time.  List Paneldsgn is assigned design specifications.  Since the survey design is unstratified, Paneldsgn includes a single list named "None" that contains four items: panel, seltype, caty.n, and over.  A vector identifying sample sizes for five panels is assigned to panel.  The value "Unequal" is assigned to seltype, which indicates unequal selection probabilities.  The third item, caty.n, assigns sample sizes for each of six multidensity categories, where lake area classes are used as the categories.  The value 100 is assigned to over, which specifies an oversample of 100 sites.  For this example, the oversample is not proportionate to the category sample sizes, and the warning message is printed by calling the warnings function.
 
 For this survey design, a shapefile will be used as the sampling frame.  The following arguments are included in the call to grts: (1) design: assigned the Paneldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "finite"; (4) src.frame: assigned the value "shapefile"; (5) in.shape: assigned the value "reg1\_lakes"; (6) att.frame: assigned the att data frame; (7) mdcaty: assigned the value "area\_cat"; and (8) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
@@ -285,7 +285,7 @@ Create the design list
 +                             seltype="Unequal",
 +                             caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
 +                                      "(10,50]"=50, "(50,500]"=25,
-+                                      "(500,7e+04]"=5),
++                                      "(500,1e+04]"=5),
 +                             over=100))
 \end{verbatim}
 
@@ -296,7 +296,7 @@ Paneldsgn <- list(None=list(panel=c(Annual=50, Year1=50, Year2=50, Year3=50,
                             seltype="Unequal",
                             caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
                                      "(10,50]"=50, "(50,500]"=25,
-                                     "(500,7e+04]"=5),
+                                     "(500,1e+04]"=5),
                             over=100))
 
 @
@@ -308,7 +308,7 @@ Select the sample
 +                    src.frame="shapefile",
 +                    in.shape="NE_lakes",
 +                    att.frame=att,
-+                    mdcaty="area_cat",
++                    mdcaty="Area_Cat",
 +                    shapefile=FALSE)
 \end{verbatim}
 
@@ -320,7 +320,7 @@ Panelsites <- grts(design=Paneldsgn,
                    src.frame="shapefile",
                    in.shape="NE_lakes",
                    att.frame=att,
-                   mdcaty="area_cat",
+                   mdcaty="Area_Cat",
                    shapefile=FALSE)
 
 @

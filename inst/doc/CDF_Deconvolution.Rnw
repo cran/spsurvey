@@ -39,7 +39,7 @@ Version 2.5 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Read the Simulated Variables Data File}
-A data file was created that contains simulated species richness variables.  The initial variable was created using the Normal distribution with mean 20 and standard deviation 5.  Addition variables were created by adding 25\%, 50\%, and 100\% measurement error variance to the original variable, where the percent values refer to the variance of the original variable.  The data file also includes x-coordinates and y-coordinates, which were simulated using the Uniform distribution with a range from zero to one.  The data file contains 1,000 records.
+A data file was created that contains simulated species richness variables.  The initial variable was created using the Normal distribution with mean 20 and standard deviation 5.  Addition variables were created by adding 25\%, 50\%, and 100\% measurement error variance to the original variable, where the percent values refer to the variance of the original variable.  The data file also includes x-coordinates and y-coordinates, which were simulated using the Uniform distribution with a range from zero to one.  The data file contains 500 records.
 
 The next step is to read the data file.  The read.delim function is used to read the tab-delimited file and assign it to a data frame named decon\_data.  The nrow function is used to determine the number of rows in the decon\_data data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the decon\_data data frame are printed using the head and tail functions, respectively.
 
@@ -70,27 +70,27 @@ tail(decon_data)
 Measurement error is an example of extraneous variance, additional variance that is convoluted with the population frequency distribution for a variable of interest.  The impact of extraneous variance on the CDF will be investigated in this section.  As an initial step, the summary function is used to summarize the data structure of the species richness values for the original variable.
 
 \begin{verbatim}
-> summary(decon_data$richness)
+> summary(decon_data$Richness)
 \end{verbatim}
 
 <<summary, echo=FALSE>>=
 # Use the summary function to summarize the data structure of the species
 # richness variable
 cat("\nSummarize the data structure of the species richness variable:\n")
-summary(decon_data$richness)
+summary(decon_data$Richness)
 
 @
 Note that the species richness values range between approximately 8 and 31.  By way of comparison, consider the range of value for the original variable plus 100\% additional measurement error.
   
 \begin{verbatim}
-> summary(decon_data$richness_100)
+> summary(decon_data$Richness_100)
 \end{verbatim}
 
 <<summary, echo=FALSE>>=
 # Use the summary function to summarize the data structure of the species
 # richness variable plus 100\% measurrement error
 cat("\nSummarize the data structure of the species richness variable plus \n100% measurrement error:\n")
-summary(decon_data$richness_100)
+summary(decon_data$Richness_100)
 
 @
 The range of species richness values now has increased to 1 to 40, which reflects the bias that is introduced into the CDF.  To illustrate the bias induced by extraneous variance, CDFs for the species richness variables will be graphed.  The first step is to assign a vector of values at which the CDFs will be calculated.  The sequence (seq) function is used to create the set of values using the range 0 to 40.  Output from the seq function is assigned to an object named cdfvals.
@@ -107,7 +107,7 @@ cdfvals <- seq(0,40,length=25)
 The next step is to calculate a CDF estimate for the original species richness variable.  The cdf.est function in spsurvey will be used to calculate the estimate.  Since values for the species richness variables were not selected in a probability survey, the survey design weights argument (wgt) for the function is assigned a vector of ones using the repeat (rep) function.  Recall that the object named nr contains the number of rows in the decon\_data data frame.
 
 \begin{verbatim}
-> CDF_org <- cdf.est(z=decon_data$richness,
+> CDF_org <- cdf.est(z=decon_data$Richness,
 +                    wgt=rep(1, nr),
 +                    x=decon_data$xcoord,
 +                    y=decon_data$ycoord,
@@ -116,7 +116,7 @@ The next step is to calculate a CDF estimate for the original species richness v
 
 <<estimates, echo=FALSE>>=
 # Calculate a CDF estimate for the original species richness variable
-CDF_org <- cdf.est(z=decon_data$richness,
+CDF_org <- cdf.est(z=decon_data$Richness,
                    wgt=rep(1, nr),
                    x=decon_data$xcoord,
                    y=decon_data$ycoord,
@@ -127,19 +127,19 @@ CDF_org <- cdf.est(z=decon_data$richness,
 Similarly, the cdf.est function will be used to calculate CDF estimates for the species richness variables that include measurement error.
 
 \begin{verbatim}
-> CDF_25 <- cdf.est(z=decon_data$richness_25,
+> CDF_25 <- cdf.est(z=decon_data$Richness_25,
 +                   wgt=rep(1, nrow(decon_data)),
 +                   x=decon_data$xcoord,
 +                   y=decon_data$ycoord,
 +                   cdfval=cdfvals)
 
-> CDF_50 <- cdf.est(z=decon_data$richness_50,
+> CDF_50 <- cdf.est(z=decon_data$Richness_50,
 +                   wgt=rep(1, nrow(decon_data)),
 +                   x=decon_data$xcoord,
 +                   y=decon_data$ycoord,
 +                   cdfval=cdfvals)
 
-> CDF_100 <- cdf.est(z=decon_data$richness_100,
+> CDF_100 <- cdf.est(z=decon_data$Richness_100,
 +                    wgt=rep(1, nrow(decon_data)),
 +                    x=decon_data$xcoord,
 +                    y=decon_data$ycoord,
@@ -148,21 +148,21 @@ Similarly, the cdf.est function will be used to calculate CDF estimates for the 
 
 <<estimates, echo=FALSE>>=
 # Calculate a CDF estimate for the variable plus 25% extraneous variance
-CDF_25 <- cdf.est(z=decon_data$richness_25,
+CDF_25 <- cdf.est(z=decon_data$Richness_25,
                   wgt=rep(1, nrow(decon_data)),
                   x=decon_data$xcoord,
                   y=decon_data$ycoord,
                   cdfval=cdfvals)
 
 # Calculate a CDF estimate for the variable plus 50% extraneous variance
-CDF_50 <- cdf.est(z=decon_data$richness_50,
+CDF_50 <- cdf.est(z=decon_data$Richness_50,
                   wgt=rep(1, nrow(decon_data)),
                   x=decon_data$xcoord,
                   y=decon_data$ycoord,
                   cdfval=cdfvals)
 
 # Calculate a CDF estimate for the variable plus 100% extraneous variance
-CDF_100 <- cdf.est(z=decon_data$richness_100,
+CDF_100 <- cdf.est(z=decon_data$Richness_100,
                    wgt=rep(1, nrow(decon_data)),
                    x=decon_data$xcoord,
                    y=decon_data$ycoord,
@@ -172,19 +172,19 @@ CDF_100 <- cdf.est(z=decon_data$richness_100,
 Density estimates facilitate visualizing the increased variance induced in a CDF by measurement error.  The ash1.wgt function in spsurvey, which implements the average shifted histogram algorithm \cite{Scott:1985}, will be used to calculate density estimates for each of the species richness variables.
 
 \begin{verbatim}
-> Density_org <- ash1.wgt(decon_data$richness, nbin=25)
-> Density_25 <- ash1.wgt(decon_data$richness_25, nbin=25)
-> Density_50 <- ash1.wgt(decon_data$richness_50, nbin=25)
-> Density_100 <- ash1.wgt(decon_data$richness_100, nbin=25)
+> Density_org <- ash1.wgt(decon_data$Richness, nbin=25)
+> Density_25 <- ash1.wgt(decon_data$Richness_25, nbin=25)
+> Density_50 <- ash1.wgt(decon_data$Richness_50, nbin=25)
+> Density_100 <- ash1.wgt(decon_data$Richness_100, nbin=25)
 
 \end{verbatim}
 
 <<estimates, echo=FALSE>>=
 # Calculate density estimates
-Density_org <- ash1.wgt(decon_data$richness, nbin=25)
-Density_25 <- ash1.wgt(decon_data$richness_25, nbin=25)
-Density_50 <- ash1.wgt(decon_data$richness_50, nbin=25)
-Density_100 <- ash1.wgt(decon_data$richness_100, nbin=25)
+Density_org <- ash1.wgt(decon_data$Richness, nbin=25)
+Density_25 <- ash1.wgt(decon_data$Richness_25, nbin=25)
+Density_50 <- ash1.wgt(decon_data$Richness_50, nbin=25)
+Density_100 <- ash1.wgt(decon_data$Richness_100, nbin=25)
 
 @
 CDF and density estimates are displayed in Figure~\ref{fig:extraneous}.  Estimates for the original species richness variable are displayed using red.  Estimates for variables containing measurement error are displayed using blue.  
@@ -235,8 +235,8 @@ par(op)
 Deconvolution will be demonstrated using the species richness variable that includes 100\% additional measurement error variance.  The decon.est function in spsurvey will be used to calculate a deconvoluted CDF estimate, which uses an algorithm based on the procedure developed by Stefansky and Bay \citeyear{Stefansky+Bay:1996}.  Argument sigma for that function specifies the extraneous variance.  For an actual survey design, a value for sigma would be estimated from the survey data or obtained from some other source.  Since we are using simulated data, a direct estimate of sigma is available.  Specifically, the variance estimation function (var) will be used to estimate the additional variance for the species richness variable with added measurement error, and the result will be assigned to an object named extvar.
 
 \begin{verbatim}
-> extvar <- var(decon_data$richness_100) - var(decon_data$richness)
-> CDF_decon <- cdf.decon(z=decon_data$richness_100,
+> extvar <- var(decon_data$Richness_100) - var(decon_data$Richness)
+> CDF_decon <- cdf.decon(z=decon_data$Richness_100,
 +                        wgt=rep(1,nr),
 +                        sigma=extvar,
 +                        x=decon_data$xcoord,
@@ -246,8 +246,8 @@ Deconvolution will be demonstrated using the species richness variable that incl
 
 <<decon, echo=FALSE>>=
 # Calculate the deconvoluted CDF estimate
-extvar <- var(decon_data$richness_100) - var(decon_data$richness)
-CDF_decon <- cdf.decon(z=decon_data$richness_100,
+extvar <- var(decon_data$Richness_100) - var(decon_data$Richness)
+CDF_decon <- cdf.decon(z=decon_data$Richness_100,
                        wgt=rep(1,nr),
                        sigma=extvar,
                        x=decon_data$xcoord,

@@ -1,10 +1,10 @@
-localmean.weight <- function(x, y, prb, nbh=4) {
+localmean.weight <- function(x, y, prb, nbh=4, vincr=0.000005*abs(mean(y))) {
 
 ################################################################################
 # Function: localmean.weight
 # Programmers: Don Stevens and Tom Kincaid
 # Date: September 5, 2001
-# Last Revised: August 22, 2012
+# Last Revised: September 19, 2013
 # Description:
 #   This function calculates the index values of neighboring points and
 #   associated weights required by the local mean variance estimator.
@@ -13,6 +13,8 @@ localmean.weight <- function(x, y, prb, nbh=4) {
 #      y = y-coordinates for location of the sample points.
 #      prb = inclusion probabilities for the sample points.
 #      nbh = number of neighboring points to use in the calculations.
+#      vincr = the variance increment for correcting an La.svd error.  The
+#        default is 0.000005*abs(mean(y)).
 #   Output:
 #      An object in list format containing two elements: a matrix named ij 
 #      composed of the index values of neighboring points and a vector named gwt
@@ -51,7 +53,20 @@ localmean.weight <- function(x, y, prb, nbh=4) {
 
    hij <- matrix(0, n, n)
    hij[ij] <- 0.5
-   a22 <- ginv(diag(gct/2) - hij %*% diag(2/gct) %*% hij)
+   a22 <- try(ginv(diag(gct/2) - hij %*% diag(2/gct) %*% hij), TRUE)
+   ind <- class(a22) == "try-error"
+   iter <- 1
+   v <- 0
+   while(ind & iter < 11) {
+      v <- v + vincr
+      xt <- x + rnorm(n, 0, v)
+      yt <- y + rnorm(n, 0, v)
+      a22 <- localmean.weight2(xt, yt, prb, nbh)
+      ind <- class(a22) == "try-error"
+      iter <- iter+1
+   }
+   if(ind)
+      stop("\nThe La.svd function terminated with an error.  Add random noise to the \nx-coordinates and y-coordinates.")
    a21 <-  - diag(2/gct) %*% hij %*% a22
    lm <- a21 %*% (1 - smwt)
    gm <- a22 %*% (1 - smwt)

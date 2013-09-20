@@ -63,12 +63,12 @@ tail(FL_lakes)
 @
 The sample of small lakes in Florida is displayed in Figure~\ref{fig:FLlakes}.  The sample sites for each basin are displayed using a unique color.  First, the levels function is used to extract the set of basin names, and the result is assigned to object basin.  Next, the rainbow function is called to select a set of six colors, and the result is assigned to object cols.  The plot function is then used to produce the basic figure, but plotting of sample points is suppressed.  The for function is used to loop through the set of six basins and plot color-coded points for each basin using the points function.  Finally, the legend function is used to add a legend to the figure, and the title function is used to create a figure title.
 \begin{verbatim}
-> basins <- levels(FL_lakes$basin)
+> basins <- levels(FL_lakes$Basin)
 > cols <- rainbow(6)
 > plot(FL_lakes$xcoord, FL_lakes$ycoord, type="n", xlab="x-coordinate",
 +      ylab="y-coordinate")
 > for(i in 1:6) {
-+    ind <- FL_lakes$basin == basins[i]
++    ind <- FL_lakes$Basin == basins[i]
 +    points(FL_lakes$xcoord[ind], FL_lakes$ycoord[ind], pch=20, cex=0.4,
 +           col=cols[i])
 +    }
@@ -81,12 +81,12 @@ The sample of small lakes in Florida is displayed in Figure~\ref{fig:FLlakes}.  
 
 <<figure, fig=TRUE, echo=FALSE>>=
 # Plot small lakes in Florida
-basins <- levels(FL_lakes$basin)
+basins <- levels(FL_lakes$Basin)
 cols <- rainbow(6)
 plot(FL_lakes$xcoord, FL_lakes$ycoord, type="n", xlab="x-coordinate",
      ylab="y-coordinate")
 for(i in 1:6) {
-   ind <- FL_lakes$basin == basins[i]
+   ind <- FL_lakes$Basin == basins[i]
    points(FL_lakes$xcoord[ind], FL_lakes$ycoord[ind], pch=20, cex=0.4,
           col=cols[i])
    }
@@ -103,7 +103,7 @@ title("Plot of Florida Small Lake Sites Color-Coded by Basin")
 The first analysis that will be examined is calculation of extent estimates for site status evaluation variables.  Extent is measured both by the proportion of the resource in status evaluation categories and by size of the resource in each category.  For a finite resource like lakes, size refers to the number of lakes in a category.  For calculating extent estimates (and for all of the analyses we will consider), the survey design weights are incorporated into the calculation process.  Two site status variables will be examined: (1) status, which classifies lakes into six evaluation categories and (2) TNT, which classifies lakes as either "Target" or "NonTarget".  The table and addmargins functions are used to create tables displaying the count for each code (level) of the two status variables.
 
 \begin{verbatim}
-> addmargins(table(FL_lakes$status))
+> addmargins(table(FL_lakes$Status))
 \end{verbatim}
 
 <<Statuseval, echo=FALSE>>=
@@ -111,7 +111,7 @@ The first analysis that will be examined is calculation of extent estimates for 
 # for each code of the status variable
 cat("\nA table displaying the number of values for each level of the status
 variable follows:\n")
-addmargins(table(FL_lakes$status))
+addmargins(table(FL_lakes$Status))
 
 @
 \begin{verbatim}
@@ -149,7 +149,7 @@ Create the subpop data frame.
 \begin{verbatim}
 > subpop <- data.frame(siteID=FL_lakes$siteID,
 +                      CombinedBasins=rep("All Basins", nr),
-+                      Basin=FL_lakes$basin)
++                      Basin=FL_lakes$Basin)
 \end{verbatim}
 
 <<Statuseval, echo=FALSE>>=
@@ -157,7 +157,7 @@ Create the subpop data frame.
 # which estimates are desired
 subpop <- data.frame(siteID=FL_lakes$siteID,
                      CombinedBasins=rep("All Basins", nr), 
-							       Basin=FL_lakes$basin)
+							       Basin=FL_lakes$Basin)
 
 @
 Create the design data frame.
@@ -180,7 +180,7 @@ design <- data.frame(siteID=FL_lakes$siteID,
 Create the data.cat data frame.
 \begin{verbatim}
 > data.cat <- data.frame(siteID=FL_lakes$siteID,
-+                        Status=FL_lakes$status,
++                        Status=FL_lakes$Status,
 +                        Target_NonTarget=FL_lakes$TNT)
 \end{verbatim}
 
@@ -188,7 +188,7 @@ Create the data.cat data frame.
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
 data.cat <- data.frame(siteID=FL_lakes$siteID,
-                       Status=FL_lakes$status,
+                       Status=FL_lakes$Status,
                        Target_NonTarget=FL_lakes$TNT)
 
 @
@@ -221,7 +221,7 @@ write.csv(Extent_Estimates, file="Extent_Estimates.csv")
 The second analysis that will be examined is estimating resource proportion and size for lake condition variables.  Two lake condition variables will be examined: (1) pH\_cat, which classifies lakes by categories of pH value and (2) coliform\_cat, which classifies lakes by categories of fecal coliform count.  The table and addmargins functions are used to create tables displaying the count for each level of the two lake condition variables.
 
 \begin{verbatim}
-> addmargins(table(FL_lakes$pH_cat))
+> addmargins(table(FL_lakes$pH_Cat))
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
@@ -229,11 +229,11 @@ The second analysis that will be examined is estimating resource proportion and 
 # for each code of the pH category variable
 cat("\nA table displaying the number of values for each level of the pH category
 variable follows:\n")
-addmargins(table(FL_lakes$pH_cat))
+addmargins(table(FL_lakes$pH_Cat))
 
 @
 \begin{verbatim}
-> addmargins(table(FL_lakes$coliform_cat))
+> addmargins(table(FL_lakes$Coliform_Cat))
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
@@ -241,7 +241,7 @@ addmargins(table(FL_lakes$pH_cat))
 # for each code of the fecal coliform category variable
 cat("\nA table displaying the number of values for each level of the fecal
 coliform category variable follows:\n")
-addmargins(table(FL_lakes$coliform_cat))
+addmargins(table(FL_lakes$Coliform_Cat))
 
 @
 As for extent estimates, the cat.analysis function will be used to calculate condition estimates.  The sites data frame for this analysis differs from the one used to calculate extent estimates.  The Use logical variables in sites is set equal to the value "Sampled", so that only sampled sites are used in the analysis. The subpop and design data frames created in the prior analysis can be reused for this analysis.  The data.cat data frame contains the two lake condition variables: pHCat and ColiformCat.  Variables pH\_cat and coliform\_cat in the FL\_lakes data frame are assigned to pHCat and ColiformCat, respectively.
@@ -250,7 +250,7 @@ Create the sites data frame.
 
 \begin{verbatim}
 > sites <- data.frame(siteID=FL_lakes$siteID,
-+                     Use=FL_lakes$status == "Sampled")
++                     Use=FL_lakes$Status == "Sampled")
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
@@ -261,7 +261,7 @@ Create the sites data frame.
 # Create the sites data frame
 # Note that only sampled sites are used
 sites <- data.frame(siteID=FL_lakes$siteID,
-                    Use=FL_lakes$status == "Sampled")
+                    Use=FL_lakes$Status == "Sampled")
 
 # Note that the existing subpop and design data frames can be reused
 
@@ -269,16 +269,16 @@ sites <- data.frame(siteID=FL_lakes$siteID,
 Create the data.cat data frame.
 \begin{verbatim}
 > data.cat <- data.frame(siteID=FL_lakes$siteID,
-+                        pHCat=FL_lakes$pH_cat,
-+                        ColiformCat=FL_lakes$coliform_cat)
++                        pHCat=FL_lakes$pH_Cat,
++                        ColiformCat=FL_lakes$Coliform_Cat)
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
 data.cat <- data.frame(siteID=FL_lakes$siteID,
-                       pHCat=FL_lakes$pH_cat,
-                       ColiformCat=FL_lakes$coliform_cat)
+                       pHCat=FL_lakes$pH_Cat,
+                       ColiformCat=FL_lakes$Coliform_Cat)
 
 @
 Use the cat.analysis function to calculate estimates for the lake condition variables.
@@ -364,25 +364,25 @@ write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 The third analysis that will be examined is estimating the CDF and percentiles for quantitative variables.  Two quantitative variables will be examined: (1) oxygen - dissolved oxygen value and (2) turbidity - turbidity value.  The summary function is used to summarize the data structure of the two quantitative variables.
 
 \begin{verbatim}
-> summary(FL_lakes$oxygen)
+> summary(FL_lakes$Oxygen)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Use the summary function to summarize the data structure of the dissolved
 # oxygen variable
 cat("\nSummarize the data structure of the dissolved oxygen variable:\n")
-summary(FL_lakes$oxygen)
+summary(FL_lakes$Oxygen)
 
 @
 \begin{verbatim}
-> summary(FL_lakes$turbidity)
+> summary(FL_lakes$Turbidity)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Use the summary function to summarize the data structure of the turbidity
 # variable
 cat("\nSummarize the data structure of the turbidity variable:\n")
-summary(FL_lakes$turbidity)
+summary(FL_lakes$Turbidity)
 
 @
 The cont.analysis function will be used to calculate estimates for quantitative variables.  Input to the cont.analysis function is the same as input for the cat.analysis function except that the data frame containing response variables is named cont.data rather than cat.data.  The sites, subpop, and design data frames created in the analysis of lake condition variables can be reused for this analysis.  The data.cont data frame contains the two quantitative variables: DissolvedOxygen and Turbidity.  Variables oxygen and turbidity in the FL\_lakes data frame are assigned to DissolvedOxygen and Turbidity, respectively.  The popsize argument is included in the call to cont.analysis.
@@ -390,8 +390,8 @@ The cont.analysis function will be used to calculate estimates for quantitative 
 Create the data.cont data frame.
 \begin{verbatim}
 > data.cont <- data.frame(siteID=FL_lakes$siteID,
-+                         DissolvedOxygen=FL_lakes$oxygen,
-+                         Turbidity=FL_lakes$turbidity)
++                         DissolvedOxygen=FL_lakes$Oxygen,
++                         Turbidity=FL_lakes$Turbidity)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
@@ -404,8 +404,8 @@ Create the data.cont data frame.
 # Create the data.cont data frame, which specifies the variables to use in the
 # analysis
 data.cont <- data.frame(siteID=FL_lakes$siteID,
-                        DissolvedOxygen=FL_lakes$oxygen,
-                        Turbidity=FL_lakes$turbidity)
+                        DissolvedOxygen=FL_lakes$Oxygen,
+                        Turbidity=FL_lakes$Turbidity)
 
 @
 Use the cont.analysis function to calculate CDF and percentile estimates for the quantitative variables.

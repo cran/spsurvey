@@ -1,16 +1,16 @@
-change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
-   data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL, popsize_2=NULL,
-   popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL, pcfsize_2=NULL,
-   N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL, stage1size_2=NULL,
-   sizeweight_1=FALSE, sizeweight_2=FALSE, vartype_1="Local", vartype_2="Local",
-   conf=95) {
+change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
+   data.cat=NULL, data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL,
+   popsize_2=NULL, popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL,
+   pcfsize_2=NULL, N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL,
+   stage1size_2=NULL, sizeweight_1=FALSE, sizeweight_2=FALSE, vartype_1="Local",
+   vartype_2="Local", conf=95) {
 
 ################################################################################
 # Function: change.analysis
 # Purpose: Change Analysis for Probability Survey Data
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
-# Last Revised: June 20, 2012
+# Last Revised: December 4, 2012
 # Description:
 #   This function organizes input and output for estimation of change between
 #   two probability surveys.
@@ -23,7 +23,9 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 #   repeats = a data frame that identifies site IDs for repeat visit sites from
 #     the two surveys.   The first variable is site IDs for survey one. The
 #     second variable is site IDs for survey two.  For each row of the data
-#     frame, the two site IDs must correspond to the same site.
+#     frame, the two site IDs must correspond to the same site. This argument
+#     should equal NULL when repeat visit sites are not present.  The default is
+#     NULL.
 #   subpop = a data frame describing sets of populations and subpopulations for
 #     which estimates will be calculated.  The first variable is site IDs.  Each
 #     subsequent variable identifies a Type of population, where the variable
@@ -62,27 +64,29 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 #   revisitwgt = a logical value that indicates whether the repeat visit sites
 #     in the two surveys have the same survey design weights, where TRUE = the
 #     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the repeat visit sites are assigned equal weights.  The
+#     argument is FALSE, the repeat visit sites are assigned equal weights when
+#     calculating the covariance component of the change estimate variance.  The
 #     default is FALSE.
 #   popsize_1 = known size of the resource for survey one, which is used to
 #     perform ratio adjustment to estimators expressed using measurement units
-#     for the resource.  For a finite resource, this argument is either the
-#     total number of sampling units or the known sum of size-weights.  For an
-#     extensive resource, this argument is the measure of the resource, i.e.,
-#     either known total length for a linear resource or known total area for an
-#     areal resource.  The argument must be in the form of a list containing an
-#     element for each population Type in the subpop data frame, where NULL is a
-#     valid choice for a population Type.  The list must be named using the
-#     column names for the population Types in subpop. If a population Type
-#     doesn't contain subpopulations, then each element of the list is either a
-#     single value for an unstratified sample or a vector containing a value for
-#     each stratum for a stratified sample, where elements of the vector are
-#     named using the stratum codes.  If a population Type contains
-#     subpopulations, then each element of the list is a list containing an
-#     element for each subpopulation, where the list is named using the
-#     subpopulation names.  The element for each subpopulation will be either a
-#     single value for an unstratified sample or a named vector of values for a
-#     stratified sample.  The default is NULL.
+#     for the resource and to calculate strata proportions for calculating
+#     estimates for a stratified sample.  For a finite resource, this argument
+#     is either the total number of sampling units or the known sum of size-
+#     weights.  For an extensive resource, this argument is the measure of the
+#     resource, i.e., either known total length for a linear resource or known
+#     total area for an areal resource.  The argument must be in the form of a
+#     list containing an element for each population Type in the subpop data
+#     frame, where NULL is a valid choice for a population Type.  The list must
+#     be named using the column names for the population Types in subpop. If a
+#     population Type doesn't contain subpopulations, then each element of the
+#     list is either a single value for an unstratified sample or a vector
+#     containing a value for each stratum for a stratified sample, where
+#     elements of the vector are named using the stratum codes.  If a population
+#     Type contains subpopulations, then each element of the list is a list
+#     containing an element for each subpopulation, where the list is named
+#     using the subpopulation names.  The element for each subpopulation will be
+#     either a single value for an unstratified sample or a named vector of
+#     values for a stratified sample.  The default is NULL.
 #     Example popsize for a stratified sample:
 #       popsize = list("Pop 1"=c("Stratum 1"=750,
 #                                "Stratum 2"=500,
@@ -163,25 +167,25 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 #   change.est - estimate change between two surveys
 # Examples:
 #   Categorical variable example for three resource classes:
-#     mysiteID <- paste("Site", 1:100, sep="")
+#     mysiteID <- paste("Site", 1:200, sep="")
 #     mysites <- data.frame(siteID=mysiteID,
-#                           Survey1=rep(c(TRUE, FALSE), c(50,50))
-#                           Survey2=rep(c(FALSE, TRUE), c(50,50))
-#                           Repeat1=rep(c(TRUE, FALSE), c(20,80))
-#                           Repeat2=rep(c(FALSE, TRUE, FALSE), c(50,20,30)))
+#                           Survey1=rep(c(TRUE, FALSE), c(100,100))
+#                           Survey2=rep(c(FALSE, TRUE), c(100,100)))
+#     myrepeats <- data.frame(siteID_1=paste("Site", 1:40, sep=""),
+#                             siteID_2=paste("Site", 101:140, sep=""))
 #     mysubpop <- data.frame(siteID=mysiteID,
-#                            All_Sites=rep("All Sites", 100),
-#                            Region=rep(c("North","South"), 50))
+#                            All_Sites=rep("All Sites", 200),
+#                            Region=rep(c("North","South"), 100))
 #     mydesign <- data.frame(siteID=mysiteID,
-#                            wgt=runif(100, 10, 100),
-#                            xcoord=runif(100),
-#                            ycoord=runif(100),
-#                            stratum=rep(c("Stratum1", "Stratum2"), 50))
+#                            wgt=runif(200, 10, 100),
+#                            xcoord=runif(200),
+#                            ycoord=runif(200),
+#                            stratum=rep(rep(c("Stratum1", "Stratum2"), c(2,2)), 50))
 #     mydata.cat <- data.frame(siteID=mysiteID,
 #                              Resource_Class=sample(c("Good","Fair","Poor"),
-#                                 100, replace=TRUE)
-#     change.analysis(sites=mysites, subpop=mysubpop, design=mydesign,
-#                     data.cat=mydata.cat)
+#                                 200, replace=TRUE)
+#     change.analysis(sites=mysites, repeats=myrepeats, subpop=mysubpop,
+#                     design=mydesign, data.cat=mydata.cat, data.cont=NULL)
 ################################################################################
 
 # Create a data frame for warning messages
@@ -194,8 +198,6 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 
    if(is.null(sites))
       stop("\nThe sites data frame must be provided.")
-   if(is.null(repeats))
-      stop("\nThe repeats data frame must be provided.")
    if(is.null(design))
       stop("\nThe design data frame must be provided.")
    if(!is.data.frame(design))
@@ -213,15 +215,17 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 
 # Check the repeats data frame for missing values
 
-   temp <- any(is.na(repeats[,1]))
-   if(any(temp)) {
-      temp.str <- vecprint(seq(nrow(sites))[temp])
-      stop(paste("\nThe following rows in the repeats data frame contain missing for site IDs \nin survey one:\n", temp.str, sep=""))
-   }
-   temp <- any(is.na(repeats[,2]))
-   if(any(temp)) {
-      temp.str <- vecprint(seq(nrow(sites))[temp])
-      stop(paste("\nThe following rows in the repeats data frame contain missing for site IDs \nin survey two:\n", temp.str, sep=""))
+   if(!is.null(repeats)) {
+      temp <- any(is.na(repeats[,1]))
+      if(any(temp)) {
+         temp.str <- vecprint(seq(nrow(sites))[temp])
+         stop(paste("\nThe following rows in the repeats data frame contain missing for site IDs \nin survey one:\n", temp.str, sep=""))
+      }
+      temp <- any(is.na(repeats[,2]))
+      if(any(temp)) {
+         temp.str <- vecprint(seq(nrow(sites))[temp])
+         stop(paste("\nThe following rows in the repeats data frame contain missing for site IDs \nin survey two:\n", temp.str, sep=""))
+      }
    }
 
 # Assign some required values from the subpop data frame
@@ -255,29 +259,30 @@ change.analysis <- function(sites, repeats, subpop=NULL, design, data.cat=NULL,
 
 # Assign the repeat visit sites logical vectors
 
-   temp <- match(sites_1[,1], repeats[,1], nomatch=0)
-   repeat_1 <- temp > 0
-   temp <- match(repeats[,1], sites_1[,1], nomatch=0)
-   if(any(temp == 0)) {
-      temp.str <- vecprint(repeats[,1][temp == 0])
-      stop(paste("\nThe following site IDs for survey one in the repeats data frame do not have \nmatching site IDs for survey one in the sites data frame:\n", temp.str, sep=""))
-   }
-   sites_1[repeat_1,] <- sites_1[temp,]
+   if(is.null(repeats)) {
+      repeat_1 <- logical(nrow(sites_1))
+      repeat_2 <- logical(nrow(sites_2))
+   } else {
+      temp <- match(sites_1[,1], repeats[,1], nomatch=0)
+      repeat_1 <- temp > 0
+      temp <- match(repeats[,1], sites_1[,1], nomatch=0)
+      if(any(temp == 0)) {
+         temp.str <- vecprint(repeats[,1][temp == 0])
+          stop(paste("\nThe following site IDs for survey one in the repeats data frame do not have \nmatching site IDs for survey one in the sites data frame:\n", temp.str, sep=""))
+      }
+      sites_1[repeat_1,] <- sites_1[temp,]
 
-   temp <- match(sites_2[,1], repeats[,2], nomatch=0)
-   repeat_2 <- temp > 0
-   temp <- match(repeats[,2], sites_2[,1], nomatch=0)
-   if(any(temp == 0)) {
-      temp.str <- vecprint(repeats[,1][temp == 0])
-      stop(paste("\nThe following site IDs for survey two in the repeats data frame do not have \nmatching site IDs for survey two in the sites data frame:\n", temp.str, sep=""))
+      temp <- match(sites_2[,1], repeats[,2], nomatch=0)
+      repeat_2 <- temp > 0
+      temp <- match(repeats[,2], sites_2[,1], nomatch=0)
+      if(any(temp == 0)) {
+         temp.str <- vecprint(repeats[,1][temp == 0])
+         stop(paste("\nThe following site IDs for survey two in the repeats data frame do not have \nmatching site IDs for survey two in the sites data frame:\n", temp.str, sep=""))
+      }
+      sites_2[repeat_2,] <- sites_2[temp,]
    }
-   sites_2[repeat_2,] <- sites_2[temp,]
 
-# Check the logical variables for repeat visit sites
-   if(!is.logical(repeat_1))
-      stop("\nThe repeat_1 argument must be a logical variable.")
-   if(!is.logical(repeat_2))
-      stop("\nThe repeat_2 argument must be a logical variable.")
+# Check the repeat visit logical variables for size
    n1 <- sum(repeat_1)
    n2 <- sum(repeat_2)
    if(n1 != n2)

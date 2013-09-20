@@ -35,15 +35,15 @@ total.est(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL, wgt1=NULL,
     is NULL.}
   \item{y1}{the stage one y-coordinate for location for each site.  The default
     is NULL.}
-  \item{popsize}{known size of the resource, which is used to perform ratio
-    adjustment to estimators expressed using measurement units for the
-    resource.  For a finite resource, this argument is either the total number
-    of sampling units or the known sum of size-weights.  For an extensive
-    resource, this argument is the measure of the resource, i.e., either known
-    total length for a linear resource or known total area for an areal
-    resource.  For a stratified sample this variable must be a vector
-    containing a value for each stratum and must have the names attribute set
-    to identify the stratum codes.  The default is NULL.}
+  \item{popsize}{known size of the resource, which is used to to calculate
+    strata proportions for calculating estimates for a stratified sample.  For a
+    finite resource, this argument is either the total number of sampling units
+    or the known sum of size-weights.  For an extensive resource, this argument
+    is the measure of the resource, i.e., either known total length for a linear
+    resource or known total area for an areal resource.  For a stratified sample
+    this variable must be a vector containing a value for each stratum and must
+    have the names attribute set to identify the stratum codes.  The default is
+    NULL.}
   \item{popcorrect}{a logical value that indicates whether finite or continuous 
     population correction factors should be employed during variance 
     estimation, where TRUE = use the correction factors and FALSE = do not 

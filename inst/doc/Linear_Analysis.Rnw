@@ -61,12 +61,12 @@ tail(IN_streams)
 @
 The sample of streams in Indiana is displayed in Figure~\ref{fig:INstreams}.  The sample sites for each Strahler order are displayed using a unique color.  First, the levels function is used to extract the set of unique Strahler order values, and the result is assigned to object strahler.  Next, the rainbow function is called to select a set of four colors, and the result is assigned to object cols.  The plot function is then used to produce the basic figure, but plotting of sample points is suppressed.  The for function is used to loop through the set of four unique Strahler order values and plot the color-coded points for each Strahler order using the points function.  Finally, the legend function is used to add a legend to the figure, and the title function is used to create a figure title.
 \begin{verbatim}
-> strahler <- levels(IN_streams$Strahler_order)
+> strahler <- levels(IN_streams$Strahler_Cat)
 > cols <- rainbow(4)
 > plot(IN_streams$xcoord, IN_streams$ycoord, type="n", xlab="x-coordinate",
 +      ylab="y-coordinate")
 > for(i in 1:4) {
-+    ind <- IN_streams$Strahler_order == strahler[i]
++    ind <- IN_streams$Strahler_Cat == strahler[i]
 +    points(IN_streams$xcoord[ind], IN_streams$ycoord[ind], pch=20, col=cols[i])
 +    }
 > legend(x="topright", inset=0.05, legend=paste("Order", strahler), pch=20,
@@ -79,12 +79,12 @@ The sample of streams in Indiana is displayed in Figure~\ref{fig:INstreams}.  Th
 
 <<figure, fig=TRUE, echo=FALSE>>=
 # Plot streams in Indiana
-strahler <- levels(IN_streams$Strahler_order)
+strahler <- levels(IN_streams$Strahler_Cat)
 cols <- rainbow(4)
 plot(IN_streams$xcoord, IN_streams$ycoord, type="n", xlab="x-coordinate",
      ylab="y-coordinate")
 for(i in 1:4) {
-   ind <- IN_streams$Strahler_order == strahler[i]
+   ind <- IN_streams$Strahler_Cat == strahler[i]
    points(IN_streams$xcoord[ind], IN_streams$ycoord[ind], pch=20, col=cols[i])
    }
 legend(x="topright", inset=0.05, legend=paste("Order", strahler), pch=20, cex=1,
@@ -101,7 +101,7 @@ title("Plot of Indiana Stream Sites Color-Coded by Strahler Order")
 The first analysis that will be examined is calculation of extent estimates for site status evaluation variables.  Extent is measured both by the proportion of the resource in status evaluation categories and by size of the resource in each category.  For a linear resource like streams, size refers to the length of streams in a category.  For calculating extent estimates (and for all of the analyses we will consider), the survey design weights are incorporated into the calculation process.  Two site status variables will be examined: (1) status, which classifies streams into seven evaluation categories and (2) TNT, which classifies streams as either "Target" or "NonTarget".  The table and addmargins functions are used to create tables displaying the count for each code (level) of the two status variables.
 
 \begin{verbatim}
-> addmargins(table(IN_streams$status))
+> addmargins(table(IN_streams$Status))
 \end{verbatim}
 
 <<Statuseval, echo=FALSE>>=
@@ -109,7 +109,7 @@ The first analysis that will be examined is calculation of extent estimates for 
 # for each code of the status variable
 cat("\nA table displaying the number of values for each level of the status
 variable follows:\n")
-addmargins(table(IN_streams$status))
+addmargins(table(IN_streams$Status))
 
 @
 \begin{verbatim}
@@ -147,7 +147,7 @@ Create the subpop data frame.
 \begin{verbatim}
 > subpop <- data.frame(siteID=IN_streams$siteID,
 +                      Upper_Wabash=rep("Upper Wabash", nr),
-+                      Strahler_Order=IN_streams$Strahler_order)
++                      Strahler_Order=IN_streams$Strahler_Cat)
 \end{verbatim}
 
 <<Statuseval, echo=FALSE>>=
@@ -155,7 +155,7 @@ Create the subpop data frame.
 # which estimates are desired
 subpop <- data.frame(siteID=IN_streams$siteID,
                      Upper_Wabash=rep("Upper Wabash", nr), 
-							       Strahler_Order=IN_streams$Strahler_order)
+							       Strahler_Order=IN_streams$Strahler_Cat)
 
 @
 Create the design data frame.
@@ -178,7 +178,7 @@ design <- data.frame(siteID=IN_streams$siteID,
 Create the data.cat data frame.
 \begin{verbatim}
 > data.cat <- data.frame(siteID=IN_streams$siteID,
-+                        Status=IN_streams$status,
++                        Status=IN_streams$Status,
 +                        Target_NonTarget=IN_streams$TNT)
 \end{verbatim}
 
@@ -186,7 +186,7 @@ Create the data.cat data frame.
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
 data.cat <- data.frame(siteID=IN_streams$siteID,
-                       Status=IN_streams$status,
+                       Status=IN_streams$Status,
                        Target_NonTarget=IN_streams$TNT)
 
 @
@@ -221,7 +221,7 @@ write.csv(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
 The second analysis that will be examined is estimating resource proportion and size for stream condition variables.  Two stream condition variables will be examined: (1) IBI\_Status, which classifies streams by IBI (index of biotic integrity) status categories and (2) QHEI\_Status, which classifies streams by QHEI (qualitative habitat evaluation index) status categories.  The table and addmargins functions are used to create tables displaying the count for each level of the two stream condition variables.
 
 \begin{verbatim}
-> addmargins(table(IN_streams$IBI_status))
+> addmargins(table(IN_streams$IBI_Status))
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
@@ -229,11 +229,11 @@ The second analysis that will be examined is estimating resource proportion and 
 # for each code of the IBI status variable
 cat("\nA table displaying the number of values for each level of the IBI status
 variable follows:\n")
-addmargins(table(IN_streams$IBI_status))
+addmargins(table(IN_streams$IBI_Status))
 
 @
 \begin{verbatim}
-> addmargins(table(IN_streams$QHEI_status))
+> addmargins(table(IN_streams$QHEI_Status))
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
@@ -241,16 +241,16 @@ addmargins(table(IN_streams$IBI_status))
 # for each code of the QHEI status variable
 cat("\nA table displaying the number of values for each level of the QHEI status
 variable follows:\n")
-addmargins(table(IN_streams$QHEI_status))
+addmargins(table(IN_streams$QHEI_Status))
 
 @
-As for extent estimates, the cat.analysis function will be used to calculate condition estimates.  The sites data frame for this analysis differs from the one used to calculate extent estimates.  The Use logical variables in sites is set equal to the value "Sampled", so that only sampled sites are used in the analysis. The subpop and design data frames created in the prior analysis can be reused for this analysis.  The data.cat data frame contains the two stream condition variables: IBI\_Status and QHEI\_Status.  Variables IBI\_status and QHEI\_status in the IN\_streams data frame are assigned to IBI\_Status and QHEI\_Status, respectively.
+As for extent estimates, the cat.analysis function will be used to calculate condition estimates.  The sites data frame for this analysis differs from the one used to calculate extent estimates.  The Use logical variables in sites is set equal to the value "Sampled", so that only sampled sites are used in the analysis. The subpop and design data frames created in the prior analysis can be reused for this analysis.  The data.cat data frame contains the two stream condition variables: IBI\_Status and QHEI\_Status.  Variables IBI\_Status and QHEI\_Status in the IN\_streams data frame are assigned to IBI\_Status and QHEI\_Status, respectively.
   
 Create the sites data frame.
 
 \begin{verbatim}
 > sites <- data.frame(siteID=IN_streams$siteID,
-+                     Use=IN_streams$status == "Sampled")
++                     Use=IN_streams$Status == "Sampled")
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
@@ -261,7 +261,7 @@ Create the sites data frame.
 # Create the sites data frame
 # Note that only sampled sites are used
 sites <- data.frame(siteID=IN_streams$siteID,
-                    Use=IN_streams$status == "Sampled")
+                    Use=IN_streams$Status == "Sampled")
 
 # Note that the existing subpop and design data frames can be reused
 
@@ -269,16 +269,16 @@ sites <- data.frame(siteID=IN_streams$siteID,
 Create the data.cat data frame.
 \begin{verbatim}
 > data.cat <- data.frame(siteID=IN_streams$siteID,
-+                        IBI_Status=IN_streams$IBI_status,
-+                        QHEI_Status=IN_streams$QHEI_status)
++                        IBI_Status=IN_streams$IBI_Status,
++                        QHEI_Status=IN_streams$QHEI_Status)
 \end{verbatim}
 
 <<Conditioneval, echo=FALSE>>=
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
 data.cat <- data.frame(siteID=IN_streams$siteID,
-                       IBI_Status=IN_streams$IBI_status,
-                       QHEI_Status=IN_streams$QHEI_status)
+                       IBI_Status=IN_streams$IBI_Status,
+                       QHEI_Status=IN_streams$QHEI_Status)
 
 @
 Use the cat.analysis function to calculate estimates for the stream condition variables.
@@ -361,37 +361,37 @@ write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 @
 \section{Analysis of quantitative variables}
 
-The third analysis that will be examined is estimating the CDF and percentiles for quantitative variables.  Two quantitative variables will be examined: (1) IBI\_score - IBI score and (2) QHEI\_score - QHEI score.  The summary function is used to summarize the data structure of the two quantitative variables.
+The third analysis that will be examined is estimating the CDF and percentiles for quantitative variables.  Two quantitative variables will be examined: (1) IBI\_Score - IBI score and (2) QHEI\_Score - QHEI score.  The summary function is used to summarize the data structure of the two quantitative variables.
 
 \begin{verbatim}
-> summary(IN_streams$IBI_score)
+> summary(IN_streams$IBI_Score)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Use the summary function to summarize the data structure of the IBI score
 # variable
 cat("\nSummarize the data structure of the IBI score variable:\n")
-summary(IN_streams$IBI_score)
+summary(IN_streams$IBI_Score)
 
 @
 \begin{verbatim}
-> summary(IN_streams$QHEI_score)
+> summary(IN_streams$QHEI_Score)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Use the summary function to summarize the data structure of the QHEI score
 # variable
 cat("\nSummarize the data structure of the QHEI score variable:\n")
-summary(IN_streams$QHEI_score)
+summary(IN_streams$QHEI_Score)
 
 @
-The cont.analysis function will be used to calculate estimates for quantitative variables.  Input to the cont.analysis function is the same as input for the cat.analysis function except that the data frame containing response variables is named cont.data rather than cat.data.  The sites, subpop, and design data frames created in the analysis of stream condition variables can be reused for this analysis.  The data.cont data frome contains the two quantitative variables: IBI\_Score and QHEI\_Score, which contain the numeric scores for the IBI and QHEI variables, respectively.  Variables IBI\_score and QHEI\_score in the IN\_streams data frame are assigned to IBI\_Score and QHEI\_Score, respectively.  The popsize argument is included in the call to cont.analysis.
+The cont.analysis function will be used to calculate estimates for quantitative variables.  Input to the cont.analysis function is the same as input for the cat.analysis function except that the data frame containing response variables is named cont.data rather than cat.data.  The sites, subpop, and design data frames created in the analysis of stream condition variables can be reused for this analysis.  The data.cont data frome contains the two quantitative variables: IBI\_Score and QHEI\_Score, which contain the numeric scores for the IBI and QHEI variables, respectively.  Variables IBI\_Score and QHEI\_Score in the IN\_streams data frame are assigned to IBI\_Score and QHEI\_Score, respectively.  The popsize argument is included in the call to cont.analysis.
   
 Create the data.cont data frame.
 \begin{verbatim}
 > data.cont <- data.frame(siteID=IN_streams$siteID,
-+                         IBI_Score=IN_streams$IBI_score,
-+                         QHEI_Score=IN_streams$QHEI_score)
++                         IBI_Score=IN_streams$IBI_Score,
++                         QHEI_Score=IN_streams$QHEI_Score)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
@@ -404,8 +404,8 @@ Create the data.cont data frame.
 # Create the data.cont data frame, which specifies the variables to use in the
 # analysis
 data.cont <- data.frame(siteID=IN_streams$siteID,
-                        IBI_Score=IN_streams$IBI_score,
-                        QHEI_Score=IN_streams$QHEI_score)
+                        IBI_Score=IN_streams$IBI_Score,
+                        QHEI_Score=IN_streams$QHEI_Score)
 
 @
 Use the cont.analysis function to calculate CDF and percentile estimates for the quantitative variables.

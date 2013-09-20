@@ -41,11 +41,12 @@ change.est(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
     NULL.}
   \item{repeat_2}{a logical variable that identifies repeat visit sites for
     survey two.}
-  \item{revisitwgt}{a logical value that indicates whether the revisited sites
-    in the two surveys have the same survey design weights, where TRUE = the
-    weights are the same and FALSE = the weights are not the same.  When this
-    argument is FALSE, the revisited sites are assigned equal weights.  The
-    default is FALSE.}
+  \item{revisitwgt}{a logical value that indicates whether the repeat visit
+    sites in the two surveys have the same survey design weights, where TRUE =
+    the weights are the same and FALSE = the weights are not the same.  When
+    this argument is FALSE, the repeat visit sites are assigned equal weights
+    when calculating the covariance component of the change estimate varaince.
+    The default is FALSE.}
   \item{stratum_1}{the stratum for each survey one site.  The default is NULL.}
   \item{stratum_2}{the stratum for each survey two site.  The default is NULL.}
   \item{cluster_1}{the stage one sampling unit (primary sampling unit or

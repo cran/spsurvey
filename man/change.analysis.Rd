@@ -6,7 +6,7 @@
   probability surveys.
 }
 \usage{
-change.analysis(sites, repeats, subpop=NULL, design, data.cat=NULL,
+change.analysis(sites, repeats=NULL, subpop=NULL, design, data.cat=NULL,
    data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL, popsize_2=NULL,
    popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL, pcfsize_2=NULL,
    N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL, stage1size_2=NULL,
@@ -22,7 +22,8 @@ change.analysis(sites, repeats, subpop=NULL, design, data.cat=NULL,
   \item{repeats}{a data frame that identifies site IDs for repeat visit sites
    from the two surveys.   The first variable is site IDs for survey one. The
    second variable is site IDs for survey two.  For each row of the data frame,
-   the two site IDs must correspond to the same site.}
+   the two site IDs must correspond to the same site. This argument should equal
+   NULL when repeat visit sites are not present.  The default is NULL.}
   \item{subpop}{a data frame describing sets of populations and subpopulations 
     for which estimates will be calculated.  The first variable is site  
     IDs.  Each subsequent variable identifies a Type of population, where
@@ -63,15 +64,17 @@ change.analysis(sites, repeats, subpop=NULL, design, data.cat=NULL,
   \item{revisitwgt}{a logical value that indicates whether the repeat visit
     sites in the two surveys have the same survey design weights, where TRUE =
     the weights are the same and FALSE = the weights are not the same.  When
-    this argument is FALSE, the repeat visit sites are assigned equal weights.
+    this argument is FALSE, the repeat visit sites are assigned equal weights
+    when calculating the covariance component of the change estimate varaince.
     The default is FALSE.}
   \item{popsize_1}{known size of the resource for survey one, which is used to
-    perform ratio adjustment to estimators expressed using measurement units for the
-    resource.  For a finite resource, this argument is either the total number
-    of sampling units or the known sum of size-weights.  For an extensive
-    resource, this argument is the measure of the resource, i.e., either known
-    total length for a linear resource or known total area for an areal
-    resource.  The argument must be in the form of a list containing an
+    perform ratio adjustment to estimators expressed using measurement units for
+    the resource and to calculate strata proportions for calculating estimates
+    for a stratified sample.  For a finite resource, this argument is either the
+    total number of sampling units or the known sum of size-weights.  For an
+    extensive resource, this argument is the measure of the resource, i.e.,
+    either known total length for a linear resource or known total area for an
+    areal resource.  The argument must be in the form of a list containing an
     element for each population Type in the subpop data frame, where NULL is a
     valid choice for a population Type.  The list must be named using the
     column names for the population Types in subpop. If a population Type

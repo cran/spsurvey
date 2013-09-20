@@ -38,15 +38,15 @@ Version 2.5 of the spsurvey package was loaded successfully.
 
 The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The initial six lines in the att data frame are printed using the head function
 
-Next, two attributes, stream type and Strahler stream order, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  Stream type is contained in a variable named "perint", and Strahler stream order is contained in a variable named "strahcat".  For stream type, streams are classified as either perennial or intermittent.  For Strahler stream order, streams are classified as either first order ("1st"), second order ("2nd"), or third order and higher ("3rd+").  The table and addmargin functions are used to produce a table displaying number of stream segments for each combination of values for the strata and multidensity category variables.
+Next, two attributes, stream type and Strahler stream order, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  Stream type is contained in a variable named "Per\_Int", and Strahler stream order is contained in a variable named "Strah\_Cat".  For stream type, streams are classified as either perennial or intermittent.  For Strahler stream order, streams are classified as either first order ("1st"), second order ("2nd"), or third order and higher ("3rd+").  The table and addmargin functions are used to produce a table displaying number of stream segments for each combination of values for the strata and multidensity category variables.
 
-Finally, frame stream length is summarized for the strata and multidensity category attributes.  Note that stream length measured in kilometers is contained in the variable named "length\_km".  The tapply function is used to calculate total stream length for each combination of stream type and Strahler stream order.  The addmargins function is applied to the output from tapply to calculate stream length for each category of stream type and Strahler stream order, and the round function is used to round value to two decimal places.  Finally, the resulting cross-tabulation of sum of stream length in kilometers for Strahler stream order and stream type is displayed.
+Finally, frame stream length is summarized for the strata and multidensity category attributes.  Note that stream length measured in kilometers is contained in the variable named "Length\_km".  The tapply function is used to calculate total stream length for each combination of stream type and Strahler stream order.  The addmargins function is applied to the output from tapply to calculate stream length for each category of stream type and Strahler stream order, and the round function is used to round value to two decimal places.  Finally, the resulting cross-tabulation of sum of stream length in kilometers for Strahler stream order and stream type is displayed.
 
 Read the attribute table from the shapefile
 
 <<att>>=
 # Read the attribute table from the shapefile
-att <- read.dbf("luck_ash")
+att <- read.dbf("Luck_Ash_streams")
 
 @
 Display the initial six lines in the attribute data frame
@@ -62,14 +62,14 @@ Display number of stream segments cross-classified by the  strata and multidensi
 # Display number of stream segments cross-classified by the  strata and
 # multidensity category variables
 
-addmargins(table("Stream Type"=att$perint, "Strahler Order"=att$strahcat))
+addmargins(table("Stream Type"=att$Per_Int, "Strahler Order"=att$Strah_Cat))
 
 @
 Summarize frame stream length by stratum and multidensity category
 
 <<att>>=
 # Summarize frame stream length by stratum and multidensity category
-temp <- tapply(att$length_km, list(att$perint, att$strahcat), sum)
+temp <- tapply(att$Length_km, list(att$Per_Int, att$Strah_Cat), sum)
 temp <- round(addmargins(temp), 2)
 names(dimnames(temp)) <- list("Stream Type", "Strahler Order")
 temp
@@ -79,17 +79,17 @@ Streams in the Luckiamute watershed are displayed in Figure~\ref{fig:Linear1} cl
 
 Read the shapefile
 \begin{verbatim}
-> shp <- read.shape("luck_ash")
+> shp <- read.shape("Luck_Ash_streams")
 \end{verbatim}
 
 Plot streams in the Luckiamute watershed classified by stream type
 \begin{verbatim}
-> spplot(shp, zcol="perint", col.regions=c("red", "blue"))
+> spplot(shp, zcol="Per_Int", col.regions=c("red", "blue"))
 \end{verbatim}
 
 Plot streams in the Luckiamute watershed classified by Strahler stream order
 \begin{verbatim}
-> spplot(shp, zcol="strahcat", col.regions=c("red", "green", "blue"))
+> spplot(shp, zcol="Strah_Cat", col.regions=c("red", "green", "blue"))
 \end{verbatim}
 
 \begin{figure}
@@ -97,9 +97,9 @@ Plot streams in the Luckiamute watershed classified by Strahler stream order
 
 <<figure1, fig=TRUE, echo=FALSE>>=
 # Read the shapefile
-shp <- read.shape("luck_ash")
+shp <- read.shape("Luck_Ash_streams")
 # Plot streams in the Luckiamute watershed classified by stream type
-print(spplot(shp, zcol="perint", col.regions=c("red", "blue")))
+print(spplot(shp, zcol="Per_Int", col.regions=c("red", "blue")))
 
 @
 \caption{Streams in the Luckiamute Watershed Classified by Stream Type.}
@@ -112,7 +112,7 @@ print(spplot(shp, zcol="perint", col.regions=c("red", "blue")))
 <<figure2, fig=TRUE, echo=FALSE>>=
 # Plot streams in the Luckiamute watershed classified by Strahler stream order
 # category
-print(spplot(shp, zcol="strahcat", col.regions=c("red", "green", "blue")))
+print(spplot(shp, zcol="Strah_Cat", col.regions=c("red", "green", "blue")))
 
 @
 \caption{Streams in the Luckiamute Watershed Classified by Strahler Stream Order Category.}
@@ -125,7 +125,7 @@ The first survey design is an unstratified, equal probability design.  The set.s
 
 The initial step is to create a list named Equaldsgn that contains information for specifying the survey design.  Since the survey design is unstratified, the list contains a single item named "None" that also is a list.  The "None" list includes two items: panel, which is used to specify the sample size for each panel, and seltype, which is used to input the type of random selection for the design.  For this example, panel is assigned a single value named "PanelOne" that is set equal to 50, and seltype is assigned the value "Equal", which indicates equal probability selection.
 
-The grts function in the spsurvey package is called to select the survey design.  The following arguments are included in the call to grts: (1) design: the named list of stratum design specifications, which is assigned the Equaldsgn list; (2) DesignID: name for the design, which is used to create a site ID for each site and is assigned the value "EQUAL"; (3) type.frame: the type of frame, which is assigned the value "linear" to indicate a linear resource; (4) src.frame: source of the frame, which is assigned the value "shapefile" to indicate a shapefile frame; (5) in.shape: name of the input shapefile, which is assigned the value "luck\_ash"; (6) att.frame: the data frame of attributes associated with elements in the frame, which is assigned the att data frame; and (7) shapefile: option to create a shapefile containing the survey design information, which is assigned FALSE.
+The grts function in the spsurvey package is called to select the survey design.  The following arguments are included in the call to grts: (1) design: the named list of stratum design specifications, which is assigned the Equaldsgn list; (2) DesignID: name for the design, which is used to create a site ID for each site and is assigned the value "EQUAL"; (3) type.frame: the type of frame, which is assigned the value "linear" to indicate a linear resource; (4) src.frame: source of the frame, which is assigned the value "shapefile" to indicate a shapefile frame; (5) in.shape: name of the input shapefile, which is assigned the value "Luck\_Ash\_streams"; (6) att.frame: the data frame of attributes associated with elements in the frame, which is assigned the att data frame; and (7) shapefile: option to create a shapefile containing the survey design information, which is assigned FALSE.
 
 During execution of the grts function, messages are printed that indicate the initial number of hierarchical levels used for the GRTS grid, the current number of levels, and the final number of levels.  The set of messages is printed for each stratum, and is labeled with the stratum name.  For this example, the set of messages is labeled "None", i.e., the name used in the Equaldsgn list.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
@@ -149,7 +149,7 @@ Select the sample
 +                    DesignID="EQUAL",
 +                    type.frame="linear",
 +                    src.frame="shapefile",
-+                    in.shape="luck_ash",
++                    in.shape="Luck_Ash_streams",
 +                    att.frame=att,
 +                    shapefile=FALSE)
 \end{verbatim}
@@ -160,7 +160,7 @@ Equalsites <- grts(design=Equaldsgn,
                    DesignID="EQUAL",
                    type.frame="linear",
                    src.frame="shapefile",
-                   in.shape="luck_ash",
+                   in.shape="Luck_Ash_streams",
                    att.frame=att,
                    shapefile=FALSE)
 
@@ -183,7 +183,7 @@ dsgnsum(Equalsites)
 
 The second survey design is a stratified, equal probability design with an oversample.  The stream type attribute is used to identify strata.  List Stratdsgn is assigned design specifications.  Since the survey design is stratified, Stratdsgn includes two lists named "Perennial" and "Intermittent" that contains three items: panel, seltype, and over.  Note that the names for the two lists match the levels of the stratum variable.  For both lists, the values for panel and seltype are the same as the ones used for the equal probability design.  The third item, over, assigns the value 50 for size of the oversample.  An oversample provides additional sample sites to replace sites that cannot be used, e.g., to replace sites in the sample that are not accessible.
 
-For this survey design, a shapefile will be used as the sampling frame.  The following arguments are included in the call to grts: (1) design: assigned the Stratdsgn list; (2) DesignID: assigned the value "STRATIFIED"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "shapefile"; (5) in.shape: assigned the value "luck\_ash"; (6) att.frame: assigned the att data frame; (7) stratum: name of the column in the attributes data frame that identifies the stratum code for each element in the frame, which is assigned the value "perint"; and (8) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
+For this survey design, a shapefile will be used as the sampling frame.  The following arguments are included in the call to grts: (1) design: assigned the Stratdsgn list; (2) DesignID: assigned the value "STRATIFIED"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "shapefile"; (5) in.shape: assigned the value "Luck\_Ash\_streams"; (6) att.frame: assigned the att data frame; (7) stratum: name of the column in the attributes data frame that identifies the stratum code for each element in the frame, which is assigned the value "Per\_Int"; and (8) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
 Create the design list
 \begin{verbatim}
@@ -211,9 +211,9 @@ Select the sample
 +                    DesignID="STRATIFIED",
 +                    type.frame="linear",
 +                    src.frame="shapefile",
-+                    in.shape="luck_ash",
++                    in.shape="Luck_Ash_streams",
 +                    att.frame=att,
-+                    stratum="perint",
++                    stratum="Per_Int",
 +                    shapefile=FALSE)
 \end{verbatim}
 
@@ -223,9 +223,9 @@ Stratsites <- grts(design=Stratdsgn,
                    DesignID="STRATIFIED",
                    type.frame="linear",
                    src.frame="shapefile",
-                   in.shape="luck_ash",
+                   in.shape="Luck_Ash_streams",
                    att.frame=att,
-                   stratum="perint",
+                   stratum="Per_Int",
                    shapefile=FALSE)
 
 @
@@ -247,7 +247,7 @@ dsgnsum(Stratsites)
 
 The third survey design is a stratified, unequal probability design with an oversample.  As for the second survey design, the stream type attribute is used to identify strata.  Strahler order categories are used to identify multidensity categories.  List Unequaldsgn is assigned design specifications.  Unequaldsgn includes the same two lists with three items (panel, seltype, and over) as used for the stratified, equal probability design plus a value for caty.n.  For both lists, panel specifies a single panel, and seltype is assigned "Unequal" to indicate unequal probability sampling.  Note that the value 0 is assigned to over for the "Intermittent" stratum, i.e., no oversample.  The over item could have been omitted from the list for "Intermittent".  The vector assigned to caty.n specifies sample sizes for each of the three multidensity categories.  Note that the sum of values provided in caty.n must equal the value in panel.
 
-For this survey design, an sp package object will be used as the sampling frame.  Recall that the read.shape function was used to read the shapefile and assign its output to an sp object named shp.  The following arguments are included in the call to grts: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; (7) stratum: assigned the value "perint"; (8) mdcaty: name of the column in the attributes data frame that identifies the unequal probability category for each element in the frame, which is assigned the value "strahcat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
+For this survey design, an sp package object will be used as the sampling frame.  Recall that the read.shape function was used to read the shapefile and assign its output to an sp object named shp.  The following arguments are included in the call to grts: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; (7) stratum: assigned the value "Per\_Int"; (8) mdcaty: name of the column in the attributes data frame that identifies the unequal probability category for each element in the frame, which is assigned the value "Strah\_Cat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
 Create the design list
 \begin{verbatim}
@@ -281,8 +281,8 @@ Select the sample
 +                      src.frame="sp.object",
 +                      sp.object=shp,
 +                      att.frame=att,
-+                      stratum="perint",
-+                      mdcaty="strahcat",
++                      stratum="Per_Int",
++                      mdcaty="Strah_Cat",
 +                      shapefile=FALSE)
 \end{verbatim}
 
@@ -294,8 +294,8 @@ Unequalsites <- grts(design=Unequaldsgn,
                      src.frame="sp.object",
                      sp.object=shp,
                      att.frame=att,
-                     stratum="perint",
-                     mdcaty="strahcat",
+                     stratum="Per_Int",
+                     mdcaty="Strah_Cat",
                      shapefile=FALSE)
 
 @
@@ -317,7 +317,7 @@ dsgnsum(Unequalsites)
 
 The fourth survey design is a stratified, unequal probability design with an oversample and a panel structure for survey over time.  List Paneldsgn is assigned design specifications.  Analogous to the stratified, unequal probability design, Paneldsgn includes two lists named "Perennial" and "Intermittent".  For the "Perennial" stratum, a vector identifying sample sizes for three panels is assigned to panel.  For the "Intermittent" stratum, the sample size for a single panel named "Annual" is assigned to panel.  The value "Unequal" is assigned to seltype for both lists, which indicates unequal selection probabilities.  For both lists, the third item, caty.n, assigns sample sizes for each of the three multidensity categories.  Again, note that the sum of sample sizes provided in caty.n must equal the sum of sample sizes in panel.  For the "Perennial" stratum, the value 50 is assigned to over, which specifies an oversample of 50 sites.  No oversample is specified for the "Intermittent" stratum, and so over is not included in the list.  The grts function attempts to distribute the oversample proportionately among sample sizes for the multidensity categories.  If the oversample proportion for one or more categories is not a whole number, a warning message is printed and the proportion is rounded to the next higher integer.
 
-For this survey design, a shapefile will be used as the sampling frame.  The following arguments are included in the call to grts: (1) design: assigned the Paneldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "shapefile"; (5) in.shape: assigned the value "luck\_ash"; (6) att.frame: assigned the att data frame; 7) stratum: assigned the value "perint"; (8) mdcaty: assigned the value "strahcat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
+For this survey design, a shapefile will be used as the sampling frame.  The following arguments are included in the call to grts: (1) design: assigned the Paneldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "shapefile"; (5) in.shape: assigned the value "Luck\_Ash\_streams"; (6) att.frame: assigned the att data frame; 7) stratum: assigned the value "Per\_Int"; (8) mdcaty: assigned the value "Strah\_Cat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
 Create the design list
 \begin{verbatim}
@@ -347,10 +347,10 @@ Select the sample
 +                    DesignID="UNEQUAL",
 +                    type.frame="linear",
 +                    src.frame="shapefile",
-+                    in.shape="luck_ash",
++                    in.shape="Luck_Ash_streams",
 +                    att.frame=att,
-+                    stratum="perint",
-+                    mdcaty="strahcat",
++                    stratum="Per_Int",
++                    mdcaty="Strah_Cat",
 +                    shapefile=FALSE)
 \end{verbatim}
 
@@ -360,10 +360,10 @@ Panelsites <- grts(design=Paneldsgn,
                    DesignID="UNEQUAL",
                    type.frame="linear",
                    src.frame="shapefile",
-                   in.shape="luck_ash",
+                   in.shape="Luck_Ash_streams",
                    att.frame=att,
-                   stratum="perint",
-                   mdcaty="strahcat",
+                   stratum="Per_Int",
+                   mdcaty="Strah_Cat",
                    shapefile=FALSE)
 
 @
