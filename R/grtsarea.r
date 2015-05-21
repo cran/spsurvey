@@ -8,7 +8,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: May 19, 2004
-# Last Revised: November 15, 2010
+# Last Revised: January 27, 2015
 # Description:      
 #   This function select a GRTS sample of an area resource.  The function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -72,7 +72,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 
 # Construct the hierarchical address for all cells
 
-   hadr <- .Call("constructAddr", xc, yc, dx, dy, nlev)
+   hadr <- .Call("constructAddr", xc, yc, dx, dy, as.integer(nlev))
 
 # Construct randomized hierarchical addresses
 

@@ -35,18 +35,7 @@ temp
 
 
 ###################################################
-### code chunk number 5: figure
-###################################################
-# Read the shapefile
-shp <- read.shape("UT_ecoregions")
-
-# Plot ecoregions in Utah
-print(spplot(shp, zcol="Level3_Nam", col.regions=rainbow(7, s=0.75)))
-
-
-
-###################################################
-### code chunk number 6: Equalsites
+### code chunk number 5: Equalsites
 ###################################################
 # Call the set.seed function so that the survey designs can be replicate
 set.seed(4447864)
@@ -54,7 +43,7 @@ set.seed(4447864)
 
 
 ###################################################
-### code chunk number 7: Equalsites
+### code chunk number 6: Equalsites
 ###################################################
 # Create the design list
 Equaldsgn <- list(None=list(panel=c(PanelOne=115), seltype="Equal"))
@@ -62,7 +51,7 @@ Equaldsgn <- list(None=list(panel=c(PanelOne=115), seltype="Equal"))
 
 
 ###################################################
-### code chunk number 8: Equalsites
+### code chunk number 7: Equalsites
 ###################################################
 # Select the sample
 Equalsites <- grts(design=Equaldsgn,
@@ -76,7 +65,7 @@ Equalsites <- grts(design=Equaldsgn,
 
 
 ###################################################
-### code chunk number 9: Equalsites
+### code chunk number 8: Equalsites
 ###################################################
 # Print the initial six lines of the survey design
 head(Equalsites@data)
@@ -84,15 +73,15 @@ head(Equalsites@data)
 
 
 ###################################################
-### code chunk number 10: Equalsites
+### code chunk number 9: Equalsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Equalsites)
+summary(Equalsites)
 
 
 
 ###################################################
-### code chunk number 11: Unequalsites
+### code chunk number 10: Unequalsites
 ###################################################
 # Create the design list
 Unequaldsgn <- list(None=list(panel=c(PanelOne=115),
@@ -108,7 +97,7 @@ Unequaldsgn <- list(None=list(panel=c(PanelOne=115),
 
 
 ###################################################
-### code chunk number 12: Unequalsites
+### code chunk number 11: Unequalsites
 ###################################################
 # Select the sample
 Unequalsites <- grts(design=Unequaldsgn,
@@ -123,7 +112,7 @@ Unequalsites <- grts(design=Unequaldsgn,
 
 
 ###################################################
-### code chunk number 13: Unequalsites
+### code chunk number 12: Unequalsites
 ###################################################
 # Print the initial six lines of the survey design
 head(Unequalsites@data)
@@ -131,10 +120,18 @@ head(Unequalsites@data)
 
 
 ###################################################
-### code chunk number 14: Unequalsites
+### code chunk number 13: Unequalsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Unequalsites)
+summary(Unequalsites)
+
+
+
+###################################################
+### code chunk number 14: Stratsites
+###################################################
+# Read the shapefile
+shp <- read.shape("UT_ecoregions")
 
 
 
@@ -186,7 +183,7 @@ head(Stratsites@data)
 ### code chunk number 18: Stratsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Stratsites)
+summary(Stratsites)
 
 
 
@@ -243,7 +240,7 @@ head(Panelsites@data)
 ### code chunk number 23: Panelsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Panelsites)
+summary(Panelsites)
 
 
 

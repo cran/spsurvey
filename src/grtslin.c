@@ -8,7 +8,9 @@
 **                the cells.
 **  Programmers:  Christian Platt, Tom Kincaid
 **  Created:      October 18, 2004
-**  Last Revised: October 18, 2007
+**  Revised:      October 18, 2007
+**  Revised:      February 23, 2015
+**  Revised:     May 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -694,7 +696,7 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   FILE * newShp = NULL;   /* pointer to the temp .shp file that will consist */
                           /* of the data found in all the .shp files found in */
                           /* the current working directory */
-  char * shpFileName = NULL;  /* stores full shape file name */
+  char * restrict shpFileName = NULL;  /* stores full shape file name */
   int singleFile = FALSE;
 
 
@@ -706,7 +708,7 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
                                               + strlen(".shp") + 1)) == NULL ){
       Rprintf( "Error: Allocating memory in C function linSample.\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );

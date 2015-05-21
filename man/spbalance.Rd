@@ -12,21 +12,22 @@
   and (2) the chi-square statistic.
 }
 \usage{
-spbalance(sp.sample, shapefilename=NULL, tess.ind=TRUE, sbc.ind=FALSE, nrows=5,
-   dxdy=TRUE)
+spbalance(spsample, spframe = NULL, tess_ind = TRUE, sbc_ind = FALSE, nrows = 5,
+   dxdy = TRUE)
 }
 \arguments{
-  \item{sp.sample}{the sp package object of class "SpatialPointsDataFrame"
-   created by the grts or irs functions).}
-  \item{shapefilename}{name of the input shapefile.  If shapefilename equal
-   NULL, then the shapefile or shapefiles in the working directory are read.
-   The default is NULL.}
-  \item{tess.ind}{a logical variable indicating whether spatial balance metrics
+  \item{spsample}{an object of class SpatialDesign produced by either the grts
+    or irs functions that contains survey design information and additional
+    attribute (auxiliary) variables.}
+  \item{spframe}{an sp package object of class SpatialPointsDataFrame,
+    SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the survey
+    design frame.  The default is NULL.}
+  \item{tess_ind}{a logical variable indicating whether spatial balance metrics
    are calculated using proportions obtained from the intersection of Dirichlet
    tesselation polygons for the sample points with the frame object.  TRUE means
    calculate the metrics.  FALSE means do not calculate the metrics.  The
    default is TRUE}
-  \item{sbc.ind}{a logical variable indicating whether spatial balance metrics
+  \item{sbc_ind}{a logical variable indicating whether spatial balance metrics
    are calculated using proportions obtained from a rectangular grid
    superimposed on the sample points and the frame.  TRUE means calculate the
    metrics. FALSE means do not calculate the metrics. The default is FALSE.}
@@ -40,7 +41,7 @@ spbalance(sp.sample, shapefilename=NULL, tess.ind=TRUE, sbc.ind=FALSE, nrows=5,
   A list containing the following components:
   \item{tess}{results for spatial balance metrics using tesselation polygons.}
   \item{sbc}{results for spatial balance metrics using a rectangular grid.}
-  If either the tess.ind or sbc.ind arguments are set to FALSE, the
+  If either the tess_ind or sbc_ind arguments are set to FALSE, the
   corresponding component in the list is set to NULL.  Otherwise, each
   component of the list is a lists that contains the following components:
   \item{J_subp}{Pielou evenness measure.}
@@ -64,12 +65,12 @@ Tom Kincaid \email{Kincaid.Tom@epa.gov}
 design <- list(Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
    Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
    caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
-attframe <- read.dbf("shapefile")
+frame <- read.shp("shapefile")
 samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
-   src.frame="shapefile", in.shape="shapefile", att.frame=attframe,
+   src.frame="shapefile", in.shape="shapefile", att.frame=frame@data,
    stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
    shapefilename="sample")
-spbalance(samp, shapefilename="shapefile", sbc.ind=TRUE)
+spbalance(samp, frame, sbc_ind = TRUE)
 }
 }
 \keyword{survey}

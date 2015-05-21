@@ -10,6 +10,9 @@
 **  Created:     August 24, 2004
 **  Revised:     April 23, 2008
 **  Revised:     January 27, 2012
+**  Revised:     July 16, 2014
+**  Revised:     February 23, 2015
+**  Revised:     May 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -274,7 +277,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
   Dbf * headDbf = NULL;  /* head ptr to list of dbf structs */
   Dbf * tempDbf = NULL;  /* used for traversing list of dbf structs */
   Dbf * dbf = NULL;             /* temp dbf strcut */
-  char * shpFileName = NULL;  /* stores the full shapefile name */
+  char * restrict shpFileName = NULL;  /* stores the full shapefile name */
   int singleFile = FALSE;  /* flag signalling when we are only looking for a */
                            /* single specified shapefile */
   SEXP tempVec;    /* temp vector for writing results to data vector */
@@ -293,7 +296,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
                                               + strlen(".shp") + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in dbfFileParser.c\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
@@ -319,7 +322,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     	 if ( strlen(fileShp->d_name) > 4 ) {
     	   ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	   if ( ptrShp == 1 ) {
-    	     if ( (shpFileName = (char *)malloc(strlen(fileShp->d_name)
+    	     if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function readDbfFile.\n" );
             closedir( dirp );
@@ -509,7 +512,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     	   if ( strlen(fileShp->d_name) > 4 ) {
     	     ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	     if ( ptrShp == 1 ) {
-    	       if ( (shpFileName = (char *)malloc(strlen(fileShp->d_name)
+    	       if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
                   +  1)) == NULL ) {
               Rprintf( "Error: Allocating memory in C function readDbfFile.\n" );
               closedir( dirp );
@@ -699,9 +702,9 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
 **             fields,  vector of all the field values
 **             filePrefix,  name of the dbf file to be created without
 **                          the .dbf extension
-** Return:     void
+** Return:     NULL
 ***********************************************************/
-void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
+SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   int i, j, k, z;               /* loop counters */
   char * fileName;              /* stores full name of the file */
   char * prefix;                /* stores the prefix of the file name */
@@ -723,14 +726,14 @@ void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   if ( (prefix = (char *) malloc( strlen(CHAR(STRING_ELT(filePrefix,0)))+1)) 
                                                              == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
-    return;
+    return R_NilValue;
   }
   strcpy( prefix, CHAR(STRING_ELT(filePrefix,0)) );
 
   /* create the .dbf file name */
   if ( (fileName = (char *) malloc( strlen(prefix) + strlen(dbf) + 1)) == NULL){
     Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
-    return;
+    return R_NilValue;
   }
   strcpy( fileName, prefix );
   strcat( fileName, dbf );
@@ -738,7 +741,7 @@ void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   /* create the dbf file */
   if ( (fptr = fopen( fileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating dbf file to write to in C function writeDbfFile.\n" );
-    return;
+    return R_NilValue;
   }
  
   /* write the version number */
@@ -771,12 +774,12 @@ void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   if ( (colLengths = (unsigned int *) malloc( sizeof(unsigned int) 
                                                  * length(fields))) == NULL) {
     Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
-    return;
+    return R_NilValue;
   }
   if ( (decimalLengths = (unsigned int *)malloc(sizeof(unsigned int)
                                                   *length(fields))) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
-    return;
+    return R_NilValue;
   }
   for ( i = 0; i < length( fields ); ++i ) {
     tempInt = 0;
@@ -1004,5 +1007,5 @@ void writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   free( prefix );
   fclose( fptr );
 
-  return;
+  return R_NilValue;
 }

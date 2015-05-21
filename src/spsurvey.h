@@ -5,16 +5,22 @@
 **  Programmer:  Tom Kincaid
 **  Created:     May 4, 2006
 **  Revised:     February 11, 2010
+**  Revised:     August 8, 2014
 ******************************************************************************/
 
 #ifndef R_SPSURVEY_H
 #define R_SPSURVEY_H
 
+#include <R.h>
+#include <Rinternals.h>
+
 #ifdef ENABLE_NLS
 #include <libintl.h>
 #define _(String) dgettext ("spsurvey", String)
+#define gettext_noop(String) (String)
 #else
 #define _(String) (String)
+#define gettext_noop(String) (String)
 #endif
 
 /* .C Methods */

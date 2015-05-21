@@ -2,6 +2,8 @@
 **  Function:    insideAreaGridCell
 **  Programmer:  Tom Kincaid
 **  Date:        May 19, 2010
+**  Revised:     February 23, 2015
+**  Revised:     May 5, 2015
 **  Description:
 **    For each grid cell, this function determines the set of shapefile records
 **    contained in the cell and returns the shapefile record IDs and the clipped
@@ -60,7 +62,7 @@ SEXP insideAreaGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec,
   int i, j, k;                /* loop counters */
   FILE * fptr = NULL;         /* pointer to the shapefile */
   FILE * newShp = NULL;       /* pointer to the temporary .shp file */
-  char * shpFileName = NULL;  /* stores full shape file name */
+  char * restrict shpFileName = NULL;  /* stores full shape file name */
   int singleFile = FALSE;
   Shape shape;           /* used to store shapefile info and data */
   Point * part = NULL;   /* stores points in a part */
@@ -101,7 +103,7 @@ SEXP insideAreaGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec,
   if(fileNamePrefix != R_NilValue) {
 
     /* create the full .shp file name */
-    if((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
                                               + strlen(".shp") + 1)) == NULL){
       Rprintf("Error: Allocating memory in C function insideAreaGridCell.\n");
       PROTECT(results = allocVector(VECSXP, 1));

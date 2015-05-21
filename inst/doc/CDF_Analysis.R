@@ -34,25 +34,7 @@ tail(FL_lakes)
 
 
 ###################################################
-### code chunk number 5: figure1
-###################################################
-# Plot small lakes in Florida
-basins <- levels(FL_lakes$Basin)
-cols <- rainbow(6)
-plot(FL_lakes$xcoord, FL_lakes$ycoord, type="n", xlab="x-coordinate",
-     ylab="y-coordinate")
-for(i in 1:6) {
-   ind <- FL_lakes$Basin == basins[i]
-   points(FL_lakes$xcoord[ind], FL_lakes$ycoord[ind], pch=20, cex=0.4,
-          col=cols[i])
-   }
-legend(x="topright", inset=0.05, legend=basins, pch=20, cex=1, col=cols)
-title("Plot of Florida Small Lake Sites Color-Coded by Basin")
-
-
-
-###################################################
-### code chunk number 6: Quanteval
+### code chunk number 5: Quanteval
 ###################################################
 # Use the summary function to summarize the data structure of the dissolved
 # oxygen variable
@@ -62,7 +44,7 @@ summary(FL_lakes$Oxygen)
 
 
 ###################################################
-### code chunk number 7: Quanteval
+### code chunk number 6: Quanteval
 ###################################################
 #
 # Conduct an analysis of lake condition variables
@@ -76,7 +58,7 @@ sites <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 8: Quanteval
+### code chunk number 7: Quanteval
 ###################################################
 # Create the subpop data frame, which defines populations and subpopulations for
 # which estimates are desired
@@ -86,7 +68,7 @@ subpop <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 9: Quanteval
+### code chunk number 8: Quanteval
 ###################################################
 # Create the design data frame, which identifies the stratum code, weight,
 #    x-coordinate, and y-coordinate for each site ID
@@ -98,7 +80,7 @@ design <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 10: Quanteval
+### code chunk number 9: Quanteval
 ###################################################
 # Create the data.cont data frame, which specifies the variables to use in the
 # analysis
@@ -108,7 +90,7 @@ data.cont <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 11: Conditionevalpop
+### code chunk number 10: Conditionevalpop
 ###################################################
 #
 # Conduct an analysis of the dissolved oxygen variables correcting for
@@ -122,7 +104,7 @@ framesize <- c("NWFWMD-1"=451, "NWFWMD-2"=394, "SFWMD-9"=834, "SJRWMD-1"=1216,
 
 
 ###################################################
-### code chunk number 12: Quanteval
+### code chunk number 11: Quanteval
 ###################################################
 # Calculate CDF estimates for the quantitative variables
 CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
@@ -131,7 +113,7 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 
 
 ###################################################
-### code chunk number 13: Quanteval
+### code chunk number 12: Quanteval
 ###################################################
 # Write CDF estimates as a csv file
 write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
@@ -140,14 +122,14 @@ write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
 
 
 ###################################################
-### code chunk number 14: Quanteval
+### code chunk number 13: Quanteval
 ###################################################
 cont.cdfplot("CDF_Estimates.pdf", CDF_Estimates$CDF)
 
 
 
 ###################################################
-### code chunk number 15: Quanteval
+### code chunk number 14: Quanteval
 ###################################################
 # Test for statistical difference between CDFs for basins
 CDF_Tests <- cont.cdftest(sites, subpop, design, data.cont,
@@ -156,7 +138,7 @@ CDF_Tests <- cont.cdftest(sites, subpop, design, data.cont,
 
 
 ###################################################
-### code chunk number 16: Quanteval
+### code chunk number 15: Quanteval
 ###################################################
 # Print results of the statistical tests for difference between CDFs from
 # basins for dissolved oxygen
@@ -165,7 +147,7 @@ print(CDF_Tests, digits=3)
 
 
 ###################################################
-### code chunk number 17: figure2
+### code chunk number 16: figure2
 ###################################################
 # Display basins that have significantly different CDFs
 n1 <- length(levels(CDF_Tests$Subpopulation_1))
@@ -187,7 +169,7 @@ abline(1, 1, col="red", lwd=2)
 
 
 ###################################################
-### code chunk number 18: Quanteval
+### code chunk number 17: Quanteval
 ###################################################
 # Write CDF test results as a csv file
 write.table(CDF_Tests, file="CDF_Tests.csv", sep=",", row.names=FALSE)

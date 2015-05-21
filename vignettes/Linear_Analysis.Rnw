@@ -31,7 +31,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.5 of the spsurvey package was loaded successfully.
+Version 3.0 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Read the survey design and analytical variables data file}
@@ -59,40 +59,12 @@ Display the final six lines in the data file.
 tail(IN_streams)
 
 @
-The sample of streams in Indiana is displayed in Figure~\ref{fig:INstreams}.  The sample sites for each Strahler order are displayed using a unique color.  First, the levels function is used to extract the set of unique Strahler order values, and the result is assigned to object strahler.  Next, the rainbow function is called to select a set of four colors, and the result is assigned to object cols.  The plot function is then used to produce the basic figure, but plotting of sample points is suppressed.  The for function is used to loop through the set of four unique Strahler order values and plot the color-coded points for each Strahler order using the points function.  Finally, the legend function is used to add a legend to the figure, and the title function is used to create a figure title.
-\begin{verbatim}
-> strahler <- levels(IN_streams$Strahler_Cat)
-> cols <- rainbow(4)
-> plot(IN_streams$xcoord, IN_streams$ycoord, type="n", xlab="x-coordinate",
-+      ylab="y-coordinate")
-> for(i in 1:4) {
-+    ind <- IN_streams$Strahler_Cat == strahler[i]
-+    points(IN_streams$xcoord[ind], IN_streams$ycoord[ind], pch=20, col=cols[i])
-+    }
-> legend(x="topright", inset=0.05, legend=paste("Order", strahler), pch=20,
-+        cex=1, col=cols)
-> title("Plot of Indiana Stream Sites Color-Coded by Strahler Order")
-\end{verbatim}
+The sample of streams in Indiana is displayed in Figure~\ref{fig:INstreams}.  The sample sites for each Strahler order are displayed using a unique color.  
 
 \begin{figure}
 \centering
-
-<<figure, fig=TRUE, echo=FALSE>>=
-# Plot streams in Indiana
-strahler <- levels(IN_streams$Strahler_Cat)
-cols <- rainbow(4)
-plot(IN_streams$xcoord, IN_streams$ycoord, type="n", xlab="x-coordinate",
-     ylab="y-coordinate")
-for(i in 1:4) {
-   ind <- IN_streams$Strahler_Cat == strahler[i]
-   points(IN_streams$xcoord[ind], IN_streams$ycoord[ind], pch=20, col=cols[i])
-   }
-legend(x="topright", inset=0.05, legend=paste("Order", strahler), pch=20, cex=1,
-       col=cols)
-title("Plot of Indiana Stream Sites Color-Coded by Strahler Order")
-
-@
-\caption{Indiana Stream Sample Sites.}
+\includegraphics{Linear_Analysis_plot}
+\caption{Location of stream sample sites in Indiana color-coded by Strahler order.}
 \label{fig:INstreams}
 \end{figure}
 

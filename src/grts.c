@@ -13,6 +13,9 @@
 **               shapefile.
 **  Created:     October 19, 2004
 **  Revised:     October 10, 2012
+**  Revised:     July 16, 2014
+**  Revised:     February 23, 2015
+**  Revised:     May 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -267,7 +270,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
   DIR * dirp = NULL;            /* used to open the current directory */
   struct dirent * fileShp;      /* used for reading file names */
   int ptrShp = 0;               /* ptr to .shp files in the current directory */
-  char * shpFileName = NULL;    /* stores the full shapefile name */
+  char * restrict shpFileName = NULL;    /* stores the full shapefile name */
   int done = FALSE;             /* flag signalling all .shp files have been read */
   FILE * oldShp;                /* pointer to the original shapefiles */
   Shape firstShape;             /* stores data for the first shapefile read */
@@ -308,7 +311,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     if ( strlen(fileShp->d_name) > 4 ) {
       ptrShp = fileMatch( fileShp->d_name, ".shp" );
       if ( ptrShp == 1 ) {
-        if ( (shpFileName = (char *)malloc(strlen(fileShp->d_name)
+        if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
               +  1)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function combineShpFiles.\n" );
           closedir( dirp );
@@ -408,7 +411,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           firstShape.Xmin = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       fread( &tempDouble, sizeof(double), 1, oldShp );
       if ( found == TRUE ) {
@@ -421,7 +424,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           firstShape.Ymin = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
   
       fread( &tempDouble, sizeof(double), 1, oldShp );
       if ( found == TRUE ) {
@@ -434,7 +437,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           firstShape.Xmax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       fread( &tempDouble, sizeof(double), 1, oldShp );
       if ( found == TRUE ) {
@@ -447,7 +450,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           firstShape.Ymax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       /* read and ignore the number of parts */
       fread( buffer, sizeof(char), 4, oldShp );
@@ -480,7 +483,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
         if ( found == TRUE ) {
           fwrite( &tempDouble, sizeof(double), 1, newShp );
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
         if ( fread( &tempDouble, sizeof(double), 1, oldShp ) == 0 ) {
           Rprintf( "Error: Reading shapefile in C function combineShpFiles.\n" );
           fclose( oldShp );
@@ -489,7 +492,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
         if ( found == TRUE ) {
           fwrite( &tempDouble, sizeof(double), 1, newShp );
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
       }
 
       /* Point shape types */
@@ -513,7 +516,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           firstShape.Xmax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       /* copy the y coordinate */
       fread( &tempDouble, sizeof(double), 1, oldShp );
@@ -531,7 +534,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           firstShape.Ymax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
     /* got a shape number that we can't parse */
     } else {
@@ -552,7 +555,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     if ( strlen(fileShp->d_name) > 4 ) {
       ptrShp = fileMatch( fileShp->d_name, ".shp" );
       if ( ptrShp == 1 ) {
-        if ( (shpFileName = (char *)malloc(strlen(fileShp->d_name)
+        if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
               +  1)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function combineShpFiles.\n" );
           closedir( dirp );
@@ -656,7 +659,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
             firstShape.Xmin = tempDouble;
           }
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
         fread( &tempDouble, sizeof(double), 1, oldShp );
         if ( found == TRUE ) {
@@ -665,7 +668,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
             firstShape.Ymin = tempDouble;
           }
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
         fread( &tempDouble, sizeof(double), 1, oldShp );
         if ( found == TRUE ) {
@@ -674,7 +677,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
             firstShape.Xmax = tempDouble;
           }
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
         fread( &tempDouble, sizeof(double), 1, oldShp );
         if ( found == TRUE ) {
@@ -683,7 +686,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
             firstShape.Ymax = tempDouble;
           }
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
         /* read and ignore the number of parts */
         fread( buffer, sizeof(char), 4, oldShp );
@@ -716,7 +719,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           if ( found == TRUE ) {
             fwrite( &tempDouble, sizeof(double), 1, newShp );
           }
-          filePosition += 8;
+          filePosition += sizeof(double);
           if ( fread( &tempDouble, sizeof(double), 1, oldShp ) == 0 ) {
             Rprintf( "Error: Reading shapefile in in C function combineShpFiles.\n" );
             return -1;
@@ -724,7 +727,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
           if ( found == TRUE ) {
             fwrite( &tempDouble, sizeof(double), 1, newShp );
           }
-          filePosition += 8;
+          filePosition += sizeof(double);
         }
 
       /* Point shape types */
@@ -741,7 +744,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
             firstShape.Xmax = tempDouble;
           }
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
         /* copy over Y coordinant */
         fread( &tempDouble, sizeof(double), 1, oldShp );
@@ -754,7 +757,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
             firstShape.Ymax = tempDouble;
           }
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
       }
 
@@ -772,7 +775,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
       if ( strlen(fileShp->d_name) > 4 ) {
         ptrShp = fileMatch( fileShp->d_name, ".shp" );
         if ( ptrShp == 1 ) {
-          if ( (shpFileName = (char *)malloc(strlen(fileShp->d_name)
+          if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function combineShpFiles.\n" );
             closedir( dirp );
@@ -942,7 +945,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           firstShape.Xmin = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       fread( &tempDouble, sizeof(double), 1, oldShp );
       if ( found == TRUE ) {
@@ -955,7 +958,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           firstShape.Ymin = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
   
       fread( &tempDouble, sizeof(double), 1, oldShp );
       if ( found == TRUE ) {
@@ -968,7 +971,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           firstShape.Xmax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       fread( &tempDouble, sizeof(double), 1, oldShp );
       if ( found == TRUE ) {
@@ -981,7 +984,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           firstShape.Ymax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       /* read and ignore the number of parts */
       fread( buffer, sizeof(char), 4, oldShp );
@@ -1014,7 +1017,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
         if ( found == TRUE ) {
           fwrite( &tempDouble, sizeof(double), 1, newShp );
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
         if ( fread( &tempDouble, sizeof(double), 1, oldShp ) == 0 ) {
           Rprintf( "Error: Reading shapefile in C function createNewTempShpFile.\n" );
           fclose( oldShp );
@@ -1023,7 +1026,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
         if ( found == TRUE ) {
           fwrite( &tempDouble, sizeof(double), 1, newShp );
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
       }
 
       /* for a Polygon_Z or Polyline_Z shapefile, copy Z range and Z values */
@@ -1036,7 +1039,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           if ( found == TRUE ) {
             fwrite( &tempDouble, sizeof(double), 1, newShp );
           }
-          filePosition += 8;
+          filePosition += sizeof(double);
         }
 
         /* copy Z values */
@@ -1045,7 +1048,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           if ( found == TRUE ) {
             fwrite( &tempDouble, sizeof(double), 1, newShp );
           }
-          filePosition += 8;
+          filePosition += sizeof(double);
         } 
       }
 
@@ -1062,7 +1065,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           if ( found == TRUE ) {
             fwrite( &tempDouble, sizeof(double), 1, newShp );
           }
-          filePosition += 8;
+          filePosition += sizeof(double);
         }
 
         /* copy M values */
@@ -1071,7 +1074,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           if ( found == TRUE ) {
             fwrite( &tempDouble, sizeof(double), 1, newShp );
           }
-          filePosition += 8;
+          filePosition += sizeof(double);
         }
       }
 
@@ -1095,7 +1098,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           firstShape.Xmax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       /* copy the y coordinate */
       fread( &tempDouble, sizeof(double), 1, oldShp );
@@ -1113,7 +1116,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
           firstShape.Ymax = tempDouble;
         }
       }
-      filePosition += 8;
+      filePosition += sizeof(double);
 
       /* for a Point_Z shapefile, copy Z value */
       if ( firstShape.shapeType == POINTS_Z ) {
@@ -1123,7 +1126,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
         if ( found == TRUE ) {
           fwrite( &tempDouble, sizeof(double), 1, newShp );
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
       }
 
@@ -1136,7 +1139,7 @@ int createNewTempShpFile( FILE * newShp, char * shapeFileName,
         if ( found == TRUE ) {
           fwrite( &tempDouble, sizeof(double), 1, newShp );
         }
-        filePosition += 8;
+        filePosition += sizeof(double);
 
       }
 
@@ -1230,7 +1233,8 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   double dx = 0.0;
   double dy = 0.0;
   double sint;
-  double roffX, roffY;
+  double roffX = 0.0;
+  double roffY = 0.0;
   double * xc = NULL;
   double * yc = NULL;
   double * tempXc = NULL;
@@ -1268,14 +1272,14 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   FILE * newShp = NULL;   /* pointer to the temp .shp file that will consist */
                           /* of the data found in all the .shp files found in */
                           /* the current working directory */
-  char * shpFileName = NULL;  /* stores full shapefile name */
+  char * restrict shpFileName = NULL;  /* stores full shapefile name */
   int singleFile = FALSE;
 
   /* see if a specific file was sent */
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
                                               + strlen(".shp") + 1)) == NULL ){
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );

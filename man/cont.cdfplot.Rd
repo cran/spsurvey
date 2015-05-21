@@ -13,7 +13,7 @@
 cont.cdfplot(pdffile="cdf2x2.pdf", cdfest, units.cdf="Percent",
    ind.type=rep("Continuous", nind), logx=rep("", nind), xlbl=NULL,
    ylbl="Percent", ylbl.r=NULL, legloc="BR", cdf.page=4, width=10, height=8,
-   confcut=5, ...)
+   confcut=5, cex.main=1.2, ...)
 }
 \arguments{
   \item{pdffile}{name of the PDF file.  The default is "cdf2x2.pdf".}
@@ -50,6 +50,7 @@ cont.cdfplot(pdffile="cdf2x2.pdf", cdfest, units.cdf="Percent",
     confcut or greater than 100 minus confcut are not plotted.  A value of 
     zero means confidence limits are plotted for the complete range of the 
     CDF.  The default is 5.}
+  \item{cex.main}{expansion factor for the plot title.  The default is 1.2.}
   \item{\dots}{additional arguments passed to the cdf.plot function.}
 }
 \value{

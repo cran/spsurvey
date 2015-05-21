@@ -5,7 +5,7 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
 # Purpose: Create an ESRI shapefile from an sp package object
 # Programmer: Tom Kincaid
 # Date: June 6, 2006
-# Last Revised: August 17, 2011
+# Last Revised: July 14, 2014
 # Description:
 #   This function creates an ESRI shapefile from an sp package object.  The type 
 #   of shapefile, i.e., point, polyline, or polygon, is determined by the class 
@@ -38,7 +38,7 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
             }
          }
       }
-      .Call("writeShapeFilePoint", sp.obj@coords[,1], sp.obj@coords[,2],
+      temp <- .Call("writeShapeFilePoint", sp.obj@coords[,1], sp.obj@coords[,2],
          prjfilename, names(att.data), att.data, shpfilename)
 
 # Create a Polyline shapefile
@@ -80,9 +80,10 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
          content.len[i] <- 22 + (2*nparts[i]) + (8*npoints[i])
       }
       filelength <- 50 + (4*nrec) + sum(content.len)
-      .Call("writeShapeFilePolygon", 3, filelength, as.integer(content.len), 
-         as.integer(nparts), as.integer(npoints), as.integer(parts), xcoord, 
-         ycoord, prjfilename, names(att.data), att.data, shpfilename)
+      temp <- .Call("writeShapeFilePolygon", 3, filelength,
+         as.integer(content.len), as.integer(nparts), as.integer(npoints),
+         as.integer(parts), xcoord, ycoord, prjfilename, names(att.data),
+         att.data, shpfilename)
 
 # Create a Polygon shapefile
 
@@ -123,9 +124,10 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
          content.len[i] <- 22 + (2*nparts[i]) + (8*npoints[i])
       }
       filelength <- 50 + (4*nrec) + sum(content.len)
-      .Call("writeShapeFilePolygon", 5, filelength, as.integer(content.len), 
-         as.integer(nparts), as.integer(npoints), as.integer(parts), xcoord, 
-         ycoord, prjfilename, names(att.data), att.data, shpfilename)
+      temp <- .Call("writeShapeFilePolygon", 5, filelength,
+         as.integer(content.len), as.integer(nparts), as.integer(npoints),
+         as.integer(parts), xcoord, ycoord, prjfilename, names(att.data),
+         att.data, shpfilename)
 
 # Print an error message due to an improper class of input object
 

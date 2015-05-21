@@ -6,9 +6,12 @@ exportPattern(".")
 
 # Import all packages listed as Depends or Imports
 import(sp)
-importFrom(deldir, deldir)
-importFrom(deldir, tile.list)
-importFrom(foreign, read.ssd)
-importFrom(foreign, read.xport)
+import(methods)
+importFrom(deldir, deldir, tile.list)
+importFrom(foreign, read.ssd, read.xport)
 importFrom(MASS, ginv)
 importFrom(rgeos, gIntersection)
+
+# Export S3 methods
+S3method(summary, SpatialDesign)
+S3method(plot, SpatialDesign)

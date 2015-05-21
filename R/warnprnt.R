@@ -5,6 +5,7 @@ warnprnt <- function(warn.df=get("warn.df", envir=.GlobalEnv),
 # Function: warnprnt
 # Programmer: Tom Kincaid
 # Date: September 19, 2005
+# Revised: April 17, 2014
 # Description:
 #   This function prints the warnings data frame. 
 #   Input:
@@ -29,8 +30,8 @@ warnprnt <- function(warn.df=get("warn.df", envir=.GlobalEnv),
          cat(paste("Indicator:", warn.df$indicator[i], "\n"))
       if(!is.na(warn.df$stratum[i]))
          cat(paste("Stratum:", warn.df$stratum[i], "\n"))
-      cat(paste("Warning:", warn.df$warn[i]))
-      cat(paste("Action:", warn.df$act[i], "\n"))
+      cat(paste("Warning:", warn.df$warning[i]))
+      cat(paste("Action:", warn.df$action[i], "\n"))
    }
 
    invisible(NULL)

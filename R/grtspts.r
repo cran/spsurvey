@@ -9,7 +9,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: October 10, 2012
+# Last Revised: January 27, 2015
 # Description:
 #   This function select a GRTS sample of a finite resource.  This function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -124,8 +124,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
          sint <- sum(cel.wt)/samplesize
          ifelse(nlev == maxlev,
             nlev <- nlev + 1,
-            nlev <- as.integer(nlev + max(1, ceiling(logb(cel.wt[cel.wt > 0]/
-               sint, 4)))))
+            nlev <- nlev + max(1, ceiling(logb(cel.wt[cel.wt > 0]/sint, 4))))
       }
 
 #  Print the final number of levels
@@ -146,7 +145,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 
 # Construct the hierarchical address for all cells
 
-   hadr <- .Call("constructAddr", xc, yc, dx, dy, nlev)
+   hadr <- .Call("constructAddr", xc, yc, dx, dy, as.integer(nlev))
 
 # Construct randomized hierarchical addresses
 

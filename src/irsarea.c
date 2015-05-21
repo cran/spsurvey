@@ -7,7 +7,9 @@
 **               for the x and y coordinates.
 **  Programmer:  Tom Kincaid
 **  Created:     November 30, 2005
-**  Last Revised: February 23, 2007
+**  Revised:     February 23, 2007
+**  Revised:     February 23, 2015
+**  Revised:     May 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -168,7 +170,7 @@ SEXP getShapeBox( SEXP fileNamePrefix, SEXP dsgnIDVec ) {
   unsigned int * dsgnID = NULL;  /*array of record ID numbers */
   int dsgnSize = length( dsgnIDVec );  /* number of IDs in dsgnID */
   int i;  /* loop counter */
-  char * shpFileName = NULL;  /* stores full shapefile name */
+  char * restrict shpFileName = NULL;  /* stores full shapefile name */
   int singleFile = FALSE;  /* indicator for the number of shapefiles */
   FILE * newShp = NULL;  /* pointer to the temporary shapefile */
   Shape shape;  /* Shape struct for temporary storage of shape data */
@@ -202,7 +204,7 @@ SEXP getShapeBox( SEXP fileNamePrefix, SEXP dsgnIDVec ) {
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full shapefile name */
-    if ((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
       + strlen(".shp") + 1)) == NULL ){
       Rprintf( "Error: Allocating memory in shapeParser.c\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );

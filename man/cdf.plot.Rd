@@ -10,7 +10,8 @@
 }
 \usage{
 cdf.plot(cdfest, units.cdf="Percent", type.cdf="Continuous", logx="", xlbl=NULL,
-   ylbl="Percent", ylbl.r=NULL, figlab=NULL, legloc="BR", confcut=5, conflev=95, ...)
+   ylbl="Percent", ylbl.r=NULL, figlab=NULL, legloc="BR", confcut=5, conflev=95,
+   cex.main=1.2, ...)
 }
 \arguments{
   \item{cdfest}{data frame utilizing the same structure as the data frame named
@@ -47,6 +48,7 @@ cdf.plot(cdfest, units.cdf="Percent", type.cdf="Continuous", logx="", xlbl=NULL,
     CDF.  The default is 5.}
   \item{conflev}{numeric value of the confidence level used for confidence 
     limits.  The default is 95.}
+  \item{cex.main}{expansion factor for the plot title.  The default is 1.2.}
   \item{\dots}{additional arguments passed to the plot function.}
 }
 \value{

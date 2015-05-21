@@ -1,21 +1,22 @@
-dsgnsum <- function(sp.obj, auxvar=NULL) {
+dsgnsum <- function(spsample, auxvar = NULL) {
 
 ################################################################################
 # Function: dsgnsum
 # Purpose: Summarize the sites selected for a survey design
 # Programmers: Tony Olsen, Tom Kincaid
 # Date: April 26, 2005
-# Last Revised: October 15, 2008
+# Last Revised: May 4, 2015
 # Description:
 #   This function summarizes the sites selected for a survey design by producing
 #   contingency tables containing the cross-tabluation of number of sites for
 #   survey design variables and, optionally, for auxiliary variables.
 # Arguments:
-#   sp.obj = the sp package object of class "SpatialPointsDataFrame" produced by
-#     the grts function that contains survey design information and additional
+#   spsample = an object of class SpatialDesign produced by either the grts or
+#     irs functions that contains survey design information and additional
 #     attribute (auxiliary) variables.
-#   auxvar = a vector containing the names of columns from sites that identify
-#      auxiliary variables to be used to summarize the survey design. 
+#   auxvar = a vector containing the names of columns in the data slot of the
+#   SpatialDesign object that identify auxiliary variables to be used to
+#  	summarize the survey design. 
 # Results:
 #   A list containing two components named DesignSum and AuxVarSum.  DesignSum
 #   is a list of contingency tables containing the cross-tabulation of number of
@@ -44,10 +45,11 @@ dsgnsum <- function(sp.obj, auxvar=NULL) {
 #   dsgnsum(samp, auxvar=c("ecoregion", "state"))
 ################################################################################
 
-# Assign the sites data frame and the survey design information
+# Assign the data slot form the spsample SpatialDesign object to the sites data
+# frame and the design slot to the design list
 
-   sites <- sp.obj@data
-   design <- attributes(sp.obj@data)$design
+   sites <- spsample@data
+   design <- spsample@design
 
 # Determine whether multiple multidensity categories are present, whether the
 # design is stratified, and whether multiple panels are present
@@ -139,17 +141,57 @@ dsgnsum <- function(sp.obj, auxvar=NULL) {
       for(i in auxvar) {
          if(!is.factor(sites[,i]))
             sites[,i] <- as.factor(sites[,i])
-         if(!seltype.ind) {
-            AuxVarSum[[i]] <- addmargins(table(sites$mdcaty, sites$panel,
-               sites$stratum, sites[,i], dnn=c("mdcaty", "panel",
-               "stratum", i)))
-            cat(paste("\n\nDesign Summary: Number of Sites Classified by mdcaty, (Multidensity Category), \nstratum, panel, and ", i, " (Auxiliary Variable)\n\n", sep=""))
-            print(AuxVarSum[[i]])
+         if(mdcaty.ind) {
+            if(panel.ind) {
+               if(stratum.ind) {
+                  AuxVarSum[[i]] <- addmargins(table(sites$mdcaty, sites[,i],
+                     sites$stratum, dnn=c("mdcaty", i, "stratum")))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category), \nstratum, and ", i, " (Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               } else {
+                  AuxVarSum[[i]] <- addmargins(table(sites$mdcaty, sites[,i],
+                     sites$panel, dnn=c("mdcaty", i, "panel")))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category), \npanel, and ", i, " (Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               }
+            } else {
+               if(stratum.ind) {
+                 AuxVarSum[[i]] <- addmargins(table(sites$mdcaty, sites[,i],
+                     sites$stratum, dnn=c("mdcaty", i, "stratum")))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category), \nstratum, and ", i, " (Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               } else {
+                  AuxVarSum[[i]] <- addmargins(table(sites$mdcaty, sites[,i],
+                     dnn=c("mdcaty", i)))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by mdcaty (Multidensity Category), \nand ", i, " (Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               }
+            }
          } else {
-            AuxVarSum[[i]] <- addmargins(table(sites$panel, sites$stratum,
-               sites[,i], dnn=c("panel", "stratum", i)))
-            cat(paste("\n\nDesign Summary: Number of Sites Classified by stratum, panel, and \n", i, " (Auxiliary Variable)\n\n", sep=""))
-            print(AuxVarSum[[i]])
+            if(panel.ind) {
+               if(stratum.ind) {
+                  AuxVarSum[[i]] <- addmargins(table(sites$panel, sites[,i],
+                     sites$stratum, dnn=c("panel", i, "stratum")))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by panel, stratum, and\n", i, " (Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               } else {
+                  AuxVarSum[[i]] <- addmargins(table(sites$panel, sites[,i],
+                     dnn=c("panel", i)))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by , panel and ", i, "\n(Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               }
+            } else {
+               if(stratum.ind) {
+                  AuxVarSum[[i]] <- addmargins(table(sites$stratum, sites[,i],
+                     dnn=c("stratum", i)))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by stratum and ", i, "\n(Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               } else {
+                  AuxVarSum[[i]] <- addmargins(table(sites[,i], dnn=c(i)))
+                  cat(paste("\n\nDesign Summary: Number of Sites Classified by ", i, " (Auxiliary Variable)\n\n", sep=""))
+                  print(AuxVarSum[[i]])
+               }
+            }
          }
       }
    }

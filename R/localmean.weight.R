@@ -1,10 +1,10 @@
-localmean.weight <- function(x, y, prb, nbh=4, vincr=0.000005*abs(mean(y))) {
+localmean.weight <- function(x, y, prb, nbh=4, vincr=0.00001*abs(mean(y))) {
 
 ################################################################################
 # Function: localmean.weight
 # Programmers: Don Stevens and Tom Kincaid
 # Date: September 5, 2001
-# Last Revised: September 19, 2013
+# Last Revised: September 27, 2013
 # Description:
 #   This function calculates the index values of neighboring points and
 #   associated weights required by the local mean variance estimator.
@@ -14,7 +14,7 @@ localmean.weight <- function(x, y, prb, nbh=4, vincr=0.000005*abs(mean(y))) {
 #      prb = inclusion probabilities for the sample points.
 #      nbh = number of neighboring points to use in the calculations.
 #      vincr = the variance increment for correcting an La.svd error.  The
-#        default is 0.000005*abs(mean(y)).
+#        default is 0.00001*abs(mean(y)).
 #   Output:
 #      An object in list format containing two elements: a matrix named ij 
 #      composed of the index values of neighboring points and a vector named gwt

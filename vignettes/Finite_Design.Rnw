@@ -31,14 +31,14 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.5 of the spsurvey package was loaded successfully.
+Version 3.0 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Shapefile attribute data}
 
 The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The initial six lines in the att data frame are printed using the head function.
 
-Two attributes, state name and lake area category, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  State code is contained in a variable named "state", and lake area category is contained in a variable named "area\_cat".  For lake area category, lakes are classified by surface area measured in hectares.  The lake area categories are coded using values such as "(5,10]", which indicates that lake area is greater than five hectares but less than or equal to ten hectares.  The table and addmargin functions are used to produce a table displaying number of lakes for each combination of values for the strata and multidensity category variables.
+Two attributes, state name and lake area category, that will be used to define, respectively, stratum codes and unequal selection probability (multidensity) categories for the survey designs are examined.  State name is contained in a variable named "state", and lake area category is contained in a variable named "area\_cat".  For lake area category, lakes are classified by surface area measured in hectares.  The lake area categories are coded using values such as "(5,10]", which indicates that lake area is greater than five hectares but less than or equal to ten hectares.  The table and addmargin functions are used to produce a table displaying number of lakes for each combination of values for the strata and multidensity category variables.
 
 Read the attribute table from the shapefile
 
@@ -62,23 +62,13 @@ Display number of lakes cross-classified by strata and multidensity category
 addmargins(table("State"=att$State, "Lake Area Category"=att$Area_Cat))
 
 @
-Lakes in the southern New England region are displayed in Figure~\ref{fig:Finite}.  The plot function is used to produce the figure.
-\begin{verbatim}
-> plot(att$xcoord, att$ycoord, xlab="x-coordinate", ylab="y-coordinate", pch=20,
-+      cex=0.1, col="red")
-\end{verbatim}
+Lakes in the southern New England region are displayed in Figure~\ref{fig:NElakes}.
 
 \begin{figure}
 \centering
-
-<<figure, fig=TRUE, echo=FALSE>>=
-# Plot lakes in the southern New England region
-plot(att$xcoord, att$ycoord, xlab="x-coordinate", ylab="y-coordinate", pch=20,
-     cex=0.1, col="red")
-
-@
-\caption{Lakes in the Southern New England Region.}
-\label{fig:Finite}
+\includegraphics{Finite_Design_plot}
+\caption{Location of lakes in the southern New England region.}
+\label{fig:NElakes}
 \end{figure}
 
 \section{Unstratified, equal probability, GRTS survey design}
@@ -89,7 +79,7 @@ The initial step is to create a list named Equaldsgn that contains information f
 
 The grts function in the spsurvey package is called to select the survey design.  The following arguments are included in the call to grts: (1) design: the named list of stratum design specifications, which is assigned the Equaldsgn list; (2) DesignID: name for the design, which is used to create a site ID for each site and is assigned the value "EQUAL"; (3) type.frame: the type of frame, which is assigned the value "finite" to indicate a finite resource; (4) src.frame: source of the frame, which is assigned the value "shapefile" to indicate a shapefile frame; (5) in.shape: name of the input shapefile, which is assigned the value "reg1\_lakes"; (6) att.frame: the data frame of attributes associated with elements in the frame, which is assigned the att data frame; and (7) shapefile: option to create a shapefile containing the survey design information, which is assigned FALSE.
 
-During execution of the grts function, messages are printed that indicate the initial number of hierarchical levels used for the GRTS grid, the current number of levels, and the final number of levels.  The set of messages is printed for each stratum, and is labeled with the stratum name.  For this example, the set of messages is labeled "None", i.e., the name used in the Equaldsgn list.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
+During execution of the grts function, messages are printed that indicate the initial number of hierarchical levels used for the GRTS grid, the current number of levels, and the final number of levels.  The set of messages is printed for each stratum, and is labeled with the stratum name.  For this example, the set of messages is labeled "None", i.e., the name used in the Equaldsgn list.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.  The output object created by the grts function is assigned class "SpatialDesign".  The design summary is created using the summary method for that class.  In addition to summary, a plot method is available for the SpatialDesign class.   For assistance using the summary and plot methods, see documentation for "SpatialDesign-class" on the R help page for spsurvey.
 
 Call the set.seed function so that the design can be replicated
 
@@ -138,7 +128,7 @@ Print the survey design summary
 
 <<Equalsites>>=
 # Print the survey design summary
-dsgnsum(Equalsites)
+summary(Equalsites)
 
 @
 \section{Stratified, equal probability, GRTS survey design}
@@ -198,7 +188,7 @@ Print the survey design summary
 
 <<Stratsites>>=
 # Print the survey design summary
-dsgnsum(Stratsites)
+summary(Stratsites)
 
 @
 \section{Unstratified, unequal probability, GRTS survey design with an oversample}
@@ -207,6 +197,11 @@ The third survey design is an unstratified, unequal probability design with an o
 
 For this survey design, an sp package object will be used as the sampling frame.  The read.shape function will be used to read the shapefile and assign its output to an sp object named shp.  The following arguments are included in the call to grts: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "finite"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; (7) mdcaty: name of the column in the attributes data frame that identifies the unequal probability category for each element in the frame, which is assigned the value "area\_cat"; (8) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
+<<Unequalsites>>=
+# Read the shapefile
+shp <- read.shape("NE_lakes")
+
+@
 Create the design list
 \begin{verbatim}
 > Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
@@ -225,13 +220,6 @@ Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
                                        "(10,50]"=50, "(50,500]"=25,
                                        "(500,1e+04]"=5),
                               over=120))
-
-@
-Read the shapefile
-
-<<Unequalsites>>=
-# Read the shapefile
-shp <- read.shape("NE_lakes")
 
 @
 Select the sample
@@ -269,7 +257,7 @@ Print the survey design summary
 
 <<Unequalsites>>=
 # Print the survey design summary
-dsgnsum(Unequalsites)
+summary(Unequalsites)
 
 @
 \section{Unstratified, unequal probability, GRTS survey design with an oversample and a panel structure for survey over time}
@@ -350,7 +338,7 @@ Print the survey design summary
 
 <<Panelsites>>=
 # Print the survey design summary
-dsgnsum(Panelsites)
+summary(Panelsites)
 
 @
 \end{document}

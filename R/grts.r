@@ -10,7 +10,7 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: November 3, 2011
+# Last Revised: April 30, 2015
 # Description:
 #   This function select a GRTS sample of a finite, linear, or area resource.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -115,10 +115,8 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #   out.shape = name (without any extension) of the output shapefile containing
 #     the survey design information.  The default is "sample".
 # Results:
-#   An sp package object containing the survey design information and any
-#   additional attribute variables that were provided.  The object is assigned
-#   class "SpatialPointsDataFrame".  For further information regarding the
-#   output object, see documentation for the sp package.  Optionally, a
+#   An object of class SpatialDesign containing the survey design information
+#   and any additional attribute variables that were provided.  Optionally, a
 #   shapefile can be created that contains the survey design information.
 # Other Functions Required:
 #   sp2shape - converts an sp package object to a shapefile
@@ -1010,7 +1008,6 @@ row.names(sites) <- IDs
 
 # Assign attributes to the output data frame
 
-attr(sites, "design") <- design
 ifelse(is.null(startlev),
    attr(sites, "startlev") <- "Not specified",
    attr(sites, "startlev") <- startlev)
@@ -1022,13 +1019,15 @@ attr(sites, "maxtry") <- maxtry
 attr(sites, "shift.grid") <- shift.grid
 attr(sites, "do.sample") <- do.sample
 
-# Create an sp package object
+# Create an object of class SpatialDesign
 
 SpointsMat <- matrix(0, nrow=n, ncol=2)
 rownames(SpointsMat) <- IDs
 SpointsMat[,1] <- sites[,2]
 SpointsMat[,2] <- sites[,3]
-sp.obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat), data=sites)
+sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),
+   data = sites)
+rslt <- SpatialDesign(design = design, sp_obj = sp_obj)
 
 # Create a shapefile containing the sample information
 
@@ -1043,15 +1042,15 @@ if(shapefile == TRUE) {
             sites.tmp[temp,i] <- " "
          }
       }
-      .Call("writeShapeFilePoint", sites.tmp$xcoord, sites.tmp$ycoord,
+      temp <- .Call("writeShapeFilePoint", sites.tmp$xcoord, sites.tmp$ycoord,
          prjfilename, names(sites.tmp), sites.tmp, out.shape)
    } else {
-      .Call("writeShapeFilePoint", sites$xcoord, sites$ycoord, prjfilename,
-         names(sites), sites, out.shape)
+      temp <- .Call("writeShapeFilePoint", sites$xcoord, sites$ycoord,
+         prjfilename, names(sites), sites, out.shape)
    }
 }
 
-# Return the sp package object
+# Return the SpatialDesign object
 
-invisible(sp.obj)
+invisible(rslt)
 }

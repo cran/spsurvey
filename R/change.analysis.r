@@ -10,7 +10,7 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 # Purpose: Change Analysis for Probability Survey Data
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
-# Last Revised: December 4, 2012
+# Last Revised: August 19, 2014
 # Description:
 #   This function organizes input and output for estimation of change between
 #   two probability surveys.
@@ -429,18 +429,20 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 
    if(cluster.ind_1) {
       for(itype in 2:ntypes) {
-         temp <- apply(table(cluster, subpop[,itype]) == 1, 2, sum)
+         temp <- apply(table(cluster, subpop_1[,itype]) == 1, 2, sum)
+         ind <- tapply(cluster, subpop_1[,itype], function(x) length(unique(x)))
+         if(any(temp == ind)) {
+            temp.str <- vecprint(names(temp)[temp == ind])
+            warn.df <<- warn.df
+            stop(paste("\nA variance estimate cannot be calculated since all of the stage one sampling \nunits contain a single stage two sampling unit for the following \nsubpopulation(s) of population ", typenames[itype], ":\n", temp.str, "\nEnter the following command to view the warning messages that were generated: \nwarnprnt() \n", sep=""))
+         }
          if(any(temp > 0)) {
             temp.str <- vecprint(names(temp)[temp > 0])
-            warn <- paste("Since they include one or more stage one sampling units with a single site, a \nvariance estimate cannot be calculated for the following subpopulation(s) of \npopulation ", typenames[itype], ", and the mean of the variance estimates for stage \none sampling units with two or more sites will be used:\n", temp.str, sep="")
+            warn <- paste("Since they include one or more stage one sampling units with a single site, \nthe mean of the variance estimates for stage one sampling units with two or \nmore sites will be used as the variance estimate for stage one sampling units \nwith one site for the following subpopulation(s) of population\n", typenames[itype], ":\n", temp.str, sep="")
             act <- "The mean of the variance estimates will be used.\n"
             warn.df <- rbind(warn.df, data.frame(func=I(fname),
                subpoptype=NA, subpop=NA, indicator=NA, stratum=NA,
                warning=I(warn), action=I(act)))
-         }
-         if(all(temp > 0) & ntypes > 2) {
-            warn.df <<- warn.df
-            stop("\nA variance estimate cannot be calculated since all of the stage one sampling \nunit(s) contain a single stage two sampling unit.  Enter the following command \nto view the warning messages that were generated: warnprnt() \n")
          }
       }
    }
@@ -616,18 +618,20 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 
    if(cluster.ind_2) {
       for(itype in 2:ntypes) {
-         temp <- apply(table(cluster, subpop[,itype]) == 1, 2, sum)
+         temp <- apply(table(cluster, subpop_2[,itype]) == 1, 2, sum)
+         ind <- tapply(cluster, subpop_2[,itype], function(x) length(unique(x)))
+         if(any(temp == ind)) {
+            temp.str <- vecprint(names(temp)[temp == ind])
+            warn.df <<- warn.df
+            stop(paste("\nA variance estimate cannot be calculated since all of the stage one sampling \nunits contain a single stage two sampling unit for the following \nsubpopulation(s) of population ", typenames[itype], ":\n", temp.str, "\nEnter the following command to view the warning messages that were generated: \nwarnprnt() \n", sep=""))
+         }
          if(any(temp > 0)) {
             temp.str <- vecprint(names(temp)[temp > 0])
-            warn <- paste("Since they include one or more stage one sampling units with a single site, a \nvariance estimate cannot be calculated for the following subpopulation(s) of \npopulation ", typenames[itype], ", and the mean of the variance estimates for stage \none sampling units with two or more sites will be used:\n", temp.str, sep="")
+            warn <- paste("Since they include one or more stage one sampling units with a single site, \nthe mean of the variance estimates for stage one sampling units with two or \nmore sites will be used as the variance estimate for stage one sampling units \nwith one site for the following subpopulation(s) of population\n", typenames[itype], ":\n", temp.str, sep="")
             act <- "The mean of the variance estimates will be used.\n"
             warn.df <- rbind(warn.df, data.frame(func=I(fname),
                subpoptype=NA, subpop=NA, indicator=NA, stratum=NA,
                warning=I(warn), action=I(act)))
-         }
-         if(all(temp > 0) & ntypes > 2) {
-            warn.df <<- warn.df
-            stop("\nA variance estimate cannot be calculated since all of the stage one sampling \nunit(s) contain a single stage two sampling unit.  Enter the following command \nto view the warning messages that were generated: warnprnt() \n")
          }
       }
    }

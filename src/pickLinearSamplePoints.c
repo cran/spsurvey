@@ -2,6 +2,8 @@
 **  Function:    pickLinearSamplePoints
 **  Programmer:  Tom Kincaid
 **  Date:        January 23, 2011
+**  Revised:     February 23, 2015
+**  Revised:     May 5, 2015
 **  Description:
 **    For each value in the set of shapefile record IDs, select a sample point
 **    from the shapefile record 
@@ -58,7 +60,7 @@ SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec,
   int i, k;                    /* loop counters */
   FILE * fptr = NULL;         /* pointer to the shapefile */
   FILE * newShp = NULL;       /* pointer to the temporary .shp file */
-  char * shpFileName = NULL;  /* stores full shape file name */
+  char * restrict shpFileName = NULL;  /* stores full shape file name */
   int singleFile = FALSE;
   Shape shape;           /* used to store shapefile info and data */
   Record * temp = NULL;  /* used for traversing linked list of records */
@@ -103,7 +105,7 @@ SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec,
   if(fileNamePrefix != R_NilValue) {
 
     /* create the full .shp file name */
-    if((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
                                               + strlen(".shp") + 1)) == NULL){
       Rprintf("Error: Allocating memory in C function pickLinearSamplePoints.\n");
       PROTECT(results = allocVector(VECSXP, 1));

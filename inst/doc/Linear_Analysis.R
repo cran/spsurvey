@@ -34,25 +34,7 @@ tail(IN_streams)
 
 
 ###################################################
-### code chunk number 5: figure
-###################################################
-# Plot streams in Indiana
-strahler <- levels(IN_streams$Strahler_Cat)
-cols <- rainbow(4)
-plot(IN_streams$xcoord, IN_streams$ycoord, type="n", xlab="x-coordinate",
-     ylab="y-coordinate")
-for(i in 1:4) {
-   ind <- IN_streams$Strahler_Cat == strahler[i]
-   points(IN_streams$xcoord[ind], IN_streams$ycoord[ind], pch=20, col=cols[i])
-   }
-legend(x="topright", inset=0.05, legend=paste("Order", strahler), pch=20, cex=1,
-       col=cols)
-title("Plot of Indiana Stream Sites Color-Coded by Strahler Order")
-
-
-
-###################################################
-### code chunk number 6: Statuseval
+### code chunk number 5: Statuseval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the status variable
@@ -63,7 +45,7 @@ addmargins(table(IN_streams$Status))
 
 
 ###################################################
-### code chunk number 7: Statuseval
+### code chunk number 6: Statuseval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the TNT variable
@@ -74,7 +56,7 @@ addmargins(table(IN_streams$TNT))
 
 
 ###################################################
-### code chunk number 8: Statuseval
+### code chunk number 7: Statuseval
 ###################################################
 #
 # Conduct an analysis of site status evaluation variables
@@ -88,7 +70,7 @@ sites <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 9: Statuseval
+### code chunk number 8: Statuseval
 ###################################################
 # Create the subpop data frame, which defines populations and subpopulations for
 # which estimates are desired
@@ -99,7 +81,7 @@ subpop <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 10: Statuseval
+### code chunk number 9: Statuseval
 ###################################################
 # Create the design data frame, which identifies the stratum code, weight,
 #    x-coordinate, and y-coordinate for each site ID
@@ -111,7 +93,7 @@ design <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 11: Statuseval
+### code chunk number 10: Statuseval
 ###################################################
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
@@ -122,7 +104,7 @@ data.cat <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 12: Statuseval
+### code chunk number 11: Statuseval
 ###################################################
 # Calculate extent estimates for the site status evaluation variables
 Extent_Estimates <- cat.analysis(sites, subpop, design, data.cat)
@@ -130,7 +112,7 @@ Extent_Estimates <- cat.analysis(sites, subpop, design, data.cat)
 
 
 ###################################################
-### code chunk number 13: Statuseval
+### code chunk number 12: Statuseval
 ###################################################
 # Print the extent estimates for all basins combined
 print(Extent_Estimates[c(1:8, 32:34),])
@@ -138,7 +120,7 @@ print(Extent_Estimates[c(1:8, 32:34),])
 
 
 ###################################################
-### code chunk number 14: Statuseval
+### code chunk number 13: Statuseval
 ###################################################
 # Write results as a comma-separated value (csv) file
 write.csv(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
@@ -147,7 +129,7 @@ write.csv(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
 
 
 ###################################################
-### code chunk number 15: Conditioneval
+### code chunk number 14: Conditioneval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the IBI status variable
@@ -158,7 +140,7 @@ addmargins(table(IN_streams$IBI_Status))
 
 
 ###################################################
-### code chunk number 16: Conditioneval
+### code chunk number 15: Conditioneval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the QHEI status variable
@@ -169,7 +151,7 @@ addmargins(table(IN_streams$QHEI_Status))
 
 
 ###################################################
-### code chunk number 17: Conditioneval
+### code chunk number 16: Conditioneval
 ###################################################
 #
 # Conduct an analysis of stream condition variables
@@ -185,7 +167,7 @@ sites <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 18: Conditioneval
+### code chunk number 17: Conditioneval
 ###################################################
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
@@ -196,7 +178,7 @@ data.cat <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 19: Conditioneval
+### code chunk number 18: Conditioneval
 ###################################################
 # Calculate estimates for the categorical variables
 Condition_Estimates <- cat.analysis(sites, subpop, design, data.cat)
@@ -204,7 +186,7 @@ Condition_Estimates <- cat.analysis(sites, subpop, design, data.cat)
 
 
 ###################################################
-### code chunk number 20: Conditioneval
+### code chunk number 19: Conditioneval
 ###################################################
 # Print the condition estimates for all basins combined
 print(Condition_Estimates[c(1:3, 16:18),])
@@ -212,7 +194,7 @@ print(Condition_Estimates[c(1:3, 16:18),])
 
 
 ###################################################
-### code chunk number 21: Conditioneval
+### code chunk number 20: Conditioneval
 ###################################################
 # Write results as a csv file
 write.csv(Condition_Estimates, file="Condition_Estimates.csv")
@@ -220,7 +202,7 @@ write.csv(Condition_Estimates, file="Condition_Estimates.csv")
 
 
 ###################################################
-### code chunk number 22: Conditionevalpop
+### code chunk number 21: Conditionevalpop
 ###################################################
 #
 # Conduct an analysis of stream condition variables correcting for population
@@ -236,7 +218,7 @@ framesize <- c("1st"=4514.450, "2nd"=1443.260, "3rd"=740.146, "4th"=660.294)
 
 
 ###################################################
-### code chunk number 23: Conditionevalpop
+### code chunk number 22: Conditionevalpop
 ###################################################
 # Calculate estimates for the stream condition variables
 Condition_Estimates_popsize <- cat.analysis(sites, subpop, design, data.cat,
@@ -246,7 +228,7 @@ Condition_Estimates_popsize <- cat.analysis(sites, subpop, design, data.cat,
 
 
 ###################################################
-### code chunk number 24: Conditionevalpop
+### code chunk number 23: Conditionevalpop
 ###################################################
 # Print the stream condition estimates for all sites combined
 print(Condition_Estimates_popsize[c(1:3, 16:18),])
@@ -254,7 +236,7 @@ print(Condition_Estimates_popsize[c(1:3, 16:18),])
 
 
 ###################################################
-### code chunk number 25: Conditionevalpop
+### code chunk number 24: Conditionevalpop
 ###################################################
 # Write results as a csv file
 write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
@@ -262,7 +244,7 @@ write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 
 
 ###################################################
-### code chunk number 26: Quanteval
+### code chunk number 25: Quanteval
 ###################################################
 # Use the summary function to summarize the data structure of the IBI score
 # variable
@@ -272,7 +254,7 @@ summary(IN_streams$IBI_Score)
 
 
 ###################################################
-### code chunk number 27: Quanteval
+### code chunk number 26: Quanteval
 ###################################################
 # Use the summary function to summarize the data structure of the QHEI score
 # variable
@@ -282,7 +264,7 @@ summary(IN_streams$QHEI_Score)
 
 
 ###################################################
-### code chunk number 28: Quanteval
+### code chunk number 27: Quanteval
 ###################################################
 #
 # Conduct an analysis of quantitative variables
@@ -299,7 +281,7 @@ data.cont <- data.frame(siteID=IN_streams$siteID,
 
 
 ###################################################
-### code chunk number 29: Quanteval
+### code chunk number 28: Quanteval
 ###################################################
 # Calculate CDF estimates for the quantitative variables
 CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
@@ -309,7 +291,7 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 
 
 ###################################################
-### code chunk number 30: Quanteval
+### code chunk number 29: Quanteval
 ###################################################
 # Write CDF estimates as a csv file
 write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
@@ -317,14 +299,14 @@ write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
 
 
 ###################################################
-### code chunk number 31: Quanteval
+### code chunk number 30: Quanteval
 ###################################################
 cont.cdfplot("CDF_Estimates.pdf", CDF_Estimates$CDF)
 
 
 
 ###################################################
-### code chunk number 32: Quanteval
+### code chunk number 31: Quanteval
 ###################################################
 # Print the percentile estimates for IBI score for all sites combined
 print(CDF_Estimates$Pct[1:10,])
@@ -332,7 +314,7 @@ print(CDF_Estimates$Pct[1:10,])
 
 
 ###################################################
-### code chunk number 33: Quanteval
+### code chunk number 32: Quanteval
 ###################################################
 # Write percentile estimates as a csv file
 write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
@@ -340,7 +322,7 @@ write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
 
 
 ###################################################
-### code chunk number 34: Quanteval
+### code chunk number 33: Quanteval
 ###################################################
 # Test for statistical difference between CDFs for Strahler order categories
 CDF_Tests <- cont.cdftest(sites, subpop[,c(1,3)], design, data.cont,
@@ -349,7 +331,7 @@ CDF_Tests <- cont.cdftest(sites, subpop[,c(1,3)], design, data.cont,
 
 
 ###################################################
-### code chunk number 35: Quanteval
+### code chunk number 34: Quanteval
 ###################################################
 # Print results of the statistical tests for difference between CDFs from
 # Strahler order categories for IBI score
@@ -358,7 +340,7 @@ print(CDF_Tests, digits=2)
 
 
 ###################################################
-### code chunk number 36: Quanteval
+### code chunk number 35: Quanteval
 ###################################################
 # Write CDF test results as a csv file
 write.csv(CDF_Tests, file="CDF_Tests.csv")

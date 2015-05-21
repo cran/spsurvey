@@ -1,4 +1,5 @@
-sbcframe <- function(shapefilename=NULL, nrows=5, dxdy=TRUE) {
+sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
+   dxdy = TRUE) {
 
 ################################################################################
 # Function: sbcframe
@@ -6,6 +7,7 @@ sbcframe <- function(shapefilename=NULL, nrows=5, dxdy=TRUE) {
 #          sample frame
 # Programmer: Tom Kincaid
 # Date: September 29, 2011
+# Revised: April 17, 2015
 # Description:      
 #   This function calculates spatial balance grid cell extent and proportions
 #   for the sample frame.  
@@ -13,6 +15,9 @@ sbcframe <- function(shapefilename=NULL, nrows=5, dxdy=TRUE) {
 #   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
 #     then the shapefile or shapefiles in the working directory are used.  The
 #     default is NULL.
+#   spframe = an sp package object of class SpatialPointsDataFrame,
+#     SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the
+#     survey design frame.  The default is NULL.
 #   nrows = number of rows (and columns) for the grid of cells.  The default is
 #     5.
 #   dxdy = indicator for equal x-coordinate and y-coordinate grid cell
@@ -39,12 +44,22 @@ sbcframe <- function(shapefilename=NULL, nrows=5, dxdy=TRUE) {
 #     area for shapefile records contained in the selected grid cells
 ################################################################################
 
+# Check that either a shapefile name of a survey design frame object was provided
+   if(is.null(shapefilename) & is.null(spframe))
+      stop("\nEither a shapefile name or a survey design frame object must be provided.")
+
 # If necessary, strip the file extension from the shapefile name
    if(!is.null(shapefilename)) {
       nc <- nchar(shapefilename)
       if(substr(shapefilename, nc-3, nc) == ".shp") {
          shapefilename <- substr(shapefilename, 1, nc-4)
       }
+   }
+# If a survey design frame object was provided, then create a temporary
+# shapefile
+   if(!is.null(spframe)) {
+      shapefilename <- "shapefile0202"
+      sp2shape(spframe, shapefilename)
    }
 
 # Read the shapefile
@@ -116,6 +131,14 @@ sbcframe <- function(shapefilename=NULL, nrows=5, dxdy=TRUE) {
 # Print an error message to indicate unknown shapefile type
    } else {
       stop(paste("\nShapefile type", shp.type, "is not recognized."))
+   }
+
+# If a survey design frame object was provided, then  remove the temporary
+# shapefile
+
+   if(!is.null(spframe)) {
+      file.remove(paste(shapefilename, ".dbf", sep=""), paste(shapefilename,
+         ".shp", sep=""), paste(shapefilename, ".shx", sep=""))
    }
 
 # Return results

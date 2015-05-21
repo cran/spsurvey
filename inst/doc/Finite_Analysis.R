@@ -34,25 +34,7 @@ tail(FL_lakes)
 
 
 ###################################################
-### code chunk number 5: figure
-###################################################
-# Plot small lakes in Florida
-basins <- levels(FL_lakes$Basin)
-cols <- rainbow(6)
-plot(FL_lakes$xcoord, FL_lakes$ycoord, type="n", xlab="x-coordinate",
-     ylab="y-coordinate")
-for(i in 1:6) {
-   ind <- FL_lakes$Basin == basins[i]
-   points(FL_lakes$xcoord[ind], FL_lakes$ycoord[ind], pch=20, cex=0.4,
-          col=cols[i])
-   }
-legend(x="topright", inset=0.05, legend=basins, pch=20, cex=1, col=cols)
-title("Plot of Florida Small Lake Sites Color-Coded by Basin")
-
-
-
-###################################################
-### code chunk number 6: Statuseval
+### code chunk number 5: Statuseval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the status variable
@@ -63,7 +45,7 @@ addmargins(table(FL_lakes$Status))
 
 
 ###################################################
-### code chunk number 7: Statuseval
+### code chunk number 6: Statuseval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the TNT variable
@@ -74,7 +56,7 @@ addmargins(table(FL_lakes$TNT))
 
 
 ###################################################
-### code chunk number 8: Statuseval
+### code chunk number 7: Statuseval
 ###################################################
 #
 # Conduct an analysis of site status evaluation variables
@@ -88,7 +70,7 @@ sites <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 9: Statuseval
+### code chunk number 8: Statuseval
 ###################################################
 # Create the subpop data frame, which defines populations and subpopulations for
 # which estimates are desired
@@ -99,7 +81,7 @@ subpop <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 10: Statuseval
+### code chunk number 9: Statuseval
 ###################################################
 # Create the design data frame, which identifies the stratum code, weight,
 #    x-coordinate, and y-coordinate for each site ID
@@ -111,7 +93,7 @@ design <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 11: Statuseval
+### code chunk number 10: Statuseval
 ###################################################
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
@@ -122,7 +104,7 @@ data.cat <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 12: Statuseval
+### code chunk number 11: Statuseval
 ###################################################
 # Calculate extent estimates for the site status evaluation variables
 Extent_Estimates <- cat.analysis(sites, subpop, design, data.cat)
@@ -130,7 +112,7 @@ Extent_Estimates <- cat.analysis(sites, subpop, design, data.cat)
 
 
 ###################################################
-### code chunk number 13: Statuseval
+### code chunk number 12: Statuseval
 ###################################################
 # Print the extent estimates for all basins combined
 print(Extent_Estimates[c(1:7, 45:47),])
@@ -138,7 +120,7 @@ print(Extent_Estimates[c(1:7, 45:47),])
 
 
 ###################################################
-### code chunk number 14: Statuseval
+### code chunk number 13: Statuseval
 ###################################################
 # Write results as a comma-separated value (csv) file
 write.csv(Extent_Estimates, file="Extent_Estimates.csv")
@@ -146,7 +128,7 @@ write.csv(Extent_Estimates, file="Extent_Estimates.csv")
 
 
 ###################################################
-### code chunk number 15: Conditioneval
+### code chunk number 14: Conditioneval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the pH category variable
@@ -157,7 +139,7 @@ addmargins(table(FL_lakes$pH_Cat))
 
 
 ###################################################
-### code chunk number 16: Conditioneval
+### code chunk number 15: Conditioneval
 ###################################################
 # Use the table and addmargins functions to create a table displaying the count
 # for each code of the fecal coliform category variable
@@ -168,7 +150,7 @@ addmargins(table(FL_lakes$Coliform_Cat))
 
 
 ###################################################
-### code chunk number 17: Conditioneval
+### code chunk number 16: Conditioneval
 ###################################################
 #
 # Conduct an analysis of lake condition variables
@@ -184,7 +166,7 @@ sites <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 18: Conditioneval
+### code chunk number 17: Conditioneval
 ###################################################
 # Create the data.cat data frame, which specifies the variables to use in the
 # analysis
@@ -195,7 +177,7 @@ data.cat <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 19: Conditioneval
+### code chunk number 18: Conditioneval
 ###################################################
 # Calculate estimates for the categorical variables
 Condition_Estimates <- cat.analysis(sites, subpop, design, data.cat)
@@ -203,7 +185,7 @@ Condition_Estimates <- cat.analysis(sites, subpop, design, data.cat)
 
 
 ###################################################
-### code chunk number 20: Conditioneval
+### code chunk number 19: Conditioneval
 ###################################################
 # Print the condition estimates for all basins combined
 print(Condition_Estimates[c(1:4, 28:32),])
@@ -211,7 +193,7 @@ print(Condition_Estimates[c(1:4, 28:32),])
 
 
 ###################################################
-### code chunk number 21: Conditioneval
+### code chunk number 20: Conditioneval
 ###################################################
 # Write results as a csv file
 write.csv(Condition_Estimates, file="Condition_Estimates.csv")
@@ -219,7 +201,7 @@ write.csv(Condition_Estimates, file="Condition_Estimates.csv")
 
 
 ###################################################
-### code chunk number 22: Conditionevalpop
+### code chunk number 21: Conditionevalpop
 ###################################################
 #
 # Conduct an analysis of lake condition variables correcting for population size
@@ -235,7 +217,7 @@ framesize <- c("NWFWMD-1"=451, "NWFWMD-2"=394, "SFWMD-9"=834, "SJRWMD-1"=1216,
 
 
 ###################################################
-### code chunk number 23: Conditionevalpop
+### code chunk number 22: Conditionevalpop
 ###################################################
 # Calculate estimates for the lake condition variables
 Condition_Estimates_popsize <- cat.analysis(sites, subpop, design, data.cat,
@@ -245,7 +227,7 @@ Condition_Estimates_popsize <- cat.analysis(sites, subpop, design, data.cat,
 
 
 ###################################################
-### code chunk number 24: Conditionevalpop
+### code chunk number 23: Conditionevalpop
 ###################################################
 # Print the lake condition estimates for all basins combined
 print(Condition_Estimates_popsize[c(1:4, 28:32),])
@@ -253,7 +235,7 @@ print(Condition_Estimates_popsize[c(1:4, 28:32),])
 
 
 ###################################################
-### code chunk number 25: Conditionevalpop
+### code chunk number 24: Conditionevalpop
 ###################################################
 # Write results as a csv file
 write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
@@ -261,7 +243,7 @@ write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
 
 
 ###################################################
-### code chunk number 26: Quanteval
+### code chunk number 25: Quanteval
 ###################################################
 # Use the summary function to summarize the data structure of the dissolved
 # oxygen variable
@@ -271,7 +253,7 @@ summary(FL_lakes$Oxygen)
 
 
 ###################################################
-### code chunk number 27: Quanteval
+### code chunk number 26: Quanteval
 ###################################################
 # Use the summary function to summarize the data structure of the turbidity
 # variable
@@ -281,7 +263,7 @@ summary(FL_lakes$Turbidity)
 
 
 ###################################################
-### code chunk number 28: Quanteval
+### code chunk number 27: Quanteval
 ###################################################
 #
 # Conduct an analysis of quantitative variables
@@ -298,7 +280,7 @@ data.cont <- data.frame(siteID=FL_lakes$siteID,
 
 
 ###################################################
-### code chunk number 29: Quanteval
+### code chunk number 28: Quanteval
 ###################################################
 # Calculate CDF estimates for the quantitative variables
 CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
@@ -308,7 +290,7 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 
 
 ###################################################
-### code chunk number 30: Quanteval
+### code chunk number 29: Quanteval
 ###################################################
 # Write CDF estimates as a csv file
 write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
@@ -316,14 +298,14 @@ write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
 
 
 ###################################################
-### code chunk number 31: Quanteval
+### code chunk number 30: Quanteval
 ###################################################
 cont.cdfplot("CDF_Estimates.pdf", CDF_Estimates$CDF, logx=c("","x"))
 
 
 
 ###################################################
-### code chunk number 32: Quanteval
+### code chunk number 31: Quanteval
 ###################################################
 # Print the percentile estimates for dissolved oxygen for all basins combined
 print(CDF_Estimates$Pct[1:10,])
@@ -331,7 +313,7 @@ print(CDF_Estimates$Pct[1:10,])
 
 
 ###################################################
-### code chunk number 33: Quanteval
+### code chunk number 32: Quanteval
 ###################################################
 # Write percentile estimates as a csv file
 write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
@@ -339,7 +321,7 @@ write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
 
 
 ###################################################
-### code chunk number 34: Quanteval
+### code chunk number 33: Quanteval
 ###################################################
 # Test for statistical difference between CDFs for basins
 CDF_Tests <- cont.cdftest(sites, subpop[,c(1,3)], design, data.cont,
@@ -348,7 +330,7 @@ CDF_Tests <- cont.cdftest(sites, subpop[,c(1,3)], design, data.cont,
 
 
 ###################################################
-### code chunk number 35: Quanteval
+### code chunk number 34: Quanteval
 ###################################################
 # Print results of the statistical tests for difference between CDFs from
 # basins for dissolved oxygen
@@ -357,7 +339,7 @@ print(CDF_Tests, digits=3)
 
 
 ###################################################
-### code chunk number 36: Quanteval
+### code chunk number 35: Quanteval
 ###################################################
 # Write CDF test results as a csv file
 write.csv(CDF_Tests, file="CDF_Tests.csv")

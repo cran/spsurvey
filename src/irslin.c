@@ -7,7 +7,9 @@
 **                point for an IRS design.
 **  Programmer:   Tom Kincaid
 **  Created:      November 30, 2005
-**  Last Revised: October 18, 2007
+**  Revised:      October 18, 2007
+**  Revised:      February 23, 2015
+**  Revised:     May 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -102,7 +104,7 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
   SEXP results = NULL;
 
   int singleFile = FALSE;     /* indicator variable for a single shapefile */
-  char * shpFileName = NULL;  /* stores full shapefile name */
+  char * restrict shpFileName = NULL;  /* stores full shapefile name */
 
   /* copy the cumulative sum of polyline lengths into a C array */
   if((lenCumSum = (double *) malloc( sizeof( double ) * dsgnSize ))
@@ -218,7 +220,7 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full shapefile name */
-    if ((shpFileName = (char *)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
       + strlen(".shp") + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function linSampleIRS.\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );

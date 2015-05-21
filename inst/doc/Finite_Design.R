@@ -34,16 +34,7 @@ addmargins(table("State"=att$State, "Lake Area Category"=att$Area_Cat))
 
 
 ###################################################
-### code chunk number 5: figure
-###################################################
-# Plot lakes in the southern New England region
-plot(att$xcoord, att$ycoord, xlab="x-coordinate", ylab="y-coordinate", pch=20,
-     cex=0.1, col="red")
-
-
-
-###################################################
-### code chunk number 6: Equalsites
+### code chunk number 5: Equalsites
 ###################################################
 # Call the set.seed function so that the survey designs can be replicate
 set.seed(4447864)
@@ -51,7 +42,7 @@ set.seed(4447864)
 
 
 ###################################################
-### code chunk number 7: Equalsites
+### code chunk number 6: Equalsites
 ###################################################
 # Create the design list
 Equaldsgn <- list(None=list(panel=c(PanelOne=300), seltype="Equal"))
@@ -59,7 +50,7 @@ Equaldsgn <- list(None=list(panel=c(PanelOne=300), seltype="Equal"))
 
 
 ###################################################
-### code chunk number 8: Equalsites
+### code chunk number 7: Equalsites
 ###################################################
 # Select the sample
 Equalsites <- grts(design=Equaldsgn,
@@ -73,7 +64,7 @@ Equalsites <- grts(design=Equaldsgn,
 
 
 ###################################################
-### code chunk number 9: Equalsites
+### code chunk number 8: Equalsites
 ###################################################
 # Print the initial six lines of the survey design
 head(Equalsites@data)
@@ -81,15 +72,15 @@ head(Equalsites@data)
 
 
 ###################################################
-### code chunk number 10: Equalsites
+### code chunk number 9: Equalsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Equalsites)
+summary(Equalsites)
 
 
 
 ###################################################
-### code chunk number 11: Stratsites
+### code chunk number 10: Stratsites
 ###################################################
 # Create the design list
 Stratdsgn <- list(CT=list(panel=c(PanelOne=125), seltype="Equal"),
@@ -99,7 +90,7 @@ Stratdsgn <- list(CT=list(panel=c(PanelOne=125), seltype="Equal"),
 
 
 ###################################################
-### code chunk number 12: Stratsites
+### code chunk number 11: Stratsites
 ###################################################
 # Select the sample
 Stratsites <- grts(design=Stratdsgn,
@@ -115,7 +106,7 @@ Stratsites <- grts(design=Stratdsgn,
 
 
 ###################################################
-### code chunk number 13: Stratsites
+### code chunk number 12: Stratsites
 ###################################################
 # Print the initial six lines of the survey design
 head(Stratsites@data)
@@ -123,10 +114,18 @@ head(Stratsites@data)
 
 
 ###################################################
-### code chunk number 14: Stratsites
+### code chunk number 13: Stratsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Stratsites)
+summary(Stratsites)
+
+
+
+###################################################
+### code chunk number 14: Unequalsites
+###################################################
+# Read the shapefile
+shp <- read.shape("NE_lakes")
 
 
 
@@ -146,14 +145,6 @@ Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
 ###################################################
 ### code chunk number 16: Unequalsites
 ###################################################
-# Read the shapefile
-shp <- read.shape("NE_lakes")
-
-
-
-###################################################
-### code chunk number 17: Unequalsites
-###################################################
 # Select the sample
 Unequalsites <- grts(design=Unequaldsgn,
                      DesignID="UNEQUAL",
@@ -167,7 +158,7 @@ Unequalsites <- grts(design=Unequaldsgn,
 
 
 ###################################################
-### code chunk number 18: Unequalsites
+### code chunk number 17: Unequalsites
 ###################################################
 # Print the initial six lines of the survey design
 head(Unequalsites@data)
@@ -175,15 +166,15 @@ head(Unequalsites@data)
 
 
 ###################################################
-### code chunk number 19: Unequalsites
+### code chunk number 18: Unequalsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Unequalsites)
+summary(Unequalsites)
 
 
 
 ###################################################
-### code chunk number 20: Panelsites
+### code chunk number 19: Panelsites
 ###################################################
 # Create the design list
 Paneldsgn <- list(None=list(panel=c(Annual=50, Year1=50, Year2=50, Year3=50,
@@ -197,7 +188,7 @@ Paneldsgn <- list(None=list(panel=c(Annual=50, Year1=50, Year2=50, Year3=50,
 
 
 ###################################################
-### code chunk number 21: Panelsites
+### code chunk number 20: Panelsites
 ###################################################
 # Select the sample
 Panelsites <- grts(design=Paneldsgn,
@@ -212,7 +203,7 @@ Panelsites <- grts(design=Paneldsgn,
 
 
 ###################################################
-### code chunk number 22: Panelsites (eval = FALSE)
+### code chunk number 21: Panelsites (eval = FALSE)
 ###################################################
 ## # Print the warning message
 ## warnings()
@@ -220,7 +211,7 @@ Panelsites <- grts(design=Paneldsgn,
 
 
 ###################################################
-### code chunk number 23: Panelsites
+### code chunk number 22: Panelsites
 ###################################################
 # Print the initial six lines of the survey design
 head(Panelsites@data)
@@ -228,10 +219,10 @@ head(Panelsites@data)
 
 
 ###################################################
-### code chunk number 24: Panelsites
+### code chunk number 23: Panelsites
 ###################################################
 # Print the survey design summary
-dsgnsum(Panelsites)
+summary(Panelsites)
 
 
 

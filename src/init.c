@@ -5,12 +5,13 @@
 **  Programmer:  Tom Kincaid
 **  Created:     May 4, 2006
 **  Revised:     February 11, 2010
+**  Revised:     October 8, 2014
 ******************************************************************************/
 
 #include <R.h>
 #include <Rinternals.h>
-#include "spsurvey.h"
 #include <R_ext/Rdynload.h>
+#include "spsurvey.h"
 
 static R_NativePrimitiveArgType ranho_t[2] = {STRSXP, INTSXP};
 
@@ -43,7 +44,11 @@ static const R_CallMethodDef callMethods[] = {
    {NULL, NULL, 0}
 };
 
+#include <Rversion.h>
 void R_init_spsurvey(DllInfo *dll) {
    R_registerRoutines(dll, cMethods, callMethods, NULL, NULL);
    R_useDynamicSymbols(dll, FALSE);
+#if defined(R_VERSION) && R_VERSION >= R_Version(3, 0, 0)
+   R_forceSymbols(dll, TRUE);
+#endif
 }

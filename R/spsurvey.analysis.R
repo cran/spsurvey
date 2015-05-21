@@ -11,7 +11,7 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
 # Purpose: Create an Object of Class spsurvey.analysis
 # Programmer: Tom Kincaid
 # Date: September 29, 2003
-# Last Revised: March 24, 2009
+# Last Revised: August 19, 2014
 # Description:
 #   This function creates an object of class spsurvey.analysis that contains all 
 #   of the information necessary to use the analysis functions in the 
@@ -704,21 +704,23 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
       if(cluster.ind) {
          ntypes <- dim(subpop)[2]
          typenames <- names(subpop)
-         temp.ind <- FALSE
          for(itype in 2:ntypes) {
             temp <- apply(table(cluster, subpop[,itype]) == 1, 2, sum)
+            ind <- tapply(cluster, subpop[,itype], function(x)
+               length(unique(x)))
+            if(any(temp == ind)) {
+               temp.str <- vecprint(names(temp)[temp == ind])
+               warn.df <<- warn.df
+               stop(paste("\nA variance estimate cannot be calculated since all of the stage one sampling \nunits contain a single stage two sampling unit for the following \nsubpopulation(s) of population ", typenames[itype], ":\n", temp.str, "\nEnter the following command to view the warning messages that were generated: \nwarnprnt() \n", sep=""))
+            }
             if(any(temp > 0)) {
-               temp.ind <- TRUE
                temp.str <- vecprint(names(temp)[temp > 0])
-               warn <- paste("A variance estimate cannot be calculated since the following subpopulation(s) of \npopulation ", typenames[itype], " include one or more stage one sampling units \nwith a single site:\n", temp.str, sep="")
-               act <- "Program execution was terminated.\n"
+               warn <- paste("Since they include one or more stage one sampling units with a single site, \nthe mean of the variance estimates for stage one sampling units with two or \nmore sites will be used as the variance estimate for stage one sampling units \nwith one site for the following subpopulation(s) of population\n", typenames[itype], ":\n", temp.str, sep="")
+               act <- "The mean of the variance estimates will be used.\n"
                warn.df <- rbind(warn.df, data.frame(func=I(fname),
          subpoptype=NA, subpop=NA, indicator=NA, stratum=NA, warning=I(warn),
          action=I(act)))
             }
-         }
-         if(temp.ind) {
-            stop("\nThe program was terminated due to the presence of one or more stage one sampling \nunits with a single site.  Enter the following command to view the warning \nmessages that were generated: warnprnt() \n")
          }
       }
 

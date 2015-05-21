@@ -1,9 +1,10 @@
 vecprint <- function(x, n.char=78) {
 
 ################################################################################
-# Function:   vecprint
+# Function: vecprint
 # Programmer: Tom Kincaid
-# Date:       May 3, 2004
+# Date: February 6, 2004
+# Last Revised:  May 3, 2004
 # Description:
 #   This function takes an input vector and outputs a character string with line
 #   breaks inserted so that, whenever possible, no line in the string exceeds

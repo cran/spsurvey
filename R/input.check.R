@@ -8,7 +8,7 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 # Function: input.check
 # Programmer: Tom Kincaid
 # Date: September 25, 2003
-# Last Revised: January 12, 2011
+# Last Revised: August 25, 2014
 # Description:
 #   This function checks input values for errors, consistency, and compatibility
 #   with analytical functions.
@@ -101,11 +101,11 @@ if(!is.null(sigma)) {
 # Check weight arguments
 
 if(cluster.ind) {
-   if(min(wgt) <= 0)
+   if(min(wgt, na.rm=TRUE) <= 0)
       stop("\nStage two weights must be positive.")
    if(is.null(wgt1))
       stop("\nArgument wgt1 was not supplied.")
-   if(min(wgt1) <= 0)
+   if(min(wgt1, na.rm=TRUE) <= 0)
       stop("\nStage one weights must be positive.")
    if(stratum.ind) {
       temp.wgt1 <- split(wgt1, stratum)
@@ -124,7 +124,7 @@ if(cluster.ind) {
          stop("\nThe stage one size-weight must be constant for all stage two sampling units \nwithin each stage one sampling unit.")
    }
 } else {
-   if(min(wgt) <= 0)
+   if(min(wgt, na.rm=TRUE) <= 0)
       stop("\nWeights must be positive.")
 }
 

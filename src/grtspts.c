@@ -8,6 +8,7 @@
 **  Programmers: Christian Platt, Tom Kincaid
 **  Created:     October 27, 2004
 **  Revised:     May 10, 2006
+**  Revised:     July 16, 2014
 ******************************************************************************/
 
 #include <stdio.h>
@@ -108,7 +109,7 @@ int cWtFcn( double ** celWts, double * xc, double * yc, double dx, double dy,
         Rprintf( "Error: Reading .shp file in grtspts.c\n" );
         return -1;
       }
-      filePosition += 16;
+      filePosition += 2*sizeof(double);
 
     } else if ( shape->shapeType == POINTS_Z ) {
 
@@ -118,15 +119,15 @@ int cWtFcn( double ** celWts, double * xc, double * yc, double dx, double dy,
         Rprintf( "Error: Reading .shp file in grtspts.c\n" );
         return -1;
       }
-      filePosition += 16;
+      filePosition += 2*sizeof(double);
 
       /* ignore the z value */
         fread( &tempDouble, sizeof(double), 1, fptr );
-        filePosition += 8;
+        filePosition += sizeof(double);
 
       /* ignore the M value */
         fread( &tempDouble, sizeof(double), 1, fptr );
-        filePosition += 8;
+        filePosition += sizeof(double);
 
     } else {
 
@@ -136,11 +137,11 @@ int cWtFcn( double ** celWts, double * xc, double * yc, double dx, double dy,
         Rprintf( "Error: Reading .shp file in grtspts.c\n" );
         return -1;
       }
-      filePosition += 16;
+      filePosition += 2*sizeof(double);
 
       /* ignore the M value */
         fread( &tempDouble, sizeof(double), 1, fptr );
-        filePosition += 8;
+        filePosition += sizeof(double);
 
     }
 

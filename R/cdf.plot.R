@@ -1,6 +1,6 @@
 cdf.plot <- function(cdfest, units.cdf="Percent", type.cdf="Continuous",
    logx="", xlbl=NULL, ylbl="Percent", ylbl.r=NULL, figlab=NULL, legloc="BR",
-   confcut=5, conflev=95, ...) {
+   confcut=5, conflev=95, cex.main=1.2, ...) {
 
 ################################################################################
 # Function: cdf.plot
@@ -8,7 +8,7 @@ cdf.plot <- function(cdfest, units.cdf="Percent", type.cdf="Continuous",
 # Programmers: Tony Olsen
 #              Tom Kincaid
 # Date: March 26, 2007
-# Last Revised: April 26, 2011
+# Last Revised: June 23, 2014
 # Description:
 #   This function creates a CDF plot.  Input data for the plots is provided by a
 #   data frame utilizing the same structure as the data frame named "CDF" that
@@ -47,6 +47,7 @@ cdf.plot <- function(cdfest, units.cdf="Percent", type.cdf="Continuous",
 #     CDF.  The default is 5.
 #   conflev = numeric value of the confidence level used for confidence limits.
 #     The default is 95.
+#   cex.main = expansion factor for the plot title.  The default is 1.2.
 #   ... = additional arguments passed to the plot function.
 # Output:
 #   A plot of the CDF and its associated confidence limits.
@@ -166,7 +167,7 @@ if(type.cdf == "Continuous") {
 
 # Create the plot title 
 
-title(figlab, line=1)
+title(figlab, line=1, cex.main=cex.main)
 
 # Create the plot legend
 

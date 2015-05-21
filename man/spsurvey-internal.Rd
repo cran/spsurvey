@@ -199,9 +199,9 @@ changevar.size(catvar.levels, catvar1, catvar2, wgt, x, y, revisitwgt, size1,
 changevar.mean(z1, z2, wgt, x, y, revisitwgt, mean1, mean2, stratum.ind,
    stratum.level, cluster.ind, cluster, wgt1, x1, y1, pcfactor.ind, pcfsize,
    N.cluster, stage1size, support, vartype, warn.ind, warn.df, warn.vec)
-sbcframe(shapefilename=NULL, nrows=5, dxdy=TRUE)
+sbcframe(shapefilename=NULL, spframe=NULL, nrows=5, dxdy=TRUE)
 sbcsamp(sp.sample, sbc.frame=NULL, dx=NULL, dy=NULL, xc=NULL, yc=NULL)
-localmean.weight(x, y, prb, nbh=4, vincr=0.000005*abs(mean(y)))
+localmean.weight(x, y, prb, nbh=4, vincr=0.00001*abs(mean(y)))
 localmean.weight2(x, y, prb, nbh)
 localmean.var(z, weight.lst)
 localmean.cov(zmat, weight.lst)

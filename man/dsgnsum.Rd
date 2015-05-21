@@ -7,14 +7,15 @@
   survey design variables and, optionally, for auxiliary variables.
 }
 \usage{
-dsgnsum(sp.obj, auxvar=NULL)
+dsgnsum(spsample, auxvar = NULL)
 }
 \arguments{
-  \item{sp.obj}{the sp package object of class "SpatialPointsDataFrame" produced
-    by the grts function that contains survey design information and additional
+  \item{spsample}{an object of class SpatialDesign produced by either the grts
+    or irs functions that contains survey design information and additional
     attribute (auxiliary) variables.}
-  \item{auxvar}{a vector containing the names of columns from sites that
-    identify auxiliary variables to be used to summarize the survey design.}
+  \item{auxvar}{a vector containing the names of columns in the data slot of the
+    SpatialDesign object that identify auxiliary variables to be used to
+    summarize the survey design.}
 }
 \value{
   A list containing the following components:
@@ -27,7 +28,7 @@ dsgnsum(sp.obj, auxvar=NULL)
   \item{AuxVarSum}{ a list of contingency tables containing the cross-tabulation
     of number of sites for each auxiliary variable and the design variables
     mdcaty, panel, and stratum}
-  In addition the output list plus labeling information is printed to the
+  In addition, the output list plus labeling information is printed to the
   console.
 }
 \references{

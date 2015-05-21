@@ -1,7 +1,7 @@
 cont.cdfplot <- function(pdffile="cdf2x2.pdf", cdfest, units.cdf="Percent",
    ind.type=rep("Continuous", nind), logx=rep("", nind), xlbl=NULL,
    ylbl="Percent", ylbl.r=NULL, legloc="BR", cdf.page=4, width=10, height=8,
-   confcut=5, ...) {
+   confcut=5, cex.main=1.2, ...) {
 
 ################################################################################
 # Function: cont.cdfplot
@@ -9,7 +9,7 @@ cont.cdfplot <- function(pdffile="cdf2x2.pdf", cdfest, units.cdf="Percent",
 # Programmers: Tony Olsen
 #              Tom Kincaid
 # Date: March 26, 2007
-# Last Revised: January 22, 2013
+# Last Revised: June 23, 2014
 # Description:
 #   This function creates CDF plots.  Input data for the plots is provided by a
 #   data frame utilizing the same structure as the data frame named "CDF" that
@@ -52,6 +52,7 @@ cont.cdfplot <- function(pdffile="cdf2x2.pdf", cdfest, units.cdf="Percent",
 #     confcut or greater than 100 minus confcut are not plotted.  A value of
 #     zero means confidence limits are plotted for the complete range of the
 #     CDF.  The default is 5.
+#   cex.main = expansion factor for the plot title.  The default is 1.2.
 #   ... = additional arguments passed to the cdf.plot function.
 # Output:
 #   A PDF file containing the CDF plots.
@@ -122,7 +123,7 @@ for(itype in 1:length(typenames)) {
             logx=logx[kin], xlbl=xlbl[indnames[kin]], ylbl=ylbl, ylbl.r=ylbl.r, 
             figlab=paste(typenames[itype], " - ", subnames[jsub], ": ",
             indnames[kin], sep=""), legloc=legloc, confcut=confcut,
-            conflev=conflev)
+            conflev=conflev, cex.main=cex.main, ...)
       }
    }
 }
