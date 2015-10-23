@@ -2,6 +2,7 @@
 **  Function:    pickGridCells
 **  Programmer:  Tom Kincaid
 **  Date:        October 24, 2005
+**  Revised:     June 11, 2015
 **  Description:
 **    This function determines the grid cells from which sample points will be
 **    selected. 
@@ -22,11 +23,11 @@
 
 SEXP pickGridCells( SEXP samplesize, SEXP idxVec ) { 
 
-  int i, j;                        /* loop counters */
-  int smpSize;                     /* sample size */
-  int idxSize = length( idxVec );  /* number of values in the idx array */
-  unsigned int * idx = NULL;       /* the idx array */
-  unsigned int * smpdx = NULL;     /* the smpdx array */
+  int i, j;                                 /* loop counters */
+  unsigned int smpSize;                     /* sample size */
+  unsigned int idxSize = length( idxVec );  /* number of values in the idx array */
+  unsigned int * idx = NULL;                /* the idx array */
+  unsigned int * smpdx = NULL;              /* the smpdx array */
 
   /* temporary pointer for converting sent R objects to C variables */
   int * intPtr;

@@ -2,7 +2,7 @@
 # File: SpatialDesign-methods
 # Purpose: Define S3 and S4 methods for class SpatialDesign
 # Programmer: Tom Kincaid
-# Date: May 1, 2015
+# Date: June 5, 2015
 ################################################################################
 
 summary.SpatialDesign <- function(object, ..., auxvar = NULL, spframe = NULL,
@@ -17,7 +17,6 @@ summary.SpatialDesign <- function(object, ..., auxvar = NULL, spframe = NULL,
 
 # Calculate spatial balance metrics for the survey design
 	if(is.null(spframe)) {
-		warning("\nIn order to calculate spatial balance metrics for the survey design, an object \ncontaining the survey design frame must be supplied as the spframe argument.")
 		spbal <- NULL
 	} else {
 		if(!(class(spframe) %in% c("SpatialPointsDataFrame",

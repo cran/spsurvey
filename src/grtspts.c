@@ -9,6 +9,7 @@
 **  Created:     October 27, 2004
 **  Revised:     May 10, 2006
 **  Revised:     July 16, 2014
+**  Revised:     June 15, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -23,8 +24,8 @@
 #define MAX(x,y) (x > y ? x : y)
 
 /* found in shapeParser.c */
-extern int readLittleEndian( unsigned char * buffer, int length );
-extern int readBigEndian( unsigned char * buffer, int length );
+extern unsigned int readLittleEndian( unsigned char * buffer, int length );
+extern unsigned int readBigEndian( unsigned char * buffer, int length );
 
 /* struct for storing a cell's coordinates */
 typedef struct cellStruct Cell;

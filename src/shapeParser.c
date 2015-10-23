@@ -33,6 +33,7 @@
 **  Revised:     July 16, 2014
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 12, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -47,11 +48,11 @@
 #include "shapeParser.h"
 
 /* found in dbfFileParser.c */
-extern void writeDbfFile( SEXP fieldNames, SEXP fields, SEXP filePrefix );
-extern void readDbfFile( SEXP fileName );
+extern void deallocateDbf( Dbf * dbf );
 extern int parseFields( FILE * fptr, Dbf * dbf ); 
 extern int parseDbfHeader( FILE * fptr, Dbf * dbf );
-extern void deallocateDbf( Dbf * dbf );
+extern void readDbfFile( SEXP fileNamePrefix );
+extern void writeDbfFile( SEXP fieldNames, SEXP fields, SEXP fileNamePrefix );
 
  
 /**********************************************************
@@ -65,10 +66,10 @@ extern void deallocateDbf( Dbf * dbf );
 **             length,  size of buffer
 ** Return:     value,   integer value of number stored in buffer 
 ***********************************************************/
-int readBigEndian( unsigned char * buffer, int length ) {
+unsigned int readBigEndian( unsigned char * buffer, int length ) {
 
   int i;
-  int value = 0;
+  unsigned int value = 0;
 
   for ( i=0; i < length-1; ++i ) {
     value += buffer[i];
@@ -91,10 +92,10 @@ int readBigEndian( unsigned char * buffer, int length ) {
 **             length,  size of buffer
 ** Return:     value,   integer value of number stored in buffer 
 ***********************************************************/
-int readLittleEndian( unsigned char * buffer, int length ) {
+unsigned int readLittleEndian( unsigned char * buffer, int length ) {
 
   int i;
-  int value = 0;
+  unsigned int value = 0;
 
   for ( i=length-1; i > 0; --i ) {
     value += buffer[i];
@@ -1618,7 +1619,10 @@ void printShape( Shape * shape ) {
 **             found in all the .shp files in the current working directory.
 ** Notes:      This function will return an error if one of the .shp files
 **             is not a polygon shape type.  
-** Arguments:  void
+** Arguments:  fileNamePrefix,  name of the shp file without the .shp extension
+**                              This argument can be specified as NULL in which
+**                              case all the .shp files in the current working
+**                              directory are read in
 ** Return:     data,  R vector of areas or lengths for each record in the 
 **                    shapefiles
 ***********************************************************/
@@ -1635,6 +1639,8 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
   DIR * dirp = NULL;         /* used to open the current directory */
   struct dirent * fileShp;  /* used for reading file names */
   int ptrShp = 0;           /* ptr to .shp files in the current directory */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
   char * restrict shpFileName = NULL;  /* stores full shapefile name */
   int singleFile = FALSE;  /* flag signalling when we are only looking for a */
                            /* single specified shapefile */
@@ -1650,15 +1656,15 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL ) {
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function getRecordShapeSizes.\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
 
   } else {
@@ -1980,6 +1986,10 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
 ** Arguments:  shape,   pointer to shape struct that stores the
 **                      shapefile info and data
 **             dbf,  pointer to the head node of a list of dbf structs 
+**             fileNamePrefix,  name of the shp file without the .shp extension
+**                              This argument can be specified as NULL in which
+**                              case all the .shp files in the current working
+**                              directory are read in
 ** Return:     data, R object containing all the shape data 
 ***********************************************************/
 SEXP convertToR( Shape * shape, Dbf * dbf, SEXP fileNamePrefix ) {
@@ -3590,17 +3600,19 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
   FILE * fptr;       /* file pointer to shapefile */
   Shape shape;       /* struct to store all info and data found in shapefile */
   SEXP data = NULL;  /* R object to store data in for returning to R */
-  char * fileName = NULL; /* full name of dbf file */
   int done = FALSE;  /* flag signalling all .shp files have been read */
   DIR * dirp = NULL;        /* used to open the current directory */
   struct dirent * fileShp;  /* used for reading file names */
   int ptrShp = 0;           /* ptr to .shp files in the current directory */
   int shapeType = -1;  /* shape type of the first .shp file we find */
-  int strLen;        /* string length */
   Dbf * headDbf = NULL;  /* head ptr to list of dbf structs */
   Dbf * tempDbf = NULL;  /* used for traversing list of dbf structs */
-  Dbf * dbf;             /* temp dbf strcut */
+  Dbf * dbf;             /* temp dbf struct */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  const char * dbfExt = ".dbf";  /* shapefile extension */
   char * restrict shpFileName = NULL;  /* stores full shapefile name */
+  char * restrict dbfFileName = NULL;  /* stores the full .dbf file name */
   int singleFile = FALSE;  /* flag signalling when we are only looking for a */
                            /* single specified shapefile */
 
@@ -3613,15 +3625,15 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL ) {
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readShapeFile.\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
 
   } else {
@@ -3778,26 +3790,20 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     /* close the shapefile */
     fclose( fptr );
 
-    /* build the corresponding .dbf file name */
-    strLen = strlen( shpFileName );
-    if ( (fileName = (char *) malloc( sizeof( char ) * (strLen+1) ))==NULL) {
-      Rprintf( "Error: Allocating memory in C function readShapeFile.\n" );
-      deallocateRecords( shape.records );
+    /* create the corresponding .dbf file name */
+    if ((dbfFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function readDbfFile.c\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
-      return data; 
+      return data;
     }
-    strcpy( fileName, shpFileName ); 
-    fileName[strLen] = '\0';
-    fileName[strLen-1] = 'f';
-    fileName[strLen-2] = 'b';
-    fileName[strLen-3] = 'd';
+    strcpy( dbfFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( dbfFileName, dbfExt );
 
     /* open the corresponding .dbf file */
-    if ( (fptr = fopen( fileName,  "rb" )) == NULL ) {
+    if ( (fptr = fopen( dbfFileName,  "rb" )) == NULL ) {
       Rprintf( "Error: Couldn't find .dbf file for %s\n", shpFileName );
       deallocateRecords( shape.records );
-      free( fileName );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
       return data;
@@ -3809,7 +3815,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Reading dbf file header in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
-      free( fileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -3822,7 +3827,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Reading dbf fields in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
-      free( fileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -3839,7 +3843,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
         Rprintf("Error: Occured in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
         deallocateDbf( dbf );
-        free( fileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
@@ -3853,7 +3856,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
           Rprintf("Error: Occured in C function readShapeFile.\n" );
           deallocateRecords( shape.records );
           deallocateDbf( dbf );
-          free( fileName );
           fclose( fptr );
           PROTECT( data = allocVector( VECSXP, 1 ) );
           UNPROTECT(1);
@@ -3890,7 +3892,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
               closedir( dirp );
               deallocateRecords( shape.records );
               deallocateDbf( dbf );
-              free( fileName );
               fclose( fptr );
               PROTECT( data = allocVector( VECSXP, 1 ) );
               UNPROTECT( 1 );
@@ -3907,7 +3908,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       }
     }
 
-    free( fileName );
     fclose( fptr );
   }
  
@@ -3929,9 +3929,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
 
   /* clean up */
   deallocateRecords( shape.records );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  }
 
   UNPROTECT( 1 );
   return data;
@@ -3950,15 +3947,16 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
 **             want to make a copy of a .prj file.
 ** Arguments:  xVec,  vector of the x-coordinates for the points
 **             yVec,  vector of the y-coordinates for the points
-**             prjFilaNameVec, name prefix of the .prj file to make a copy of
+**             prjFileNameVec, name prefix of the .prj file to make a copy of
 **                             (no .prj extension)
 **             dbfFieldNames,  name of the dbf fields
 **             dbfFields,  field values for the dbf file
-**             filePrefix,  prefix of the name of the files to be created
+**             fileNamePrefix,  name of the shapefile to be created
 ** Return:     NULL
 ***********************************************************/
 SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec, 
-                        SEXP dbfFieldNames , SEXP dbfFields, SEXP filePrefix ) {
+                          SEXP dbfFieldNames , SEXP dbfFields,
+                          SEXP fileNamePrefix ) {
 
   int i;                            /* loop counter */
   FILE * fptrShp;                   /* pointer to new shapefile */
@@ -3972,57 +3970,45 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
   int tempInt;                      /* temp integer storage */
   double tempDbl;                   /* temp double storage */
   double xmin, ymin, xmax, ymax;    /* bounding box coordiantes */
-  char * fileName;                  /* full file name */
-  char * prjFileName;               /* name of the .prj file */
-  char * prefix;                    /* name prefix to use for each file */
+  unsigned int fileNameLen;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  const char * shxExt = ".shx";  /* shapefile extension */
+  const char * prjExt = ".prj";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
+  char * restrict shxFileName = NULL;  /* stores the full .shx file name */
+  char * restrict prjFileNameOrg = NULL;  /* stores the original .prj file name */
+  char * restrict prjFileName = NULL;  /* stores the new .prj file name */
   unsigned int offset;              /* byte offset counter */
   unsigned char byte;               /* bytes used for copying file */
 
-  /* file extensions */
-  char * shp = ".shp";
-  char * shx = ".shx";
-  char * prj = ".prj";
-
-  /* copy the file name's prefix */
-  if ( (prefix = (char *) malloc( strlen(CHAR(STRING_ELT(filePrefix,0)))+1))
-                                                                   == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint.\n" );
+  /* create the full .shp (main) file name */
+  fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+  if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
     return R_NilValue;
   }
-  strcpy( prefix, CHAR(STRING_ELT(filePrefix,0)) );
+  strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+  strcat( shpFileName, shpExt );
 
-  /* create the .shp file name */
-  if ( (fileName = (char *) malloc( strlen(prefix) + strlen(shp) + 1))
-                                                             == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint.\n" );
-    return R_NilValue;
-  }
-  strcpy( fileName, prefix );
-  strcat( fileName, shp );
-
-  /* create the shapefile */
-  if ( (fptrShp = fopen( fileName, "wb" )) == NULL ) {
+  /* open the main file */
+  if ( (fptrShp = fopen( shpFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePoint.\n" );
     return R_NilValue;
   }
-  free( fileName );
 
-
-  /* create the .shx file name */
-  if ( (fileName = (char *) malloc( strlen(prefix) + strlen(shx) + 1))
-                                                             == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint.\n" );
+  /* create the full .shx (index) file name */
+  if ((shxFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
     return R_NilValue;
   }
-  strcpy( fileName, prefix );
-  strcat( fileName, shx );
+  strcpy( shxFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+  strcat( shxFileName, shxExt );
 
-  /* create the index file */
-  if ( (fptrShx = fopen( fileName, "wb" )) == NULL ) {
+  /* open the index file */
+  if ( (fptrShx = fopen( shxFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePoint.\n" );
     return R_NilValue;
   }
-  free( fileName );
 
   /* write the shapefile header */
   /* big endian byte order */
@@ -4173,31 +4159,29 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
   if ( prjFileNameVec != R_NilValue ) {
 
     /* create the original .prj file name */
-    if((prjFileName=(char *)malloc(strlen(CHAR(STRING_ELT( prjFileNameVec,0 )))
-                                                 + strlen(prj) + 1)) == NULL ) {
-      Rprintf( "Error: Allocating memory in C function writeShapeFilePoint.\n" );
+    if ((prjFileNameOrg = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
       return R_NilValue;
     }
-    strcpy( prjFileName, CHAR(STRING_ELT( prjFileNameVec, 0 )) );
-    strcat( prjFileName, prj );
+    strcpy( prjFileNameOrg, CHAR(STRING_ELT(prjFileNameVec, 0)));
+    strcat( prjFileNameOrg, prjExt );
 
     /* create the new .prj file name */
-    if ((fileName = (char *) malloc( strlen(prefix) + strlen(prj) + 1))
-                                                         == NULL ) {
-      Rprintf( "Error: Allocating memory in C function writeShapeFilePoint.\n" );
+    if ((prjFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
       return R_NilValue;
     }
-    strcpy( fileName, prefix );
-    strcat( fileName, prj );
+    strcpy( prjFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( prjFileName, prjExt );
 
-    /* open existing projection file */
-    if ((prjOld = fopen( prjFileName, "rb" )) == NULL ){
+    /* open the original projection file */
+    if ((prjOld = fopen( prjFileNameOrg, "rb" )) == NULL ){
       Rprintf( "Error: Opening .prj file in C function writeShapeFilePoint.\n" );
       return R_NilValue;
     }
 
-    /* create the new projection file */
-    if ( (prjNew = fopen( fileName, "wb" )) == NULL ) {
+    /* open the new projection file */
+    if ( (prjNew = fopen( prjFileName, "wb" )) == NULL ) {
       Rprintf("Error: Creating .prj file in C function writeShapeFilePoint.\n" );
       fclose( prjOld );
       return R_NilValue;
@@ -4208,16 +4192,12 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
       fwrite( &byte, sizeof(char), 1, prjNew );
     }
 
-    free( fileName );
-    free( prjFileName );
     fclose( prjNew );
     fclose( prjOld );
   }
 
   /* create the dbf file */
-  writeDbfFile( dbfFieldNames, dbfFields, filePrefix );
-
-  free( prefix );
+  writeDbfFile( dbfFieldNames, dbfFields, fileNamePrefix );
 
   return R_NilValue;
 }
@@ -4257,12 +4237,13 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
   FILE * fptr = NULL;       /* file pointer to shapefile */
   Shape shape;       /* struct to store all info and data found in shapefile */
   SEXP data = NULL;  /* R object to store data in for returning to R */
-  char * fileName = NULL; /* full name of dbf file */
   int done = FALSE;  /* flag signalling all .shp files have been read */
   DIR * dirp = NULL;        /* used to open the current directory */
   struct dirent * fileShp;  /* used for reading file names */
   int ptrShp = 0;           /* ptr to .shp files in the current directory */
   int shapeType = -1;  /* shape type of the first .shp file we find */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
   char * restrict shpFileName = NULL;  /* stores full shapefile name */
   int singleFile = FALSE;  /* flag signalling when we are only looking for a */
                            /* single specified shapefile */
@@ -4282,15 +4263,15 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL ) {
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readShapeFilePts.\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data;
     }
     strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
 
   } else {
@@ -4452,7 +4433,6 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
       }
     }
 
-    free( fileName );
   }
 
   /* close the current directory */
@@ -4522,9 +4502,6 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
 
   /* clean up */
   deallocateRecords( shape.records );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  }
   UNPROTECT(3);
 
   return data;
@@ -4556,13 +4533,13 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
 **             prjFileNameVec, name prefix of the .prj file (no .prj extension)
 **             dbfFieldNames,  names of the dbf fields
 **             dbfFields,  field values for the dbf file
-**             filePrefix,  prefix of the name of the files to be created
+**             fileNamePrefix,  name of the shapefile to be created
 ** Return:     NULL
 ***********************************************************/
 SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
   SEXP contentLenVec, SEXP nPartsVec, SEXP nPointsVec, SEXP partsVec, SEXP xVec,
   SEXP yVec, SEXP prjFileNameVec, SEXP dbfFieldNames, SEXP dbfFields,
-  SEXP filePrefix ) {
+  SEXP fileNamePrefix ) {
 
   /* C variables that store the sent R object's values */
   unsigned int * contentLen = NULL;
@@ -4585,61 +4562,49 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
   int tempInt;                      /* temp integer storage */
   double tempDbl;                   /* temp double storage */
   double xmin, ymin, xmax, ymax;    /* bounding box values */
-  char * fileName;                  /* full file name */
-  char * prjFileName;               /* name of the .prj file */
-  char * prefix;                    /* name prefix to use for each file */
+  unsigned int fileNameLen;         /* length of the shapefile name */
+  const char * shpExt = ".shp";        /* shapefile extension */
+  const char * shxExt = ".shx";        /* shapefile extension */
+  const char * prjExt = ".prj";        /* shapefile extension */
+  char * restrict shpFileName = NULL;     /* stores the full .shp file name */
+  char * restrict shxFileName = NULL;     /* stores the full .shx file name */
+  char * restrict prjFileNameOrg = NULL;  /* stores the original .prj file name */
+  char * restrict prjFileName = NULL;     /* stores the new .prj file name */
   unsigned int offset;              /* byte offset counter */
   unsigned char byte;               /* bytes used for copying file */
-  int nRec = length( nPointsVec );  /* number of records in the shapefile */
+  unsigned int nRec = length( nPointsVec );  /* number of records in the shapefile */
   int shapeType;                    /* shapefile type */
   int iStartPart, iStopPart;        /* parts vector index values */
   int iStartPoint, iStopPoint;      /* coordinate vector index values */
 
-  /* file extensions */
-  char * shp = ".shp";
-  char * shx = ".shx";
-  char * prj = ".prj";
-
-  /* copy the prefix of the output shapefile */
-  if ( (prefix = (char *) malloc( strlen(CHAR(STRING_ELT(filePrefix,0)))+1))
-                                                                   == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeShapeFilePolygon.\n" );
+  /* create the full .shp (main) file name */
+  fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+  if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
     return R_NilValue;
   }
-  strcpy( prefix, CHAR(STRING_ELT(filePrefix,0)) );
+  strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+  strcat( shpFileName, shpExt );
 
-  /* create the .shp (main) file name */
-  if ( (fileName = (char *) malloc( strlen(prefix) + strlen(shp) + 1))
-                                                             == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeShapeFilePolygon.\n" );
-    return R_NilValue;
-  }
-  strcpy( fileName, prefix );
-  strcat( fileName, shp );
-
-  /* create the main file */
-  if ( (fptrShp = fopen( fileName, "wb" )) == NULL ) {
+  /* open the main file */
+  if ( (fptrShp = fopen( shpFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePolygon.\n" );
     return R_NilValue;
   }
-  free( fileName );
 
-
-  /* create the .shx (index) file name */
-  if ( (fileName = (char *) malloc( strlen(prefix) + strlen(shx) + 1))
-                                                             == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeShapeFilePolygon.\n" );
+  /* create the full .shx (index) file name */
+  if ((shxFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
     return R_NilValue;
   }
-  strcpy( fileName, prefix );
-  strcat( fileName, shx );
+  strcpy( shxFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+  strcat( shxFileName, shxExt );
 
-  /* create the index file */
-  if ( (fptrShx = fopen( fileName, "wb" )) == NULL ) {
+  /* open the index file */
+  if ( (fptrShx = fopen( shxFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePolygon.\n" );
     return R_NilValue;
   }
-  free( fileName );
 
   /* write the shapefile headers */
 
@@ -4893,32 +4858,30 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
   /* see if a .prj (projection) file name was sent */
   if ( prjFileNameVec != R_NilValue ) {
 
-    /* create the original projection file name */
-    if((prjFileName=(char *)malloc(strlen(CHAR(STRING_ELT( prjFileNameVec,0 )))
-                                                 + strlen(prj) + 1)) == NULL ) {
-      Rprintf( "Error: Allocating memory in C function writeShapeFilePolygon.\n" );
+    /* create the original .prj file name */
+    if ((prjFileNameOrg = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
       return R_NilValue;
     }
-    strcpy( prjFileName, CHAR(STRING_ELT( prjFileNameVec, 0 )) );
-    strcat( prjFileName, prj );
+    strcpy( prjFileNameOrg, CHAR(STRING_ELT(prjFileNameVec, 0)));
+    strcat( prjFileNameOrg, prjExt );
 
-    /* create the new projection file name */
-    if ((fileName = (char *) malloc( strlen(prefix) + strlen(prj) + 1))
-                                                         == NULL ) {
-      Rprintf( "Error: Allocating memory in C function writeShapeFilePolygon.\n" );
+    /* create the new .prj file name */
+    if ((prjFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
       return R_NilValue;
     }
-    strcpy( fileName, prefix );
-    strcat( fileName, prj );
+    strcpy( prjFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( prjFileName, prjExt );
 
-    /* open the existing projection file */
-    if ((prjOld = fopen( prjFileName, "rb" )) == NULL ){
+    /* open the original projection file */
+    if ((prjOld = fopen( prjFileNameOrg, "rb" )) == NULL ){
       Rprintf( "Error: Opening .prj file in C function writeShapeFilePolygon.\n" );
       return R_NilValue;
     }
 
-    /* create the new projection file */
-    if ( (prjNew = fopen( fileName, "wb" )) == NULL ) {
+    /* open the new projection file */
+    if ( (prjNew = fopen( prjFileName, "wb" )) == NULL ) {
       Rprintf("Error: Creating .prj file in C function writeShapeFilePolygon.\n" );
       fclose( prjOld );
       return R_NilValue;
@@ -4929,16 +4892,12 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
       fwrite( &byte, sizeof(char), 1, prjNew );
     }
 
-    free( fileName );
-    free( prjFileName );
     fclose( prjNew );
     fclose( prjOld );
   }
 
   /* create the .dbf (dBASE) file */
-  writeDbfFile( dbfFieldNames, dbfFields, filePrefix );
-
-  free( prefix );
+  writeDbfFile( dbfFieldNames, dbfFields, fileNamePrefix );
 
   return R_NilValue;
 }

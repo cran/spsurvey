@@ -33,13 +33,13 @@ SEXP readDbfFile(SEXP fileNamePrefix);
 SEXP readShapeFile(SEXP fileNamePrefix);
 SEXP readShapeFilePts(SEXP fileNamePrefix);
 SEXP getRecordShapeSizes(SEXP fileNamePrefix);
-SEXP writeDbfFile(SEXP fieldNames, SEXP fields, SEXP filePrefix);
+SEXP writeDbfFile(SEXP fieldNames, SEXP fields, SEXP fileNamePrefix);
 void writeShapeFilePoint(SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
-   SEXP dbfFieldNames, SEXP dbfFields, SEXP filePrefix);
+   SEXP dbfFieldNames, SEXP dbfFields, SEXP fileNamePrefix);
 void writeShapeFilePolygon(SEXP shapeTypeVal, SEXP fileLengthVal,
   SEXP contentLenVec, SEXP nPartsVec, SEXP nPointsVec, SEXP partsVec, SEXP xVec,
   SEXP yVec, SEXP prjFileNameVec, SEXP dbfFieldNames, SEXP dbfFields,
-  SEXP filePrefix);
+  SEXP fileNamePrefix);
 SEXP pointInPolygonObj(SEXP ptXVec, SEXP ptYVec, SEXP polyXVec, SEXP polyYVec);
 SEXP numLevels(SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
    SEXP startLevVec, SEXP maxLevVec, SEXP dsgnmdIDVec, SEXP dsgnmdVec);

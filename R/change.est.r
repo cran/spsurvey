@@ -67,12 +67,13 @@ change.est <- function(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
 #     NULL.
 #   repeat_2 = a logical variable that identifies repeat visit sites for survey
 #     two.
-#   revisitwgt = a logical value that indicates whether the repeat visit sites
-#     in the two surveys have the same survey design weights, where TRUE = the
-#     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the repeat visit sites are assigned equal weights when
-#     calculating the covariance component of the change estimate variance.  The
-#     default is FALSE.
+#   revisitwgt = a logical value that indicates whether each repeat visit site
+#     has the same survey design weight in the two surveys, where TRUE = the
+#     weight for each repeat visit site is the same and FALSE = the weight for
+#     each repeat visit site is not the same.  When this argument is FALSE, all
+#     of the repeat visit sites are assigned equal weights when calculating the
+#     covariance component of the change estimate standard error.  The default
+#     is FALSE.
 #   stratum_1 = the stratum for each survey one site.  The default is NULL.
 #   stratum_2 = the stratum for each survey two site.  The default is NULL.
 #   cluster_1 = the stage one sampling unit (primary sampling unit or cluster)

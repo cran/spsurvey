@@ -10,7 +10,8 @@
 **  Created:      October 18, 2004
 **  Revised:      October 18, 2007
 **  Revised:      February 23, 2015
-**  Revised:     May 5, 2015
+**  Revised:      May 5, 2015
+**  Revised:      June 15, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -30,8 +31,8 @@
 
 /* these functions are found in shapeParser.c */
 extern int parseHeader( FILE * fptr, Shape * shape );
-extern int readLittleEndian( unsigned char * buffer, int length );
-extern int readBigEndian( unsigned char * buffer, int length );
+extern unsigned int readLittleEndian( unsigned char * buffer, int length );
+extern unsigned int readBigEndian( unsigned char * buffer, int length );
 
 /* these functions are found in grts.c */
 extern int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs );
@@ -657,7 +658,7 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   double * yc = NULL;
   double * dsgnmd = NULL;
   unsigned int * dsgnmdID = NULL;
-  int dsgSize = length( dsgnmdIDVec );
+  unsigned int dsgSize = length( dsgnmdIDVec );
 
   double * realPtr;    /* temp reald pointer */
   FILE * fptr = NULL;  /* pointer to .shp file */
@@ -696,7 +697,9 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   FILE * newShp = NULL;   /* pointer to the temp .shp file that will consist */
                           /* of the data found in all the .shp files found in */
                           /* the current working directory */
-  char * restrict shpFileName = NULL;  /* stores full shape file name */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
   int singleFile = FALSE;
 
 
@@ -708,15 +711,15 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL ){
-      Rprintf( "Error: Allocating memory in C function linSample.\n" );
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function linSample\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      UNPROTECT( 1 );
       return results;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
   }
 
@@ -1428,9 +1431,6 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
     free( y );
   }
   fclose( fptr );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  }
   remove( TEMP_SHP_FILE );
   UNPROTECT( 5 );
 

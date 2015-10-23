@@ -35,19 +35,19 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.6 of the spsurvey package was loaded successfully.
+Version 3.1 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
-\section{Read the survey design and analytical variables data file}
-The original NLA data file contains more than 1,000 records.  To produce a more manageable number of records, lakes located in the western U.S. were retained in the data that will be analyzed, which produced a file containing 236 records.
+\section{Load the survey design and analytical variables data set}
+The original NLA data file contains more than 1,000 records.  To produce a more manageable number of records, lakes located in the western U.S. were retained in the data that will be analyzed, which produced a data set containing 236 records.
 
-The next step is to read the data file, which includes both survey design variables and analytical variables.  The read.delim function is used to read the tab-delimited file and assign it to a data frame named NLA\_2007.  The nrow function is used to determine the number of rows in the NLA\_2007 data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the NLA\_2007 data frame are printed using the head and tail functions, respectively.
+The next step is to load the data set, which includes both survey design variables and analytical variables.  The data function is used to load the data set and assign it to a data frame named NLA\_2007.  The nrow function is used to determine the number of rows in the NLA\_2007 data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the NLA\_2007 data frame are printed using the head and tail functions, respectively.
 
-Read the survey design and analytical variables data file
+Load the survey design and analytical variables data set
 
 <<data>>=
-# Read the data file and determine the number of rows in the file
-NLA_2007 <- read.delim("NLA_2007.tab")
+# Load the data set and determine the number of rows in the data frame
+data(NLA_2007)
 nr <- nrow(NLA_2007)
 
 @
@@ -220,7 +220,7 @@ AttRisk_Estimates <- attrisk.analysis(sites, subpop, design, data.risk,
    stressor.var=rep(stress_vars, length(resp_vars)))
 
 @
-The attributable risk estimates are displayed using the print function.  The object produced by attrisk.analysis is a data frame containing nineteen columns.  The data data frame is identicl to the one produced by the relrisl.analysis function except that it doesn't include the columns named Estimate.num and Estimate.denom.  Since attributable risk is not calculated using a ratio estimator, values for numerator and denominator estimates are not relevant.
+The attributable risk estimates are displayed using the print function.  The object produced by attrisk.analysis is a data frame containing nineteen columns.  The data data frame is identical to the one produced by the relrisk.analysis function except that it doesn't include the columns named Estimate.num and Estimate.denom.  Since attributable risk is not calculated using a ratio estimator, values for numerator and denominator estimates are not relevant.
 
 <<Riskeval>>=
 # Print the attributable risk estimates

@@ -31,9 +31,21 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.0 of the spsurvey package was loaded successfully.
+Version 3.1 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
+\section{Create a shapefile}
+
+For creating a survey design using the spsurvey package, the standard form of input regarding the resource is a shapefile.  In order to conserve storage space, shapefiles are not included with the package.  Instead, a data set from which a shapefile can be created is included in the data directory of the package.  The data function is used to load the data set stored in the data directory into an object named Luck\_Ash\_streams.  The sp2shape function is used to create a shapefile from the Luck\_Ash\_streams object. Note that objects loaded from the data sets in the data directory are stored in formats that are defined in the sp package.  See documentation for the sp package for additional information regarding format of the objects.
+
+<<createshape>>=
+# Load the sp object in the data directory
+data(Luck_Ash_streams)
+
+# Create a shapefile
+sp2shape(sp.obj=Luck_Ash_streams, shpfilename="Luck_Ash_streams")
+
+@
 \section{Shapefile attribute data}
 
 The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The initial six lines in the att data frame are printed using the head function
@@ -221,7 +233,7 @@ summary(Stratsites)
 
 The third survey design is a stratified, unequal probability design with an oversample.  As for the second survey design, the stream type attribute is used to identify strata.  Strahler order categories are used to identify multidensity categories.  List Unequaldsgn is assigned design specifications.  Unequaldsgn includes the same two lists with three items (panel, seltype, and over) as used for the stratified, equal probability design plus a value for caty.n.  For both lists, panel specifies a single panel, and seltype is assigned "Unequal" to indicate unequal probability sampling.  Note that the value 0 is assigned to over for the "Intermittent" stratum, i.e., no oversample.  The over item could have been omitted from the list for "Intermittent".  The vector assigned to caty.n specifies sample sizes for each of the three multidensity categories.  Note that the sum of values provided in caty.n must equal the value in panel.
 
-For this survey design, an sp package object will be used as the sampling frame.  The read.shape function will be used to read the shapefile and assign its output to an sp object named shp.  The following arguments are included in the call to grts: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; (7) stratum: assigned the value "Per\_Int"; (8) mdcaty: name of the column in the attributes data frame that identifies the unequal probability category for each element in the frame, which is assigned the value "Strah\_Cat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
+For this survey design, an sp package object will be used as the sampling frame.  The read.shape function will be used to read the shapefile and assign its output to an sp object named shp.  Note that the object created by the read.shape function is identical to the object that was loaded from the data directory at the beginning of this vignette.  The following arguments are included in the call to grts: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value "UNEQUAL"; (3) type.frame: assigned the value "linear"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; (7) stratum: assigned the value "Per\_Int"; (8) mdcaty: name of the column in the attributes data frame that identifies the unequal probability category for each element in the frame, which is assigned the value "Strah\_Cat"; (9) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
 <<Unequalsites>>=
 # Read the shapefile

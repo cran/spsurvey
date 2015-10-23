@@ -35,19 +35,19 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 2.5 of the spsurvey package was loaded successfully.
+Version 3.1 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
-\section{Read the Simulated Variables Data File}
-A data file was created that contains simulated species richness variables.  The initial variable was created using the Normal distribution with mean 20 and standard deviation 5.  Addition variables were created by adding 25\%, 50\%, and 100\% measurement error variance to the original variable, where the percent values refer to the variance of the original variable.  The data file also includes x-coordinates and y-coordinates, which were simulated using the Uniform distribution with a range from zero to one.  The data file contains 500 records.
+\section{Load the Simulated Variables Data Set}
+A data set was created that contains simulated species richness variables.  The initial variable was created using the Normal distribution with mean 20 and standard deviation 5.  Addition variables were created by adding 25\%, 50\%, and 100\% measurement error variance to the original variable, where the percent values refer to the variance of the original variable.  The data file also includes x-coordinates and y-coordinates, which were simulated using the Uniform distribution with a range from zero to one.  The data set contains 500 records.
 
-The next step is to read the data file.  The read.delim function is used to read the tab-delimited file and assign it to a data frame named decon\_data.  The nrow function is used to determine the number of rows in the decon\_data data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the decon\_data data frame are printed using the head and tail functions, respectively.
+The next step is to load the data set.  The data function is used to load the data set and assign it to a data frame named decon\_data.  The nrow function is used to determine the number of rows in the decon\_data data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the decon\_data data frame are printed using the head and tail functions, respectively.
 
-Read the survey design and analytical variables data file
+Load the simulated variables data set
 
 <<data>>=
-# Read the data file and determine the number of rows in the file
-decon_data <- read.delim("decon_data.tab")
+# Load the data set and determine the number of rows in the data frame
+data(decon_data)
 nr <- nrow(decon_data)
 
 @

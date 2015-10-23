@@ -4,6 +4,7 @@
 **  Date:        January 23, 2011
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 15, 2015
 **  Description:
 **    For each value in the set of shapefile record IDs, select a sample point
 **    from the shapefile record 
@@ -39,8 +40,8 @@
 
 /* This function is found in shapeParser.c */
 extern int parseHeader(FILE * fptr, Shape * shape);
-extern int readLittleEndian(unsigned char * buffer, int length);
-extern int readBigEndian(unsigned char * buffer, int length);
+extern unsigned int readLittleEndian(unsigned char * buffer, int length);
+extern unsigned int readBigEndian(unsigned char * buffer, int length);
 
 /* These functions are found in grts.c */
 extern int combineShpFiles(FILE * newShp, unsigned int * ids, int numIDs);
@@ -60,7 +61,9 @@ SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec,
   int i, k;                    /* loop counters */
   FILE * fptr = NULL;         /* pointer to the shapefile */
   FILE * newShp = NULL;       /* pointer to the temporary .shp file */
-  char * restrict shpFileName = NULL;  /* stores full shape file name */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
   int singleFile = FALSE;
   Shape shape;           /* used to store shapefile info and data */
   Record * temp = NULL;  /* used for traversing linked list of records */
@@ -77,7 +80,7 @@ SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec,
   Segment * segmentList = NULL;  /* variable for storing a linked list of segment structs */
   Segment * tempSeg;     /* variables for traversing the list of segment structs */
   unsigned int * shpIDs = NULL;     /* array of shapefile record IDs to use */
-  int dsgSize = length(shpIDsVec);  /* number of values in the shpIDs array */
+  unsigned int dsgSize = length(shpIDsVec);  /* number of values in the shpIDs array */
   unsigned int sampleSize = length(xcVec); /* sample size */
   unsigned int * recordIDs = NULL;  /* array of shapefile record IDs that get a sample point */
   double * xc = NULL;    /* array that stores values found in xcVec R vector */
@@ -105,15 +108,15 @@ SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec,
   if(fileNamePrefix != R_NilValue) {
 
     /* create the full .shp file name */
-    if((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL){
-      Rprintf("Error: Allocating memory in C function pickLinearSamplePoints.\n");
-      PROTECT(results = allocVector(VECSXP, 1));
-      UNPROTECT(1);
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function pickLinearSamplePoints\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT( 1 );
       return results;
     }
-    strcpy(shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat(shpFileName, ".shp");
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
   }
 
@@ -762,9 +765,6 @@ SEXP pickLinearSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec,
     free(yc);
   }
   fclose(fptr);
-  if(singleFile == TRUE) {
-    free(shpFileName);
-  }
   remove(TEMP_SHP_FILE);
   UNPROTECT(4);
 

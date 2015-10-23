@@ -12,6 +12,7 @@
 **  Revised:     November 9, 2007
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 15, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -33,8 +34,8 @@
 
 /* these functions are found in shapeParser.c */
 extern int parseHeader( FILE * fptr, Shape * shape );
-extern int readLittleEndian( unsigned char * buffer, int length );
-extern int readBigEndian( unsigned char * buffer, int length );
+extern unsigned int readLittleEndian( unsigned char * buffer, int length );
+extern unsigned int readBigEndian( unsigned char * buffer, int length );
 
 /* these functions are found in grts.c */
 extern int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs );
@@ -1537,7 +1538,7 @@ SEXP pointInPolygonFile( SEXP fileNamePrefix, SEXP xcsVec, SEXP ycsVec,
   unsigned int * dsgnmdID = NULL; /*array of the ID numbers that have weights */
   double * dsgnmd = NULL;       /* array of weights that corresponde to the */
                                 /* to the array of ID numbers */
-  int dsgSize = length( dsgnmdIDVec ); /* number of IDs in the dsgnmdID array */
+  unsigned int dsgSize = length( dsgnmdIDVec ); /* number of IDs in the dsgnmdID array */
   FILE * newShp = NULL;   /* pointer to the temporary .shp file */
   char * restrict shpFileName = NULL;  /* stores full shape file name */
   int singleFile = FALSE;

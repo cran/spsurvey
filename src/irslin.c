@@ -10,6 +10,7 @@
 **  Revised:      October 18, 2007
 **  Revised:      February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 15, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -30,8 +31,8 @@ extern int createNewTempShpFile( FILE * newShp, char * shapeFileName,
 
 /* these functions are found in shapeParser.c */
 extern int parseHeader( FILE * fptr, Shape * shape );
-extern int readLittleEndian( unsigned char * buffer, int length );
-extern int readBigEndian( unsigned char * buffer, int length );
+extern unsigned int readLittleEndian( unsigned char * buffer, int length );
+extern unsigned int readBigEndian( unsigned char * buffer, int length );
 
 /* these functions are found in grtslin.c */
 extern void addSegment( Segment ** head, Segment * seg );
@@ -65,11 +66,11 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
   /* C variables that store the sent R object's values */
   double * lenCumSum = NULL;
   double * sampPos = NULL;
-  int smpSize = length( sampPosVec );
+  unsigned int smpSize = length( sampPosVec );
   unsigned int * dsgnID = NULL;
   double * dsgnLen = NULL;
   double * dsgnMdm = NULL;
-  int dsgnSize = length( dsgnIDVec );
+  unsigned int dsgnSize = length( dsgnIDVec );
 
   FILE * newShp = NULL;       /* pointer to the temporary shapefile */
   FILE * fptr = NULL;         /* pointer to the shapefile */
@@ -103,8 +104,10 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
   SEXP xVec, yVec, IDVec, colNamesVec;
   SEXP results = NULL;
 
-  int singleFile = FALSE;     /* indicator variable for a single shapefile */
-  char * restrict shpFileName = NULL;  /* stores full shapefile name */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
+  int singleFile = FALSE;
 
   /* copy the cumulative sum of polyline lengths into a C array */
   if((lenCumSum = (double *) malloc( sizeof( double ) * dsgnSize ))
@@ -219,16 +222,16 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
   /* see if a specific shapefile was sent */
   if ( fileNamePrefix != R_NilValue ) {
 
-    /* create the full shapefile name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-      + strlen(".shp") + 1)) == NULL ) {
-      Rprintf( "Error: Allocating memory in C function linSampleIRS.\n" );
+    /* create the full .shp file name */
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function linSampleIRS\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      UNPROTECT( 1 );
       return results;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
 
   }
@@ -830,9 +833,6 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
     free( y );
   }
   fclose( fptr );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  }
   remove( TEMP_SHP_FILE );
   UNPROTECT( 5 );
 

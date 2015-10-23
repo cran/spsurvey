@@ -97,11 +97,12 @@ readDbfFile(fileNamePrefix)
 readShapeFile(fileNamePrefix)
 readShapeFilePts(fileNamePrefix)
 getRecordShapeSizes(fileNamePrefix)
+writeDbfFile(fieldNames, fields, fileNamePrefix);
 writeShapeFilePoint(xVec, yVec, prjFileNameVec, dbfFieldNames, dbfFields,
-   filePrefix)
+   fileNamePrefix)
 writeShapeFilePolygon(shapeTypeVal, fileLengthVal, contentLenVec, nPartsVec,
    nPointsVec, partsVec, xVec, yVec, prjFileNameVec, dbfFieldNames, dbfFields,
-   filePrefix)
+   fileNamePrefix)
 pointInPolygonObj(ptXVec, ptYVec, polyXVec, polyYVec)
 numLevels(fileNamePrefix, nsmpVec, shiftGridVec,
    startLevVec, maxLevVec, dsgnmdIDVec, dsgnmdVec)

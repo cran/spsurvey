@@ -1,6 +1,23 @@
 \name{NEWS}
 \title{News for Package \pkg{spsurvey}}
 
+\section{CHANGES IN spsurvey VERSION 3.1 (Released 2015-10-23)}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Modified vignettes to use data sets from the data directory for the
+        package.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Modified C functions to ensure that variables passed to function
+        malloc are of type unsigned integer.
+    }
+  }
+}
+
+
 \section{Changes in spsurvey VERSION 3.0 (Released 2015-05-21)}{
   \subsection{NEW FEATURES}{
     \itemize{

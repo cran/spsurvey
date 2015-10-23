@@ -31,6 +31,7 @@
 **  Created:     August 11, 2004
 **  Revised:     April 24, 2006
 **  Revised:     January 27, 2012
+**  Revised:     June 15, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -230,7 +231,7 @@ SEXP constructAddr( SEXP xcVec, SEXP ycVec, SEXP dxVec, SEXP dyVec,
   int vecSize = length( xcVec );     /* size of incoming xc and yc vcectors */
   int x;                             /* temp x addr */
   int y;                             /* temp y addr */
-  int nlev = INTEGER( nlevVec )[0];  /* number of levels */
+  unsigned int nlev = INTEGER( nlevVec )[0];  /* number of levels */
   int * addr;                        /* temp array of addresses as integers */
   char * addrStr;                    /* char string representation of the addr*/
   SEXP results = NULL;               /* returing R object */
@@ -468,7 +469,7 @@ void permFcn( int level, int fin, addrNode * prevAddrList ) {
 ** Purpose:    This is the entry point from R.  This function is sent
 **             the array of addresses and the number of addresses in
 **             the set.  It starts off the algorithm by calling the 
-**             recursive function permFcnand the addresses in adr are
+**             recursive function permFcn and the addresses in adr are
 **             modified as the alogirithm works.  R will retrieve the
 **             new addresses from the same sent adr structure.
 ** Arguments:  adr,  array of strings representing all the addresses

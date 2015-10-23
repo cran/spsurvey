@@ -11,8 +11,8 @@ library(spsurvey)
 ###################################################
 ### code chunk number 2: data
 ###################################################
-# Read the data file and determine the number of rows in the file
-NLA_2007 <- read.delim("NLA_2007.tab")
+# Load the data set and determine the number of rows in the data frame
+data(NLA_2007)
 nr <- nrow(NLA_2007)
 
 

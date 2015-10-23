@@ -32,11 +32,12 @@ changevar.mean <- function(z1, z2, wgt, x, y, revisitwgt, mean1, mean2,
 #   y = y-coordinate for location for each site, which is either the y-
 #     coordinate for a single-stage sample or the stage two y-coordinate for a
 #     two-stage sample.
-#   revisitwgt = a logical value that indicates whether the repeat visit sites
-#     in the two surveys have the same survey design weights, where TRUE = the
-#     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the repeat visit sites have been assigned equal
-#     weights.
+#   revisitwgt = a logical value that indicates whether each repeat visit site
+#     has the same survey design weight in the two surveys, where TRUE = the
+#     weight for each repeat visit site is the same and FALSE = the weight for
+#     each repeat visit site is not the same.  When this argument is FALSE, all
+#     of the repeat visit sites are assigned equal weights when calculating the
+#     covariance component of the change estimate standard error.
 #   mean1 = the estimated mean for survey one.
 #   mean2 = the estimated mean for survey two.
 #   stratum.ind = a logical value that indicates whether the sample is

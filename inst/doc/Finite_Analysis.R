@@ -11,8 +11,8 @@ library(spsurvey)
 ###################################################
 ### code chunk number 2: data
 ###################################################
-# Read the data file and determine the number of rows in the file
-FL_lakes <- read.delim("FL_lakes.tab")
+# Load the data set and determine the number of rows in the data frame
+data(FL_lakes)
 nr <- nrow(FL_lakes)
 
 

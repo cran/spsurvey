@@ -11,8 +11,8 @@ library(spsurvey)
 ###################################################
 ### code chunk number 2: data
 ###################################################
-# Read the data file and determine the number of rows in the file
-IN_streams <- read.delim("IN_streams.tab")
+# Load the data set and determine the number of rows in the data frame
+data(IN_streams)
 nr <- nrow(IN_streams)
 
 

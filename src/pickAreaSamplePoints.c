@@ -5,6 +5,7 @@
 **  Revised:     November 3, 2011
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 15, 2015
 **  Description:
 **    For each value in the set of shapefile record IDs, select a sample point
 **    from the shapefile record 
@@ -43,8 +44,8 @@
 
 /* This function is found in shapeParser.c */
 extern int parseHeader(FILE * fptr, Shape * shape);
-extern int readLittleEndian(unsigned char * buffer, int length);
-extern int readBigEndian(unsigned char * buffer, int length);
+extern unsigned int readLittleEndian(unsigned char * buffer, int length);
+extern unsigned int readBigEndian(unsigned char * buffer, int length);
 
 /* These functions are found in grts.c */
 extern int combineShpFiles(FILE * newShp, unsigned int * ids, int numIDs);
@@ -61,7 +62,9 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   int i, j, k, l;             /* loop counters */
   FILE * fptr = NULL;         /* pointer to the shapefile */
   FILE * newShp = NULL;       /* pointer to the temporary .shp file */
-  char * restrict shpFileName = NULL;  /* stores full shape file name */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
   int singleFile = FALSE;
   Shape shape;           /* used to store shapefile info and data */
   Point * part = NULL;   /* stores points in a part */
@@ -77,7 +80,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   Record record;         /* record used for parsing records */
   Cell cell;             /* temporary storage for a cell */
   unsigned int * shpIDs = NULL;  /* array of shapefile record IDs to use */
-  int dsgSize = length(shpIDsVec);  /* number of values in the shpIDs array */
+  unsigned int dsgSize = length(shpIDsVec);  /* number of values in the shpIDs array */
   unsigned int * recordIDs = NULL;  /* array of shapefile record IDs that get a sample point */
   double * xc = NULL;    /* array that stores values found in xcVec R vector */
   double * yc = NULL;    /* array that stores values found in ycVec R vector */
@@ -108,15 +111,15 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   if(fileNamePrefix != R_NilValue) {
 
     /* create the full .shp file name */
-    if((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL){
-      Rprintf("Error: Allocating memory in C function pickAreaSamplePoints.\n");
-      PROTECT(results = allocVector(VECSXP, 1));
-      UNPROTECT(1);
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function pickAreaSamplePoints\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT( 1 );
       return results;
     }
-    strcpy(shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat(shpFileName, ".shp");
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
   }
 
@@ -905,9 +908,6 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
     free(bp);
   }
   fclose(fptr);
-  if(singleFile == TRUE) {
-    free(shpFileName);
-  }
   remove(TEMP_SHP_FILE);
   UNPROTECT(5);
 

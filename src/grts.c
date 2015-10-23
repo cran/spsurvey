@@ -16,6 +16,7 @@
 **  Revised:     July 16, 2014
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 15, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -36,8 +37,8 @@
 /* these functions are found in shapeParser.c */
 extern int fileMatch( char * fileName, char * fileExt );
 extern int parseHeader( FILE * fptr, Shape * shape );
-extern int readLittleEndian( unsigned char * buffer, int length );
-extern int readBigEndian( unsigned char * buffer, int length );
+extern unsigned int readLittleEndian( unsigned char * buffer, int length );
+extern unsigned int readBigEndian( unsigned char * buffer, int length );
 
 /* this function is found in grtsarea.c */
 extern int areaIntersection( double ** celWts, double * xc, double * yc,
@@ -1268,30 +1269,32 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   unsigned int * dsgnmdID = NULL; /*array of the ID numbers that have weights */
   double * dsgnmd = NULL;       /* array of weights that corresponde to the */
                                 /* to the array of ID numbers */
-  int dsgSize = length( dsgnmdIDVec ); /* number of IDs in the dsgnmdID array */
+  unsigned int dsgSize = length( dsgnmdIDVec ); /* number of IDs in the dsgnmdID array */
   FILE * newShp = NULL;   /* pointer to the temp .shp file that will consist */
                           /* of the data found in all the .shp files found in */
                           /* the current working directory */
-  char * restrict shpFileName = NULL;  /* stores full shapefile name */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
   int singleFile = FALSE;
 
   /* see if a specific file was sent */
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL ){
-      Rprintf( "Error: Allocating memory in C function numLevels.\n" );
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function numLevels\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      UNPROTECT( 1 );
       return results;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
   }
 
-  /* create the new temporary .shp file */
+  /* open the new temporary .shp file */
   if ( ( newShp = fopen( TEMP_SHP_FILE, "wb" )) == NULL ) {
     Rprintf( "Error: Creating temporary .shp file %s in C function numLevels.\n", TEMP_SHP_FILE );
     PROTECT( results = allocVector( VECSXP, 1 ) );
@@ -1655,9 +1658,6 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     free( dsgnmd );
   }
   fclose( fptr );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  }
   remove( TEMP_SHP_FILE );
   UNPROTECT(9);
 

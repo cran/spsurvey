@@ -61,12 +61,13 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 #   data.cont = a data frame of continuous response variables.  The first
 #     variable is site IDs.  Subsequent variables are response variables.
 #     Missing data (NA) is allowed.  The default is NULL.
-#   revisitwgt = a logical value that indicates whether the repeat visit sites
-#     in the two surveys have the same survey design weights, where TRUE = the
-#     weights are the same and FALSE = the weights are not the same.  When this
-#     argument is FALSE, the repeat visit sites are assigned equal weights when
-#     calculating the covariance component of the change estimate variance.  The
-#     default is FALSE.
+#   revisitwgt = a logical value that indicates whether each repeat visit site
+#     has the same survey design weight in the two surveys, where TRUE = the
+#     weight for each repeat visit site is the same and FALSE = the weight for
+#     each repeat visit site is not the same.  When this argument is FALSE, all
+#     of the repeat visit sites are assigned equal weights when calculating the
+#     covariance component of the change estimate standard error.  The default
+#     is FALSE.
 #   popsize_1 = known size of the resource for survey one, which is used to
 #     perform ratio adjustment to estimators expressed using measurement units
 #     for the resource and to calculate strata proportions for calculating

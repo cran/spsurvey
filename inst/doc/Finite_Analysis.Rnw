@@ -31,19 +31,19 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.0 of the spsurvey package was loaded successfully.
+Version 3.1 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
-\section{Read the survey design and analytical variables data file}
+\section{Load the survey design and analytical variables data set}
 The original Florida small lakes data file contains more than 3,800 records and 29 basins.  To produce a more manageable number of records, only six basins were retained in the data that will be analyzed, which produced a file containing 930 records.
 
-The next step is to read the data file, which includes both survey design variables and analytical variables.  The read.delim function is used to read the tab-delimited file and assign it to a data frame named FL\_lakes.  The nrow function is used to determine the number of rows in the FL\_lakes data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the FL\_lakes data frame are printed using the head and tail functions, respectively.
+The next step is to load the data set, which includes both survey design variables and analytical variables.  The data function is used to load the data set and assign it to a data frame named FL\_lakes.  The nrow function is used to determine the number of rows in the FL\_lakes data frame, and the resulting value is assigned to an object named nr. Finally, the initial six lines and the final six lines in the FL\_lakes data frame are printed using the head and tail functions, respectively.
 
-Read the survey design and analytical variables data file
+Load the survey design and analytical variables data set
 
 <<data>>=
-# Read the data file and determine the number of rows in the file
-FL_lakes <- read.delim("FL_lakes.tab")
+# Load the data set and determine the number of rows in the data frame
+data(FL_lakes)
 nr <- nrow(FL_lakes)
 
 @

@@ -13,6 +13,7 @@
 **  Revised:     July 16, 2014
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 12, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -30,7 +31,7 @@
 
 /* found in shapeParser.c */
 extern int fileMatch( char * fileName, char * fileExt );
-extern int readLittleEndian( unsigned char * buffer, int length );
+extern unsigned int readLittleEndian( unsigned char * buffer, int length );
 extern SEXP getRecordShapeSizes( SEXP fileNamePrefix ); 
 extern int parseHeader( FILE * fptr, Shape * shape );
 extern void deallocateRecords( Record * head );
@@ -253,10 +254,10 @@ int parseDbfHeader( FILE * fptr, Dbf * dbf ) {
 **             and then parses the entire file storing all info and 
 **             data from the file into this struct.  It returns a 
 **             R object with the data and info written to it.
-** Arguments:  filePrefix,  name of the dbf file without the .dbf extension
-**                          This argument can be specified as NULL in which
-**                          case all the .dbf files in the current working
-**                          directory are read in
+** Arguments:  fileNamePrefix,  name of the shp file without the .shp extension
+**                              This argument can be specified as NULL in which
+**                              case all the .shp files in the current working
+**                              directory are read in
 ** Return:     data,    R vector containing vectors of data entries
 **                      for each field.  Each column in data will
 **                      be labeled with the corresponding field name.
@@ -267,17 +268,19 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
   FILE * fptr;       /* file pointer to shapefile */
   Shape shape;       /* struct to store all info and data found in shapefile */
   SEXP data = NULL;  /* R object to store data in for returning to R */
-  char * fileName = NULL; /* full name of dbf file */
   int done = FALSE;  /* flag signalling all .shp files have been reads */
   DIR * dirp = NULL;        /* used to open the current directory */
   struct dirent * fileShp;  /* used for reading file names */
   int ptrShp = 0;           /* ptr to .shp files in the current directory */
   int shapeType = -1;  /* shape type of the first .shp file found */
-  int strLen;        /* string length */
   Dbf * headDbf = NULL;  /* head ptr to list of dbf structs */
   Dbf * tempDbf = NULL;  /* used for traversing list of dbf structs */
-  Dbf * dbf = NULL;             /* temp dbf strcut */
-  char * restrict shpFileName = NULL;  /* stores the full shapefile name */
+  Dbf * dbf = NULL;             /* temp dbf struct */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  const char * dbfExt = ".dbf";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
+  char * restrict dbfFileName = NULL;  /* stores the full .dbf file name */
   int singleFile = FALSE;  /* flag signalling when we are only looking for a */
                            /* single specified shapefile */
   SEXP tempVec;    /* temp vector for writing results to data vector */
@@ -296,15 +299,15 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-                                              + strlen(".shp") + 1)) == NULL ) {
-      Rprintf( "Error: Allocating memory in dbfFileParser.c\n" );
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function readDbfFile\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
       return data;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
 
   } else {
@@ -403,27 +406,20 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     /* close the shapefile */
     fclose( fptr );
 
-    /* build the corresponding .dbf file name */
-    strLen = strlen( shpFileName );
-    if ( (fileName = (char *) malloc( sizeof( char ) * (strLen+1) ))==NULL) {
-      Rprintf( "Error: Allocating memory in C function readDbfFile.\n" );
-      Rprintf( "Error: Occured in C function readDbfFile.\n" );
-      deallocateRecords( shape.records );
+    /* create the corresponding .dbf file name */
+    if ((dbfFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function readDbfFile.c\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
-      return data; 
+      return data;
     }
-    strcpy( fileName, shpFileName ); 
-    fileName[strLen] = '\0';
-    fileName[strLen-1] = 'f';
-    fileName[strLen-2] = 'b';
-    fileName[strLen-3] = 'd';
+    strcpy( dbfFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( dbfFileName, dbfExt );
 
     /* open the corresponding .dbf file */
-    if ( (fptr = fopen( fileName,  "rb" )) == NULL ) {
+    if ( (fptr = fopen( dbfFileName,  "rb" )) == NULL ) {
       Rprintf( "Error: Couldn't find .dbf file for %s\n", shpFileName );
       deallocateRecords( shape.records );
-      free( fileName );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
       return data;
@@ -436,7 +432,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Occured in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
-      free( fileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -450,7 +445,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Reading dbf fields in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
-      free( fileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -467,7 +461,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
         Rprintf("Error: Occured in readDbfFile() in C function readDbfFile.\n" );
         deallocateRecords( shape.records );
         deallocateDbf( dbf );
-        free( fileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT( 1 );
@@ -481,7 +474,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
           Rprintf("Error: Occured in readDbfFile() in C function readDbfFile.\n" );
           deallocateRecords( shape.records );
           deallocateDbf( dbf );
-          free( fileName );
           fclose( fptr );
           PROTECT( data = allocVector( VECSXP, 1 ) );
           UNPROTECT( 1 );
@@ -518,7 +510,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
               closedir( dirp );
               deallocateRecords( shape.records );
               deallocateDbf( dbf );
-              free( fileName );
               fclose( fptr );
               PROTECT( data = allocVector( VECSXP, 1 ) );
               UNPROTECT( 1 );
@@ -535,7 +526,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       }
     }
 
-    free( fileName );
     fclose( fptr );
   }
 
@@ -681,9 +671,6 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
 
   /* clean up */
   deallocateRecords( shape.records );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  } 
   UNPROTECT( 1 );
 
   return data;
@@ -700,15 +687,15 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
 **
 ** Arguments:  fieldNames,  vector of the field names (column names)
 **             fields,  vector of all the field values
-**             filePrefix,  name of the dbf file to be created without
-**                          the .dbf extension
+**             fileNamePrefix,  name of the dbf file to be created without
+**                              the .dbf extension
 ** Return:     NULL
 ***********************************************************/
-SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
+SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP fileNamePrefix ) {
   int i, j, k, z;               /* loop counters */
-  char * fileName;              /* stores full name of the file */
-  char * prefix;                /* stores the prefix of the file name */
-  char * dbf = ".dbf";          /* file name's extension */
+  unsigned int fileNameLen;     /* length of the shapefile name */
+  const char * dbfExt = ".dbf";    /* shapefile extension */
+  char * restrict dbfFileName = NULL;  /* stores the full .dbf file name */
   FILE * fptr;                  /* pointer to the file that is created */
   unsigned char byte;           /* for writing a byte at a time to the file */
   char buffer[256];             /* for storing a field value as a string */
@@ -721,25 +708,18 @@ SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   unsigned int * colLengths;    /* number of chars in a column */
   unsigned int * decimalLengths;/* number of digits beyond the decimal point */
   unsigned int numRecords;      /* number of records */
-
-  /* copy over the file name's prefix */
-  if ( (prefix = (char *) malloc( strlen(CHAR(STRING_ELT(filePrefix,0)))+1)) 
-                                                             == NULL ) {
-    Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
+  
+  /* create the full .dbf file name */
+  fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(dbfExt);
+  if ((dbfFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
     return R_NilValue;
   }
-  strcpy( prefix, CHAR(STRING_ELT(filePrefix,0)) );
+  strcpy( dbfFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+  strcat( dbfFileName, dbfExt );
 
-  /* create the .dbf file name */
-  if ( (fileName = (char *) malloc( strlen(prefix) + strlen(dbf) + 1)) == NULL){
-    Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
-    return R_NilValue;
-  }
-  strcpy( fileName, prefix );
-  strcat( fileName, dbf );
-
-  /* create the dbf file */
-  if ( (fptr = fopen( fileName, "wb" )) == NULL ) {
+  /* open the dbf file */
+  if ( (fptr = fopen( dbfFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating dbf file to write to in C function writeDbfFile.\n" );
     return R_NilValue;
   }
@@ -1003,8 +983,6 @@ SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP filePrefix ) {
   /* clean up */
   free( colLengths );
   free( decimalLengths );
-  free( fileName );
-  free( prefix );
   fclose( fptr );
 
   return R_NilValue;

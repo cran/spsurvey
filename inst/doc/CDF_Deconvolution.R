@@ -11,8 +11,8 @@ library(spsurvey)
 ###################################################
 ### code chunk number 2: data
 ###################################################
-# Read the data file and determine the number of rows in the file
-decon_data <- read.delim("decon_data.tab")
+# Load the data set and determine the number of rows in the data frame
+data(decon_data)
 nr <- nrow(decon_data)
 
 

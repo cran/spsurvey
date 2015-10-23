@@ -10,6 +10,8 @@
 **  Revised:     February 23, 2007
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
+**  Revised:     June 15, 2015
+**  Revised:     July 8, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -56,8 +58,8 @@ SEXP getRecordIDs( SEXP areaCumSumVec, SEXP sampPosVec, SEXP dsgnIDVec ) {
   double * areaCumSum = NULL;
   double * sampPos = NULL;
   unsigned int * dsgnID = NULL;
-  int smpSize = length( sampPosVec );
-  int dsgnSize = length( dsgnIDVec );
+  unsigned int smpSize = length( sampPosVec );
+  unsigned int dsgnSize = length( dsgnIDVec );
 
   /* variable used for converting results to an R object */
   SEXP IDVec;
@@ -168,9 +170,11 @@ SEXP getRecordIDs( SEXP areaCumSumVec, SEXP sampPosVec, SEXP dsgnIDVec ) {
 SEXP getShapeBox( SEXP fileNamePrefix, SEXP dsgnIDVec ) {
 
   unsigned int * dsgnID = NULL;  /*array of record ID numbers */
-  int dsgnSize = length( dsgnIDVec );  /* number of IDs in dsgnID */
+  unsigned int dsgnSize = length( dsgnIDVec );  /* number of IDs in dsgnID */
   int i;  /* loop counter */
-  char * restrict shpFileName = NULL;  /* stores full shapefile name */
+  unsigned int fileNameLen = 0;  /* length of the shapefile name */
+  const char * shpExt = ".shp";  /* shapefile extension */
+  char * restrict shpFileName = NULL;  /* stores the full .shp file name */
   int singleFile = FALSE;  /* indicator for the number of shapefiles */
   FILE * newShp = NULL;  /* pointer to the temporary shapefile */
   Shape shape;  /* Shape struct for temporary storage of shape data */
@@ -203,16 +207,16 @@ SEXP getShapeBox( SEXP fileNamePrefix, SEXP dsgnIDVec ) {
   /* see if a specific file was sent */
   if ( fileNamePrefix != R_NilValue ) {
 
-    /* create the full shapefile name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
-      + strlen(".shp") + 1)) == NULL ){
-      Rprintf( "Error: Allocating memory in shapeParser.c\n" );
+    /* create the full .shp file name */
+    fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
+    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+      Rprintf( "Error: Allocating memory in C function getShapeBox\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      UNPROTECT( 1 );
       return results;
     }
-    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix,0)));
-    strcat( shpFileName, ".shp" );
+    strcpy( shpFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
+    strcat( shpFileName, shpExt );
     singleFile = TRUE;
   }
 
@@ -314,9 +318,6 @@ SEXP getShapeBox( SEXP fileNamePrefix, SEXP dsgnIDVec ) {
     free( dsgnID );
   }
   fclose( fptr );
-  if ( singleFile == TRUE ) {
-    free( shpFileName );
-  }
   remove( TEMP_SHP_FILE );
   UNPROTECT(6);
 

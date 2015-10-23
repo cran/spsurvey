@@ -31,9 +31,21 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.0 of the spsurvey package was loaded successfully.
+Version 3.1 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
+\section{Create a shapefile}
+
+For creating a survey design using the spsurvey package, the standard form of input regarding the resource is a shapefile.  In order to conserve storage space, shapefiles are not included with the package.  Instead, a data set from which a shapefile can be created is included in the data directory of the package.  The data function is used to load the data set stored in the data directory into an object named UT\_ecoregions.  The sp2shape function is used to create a shapefile from the UT\_ecoregions object. Note that objects loaded from the data sets in the data directory are stored in formats that are defined in the sp package.  See documentation for the sp package for additional information regarding format of the objects.
+
+<<createshape>>=
+# Load the sp object in the data directory
+data(UT_ecoregions)
+
+# Create a shapefile
+sp2shape(sp.obj=UT_ecoregions, shpfilename="UT_ecoregions")
+
+@
 \section{Shapefile attribute data}
 
 The next step is to read the attribute data from the shapefile.  The read.dbf function in the spsurvey package is used to read the attribute (dbf) file in the shapefile and assign it to a data frame named att.  The att data frame is printed by entering the data frame name at the R prompt.
@@ -208,7 +220,7 @@ summary(Unequalsites)
 
 The third survey design is a stratified, equal probability design.  Ecoregions are used to identify strata.  List Stratdsgn is assigned design specifications.  The ecoregion attribute is used to identify strata.  Stratdsgn includes seven lists, one for each stratum.  The names for the lists match the levels of the stratum variable, i.e., the unique values of the ecoregion attribute.  Each list in Stratdsgn contains two items: panel and seltype.  The value for panel is the same as for the equal probability design, and seltype is assigned "Equal".
 
-For this survey design, an sp package object will be used as the sampling frame.  The read.shape function will be used to read the shapefile and assign its output to an sp object named shp.  The following arguments are included in the call to grts: (1) design: assigned the Stratdsgn list; (2) DesignID: assigned the value "STRATIFIED"; (3) type.frame: assigned the value "area"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; 7) stratum: name of the column in the attributes data frame that identifies the stratum code for each element in the frame, which is assigned the value "level3\_nam"; and (8) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
+For this survey design, an sp package object will be used as the sampling frame.  The read.shape function will be used to read the shapefile and assign its output to an sp object named shp.  Note that the object created by the read.shape function is identical to the object that was loaded from the data directory at the beginning of this vignette.  The following arguments are included in the call to grts: (1) design: assigned the Stratdsgn list; (2) DesignID: assigned the value "STRATIFIED"; (3) type.frame: assigned the value "area"; (4) src.frame: assigned the value "sp.object" to indicate that the sampling frame is provided by an sp object; (5) sp.object: name of the sp object, which is assigned the shp object; (6) att.frame: assigned the att data frame; 7) stratum: name of the column in the attributes data frame that identifies the stratum code for each element in the frame, which is assigned the value "level3\_nam"; and (8) shapefile: assigned the value FALSE.  Upon completion of the call to grts, the initial six sites for the survey design and a design summary are printed.
 
 <<Stratsites>>=
 # Read the shapefile
