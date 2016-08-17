@@ -5,14 +5,17 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
 # Purpose: Create an ESRI shapefile from an sp package object
 # Programmer: Tom Kincaid
 # Date: June 6, 2006
-# Last Revised: July 14, 2014
+# Last Revised: June 10, 2016
 # Description:
-#   This function creates an ESRI shapefile from an sp package object.  The type 
-#   of shapefile, i.e., point, polyline, or polygon, is determined by the class 
-#   of the sp object, which must be either "SpatialPointsDataFrame", 
-#   "SpatialLinesDataFrame", or "SpatialPolygonsDataFrame".
+#   This function creates an ESRI shapefile from an sp package object.  The
+#   function can also accommodate an object created by the grts or irs functions
+#   in spsurvey.  The type of shapefile, i.e., point, polyline, or polygon, is
+#   determined by the class of the input object, which must be either
+#   "SpatialDesign", "SpatialPointsDataFrame", "SpatialLinesDataFrame", or
+#   "SpatialPolygonsDataFrame".
 # Arguments:
-#   sp.obj = the sp package object.
+#   sp.obj = the sp package object or object created by either the grts or irs
+#     functions.
 #   shpfilename = name (without any extension) of the output shapefile.  The
 #     default is "tempfile".
 #   prjfilename = name (without any extension) of the projection file for the
@@ -26,8 +29,14 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
 
 # Create a Point shapefile
 
-   if(class(sp.obj) == "SpatialPointsDataFrame") {
+   if(class(sp.obj) %in% c("SpatialDesign", "SpatialPointsDataFrame")) {
       att.data <- sp.obj@data
+      temp <- sapply(att.data, is.character)
+      if(any(temp)) {
+         for(i in seq(ncol(att.data))[temp]) {
+            att.data[,i] <- as.factor(att.data[,i])
+         }
+      }
       temp <- sapply(att.data, is.factor)
       if(any(temp)) {
          for(i in seq(ncol(att.data))[temp]) {
@@ -45,6 +54,12 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
 
    } else if(class(sp.obj) == "SpatialLinesDataFrame") {
       att.data <- sp.obj@data
+      temp <- sapply(att.data, is.character)
+      if(any(temp)) {
+         for(i in seq(ncol(att.data))[temp]) {
+            att.data[,i] <- as.factor(att.data[,i])
+         }
+      }
       temp <- sapply(att.data, is.factor)
       if(any(temp)) {
          for(i in seq(ncol(att.data))[temp]) {
@@ -89,6 +104,12 @@ sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
 
    } else  if(class(sp.obj) == "SpatialPolygonsDataFrame") {
       att.data <- sp.obj@data
+      temp <- sapply(att.data, is.character)
+      if(any(temp)) {
+         for(i in seq(ncol(att.data))[temp]) {
+            att.data[,i] <- as.factor(att.data[,i])
+         }
+      }
       temp <- sapply(att.data, is.factor)
       if(any(temp)) {
          for(i in seq(ncol(att.data))[temp]) {

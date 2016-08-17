@@ -5,7 +5,7 @@ write.dbf <- function(dframe, filename) {
 # Purpose: Write a data frame to the dbf file of an ESRI shapefile
 # Programmer: Tom Kincaid
 # Date: September 30, 2009
-# Revised: July 14, 2014
+# Revised: February 17, 2016
 # Description:
 #   This function writes a data frame to a dbf file.
 # Arguments:
@@ -27,7 +27,15 @@ write.dbf <- function(dframe, filename) {
       }
    }
 
-# Convert factors to character vectors
+# Convert character vectors to factors
+   temp <- sapply(dframe, is.character)
+   if(any(temp)) {
+      for(i in seq(ncol(dframe))[temp]) {
+         dframe[,i] <- as.factor(dframe[,i])
+      }
+   }
+
+# Ensure correct handling of missing values for factors
    temp <- sapply(dframe, is.factor)
    if(any(temp)) {
       for(i in seq(ncol(dframe))[temp]) {

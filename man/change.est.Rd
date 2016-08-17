@@ -2,18 +2,18 @@
 \alias{change.est}
 \title{Category Proportion and Size Estimates}
 \description{
-  This function estimates change between two probability surveys.  Upper and lower confidence
-  bounds also are estimated.
+  This function estimates change between two probability surveys.  Upper and
+  lower confidence bounds also are estimated.
 }
 \usage{
 change.est(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
-   wgt_2, x_2=NULL, y_2=NULL, repeat_2, revisitwgt=FALSE, stratum_1=NULL,
-   stratum_2=NULL, cluster_1=NULL, cluster_2=NULL, wgt1_1=NULL, x1_1=NULL,
-   y1_1=NULL, wgt1_2=NULL, x1_2=NULL, y1_2=NULL, popsize_1=NULL, popsize_2=NULL,
-   popcorrect_1=FALSE, pcfsize_1=NULL, N.cluster_1=NULL, stage1size_1=NULL,
-   support_1=NULL, popcorrect_2=FALSE, pcfsize_2=NULL, N.cluster_2=NULL,
-   stage1size_2=NULL, support_2=NULL, sizeweight_1=FALSE, swgt_1=NULL,
-   swgt1_1=NULL, sizeweight_2=FALSE, swgt_2=NULL, swgt1_2=NULL,
+   wgt_2, x_2=NULL, y_2=NULL, repeat_2, revisitwgt=FALSE, test="mean",
+   stratum_1=NULL,stratum_2=NULL, cluster_1=NULL, cluster_2=NULL, wgt1_1=NULL,
+   x1_1=NULL, y1_1=NULL, wgt1_2=NULL, x1_2=NULL, y1_2=NULL, popsize_1=NULL,
+   popsize_2=NULL, popcorrect_1=FALSE, pcfsize_1=NULL, N.cluster_1=NULL,
+   stage1size_1=NULL, support_1=NULL, popcorrect_2=FALSE, pcfsize_2=NULL,
+   N.cluster_2=NULL, stage1size_2=NULL, support_2=NULL, sizeweight_1=FALSE,
+   swgt_1=NULL, swgt1_1=NULL, sizeweight_2=FALSE, swgt_2=NULL, swgt1_2=NULL,
    vartype_1="Local", vartype_2="Local", conf=95, check.ind=TRUE, warn.ind=NULL,
    warn.df=NULL, warn.vec=NULL)
 }
@@ -48,6 +48,10 @@ change.est(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
     of the repeat visit sites are assigned equal weights when calculating the
     covariance component of the change estimate standard error.  The default
     is FALSE.}
+  \item{test}{a character string or character vector providing the location
+    measure(s) to use for change estimation for continuous variables.  The
+    choices are "mean", "median", or c("mean", "median").  The default is
+    "mean".}
   \item{stratum_1}{the stratum for each survey one site.  The default is NULL.}
   \item{stratum_2}{the stratum for each survey two site.  The default is NULL.}
   \item{cluster_1}{the stage one sampling unit (primary sampling unit or
@@ -77,9 +81,13 @@ change.est(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
     to identify the stratum codes.  The default is NULL.}
   \item{popsize_2}{known size of the survey two resource.  The default is NULL.}
   \item{popcorrect_1}{a logical value that indicates whether finite or
-    continuous population correction factors should be employed during variance 
-    estimation for survey one, where TRUE = use the correction factors and FALSE
-    = do not use the correction factors.  The default is FALSE.}
+    continuous population correction factors should be employed during variance
+    estimation for survey one, where TRUE = use the correction factor and FALSE
+    = do not use the correction factor.  The default is FALSE.  To employ the
+    correction factor for a single-stage sample, values must be supplied for
+    arguments pcfsize_1 and support_1.  To employ the correction factor for a
+    two-stage sample, values must be supplied for arguments N.cluster_1,
+    stage1size_1, and support_1.}
   \item{pcfsize_1}{size of the survey one resource, which is required for
     calculation of finite and continuous population correction factors for a
     single-stage sample.  For a stratified sample this argument must be a vector
@@ -105,8 +113,13 @@ change.est(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
     calculation of finite and continuous population correction factors.  The
     default is NULL.}
   \item{popcorrect_2}{a logical value that indicates whether finite or
-    continuous population correction factors should be employed during variance 
-    estimation for survey two.  The default is FALSE.}
+    continuous population correction factors should be employed during variance
+    estimation for survey two, where TRUE = use the correction factor and FALSE
+    = do not use the correction factor.  The default is FALSE.  To employ the
+    correction factor for a single-stage sample, values must be supplied for
+    arguments pcfsize_2 and support_2.  To employ the correction factor for a
+    two-stage sample, values must be supplied for arguments N.cluster_2,
+    stage1size_2, and support_2.}
   \item{pcfsize_2}{size of the survey two resource.  The default is NULLL.}
   \item{N.cluster_2}{the number of stage one sampling units in the survey two
     resource.  The default is NULL.}

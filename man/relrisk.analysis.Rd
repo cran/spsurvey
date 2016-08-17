@@ -79,8 +79,13 @@ relrisk.analysis(sites=NULL, subpop=NULL, design, data.rr, response.var,
     element in the stressor.var argument.}
   \item{popcorrect}{a logical value that indicates whether finite or continuous 
     population correction factors should be employed during variance 
-    estimation, where TRUE = use the correction factors and FALSE = do not 
-    use the correction factors.  The default is FALSE.}
+    estimation, where TRUE = use the correction factor and FALSE = do not 
+    use the correction factor.  The default is FALSE.  To employ the correction
+    factor for a single-stage sample, values must be supplied for argument
+    pcfsize and for the support variable of the design argument.  To employ the
+    correction factor for a two-stage sample, values must be supplied for
+    arguments N.cluster and stage1size, and for the support variable of the
+    design argument.}
   \item{pcfsize}{size of the resource, which is required for calculation of
     finite and continuous population correction factors for a single-stage
     sample.  For a stratified sample this argument must be a vector containing a

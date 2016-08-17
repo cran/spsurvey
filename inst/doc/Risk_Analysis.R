@@ -86,10 +86,6 @@ data.risk <- data.frame(siteID=NLA_2007$siteID,
 ###################################################
 ### code chunk number 9: Riskeval
 ###################################################
-#
-# Conduct a relative risk analysis
-#
-
 # Assign response and stressor variable names
 resp_vars <- c("Chlorophyll_a", "MacroInvert_OE")
 stress_vars <- c("Total_Nitrogen", "Total_Phosphorus", "Turbidity")
@@ -118,7 +114,7 @@ print(RelRisk_Estimates)
 ### code chunk number 12: Riskeval
 ###################################################
 # Write results as a comma-separated value (csv) file
-write.csv(RelRisk_Estimates, file="RelRisk_Estimates.csv")
+write.csv(RelRisk_Estimates, file="RelRisk_Estimates.csv", row.names=FALSE)
 
 
 
@@ -144,7 +140,7 @@ print(AttRisk_Estimates)
 ### code chunk number 15: Riskeval
 ###################################################
 # Write results as a csv file
-write.csv(AttRisk_Estimates, file="AttRisk_Estimates.csv")
+write.csv(AttRisk_Estimates, file="AttRisk_Estimates.csv", row.names=FALSE)
 
 
 

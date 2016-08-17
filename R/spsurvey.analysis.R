@@ -11,7 +11,7 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
 # Purpose: Create an Object of Class spsurvey.analysis
 # Programmer: Tom Kincaid
 # Date: September 29, 2003
-# Last Revised: August 19, 2014
+# Last Revised: August 12, 2016
 # Description:
 #   This function creates an object of class spsurvey.analysis that contains all 
 #   of the information necessary to use the analysis functions in the 
@@ -136,8 +136,13 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
 #                      "Pop 3"=NULL)
 #   popcorrect = a logical value that indicates whether finite or continuous
 #     population correction factors should be employed during variance
-#     estimation, where TRUE = use the correction factors and FALSE = do not use
-#     the correction factors.  The default is FALSE.
+#     estimation, where TRUE = use the correction factor and FALSE = do not use
+#     the correction factor.  The default is FALSE.  To employ the correction
+#     factor for a single-stage sample, values must be supplied for argument
+#     pcfsize and for the support variable of the design argument.  To employ the
+#     correction factor for a two-stage sample, values must be supplied for
+#     arguments N.cluster and stage1size, and for the support variable of the
+#     design argument.
 #   pcfsize = size of the resource, which is required for calculation of finite
 #     and continuous population correction factors for a single-stage sample.
 #     For a stratified sample this argument must be a vector containing a value
@@ -158,7 +163,7 @@ spsurvey.analysis <- function(sites=NULL, subpop=NULL, design=NULL,
 #     The default is NULL.
 #   support = the support value for each site - the value one (1) for a site
 #     from a finite resource or the measure of the sampling unit associated with
-#     a site from anextensive resource, which is required for calculation of
+#     a site from an extensive resource, which is required for calculation of
 #     finite and continuous population correction factors.  This variable can be
 #     input directly or as a formula.  The default is NULL.
 #   sizeweight = a logical value that indicates whether size-weights should be

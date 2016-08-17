@@ -123,8 +123,7 @@ print(Extent_Estimates[c(1:8, 32:34),])
 ### code chunk number 13: Statuseval
 ###################################################
 # Write results as a comma-separated value (csv) file
-write.csv(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(Extent_Estimates, file="Extent_Estimates.csv", row.names=FALSE)
 
 
 
@@ -197,7 +196,7 @@ print(Condition_Estimates[c(1:3, 16:18),])
 ### code chunk number 20: Conditioneval
 ###################################################
 # Write results as a csv file
-write.csv(Condition_Estimates, file="Condition_Estimates.csv")
+write.csv(Condition_Estimates, file="Condition_Estimates.csv", row.names=FALSE)
 
 
 
@@ -239,7 +238,8 @@ print(Condition_Estimates_popsize[c(1:3, 16:18),])
 ### code chunk number 24: Conditionevalpop
 ###################################################
 # Write results as a csv file
-write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
+write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv",
+   row.names=FALSE)
 
 
 
@@ -294,7 +294,7 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 ### code chunk number 29: Quanteval
 ###################################################
 # Write CDF estimates as a csv file
-write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
+write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv", row.names=FALSE)
 
 
 
@@ -317,7 +317,7 @@ print(CDF_Estimates$Pct[1:10,])
 ### code chunk number 32: Quanteval
 ###################################################
 # Write percentile estimates as a csv file
-write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
+write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv", row.names=FALSE)
 
 
 
@@ -343,7 +343,7 @@ print(CDF_Tests, digits=2)
 ### code chunk number 35: Quanteval
 ###################################################
 # Write CDF test results as a csv file
-write.csv(CDF_Tests, file="CDF_Tests.csv")
+write.csv(CDF_Tests, file="CDF_Tests.csv", row.names=FALSE)
 
 
 

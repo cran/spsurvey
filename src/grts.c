@@ -17,6 +17,7 @@
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
 **  Revised:     June 15, 2015
+**  Revised:     November 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -312,7 +313,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     if ( strlen(fileShp->d_name) > 4 ) {
       ptrShp = fileMatch( fileShp->d_name, ".shp" );
       if ( ptrShp == 1 ) {
-        if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+        if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
               +  1)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function combineShpFiles.\n" );
           closedir( dirp );
@@ -326,6 +327,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
   /* make sure a .shp file was found */
   if ( ptrShp == 0 ) {
     Rprintf( "Error: Couldn't find a .shp file in C function combineShpFiles.\n" );
+    free( shpFileName );
     closedir( dirp );
     return -1;
   }
@@ -333,6 +335,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
   /* open the first .shp file */
   if ( (oldShp = fopen( shpFileName, "rb" )) == NULL ) {
     Rprintf( "Error: Opening %s file in C function combineShpFiles.\n", shpFileName );
+    free( shpFileName );
     closedir( dirp );
     return -1;
   }
@@ -341,6 +344,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
   /* parse main file header */
   if ( parseHeader( oldShp, &firstShape ) == -1 ) {
     Rprintf( "Error: Reading %s file header in C function combineShpFiles.\n", shpFileName );
+    free( shpFileName );
     fclose( oldShp );
     closedir( dirp );
     return -1;
@@ -540,6 +544,9 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     /* got a shape number that we can't parse */
     } else {
       Rprintf( "Error: Unrecognized shape type in C function combineShpFiles.\n" );
+      free( shpFileName );
+      fclose( oldShp );
+      closedir( dirp );
       return -1; 
     }
 
@@ -548,7 +555,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     }
 
   }
-
+  free( shpFileName );
   fclose( oldShp );
 
     /* get the name of the next .shp file */
@@ -556,7 +563,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     if ( strlen(fileShp->d_name) > 4 ) {
       ptrShp = fileMatch( fileShp->d_name, ".shp" );
       if ( ptrShp == 1 ) {
-        if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+        if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
               +  1)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function combineShpFiles.\n" );
           closedir( dirp );
@@ -578,6 +585,8 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     /* open the next .shp file */
     if ( (oldShp = fopen( shpFileName, "rb" )) == NULL ) {
       Rprintf( "Error: Opening %s file in C function combineShpFiles.\n", shpFileName );
+      free( shpFileName );
+      closedir( dirp );
       return -1;
     }
 
@@ -588,14 +597,18 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     /* get this next file's header info */
     if ( parseHeader( oldShp, &shape ) == -1 ) {
       Rprintf("Error: Reading %s file header in C function combineShpFiles.\n", shpFileName);
+      free( shpFileName );
       fclose( oldShp );
+      closedir( dirp );
       return -1;
     }  
 
     /* make sure we have consistant shp files */
     if ( shape.shapeType != firstShape.shapeType ) {
       Rprintf("Error: Multiple shapefiles with varying shape types in C function combineShpFiles.\n" );
+      free( shpFileName );
       fclose( oldShp );
+      closedir( dirp );
       return -1;
     }
 
@@ -767,7 +780,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
       }
 
     }
-
+    free( shpFileName );
     fclose( oldShp );
 
     /* get the next .shp file */
@@ -776,7 +789,7 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
       if ( strlen(fileShp->d_name) > 4 ) {
         ptrShp = fileMatch( fileShp->d_name, ".shp" );
         if ( ptrShp == 1 ) {
-          if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+          if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function combineShpFiles.\n" );
             closedir( dirp );
@@ -791,12 +804,12 @@ int combineShpFiles( FILE * newShp, unsigned int * ids, int numIDs ) {
     if ( ptrShp == 0 ) {
       done = TRUE;
     }
-
   }
+  closedir( dirp );
 
-  firstShape.fileLength = fileLength;
 
   /* overwrite the new header information into the new shapefile */
+  firstShape.fileLength = fileLength;
   fseek( newShp, 24, SEEK_SET );
   ptr = (unsigned char *) &(firstShape.fileLength);
   buffer[0] = ptr[3];
@@ -1283,7 +1296,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
 
     /* create the full .shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -1297,6 +1310,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   /* open the new temporary .shp file */
   if ( ( newShp = fopen( TEMP_SHP_FILE, "wb" )) == NULL ) {
     Rprintf( "Error: Creating temporary .shp file %s in C function numLevels.\n", TEMP_SHP_FILE );
+    free( shpFileName );
     PROTECT( results = allocVector( VECSXP, 1 ) );
     UNPROTECT(1);
     return results;
@@ -1308,6 +1322,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     Rprintf( "Error: Allocating memory in C function numLevels.\n" );
     PROTECT( results = allocVector( VECSXP, 1 ) );
     UNPROTECT(1);
+    free( shpFileName );
     fclose( newShp );
     remove( TEMP_SHP_FILE );
     return results;
@@ -1322,12 +1337,12 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     if ( combineShpFiles( newShp, dsgnmdID, dsgSize ) == -1 ) {
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
+      free( shpFileName );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
       Rprintf( "Error: Combining multiple shapefiles in C function numLevels.\n" );
       return results; 
     }
-    fclose( newShp );
 
   } else {
 
@@ -1335,13 +1350,15 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     if (createNewTempShpFile(newShp,shpFileName,dsgnmdID,dsgSize) == -1 ){
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
+      free( shpFileName );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
       Rprintf( "Error: Creating temporary shapefile in C function numLevels.\n" );
       return results; 
     }
-    fclose( newShp );
   }
+  free( shpFileName );
+  fclose( newShp );
 
   /* initialize the shape struct */
   shape.records = NULL;
@@ -1394,6 +1411,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     PROTECT( results = allocVector( VECSXP, 1 ) );
     UNPROTECT(1);
     fclose( fptr );
+    remove( TEMP_SHP_FILE );
     return results;
   }
   for ( i = 0; i < dsgSize; ++i ) {
@@ -1406,6 +1424,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     PROTECT( results = allocVector( VECSXP, 1 ) );
     UNPROTECT(1);
     fclose( fptr );
+    remove( TEMP_SHP_FILE );
     return results;
   }
   celWtsSize = 1;
@@ -1457,6 +1476,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       fclose( fptr );
+      remove( TEMP_SHP_FILE );
       return results;
     }
 
@@ -1469,6 +1489,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       fclose( fptr );
+      remove( TEMP_SHP_FILE );
       return results;
     }
 
@@ -1485,6 +1506,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       fclose( fptr );
+      remove( TEMP_SHP_FILE );
       return results;
     }
 
@@ -1498,6 +1520,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       fclose( fptr );
+      remove( TEMP_SHP_FILE );
       return results;
     }
 
@@ -1520,6 +1543,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       fclose( fptr );
+      remove( TEMP_SHP_FILE );
       return results;
     }
 
@@ -1532,6 +1556,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
         PROTECT( results = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
         fclose( fptr );
+        remove( TEMP_SHP_FILE );
         return results;
       }
    
@@ -1544,6 +1569,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
         PROTECT( results = allocVector( VECSXP, 1 ) );
         UNPROTECT(1); 
         fclose( fptr );
+        remove( TEMP_SHP_FILE );
         return results;
       }
 
@@ -1556,6 +1582,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
         PROTECT( results = allocVector( VECSXP, 1 ) );
         UNPROTECT(1); 
         fclose( fptr );
+        remove( TEMP_SHP_FILE );
         return results;
       }
 
@@ -1565,6 +1592,7 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT(1); 
       fclose( fptr );
+      remove( TEMP_SHP_FILE );
       return results;
     }
     sint = sum( celWts, celWtsSize ) / nsmp; 

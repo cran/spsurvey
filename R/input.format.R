@@ -81,7 +81,7 @@ if(is.numeric(x)) {
       rslt <- x
    }
 
-# Stop execution if the input vlues is not numeric or character
+# Stop execution if the input value is not numeric or character
 } else {
    stop("The data frame or matrix input to write.object contains elements that \nare neither numeric nor character values.\n")
 }

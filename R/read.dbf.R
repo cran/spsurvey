@@ -5,7 +5,7 @@ read.dbf <- function(filename=NULL) {
 # Purpose: Read the dbf file of an ESRI shapefile
 # Programmer: Tom Kincaid
 # Date: March 1, 2005
-# Last Revised: October 8, 2008
+# Revised: February 17, 2016
 # Description:
 #   This function reads either a single dbf file or multiple dbf files.  For 
 #   multiple dbf files, all of the dbf files must have the same variable names.
@@ -44,10 +44,6 @@ read.dbf <- function(filename=NULL) {
       for(i in (1:length(dbffile))[ind])
          dbffile[,i] <- as.factor(dbffile[,i])
    }
-
-# Assign class to the output data frame
-
-   attr(dbffile, "class") <- c("SurveyFrame", "data.frame")
 
 # Return the data frame
 

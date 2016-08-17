@@ -712,7 +712,7 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
     /* create the full .shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function linSample\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );

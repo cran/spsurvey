@@ -253,7 +253,7 @@ summary(SC_estuaries$WQ_score)
 ### code chunk number 26: Quanteval
 ###################################################
 #
-# Conduct an analysis of quantitativen variables
+# Conduct an analysis of quantitative variables
 #
 
 # Note that the existing sites, subpop, and design data frames can be reused
@@ -303,7 +303,7 @@ print(CDF_Estimates$Pct[1:10,])
 ### code chunk number 31: Quanteval
 ###################################################
 # Write percentile estimates as a csv file
-write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
+write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv", row.names=FALSE)
 
 
 
@@ -329,7 +329,7 @@ print(CDF_Tests, digits=3)
 ### code chunk number 34: Quanteval
 ###################################################
 # Write CDF test results as a csv file
-write.csv(CDF_Tests, file="CDF_Tests.csv")
+write.csv(CDF_Tests, file="CDF_Tests.csv", row.names=FALSE)
 
 
 

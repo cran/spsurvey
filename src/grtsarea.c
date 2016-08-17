@@ -1547,7 +1547,7 @@ SEXP pointInPolygonFile( SEXP fileNamePrefix, SEXP xcsVec, SEXP ycsVec,
   if ( fileNamePrefix != R_NilValue ) {
 
     /* create the full .shp file name */
-    if ((shpFileName = (char * restrict)malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
+    if ((shpFileName = (char * restrict) malloc(strlen(CHAR(STRING_ELT(fileNamePrefix,0)))
                                               + strlen(".shp") + 1)) == NULL ){
       Rprintf( "Error: Allocating memory in C function pointInPolygonFile.\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );

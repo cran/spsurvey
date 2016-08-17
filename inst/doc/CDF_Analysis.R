@@ -116,8 +116,7 @@ CDF_Estimates <- cont.analysis(sites, subpop, design, data.cont,
 ### code chunk number 12: Quanteval
 ###################################################
 # Write CDF estimates as a csv file
-write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv", row.names=FALSE)
 
 
 
@@ -172,7 +171,7 @@ abline(1, 1, col="red", lwd=2)
 ### code chunk number 17: Quanteval
 ###################################################
 # Write CDF test results as a csv file
-write.table(CDF_Tests, file="CDF_Tests.csv", sep=",", row.names=FALSE)
+write.csv(CDF_Tests, file="CDF_Tests.csv", row.names=FALSE)
 
 
 

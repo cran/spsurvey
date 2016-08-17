@@ -8,7 +8,7 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 # Function: input.check
 # Programmer: Tom Kincaid
 # Date: September 25, 2003
-# Last Revised: August 25, 2014
+# Last Revised: November 11, 2015
 # Description:
 #   This function checks input values for errors, consistency, and compatibility
 #   with analytical functions.
@@ -29,6 +29,7 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 #         stage sample, where TRUE = a two-stage sample and FALSE = not a two-
 #         stage sample.
 #      cluster = the stage one sampling unit codes.
+#      cluster.levels = factor levels of the stage one sampling unit codes.
 #      ncluster = the number of stage one sampling units in the sample.
 #      wgt1 = the final adjusted stage one weights.
 #      xcoord1 = the stage one x-coordinates for location.
@@ -37,6 +38,10 @@ input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
 #      pcfactor.ind = a logical value that indicates whether the population
 #         correction factor is used during variance estimation, where TRUE = use
 #         the population correction factor and FALSE = do not use the factor.
+#         To employ the correction factor for a single-stage sample, values must
+#         be supplied for arguments pcfsize and support.  To employ the
+#         correction factor for a two-stage sample, values must be supplied for
+#         arguments N.cluster, stage1size, and support.
 #      pcfsize = size of the resource, which is required for calculation of
 #         finite and continuous population correction factors for a single-stage
 #         sample.  For a stratified sample this argument must be a vector
@@ -271,9 +276,10 @@ if(pcfactor.ind) {
             stop("\nThe known number of stage one sampling units for each stratum must be a \npositive value.")
          if(is.null(names(N.cluster)))
             stop("\nThe vector of known number of stage one sampling units for each stratum must be \nnamed.")
-         N.cluster <- N.cluster[order(names(N.cluster))]
-         if(sum(names(N.cluster) == stratum.levels) != nstrata) 
+         temp <- match(stratum.levels, names(N.cluster))
+         if(any(is.na(temp)))
             stop("\nThe names for the vector of known number of stage one sampling units for each \nstratum must match the stratum codes.")
+         N.cluster <- N.cluster[temp]
          temp <- ncluster > N.cluster
          if(any(temp)) {
             temp.str <- vecprint(names(N.cluster)[temp])
@@ -293,13 +299,15 @@ if(pcfactor.ind) {
          stage1stratum <- substring(names(stage1size), 1, temp-1)
          names(stage1size) <- substring(names(stage1size), temp+1)
          stage1size <- split(stage1size, stage1stratum)
-         stage1size <- stage1size[order(names(stage1size))]
-         if(sum(names(stage1size) == stratum.levels) != nstrata) 
+         temp <- match(stratum.levels, names(stage1size))
+         if(any(is.na(temp)))
             stop("\nThe names for the list of known number of stage one sampling units for each \nstratum do not match the stratum codes")
+         stage1size <- stage1size[temp]
          for(i in 1:nstrata) {
-            stage1size[[i]] <- stage1size[[i]][order(names(stage1size[[i]]))]
-            if(sum(names(stage1size[[i]]) == cluster.levels[[i]]) != ncluster[i]) 
+            temp <- match(cluster.levels[[i]], names(stage1size[[i]]))
+            if(any(is.na(temp)))
                stop(paste("\nThe names for the vector of known size of the stage one sampling units did not \nmatch the stage one sampling unit codes for stratum ", stratum.levels[i], ".\n\n", sep=""))
+            stage1size[[i]] <- stage1size[[i]][temp]
             stratum.i <- stratum == stratum.levels[i]
             temp <- tapply(support[stratum.i], cluster[[i]], sum) > stage1size[[i]]
             if(any(temp)) {
@@ -342,9 +350,10 @@ if(pcfactor.ind) {
             stop("\nThe number of values of known size of the stage one sampling units must equal \nthe number of stage one sampling units.")
          if(is.null(names(stage1size)))
             stop("\nThe vector of known size of the stage one sampling units must be named.")
-         stage1size <- stage1size[order(names(stage1size))]
-         if(sum(names(stage1size) == cluster.levels) != ncluster) 
+         temp <- match(cluster.levels, names(stage1size))
+         if(any(is.na(temp)))
             stop("\nThe names for the vector of known size of the stage one sampling units must \nmatch the stage one sampling unit codes.")
+         stage1size <- stage1size[temp]
          temp <- tapply(support, cluster, sum) > stage1size
          if(any(temp)) {
             temp.str <- vecprint(names(stage1size)[temp])

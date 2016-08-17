@@ -34,6 +34,8 @@
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
 **  Revised:     June 12, 2015
+**  Revised:     November 5, 2015
+**  Revised:     August 15, 2016
 ******************************************************************************/
 
 #include <stdio.h>
@@ -46,6 +48,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include "shapeParser.h"
+#include "order.h"
 
 /* found in dbfFileParser.c */
 extern void deallocateDbf( Dbf * dbf );
@@ -71,11 +74,19 @@ unsigned int readBigEndian( unsigned char * buffer, int length ) {
   int i;
   unsigned int value = 0;
 
-  for ( i=0; i < length-1; ++i ) {
+  if (HOST_ORDER == LITTLE_ENDIAN) {
+    for ( i=0; i < length-1; ++i ) {
+      value += buffer[i];
+      value = value << 8;  
+    }
     value += buffer[i];
-    value = value << 8;  
+  } else {
+    for ( i=length-1; i > 0; --i ) {
+      value += buffer[i];
+      value = value << 8;  
+    }
+    value += buffer[i];
   }
-  value += buffer[i];
 
   return value;
 }
@@ -97,11 +108,19 @@ unsigned int readLittleEndian( unsigned char * buffer, int length ) {
   int i;
   unsigned int value = 0;
 
-  for ( i=length-1; i > 0; --i ) {
+  if (HOST_ORDER == LITTLE_ENDIAN) {
+    for ( i=length-1; i > 0; --i ) {
+      value += buffer[i];
+      value = value << 8;  
+    }
     value += buffer[i];
-    value = value << 8;  
+  } else {
+    for ( i=0; i < length-1; ++i ) {
+      value += buffer[i];
+      value = value << 8;  
+    }
+    value += buffer[i];
   }
-  value += buffer[i];
 
   return value;
 }
@@ -313,7 +332,7 @@ int parsePoints( FILE * fptr, Shape * shape ) {
   int filePosition = 100;   /* start at 100 bytes, just past the header */
   Record record;            /* temp record struct forstoring data */
   Point * point;            /* point struct for holding point data */
-  Record * lastRecord;      /* pointer to last record in linked list */
+  Record * lastRecord = NULL;      /* pointer to last record in linked list */
   unsigned char buffer[4];  /* temp buffer for reading data from the file */
   Record * temp;            /* used for traversing linked list of records */
 
@@ -408,7 +427,7 @@ int parsePointsZ( FILE * fptr, Shape * shape ) {
   int filePosition = 100;   /* start at 100 bytes, just past the header */
   Record record;            /* temp record struct forstoring data */
   PointZ * pointZ;            /* point struct for holding point data */
-  Record * lastRecord;      /* pointer to last record in linked list */
+  Record * lastRecord = NULL;      /* pointer to last record in linked list */
   unsigned char buffer[4];  /* temp buffer for reading data from the file */
   Record * temp;            /* used for traversing linked list of records */
 
@@ -511,7 +530,7 @@ int parsePointsM( FILE * fptr, Shape * shape ) {
   int filePosition = 100;   /* start at 100 bytes, just past the header */
   Record record;            /* temp record struct forstoring data */
   PointM * pointM;            /* point struct for holding point data */
-  Record * lastRecord;      /* pointer to last record in linked list */
+  Record * lastRecord = NULL;      /* pointer to last record in linked list */
   unsigned char buffer[4];  /* temp buffer for reading data from the file */
   Record * temp;            /* used for traversing linked list of records */
 
@@ -618,7 +637,7 @@ int parsePolygon( FILE * fptr, Shape * shape ) {
   int filePosition = 100;    /* start at 100 bytes, just past file header */
   unsigned char buffer[4];   /* temp buffer for reading data from the file */
   Record record;             /* temp record struct for storing data */
-  Record * lastRecord;       /* pointer to last record in linked list */
+  Record * lastRecord = NULL;       /* pointer to last record in linked list */
   Polygon * poly;            /* ploygon struct for holding polygon data */
   Record * temp;             /* used for traversing the linked list of records*/
   Point * part = NULL;       /* used for determing ring direction for */
@@ -870,7 +889,7 @@ int parsePolygonZ( FILE * fptr, Shape * shape ) {
   int filePosition = 100;    /* start at 100 bytes, just past file header */
   unsigned char buffer[4];   /* temp buffer for reading data from the file */
   Record record;             /* temp record struct for storing data */
-  Record * lastRecord;       /* pointer to last record in linked list */
+  Record * lastRecord = NULL;       /* pointer to last record in linked list */
   PolygonZ * polyZ;          /* ploygon struct for holding polygon data */
   Record * temp;             /* used for traversing the linked list of records*/
   Point * part = NULL;       /* used for determing ring direction for */
@@ -1154,7 +1173,7 @@ int parsePolygonM( FILE * fptr, Shape * shape ) {
   int filePosition = 100;    /* start at 100 bytes, just past file header */
   unsigned char buffer[4];   /* temp buffer for reading data from the file */
   Record record;             /* temp record struct for storing data */
-  Record * lastRecord;       /* pointer to last record in linked list */
+  Record * lastRecord = NULL;       /* pointer to last record in linked list */
   PolygonM * polyM;          /* ploygon struct for holding polygon data */
   Record * temp;             /* used for traversing the linked list of records*/
   Point * part = NULL;       /* used for determing ring direction for */
@@ -1657,7 +1676,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
 
     /* create the full .shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function getRecordShapeSizes.\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -1682,7 +1701,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     	 if ( strlen(fileShp->d_name) > 4 ) {
     	   ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	   if ( ptrShp == 1 ) {
-    	     if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	     if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function getRecordShapeSizes.\n" );
             closedir( dirp );
@@ -1713,6 +1732,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     if ( fptr == NULL ) {
       Rprintf( "Error: Opening shapefile in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
       return data;
@@ -1722,9 +1742,10 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     if ( parseHeader( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading main file header in C function getRecordShapeSizes.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
+        fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
-        fclose ( fptr );
         return data;
     }
 
@@ -1736,6 +1757,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
       Rprintf( "Error: Multiple shapefiles have different shape types.\n" );
       Rprintf( "Error: Occured in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -1749,6 +1771,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
       Rprintf( "Error: Shape type must be polygons or polylines,\n" );
       Rprintf( "Error: Occured in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -1760,9 +1783,10 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
       if ( parsePolygon( fptr, &shape ) == - 1 ) {
         Rprintf( "Error: Reading Polygon or Polyline data from file %s \nin C function getRecordShapeSizes.\n", shpFileName );
         deallocateRecords( shape.records );
+        free( shpFileName );
+        fclose ( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
-        fclose ( fptr );
         return data; 
       }
 
@@ -1772,9 +1796,10 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
       if ( parsePolygonZ( fptr, &shape ) == - 1 ) {
         Rprintf( "Error: Reading PolygonZ or PolylineZ data from file %s \nin C function getRecordShapeSizes.\n", shpFileName );
         deallocateRecords( shape.records );
+        free( shpFileName );
+        fclose ( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
-        fclose ( fptr );
         return data; 
       }
 
@@ -1784,9 +1809,10 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
       if ( parsePolygonM( fptr, &shape ) == - 1 ) {
         Rprintf( "Error: Reading PolygonM or PolylineM data from file %s \nin C function getRecordShapeSizes.\n", shpFileName );
         deallocateRecords( shape.records );
+        free( shpFileName );
+        fclose ( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
-        fclose ( fptr );
         return data; 
       }
 
@@ -1794,13 +1820,16 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     } else {
       Rprintf( "Error: Unrecognized shape type in C function getRecordShapeSizes.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
+      fclose ( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
-      fclose ( fptr );
       return data; 
     }
 
     /* get the next .shp file */
+    free( shpFileName );
+    fclose ( fptr );
     if ( singleFile == TRUE )  {
       done = TRUE;
     } else {
@@ -1809,7 +1838,7 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
     	   if ( strlen(fileShp->d_name) > 4 ) {
     	     ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	     if ( ptrShp == 1 ) {
-    	       if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	       if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                   +  1)) == NULL ) {
               Rprintf( "Error: Allocating memory in C function getRecordShapeSizes.\n" );
               closedir( dirp );
@@ -1828,9 +1857,6 @@ SEXP getRecordShapeSizes( SEXP fileNamePrefix ) {
         done = TRUE;
       }
     }
-
-    fclose( fptr );
-
   }
 
   /* close the current directory */
@@ -3324,249 +3350,6 @@ SEXP convertToR( Shape * shape, Dbf * dbf, SEXP fileNamePrefix ) {
 
 
 /**********************************************************
-** Function:   getPartAreas
-**
-** Purpose:    Returns a R vector of areas of all the parts found in
-**             all the .shp files in the current working directory.
-** Notes:      This function will return an error if one of the .shp files
-**             is not a polygon shape type.  
-**             Parts that are holes will have a negative area.
-** Arguments:  void
-** Return:     data,  R vector of areas for each part in the shapefiles
-***********************************************************/
-SEXP getPartAreas() {
-
-  int i;             /* loop counter */
-  FILE * fptr;       /* file pointer to shapefile */
-  Shape shape;       /* struct to store all info and data found in shapefile */
-  SEXP data = NULL;  /* R object to store data in for returning to R */
-  int idx;           /* array index */
-  Record * temp;     /* used to traverse list of records */
-  int done = FALSE;  /* flag signalling all .shp files have been read */
-  DIR * dirp = NULL;          /* used to open the current directory */
-  struct dirent * fileShp;    /* used for reading file names */
-  int ptrShp = 0;             /* ptr to .shp files in the current directory */
-  char * restrict shpFileName = NULL;  /* stores the full shapefile name */
-
-  /* initialize the shape struct */
-  shape.records = NULL;
-  shape.numRecords = 0;
-  shape.numParts = 0;
-
-  /* open the current directory */
-  if((dirp = opendir(".")) == NULL) {
-    Rprintf( "Error: Opening the current directory in C function getPartAreas.\n" );
-    PROTECT( data = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
-    return data;
-  }
-
-  /* get the name of the first .shp file */
-  while ( ptrShp == 0 && (fileShp = readdir( dirp )) != NULL ) {
-    if ( strlen(fileShp->d_name) > 4 ) {
-      ptrShp = fileMatch( fileShp->d_name, ".shp" );
-      if ( ptrShp == 1 ) {
-        if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
-              +  1)) == NULL ) {
-          Rprintf( "Error: Allocating memory in C function getPartAreas.\n" );
-          closedir( dirp );
-          PROTECT( data = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
-          return data;
-        }
-        strcpy( shpFileName, fileShp->d_name);
-    	 }
-    }
-  }
-
-  /* make sure a .shp file was found */
-  if ( ptrShp == 0 ) {
-    Rprintf( "Error: Couldn't find a .shp file in C function getPartAreas.\n" );
-    closedir( dirp );
-    PROTECT( data = allocVector( VECSXP, 2 ) );
-    UNPROTECT(1);
-    return data;
-  }
-
-while ( done == FALSE ) {
-  
-    /* open the shapefile */
-    if ( (fptr = fopen( shpFileName, "rb" )) == NULL ) {
-      Rprintf( "Error: Opening shapefile in C function getPartAreas.\n" );
-      deallocateRecords( shape.records );
-      PROTECT( data = allocVector( VECSXP, 2 ) );
-      UNPROTECT(1);
-      return data;
-    }
-
-    /* parse main file header */
-    if ( parseHeader( fptr, &shape ) == -1 ) {
-        Rprintf( "Error: Reading main file header in C function getPartAreas.\n" );
-        deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        fclose ( fptr );
-        return data;
-    }
-
-    /* if we get a Point or Polyline file then return an error */
-    if ( shape.shapeType == POINTS || shape.shapeType == POLYLINE || 
-            shape.shapeType == POINTS_Z || shape.shapeType == POLYLINE_Z ||
-              shape.shapeType == POINTS_M || shape.shapeType == POLYLINE_M ) {
-        Rprintf( "Error: Invalid shape type found in file %s.\n", shpFileName );
-        Rprintf( "Error: Shape type must be polygons.\n" );
-        Rprintf( "Error: Occurred in C function getPartAreas.\n" );
-        deallocateRecords( shape.records );
-        fclose( fptr );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        return data; 
-
-    /* read Polygon shape */
-    } else if ( shape.shapeType == POLYGON ) {
-
-      if ( parsePolygon( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading Polygon data from file %s \nin C function getPartAreas.\n", shpFileName  );
-        deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        fclose ( fptr );
-        return data; 
-      }
-      
-    /* read PolygonZ shape */
-    } else if ( shape.shapeType == POLYGON_Z ) {
-
-      if ( parsePolygonZ( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading PolygonZ data from file %s \nin C function getPartAreas.\n", shpFileName  );
-        deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        fclose ( fptr );
-        return data; 
-      }
-
-    /* read PolygonM shape */
-    } else if ( shape.shapeType == POLYGON_M ) {
-
-      if ( parsePolygonM( fptr, &shape ) == - 1 ) {
-        Rprintf( "Error: Reading PolygonM data from file %s \nin C function getPartAreas.\n", shpFileName  );
-        deallocateRecords( shape.records );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        fclose ( fptr );
-        return data; 
-      }
-
-    /* got a shape number that we can't parse */
-    } else {
-      Rprintf( "Error: Unrecognized shape type in C function getPartArea.\n" );
-      deallocateRecords( shape.records );
-      PROTECT( data = allocVector( VECSXP, 2 ) );
-      UNPROTECT(1);
-      fclose ( fptr );
-      return data; 
-    }
-
-    fclose( fptr );
-
-    /* get the name of the next .shp file */
-    ptrShp = 0;
-    while ( ptrShp == 0 && (fileShp = readdir( dirp )) != NULL ) {
-      if ( strlen(fileShp->d_name) > 4 ) {
-        ptrShp = fileMatch( fileShp->d_name, ".shp" );
-        if ( ptrShp == 1 ) {
-          if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
-                +  1)) == NULL ) {
-            Rprintf( "Error: Allocating memory in C function getPartAreas.\n" );
-            closedir( dirp );
-            deallocateRecords( shape.records );
-            fclose ( fptr );
-            PROTECT( data = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
-            return data;
-          }
-          strcpy( shpFileName, fileShp->d_name);
-        }
-      }
-    }
-
-    /* determine whether there are no more .shp files */
-    if ( ptrShp == 0 ) {
-      done = TRUE;
-    }
-  }
-
-  /* close the current directory */
-  closedir( dirp );
-
-  /* create the returning R object */
-  PROTECT( data = allocVector( REALSXP, shape.numParts ) );
-
-  /* go though each record and calcualte part areas */
-  temp = shape.records;
-  idx = 0;
-  while ( temp ) {
-
-    if (shape.shapeType == POLYGON ) {
-
-      /* calculate the areas of the different parts */
-      for ( i = 0; i < temp->poly->numParts; ++i ) {
-        int firstPoint = temp->poly->parts[i];
-        int secondPoint;
-
-        if ( temp->poly->numParts == 1 || i == temp->poly->numParts-1 ) {
-          secondPoint = temp->poly->numPoints - 1;
-        } else {
-          secondPoint = temp->poly->parts[i+1] - 1;
-        }
-        REAL(data)[idx]=calcArea(temp->poly->points, firstPoint, secondPoint); 
-        ++idx;
-      }
-
-    } else if (shape.shapeType == POLYGON_Z) {
-      /* calculate the areas of the different parts */
-      for ( i = 0; i < temp->polyZ->numParts; ++i ) {
-        int firstPoint = temp->polyZ->parts[i];
-        int secondPoint;
-
-        if ( temp->polyZ->numParts == 1 || i == temp->polyZ->numParts-1 ) {
-          secondPoint = temp->polyZ->numPoints - 1;
-        } else {
-          secondPoint = temp->polyZ->parts[i+1] - 1;
-        }
-        REAL(data)[idx]=calcArea(temp->polyZ->points, firstPoint, secondPoint); 
-        ++idx;
-      }
-
-    } else if (shape.shapeType == POLYGON_M) {
-      /* calculate the areas of the different parts */
-      for ( i = 0; i < temp->polyM->numParts; ++i ) {
-        int firstPoint = temp->polyM->parts[i];
-        int secondPoint;
-
-        if ( temp->polyM->numParts == 1 || i == temp->polyM->numParts-1 ) {
-          secondPoint = temp->polyM->numPoints - 1;
-        } else {
-          secondPoint = temp->polyM->parts[i+1] - 1;
-        }
-        REAL(data)[idx]=calcArea(temp->polyM->points, firstPoint, secondPoint); 
-        ++idx;
-      }
-    }
-
-    temp = temp->next;
-  }
-
-  /* clean up */
-  deallocateRecords( shape.records );
-  UNPROTECT(1);
-
-  return data;
-}
-
-
-/**********************************************************
 ** Function:   readShapeFile
 **
 ** Purpose:    This function is used to read in and parse all the .shp
@@ -3626,7 +3409,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
 
     /* create the full .shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readShapeFile.\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -3651,7 +3434,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     	 if ( strlen(fileShp->d_name) > 4 ) {
     	   ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	   if ( ptrShp == 1 ) {
-    	     if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	     if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function readShapeFile.\n" );
             closedir( dirp );
@@ -3682,6 +3465,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     if ( fptr == NULL ) {
       Rprintf( "Error: Opening shapefile in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT(1);
       return data;
@@ -3689,12 +3473,13 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
 
     /* parse main file header */
     if ( parseHeader( fptr, &shape ) == -1 ) {
-        Rprintf( "Error: Reading main file header in C function readShapeFile.\n" );
-        deallocateRecords( shape.records );
-        fclose( fptr );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        return data;
+      Rprintf( "Error: Reading main file header in C function readShapeFile.\n" );
+      deallocateRecords( shape.records );
+      free( shpFileName );
+      fclose( fptr );
+      PROTECT( data = allocVector( VECSXP, 2 ) );
+      UNPROTECT(1);
+      return data;
     }
 
     /* initialize the shape type if necessary and make sure that if there */
@@ -3705,6 +3490,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Multiple shapefiles have different shape types.\n" );
       Rprintf( "Error: Occured in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT(1);
@@ -3716,6 +3502,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       if ( parsePoints( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading Point data from shapefile in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3727,6 +3514,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       if ( parsePointsZ( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading PointZ data from shapefile in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3738,6 +3526,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       if ( parsePointsM( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading PointM data from shapefile in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3749,6 +3538,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       if ( parsePolygon( fptr, &shape ) == - 1 ) {
         Rprintf( "Error: Reading Polygon or Polyline data from shapefile in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3760,6 +3550,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       if ( parsePolygonZ( fptr, &shape ) == - 1 ) {
         Rprintf( "Error: Reading PolygonZ or PolylineZ data from shapefile in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3771,6 +3562,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       if ( parsePolygonM( fptr, &shape ) == - 1 ) {
         Rprintf( "Error: Reading PolygonM or PolylineM data from shapefile in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -3781,6 +3573,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     } else {
       Rprintf( "Error: Unrecognized shape type in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT(1);
@@ -3788,10 +3581,11 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     }
 
     /* close the shapefile */
+    free( shpFileName );
     fclose( fptr );
 
     /* create the corresponding .dbf file name */
-    if ((dbfFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((dbfFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readDbfFile.c\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -3804,6 +3598,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     if ( (fptr = fopen( dbfFileName,  "rb" )) == NULL ) {
       Rprintf( "Error: Couldn't find .dbf file for %s\n", shpFileName );
       deallocateRecords( shape.records );
+      free( dbfFileName );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
       return data;
@@ -3815,6 +3610,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Reading dbf file header in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
+      free( dbfFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -3827,6 +3623,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Reading dbf fields in C function readShapeFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
+      free( dbfFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -3843,6 +3640,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
         Rprintf("Error: Occured in C function readShapeFile.\n" );
         deallocateRecords( shape.records );
         deallocateDbf( dbf );
+        free( dbfFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT(1);
@@ -3856,6 +3654,7 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
           Rprintf("Error: Occured in C function readShapeFile.\n" );
           deallocateRecords( shape.records );
           deallocateDbf( dbf );
+          free( dbfFileName );
           fclose( fptr );
           PROTECT( data = allocVector( VECSXP, 1 ) );
           UNPROTECT(1);
@@ -3878,6 +3677,8 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     }
 
     /* get the next .shp file */
+    free( dbfFileName );
+    fclose ( fptr );
     if ( singleFile == TRUE )  {
       done = TRUE;
     } else {
@@ -3886,13 +3687,12 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
     	   if ( strlen(fileShp->d_name) > 4 ) {
     	     ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	     if ( ptrShp == 1 ) {
-    	       if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	       if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                   +  1)) == NULL ) {
               Rprintf( "Error: Allocating memory in C function readShapeFile.\n" );
               closedir( dirp );
               deallocateRecords( shape.records );
               deallocateDbf( dbf );
-              fclose( fptr );
               PROTECT( data = allocVector( VECSXP, 1 ) );
               UNPROTECT( 1 );
               return data;
@@ -3907,8 +3707,6 @@ SEXP readShapeFile( SEXP fileNamePrefix ) {
         done = TRUE;
       }
     }
-
-    fclose( fptr );
   }
  
   /* close the current directory */
@@ -3968,7 +3766,7 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
   unsigned int fileSize;            /* size of the new shapefile */
   unsigned char * ptr;              /* used to write data to file */
   int tempInt;                      /* temp integer storage */
-  double tempDbl;                   /* temp double storage */
+  double tempDbl = 0.0;             /* temp double storage */
   double xmin, ymin, xmax, ymax;    /* bounding box coordiantes */
   unsigned int fileNameLen;  /* length of the shapefile name */
   const char * shpExt = ".shp";  /* shapefile extension */
@@ -3983,7 +3781,7 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
 
   /* create the full .shp (main) file name */
   fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-  if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+  if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
     return R_NilValue;
   }
@@ -3993,12 +3791,14 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
   /* open the main file */
   if ( (fptrShp = fopen( shpFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePoint.\n" );
+    free( shpFileName );
     return R_NilValue;
   }
 
   /* create the full .shx (index) file name */
-  if ((shxFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+  if ((shxFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
+    free( shpFileName );
     return R_NilValue;
   }
   strcpy( shxFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
@@ -4007,6 +3807,8 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
   /* open the index file */
   if ( (fptrShx = fopen( shxFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePoint.\n" );
+    free( shpFileName );
+    free( shxFileName );
     return R_NilValue;
   }
 
@@ -4152,14 +3954,16 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
       return R_NilValue;
     }
   }
+  free( shpFileName );
   fclose( fptrShp );
+  free( shxFileName );
   fclose( fptrShx );
 
   /* see if a .prj file name was sent */
   if ( prjFileNameVec != R_NilValue ) {
 
     /* create the original .prj file name */
-    if ((prjFileNameOrg = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((prjFileNameOrg = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
       return R_NilValue;
     }
@@ -4167,8 +3971,9 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
     strcat( prjFileNameOrg, prjExt );
 
     /* create the new .prj file name */
-    if ((prjFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((prjFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
+      free( prjFileNameOrg );
       return R_NilValue;
     }
     strcpy( prjFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
@@ -4177,23 +3982,28 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
     /* open the original projection file */
     if ((prjOld = fopen( prjFileNameOrg, "rb" )) == NULL ){
       Rprintf( "Error: Opening .prj file in C function writeShapeFilePoint.\n" );
+      free( prjFileNameOrg );
+      free( prjFileName );
       return R_NilValue;
     }
 
     /* open the new projection file */
     if ( (prjNew = fopen( prjFileName, "wb" )) == NULL ) {
       Rprintf("Error: Creating .prj file in C function writeShapeFilePoint.\n" );
+      free( prjFileNameOrg );
+      free( prjFileName );
       fclose( prjOld );
       return R_NilValue;
     }
 
-    /* make copy of old projection file */
+    /* make a copy of the old projection file */
     while ( fread( &byte, sizeof(char), 1, prjOld ) > 0 ) {
       fwrite( &byte, sizeof(char), 1, prjNew );
     }
-
-    fclose( prjNew );
+    free( prjFileNameOrg );
+    free( prjFileName );
     fclose( prjOld );
+    fclose( prjNew );
   }
 
   /* create the dbf file */
@@ -4264,7 +4074,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
 
     /* create the full shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readShapeFilePts.\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT(1);
@@ -4289,7 +4099,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
     	 if ( strlen(fileShp->d_name) > 4 ) {
     	   ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	   if ( ptrShp == 1 ) {
-    	     if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	     if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function readShapeFilePts.\n" );
             closedir( dirp );
@@ -4322,6 +4132,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
       Rprintf("Error: Make sure there is a corresponding .shp file for the specified shapefile name.\n");
       Rprintf( "Error: Occured in C function readShapeFilePts.\n");
       deallocateRecords( shape.records );
+      free( shpFileName );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT( 1 );
       return data;
@@ -4329,12 +4140,13 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
 
     /* parse main file header */
     if ( parseHeader( fptr, &shape ) == -1 ) {
-        Rprintf( "Error: Reading main file header in C function readShapeFilePts.\n" );
-        deallocateRecords( shape.records );
-        fclose( fptr );
-        PROTECT( data = allocVector( VECSXP, 2 ) );
-        UNPROTECT(1);
-        return data;
+      Rprintf( "Error: Reading main file header in C function readShapeFilePts.\n" );
+      deallocateRecords( shape.records );
+      free( shpFileName );
+      fclose( fptr );
+      PROTECT( data = allocVector( VECSXP, 2 ) );
+      UNPROTECT(1);
+      return data;
     }
 
     /* initialize the shape type if necessary and make sure that if there */
@@ -4344,6 +4156,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
     } else if ( shapeType != shape.shapeType ) {
       Rprintf( "Error: Multiple shapefiles have different shape types in C function readShapeFilePts.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT(1);
@@ -4356,6 +4169,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
       if ( parsePoints( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading point data from shapefile in C function readShapeFilePts.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -4368,6 +4182,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
       if ( parsePointsZ( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading PointZ data from shapefile in C function readShapeFilePts.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -4380,6 +4195,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
       if ( parsePointsM( fptr, &shape ) == -1 ) {
         Rprintf( "Error: Reading PointM data from shapefile in C function readShapeFilePts.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -4394,6 +4210,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
         Rprintf( "Error: Invalid shape type in C function readShapeFilePts.\n" );
         Rprintf( "Error: Function only works with Point shape types.\n" );
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT(1);
@@ -4402,6 +4219,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
     }
 
     /* close the shapefile */
+    free( shpFileName );
     fclose( fptr );
 
     /* get the next .shp file */
@@ -4413,7 +4231,7 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
     	   if ( strlen(fileShp->d_name) > 4 ) {
     	     ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	     if ( ptrShp == 1 ) {
-    	       if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	       if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                   +  1)) == NULL ) {
               Rprintf( "Error: Allocating memory in C function readShapeFilePts.\n" );
               closedir( dirp );
@@ -4432,7 +4250,6 @@ SEXP readShapeFilePts( SEXP fileNamePrefix ) {
         done = TRUE;
       }
     }
-
   }
 
   /* close the current directory */
@@ -4560,7 +4377,7 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
   unsigned char * ptr;              /* used to write data to file */
   int * intPtr;                     /* temp pointer to convert from R to C*/
   int tempInt;                      /* temp integer storage */
-  double tempDbl;                   /* temp double storage */
+  double tempDbl = 0.0;             /* temp double storage */
   double xmin, ymin, xmax, ymax;    /* bounding box values */
   unsigned int fileNameLen;         /* length of the shapefile name */
   const char * shpExt = ".shp";        /* shapefile extension */
@@ -4579,7 +4396,7 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
 
   /* create the full .shp (main) file name */
   fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-  if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+  if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
     return R_NilValue;
   }
@@ -4589,12 +4406,15 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
   /* open the main file */
   if ( (fptrShp = fopen( shpFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePolygon.\n" );
+    free( shpFileName );
     return R_NilValue;
   }
 
   /* create the full .shx (index) file name */
-  if ((shxFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+  if ((shxFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeShapeFilePoint\n" );
+    free( shpFileName );
+    fclose( fptrShp );
     return R_NilValue;
   }
   strcpy( shxFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
@@ -4603,6 +4423,9 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
   /* open the index file */
   if ( (fptrShx = fopen( shxFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating shapefile in C function writeShapeFilePolygon.\n" );
+    free( shpFileName );
+    fclose( fptrShp );
+    free( shxFileName );
     return R_NilValue;
   }
 
@@ -4852,14 +4675,16 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
     iStartPart += nParts[i-1];
     iStartPoint += nPoints[i-1];
   }
+  free( shpFileName );
   fclose( fptrShp );
+  free( shxFileName );
   fclose( fptrShx );
 
   /* see if a .prj (projection) file name was sent */
   if ( prjFileNameVec != R_NilValue ) {
 
     /* create the original .prj file name */
-    if ((prjFileNameOrg = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((prjFileNameOrg = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
       return R_NilValue;
     }
@@ -4867,8 +4692,9 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
     strcat( prjFileNameOrg, prjExt );
 
     /* create the new .prj file name */
-    if ((prjFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((prjFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
+      free( prjFileNameOrg );
       return R_NilValue;
     }
     strcpy( prjFileName, CHAR(STRING_ELT(fileNamePrefix, 0)));
@@ -4877,12 +4703,16 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
     /* open the original projection file */
     if ((prjOld = fopen( prjFileNameOrg, "rb" )) == NULL ){
       Rprintf( "Error: Opening .prj file in C function writeShapeFilePolygon.\n" );
+      free( prjFileNameOrg );
+      free( prjFileName );
       return R_NilValue;
     }
 
     /* open the new projection file */
     if ( (prjNew = fopen( prjFileName, "wb" )) == NULL ) {
       Rprintf("Error: Creating .prj file in C function writeShapeFilePolygon.\n" );
+      free( prjFileNameOrg );
+      free( prjFileName );
       fclose( prjOld );
       return R_NilValue;
     }
@@ -4891,9 +4721,10 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
     while ( fread( &byte, sizeof(char), 1, prjOld ) > 0 ) {
       fwrite( &byte, sizeof(char), 1, prjNew );
     }
-
-    fclose( prjNew );
+    free( prjFileNameOrg );
+    free( prjFileName );
     fclose( prjOld );
+    fclose( prjNew );
   }
 
   /* create the .dbf (dBASE) file */

@@ -45,6 +45,8 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 #   pickGridCells - C function to select grid cells that get a sample point
 #   insideAreaGridCell - C function to determine ID value and clipped polygon area
 #     for shapefile records contained in the selected grid cells
+#   selectrecordID - select a shapefile record from which to select a sample
+#     point
 #   pickAreaSamplePoints - C function to pick sample points in the selected grid
 #     cells
 ################################################################################

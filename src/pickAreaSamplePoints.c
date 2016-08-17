@@ -6,6 +6,7 @@
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
 **  Revised:     June 15, 2015
+**  Revised:     November 5, 2015
 **  Description:
 **    For each value in the set of shapefile record IDs, select a sample point
 **    from the shapefile record 
@@ -112,7 +113,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
 
     /* create the full .shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function pickAreaSamplePoints\n" );
       PROTECT( results = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -126,6 +127,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   /* create the new temporary .shp file */
   if((newShp = fopen(TEMP_SHP_FILE, "wb")) == NULL) {
     Rprintf("Error: Creating temporary .shp file %s in C function pickAreaSamplePoints.\n", TEMP_SHP_FILE);
+    free( shpFileName );
     PROTECT(results = allocVector(VECSXP, 1));
     UNPROTECT(1);
     return results;
@@ -136,6 +138,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
     Rprintf("Error: Allocating memory in C function pickAreaSamplePoints.\n");
     PROTECT(results = allocVector(VECSXP, 1));
     UNPROTECT(1);
+    free( shpFileName );
     fclose(newShp);
     remove(TEMP_SHP_FILE);
     return results;
@@ -150,26 +153,29 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
     if(combineShpFiles(newShp, shpIDs, dsgSize) == -1) {
       PROTECT(results = allocVector(VECSXP, 1));
       UNPROTECT(1);
+      free( shpIDs );
+      free( shpFileName );
       fclose(newShp);
       remove(TEMP_SHP_FILE);
       Rprintf("Error: Combining multiple shapefiles in C function pickAreaSamplePoints.\n");
       return results; 
     }
-    fclose(newShp);
-
   } else {
 
     /* create a temporary .shp file containing the sent .shp file */
     if(createNewTempShpFile(newShp, shpFileName, shpIDs, dsgSize) == -1) {
       PROTECT(results = allocVector(VECSXP, 1));
       UNPROTECT(1);
+      free( shpIDs );
+      free( shpFileName );
       fclose(newShp);
       remove(TEMP_SHP_FILE);
       Rprintf("Error: Creating temporary shapefile in C function pickAreaSamplePoints.\n");
       return results; 
     }
-    fclose(newShp);
   }
+  free( shpFileName );
+  fclose(newShp);
 
   /* initialize the shape struct */
   shape.records = NULL;
@@ -178,6 +184,7 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   /* open the temporary .shp file */
   if((fptr = fopen(TEMP_SHP_FILE, "rb")) == NULL) {
     Rprintf("Error: Opening shape file in C function pickAreaSamplePoints.\n");
+    remove(TEMP_SHP_FILE);
     PROTECT(results = allocVector(VECSXP, 1));
     UNPROTECT(1);
     return results;
@@ -863,10 +870,13 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
     } else if(shape.shapeType == POLYGON_Z) {
       free(temp->polyZ->parts);
       free(temp->polyZ->points);
+      free(temp->polyZ->zArray);
+      free(temp->polyZ->mArray);
       free(temp->polyZ);
     } else {
       free(temp->polyM->parts);
       free(temp->polyM->points);
+      free(temp->polyM->mArray);
       free(temp->polyM);
     }
 
@@ -898,6 +908,9 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   if(shpIDs) {
     free(shpIDs);
   }
+  if(recordIDs) {
+    free(recordIDs);
+  }
   if(xc) {
     free(xc);
   }
@@ -906,6 +919,12 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   }
   if(bp) {
     free(bp);
+  }
+  if(xcs) {
+    free(xcs);
+  }
+  if(ycs) {
+    free(ycs);
   }
   fclose(fptr);
   remove(TEMP_SHP_FILE);

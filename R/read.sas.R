@@ -1,5 +1,5 @@
 read.sas <- function(filename, libname=NULL, xport=FALSE,
-   sascmd="/Program Files/SAS/SAS 9.1/sas.exe") {
+   sascmd="C:/Program Files/SASHome/SASFoundation/9.4/sas.exe") {
 
 ################################################################################
 # Function: read.sas
@@ -7,6 +7,7 @@ read.sas <- function(filename, libname=NULL, xport=FALSE,
 # Programmer: Tom Kincaid
 # Date: May 9, 2007
 # Revised: March 9, 2010
+# Revised: April 18, 2016
 # Description:
 #   This function reads either a SAS dataset or a SAS XPORT (transport) file and
 #   creates a data frame.

@@ -14,6 +14,7 @@
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
 **  Revised:     June 12, 2015
+**  Revised:     November 5, 2015
 ******************************************************************************/
 
 #include <stdio.h>
@@ -300,7 +301,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
 
     /* create the full .shp file name */
     fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(shpExt);
-    if ((shpFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((shpFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readDbfFile\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -325,7 +326,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     	 if ( strlen(fileShp->d_name) > 4 ) {
     	   ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	   if ( ptrShp == 1 ) {
-    	     if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	     if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                 +  1)) == NULL ) {
             Rprintf( "Error: Allocating memory in C function readDbfFile.\n" );
             closedir( dirp );
@@ -358,6 +359,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf("Error: Make sure there is a corresponding .shp file for the specified shapefile name.\n");
       Rprintf( "Error: Occured in C function readDbfFile.\n");
       deallocateRecords( shape.records );
+      free( shpFileName );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT( 1 );
       return data;
@@ -368,6 +370,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
         Rprintf( "Error: Reading .shp file header in C function.\n" );
         Rprintf( "Error: Occured in C function readDbfFile.\n");
         deallocateRecords( shape.records );
+        free( shpFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 2 ) );
         UNPROTECT( 1 );
@@ -382,6 +385,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Multiple shapefiles have different shape types.\n" );
       Rprintf( "Error: Occured in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT( 1 );
@@ -397,6 +401,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Unrecognized shape type.\n" );
       Rprintf( "Error: Occured in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
+      free( shpFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 2 ) );
       UNPROTECT( 1 );
@@ -404,10 +409,11 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     }
 
     /* close the shapefile */
+    free( shpFileName );
     fclose( fptr );
 
     /* create the corresponding .dbf file name */
-    if ((dbfFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+    if ((dbfFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
       Rprintf( "Error: Allocating memory in C function readDbfFile.c\n" );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -420,6 +426,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     if ( (fptr = fopen( dbfFileName,  "rb" )) == NULL ) {
       Rprintf( "Error: Couldn't find .dbf file for %s\n", shpFileName );
       deallocateRecords( shape.records );
+      free( dbfFileName );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
       return data;
@@ -432,6 +439,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Occured in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
+      free( dbfFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -445,6 +453,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       Rprintf( "Error: Reading dbf fields in C function readDbfFile.\n" );
       deallocateRecords( shape.records );
       deallocateDbf( dbf );
+      free( dbfFileName );
       fclose( fptr );
       PROTECT( data = allocVector( VECSXP, 1 ) );
       UNPROTECT( 1 );
@@ -461,6 +470,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
         Rprintf("Error: Occured in readDbfFile() in C function readDbfFile.\n" );
         deallocateRecords( shape.records );
         deallocateDbf( dbf );
+        free( dbfFileName );
         fclose( fptr );
         PROTECT( data = allocVector( VECSXP, 1 ) );
         UNPROTECT( 1 );
@@ -474,6 +484,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
           Rprintf("Error: Occured in readDbfFile() in C function readDbfFile.\n" );
           deallocateRecords( shape.records );
           deallocateDbf( dbf );
+          free( dbfFileName );
           fclose( fptr );
           PROTECT( data = allocVector( VECSXP, 1 ) );
           UNPROTECT( 1 );
@@ -504,7 +515,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
     	   if ( strlen(fileShp->d_name) > 4 ) {
     	     ptrShp = fileMatch( fileShp->d_name, ".shp" );
     	     if ( ptrShp == 1 ) {
-    	       if ( (shpFileName = (char * restrict)malloc(strlen(fileShp->d_name)
+    	       if ( (shpFileName = (char * restrict) malloc(strlen(fileShp->d_name)
                   +  1)) == NULL ) {
               Rprintf( "Error: Allocating memory in C function readDbfFile.\n" );
               closedir( dirp );
@@ -526,6 +537,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       }
     }
 
+    free( dbfFileName );
     fclose( fptr );
   }
 
@@ -711,7 +723,7 @@ SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP fileNamePrefix ) {
   
   /* create the full .dbf file name */
   fileNameLen = strlen(CHAR(STRING_ELT(fileNamePrefix, 0))) + strlen(dbfExt);
-  if ((dbfFileName = (char * restrict)malloc(fileNameLen + 1)) == NULL ) {
+  if ((dbfFileName = (char * restrict) malloc(fileNameLen + 1)) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeDbfFile\n" );
     return R_NilValue;
   }
@@ -721,6 +733,7 @@ SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP fileNamePrefix ) {
   /* open the dbf file */
   if ( (fptr = fopen( dbfFileName, "wb" )) == NULL ) {
     Rprintf( "Error: Creating dbf file to write to in C function writeDbfFile.\n" );
+    free( dbfFileName );
     return R_NilValue;
   }
  
@@ -754,11 +767,16 @@ SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP fileNamePrefix ) {
   if ( (colLengths = (unsigned int *) malloc( sizeof(unsigned int) 
                                                  * length(fields))) == NULL) {
     Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
+    free( dbfFileName );
+    fclose( fptr );
     return R_NilValue;
   }
   if ( (decimalLengths = (unsigned int *)malloc(sizeof(unsigned int)
                                                   *length(fields))) == NULL ) {
     Rprintf( "Error: Allocating memory in C function writeDbfFile.\n" );
+    free( colLengths );
+    free( dbfFileName );
+    fclose( fptr );
     return R_NilValue;
   }
   for ( i = 0; i < length( fields ); ++i ) {
@@ -981,8 +999,9 @@ SEXP writeDbfFile ( SEXP fieldNames, SEXP fields, SEXP fileNamePrefix ) {
   }
 
   /* clean up */
-  free( colLengths );
   free( decimalLengths );
+  free( colLengths );
+  free( dbfFileName );
   fclose( fptr );
 
   return R_NilValue;

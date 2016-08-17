@@ -6,7 +6,8 @@
   creates a data frame.
 }
 \usage{
-read.sas(filename, libname=NULL, xport=FALSE, sascmd="/Program Files/SAS/SAS 9.1/sas.exe")
+read.sas(filename, libname=NULL, xport=FALSE,
+   sascmd="C:/Program Files/SASHome/SASFoundation/9.4/sas.exe")
 }
 \arguments{
   \item{filename}{if xport equals TRUE, a character string giving the full path 
@@ -23,7 +24,7 @@ read.sas(filename, libname=NULL, xport=FALSE, sascmd="/Program Files/SAS/SAS 9.1
     file.  The default value is FALSE.}
   \item{sascmd}{a character string giving the full path to SAS executable.  This
     argument is required only when xport equals FALSE.  The default value is
-    "C:/Program Files/SAS/SAS 9.1/sas.exe".}
+    "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe".}
 }
 \value{
   Either a single data frame or a list of data frames.

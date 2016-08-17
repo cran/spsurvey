@@ -19,7 +19,7 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
 }
 \arguments{
   \item{bounds}{vector of upper bounds that define classes for the CDFs, which must
-    contain at least three values.}
+    contain at least two values.}
   \item{z_1}{response value for each sample one site.}
   \item{wgt_1}{final adjusted weight (inverse of the sample inclusion
     probability) for each sample one site, which is either the weight for a
@@ -75,9 +75,12 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
     stratum and must have the names attribute set to identify the stratum codes.
     The default is NULL.}
   \item{popcorrect_1}{a logical value that indicates whether finite or
-    continuous population correction factors should be employed during variance 
-    estimation for sample one, where TRUE = use the correction factors and FALSE
-    = do not use the correction factors.  The default is FALSE.}
+    continuous population correction factors should be employed during variance estimation for sample one, where TRUE = use the correction factor and FALSE
+    = do not use the correction factor.  The default is FALSE.  To employ the
+    correction factor for a single-stage sample, values must be supplied for
+    arguments pcfsize_1 and support_1.  To employ the correction factor for a
+    two-stage sample, values must be supplied for arguments N.cluster_1,
+    stage1size_1, and support_1.}
   \item{pcfsize_1}{size of the sample one resource, which is required for
     calculation of finite and continuous population correction factors for a
     single-stage sample.  For a stratified sample this argument must be a vector
@@ -103,10 +106,13 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
     calculation of finite and continuous population correction factors.  The
     default is NULL.}
   \item{popcorrect_2}{a logical value that indicates whether finite or
-    continuous population correction factors should be employed during variance 
-    estimation for sample two, where TRUE = use the correction factors and FALSE
-    = do not use the correction factors.  The default is FALSE.}
-  \item{pcfsize_2}{size of the sample two resource, which is required for
+    continuous population correction factors should be employed during variance estimation for sample two, where TRUE = use the correction factor and FALSE
+    = do not use the correction factor.  The default is FALSE.  To employ the
+    correction factor for a single-stage sample, values must be supplied for
+    arguments pcfsize_2 and support_2.  To employ the correction factor for a
+    two-stage sample, values must be supplied for arguments N.cluster_2,
+    stage1size_2, and support_2.}
+   \item{pcfsize_2}{size of the sample two resource, which is required for
     calculation of finite and continuous population correction factors for a
     single-stage sample.  For a stratified sample this argument must be a vector
     containing a value for each stratum and must have the names attribute set to
@@ -172,7 +178,7 @@ cdf.test(bounds, z_1, wgt_1, x_1=NULL, y_1=NULL, z_2, wgt_2, x_2=NULL, y_2=NULL,
   Chi-squared random variables, and alternate version of the statistics, which
   are distributed as F random variables, are available.  The user supplies the
   set of upper bounds that define the intervals (classes) into which the CDFs
-  are divided (binned). The minimum number of classes is three.  The
+  are divided (binned). The minimum number of classes is two.  The
   Horvitz-Thompson ratio estimator, i.e., the ratio of two Horvitz-Thompson
   estimators, is used to calculate estimates of the class proportions for the
   CDFs.  Variance estimates for the test statistics are calculated using either

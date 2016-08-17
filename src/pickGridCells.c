@@ -3,6 +3,7 @@
 **  Programmer:  Tom Kincaid
 **  Date:        October 24, 2005
 **  Revised:     June 11, 2015
+**  Revised:     August 16, 2016
 **  Description:
 **    This function determines the grid cells from which sample points will be
 **    selected. 
@@ -81,6 +82,15 @@ SEXP pickGridCells( SEXP samplesize, SEXP idxVec ) {
     INTEGER( smpdxVec )[i] = smpdx[i];
   }
   UNPROTECT(1);
+
+  /* clean up */
+
+  if(idx) {
+    free(idx);
+  }
+  if(smpdx) {
+    free(smpdx);
+  }
 
   return smpdxVec;
 }

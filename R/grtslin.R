@@ -40,6 +40,8 @@ grtslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1,
 #   pickGridCells - C function to select grid cells that get a sample point
 #   insideLinearGridCell - C function to determine ID value and clipped polyline
 #     length for shapefile records contained in the selected grid cells
+#   selectrecordID - select a shapefile record from which to select a sample
+#     point
 #   pickLinearSamplePoints - C function to pick sample points in the selected grid
 #     cells
 ################################################################################

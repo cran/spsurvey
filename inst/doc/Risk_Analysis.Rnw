@@ -35,7 +35,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.1 of the spsurvey package was loaded successfully.
+Version 3.2 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Load the survey design and analytical variables data set}
@@ -79,7 +79,7 @@ The location of lakes that were sampled in the western United States is displaye
 
 Relative risk analysis will be investigated by examining two response variables and three stressor variables.  The response variables are chlorophyll-a concentration for each sample site, which is a mesure of trophic condition, and an index of macroinvertebrate taxa loss that is based on modeling the ratio of observed and expected loss.  The stressor variables are total nitrogen concentration, total phosphorus concentration, and turbidity for each site.
 
-The relrisk.analysis function will be used to calculate relative risk estimates.  Four data frames constitute the primary input to the relrisk.analysis function.  The first column (variable) in the four data frames provides the unique identifier (site ID) for each sample site and is used to connect records among the data frames.  The siteID variable in the NLA\_2007 data frame is assigned to the siteID variable in the data frames.  The four data frames that will be created are named as follows: sites, subpop, design, and data.risk.  The sites data frame identifies sites to use in the analysis and contains two variables: (1) siteID - site ID values and (2) Use - a logical vector indicating which sites to use in the analysis.  Since we want to include all sampled sites, the rep (repeat) function is used to assign the value TRUE to each element of the Use variable. Recall that nr is an object containing the number of rows in the NLA\_2007 data frame.  The subpop data frame defines populations and, optionally, subpopulations for which estimates are desired.  Unlike the sites and design data frames, the subpop data frame can contain an arbitrary number of columns.  The first variable in the subpop data frame identifies site ID values and each subsequent variable identifies a type of population, where the variable name is used to identify type.  A type variable identifies each site with a character value.  If the number of unique values for a type variable is greater than one, then the set of values represent subpopulations of that type.  When a type variable consists of a single unique value, then the type does not contain subpopulations.  For this analysis, the subpop data frame contains three variables: (1) siteID - site ID values, (2) Western\_US - which will be used to calculate estimates for all of the sample sites combined, and (3) Lake\_Origin - which will be used to calculate estimates for each of the two classes of lake origin (natural and manmade).  The rep function is used to assign values to the Western\_US variable, and the Lake\_Origin variable in the NLA\_2007 data frame is assigned to the Lake\_Origin variable in the subpop data frame.  The design data frame consists of survey design variables.  For the analysis under consideration, the design data frame contains the following variables: (1) siteID - site ID values; (2) wgt - final, adjusted, survey design weights; (3) xcoord - x-coordinates for location; and (4) ycoord - y-coordinates for location.  The wgt, xcoord, and ycoord variables in the design data frame are assigned values using variables with the same names in the NLA\_2007 data frame.  Like the subpop data frame, the data.risk data frame can contain an arbitrary number of columns.  The first variable in the data.risk data frame identifies site ID values and each subsequent variable identifies a response or stressor variable. For this analysis, the response variables are Chlorophyll\_a and MacroInvert\_OE, and the stressor variables are Total\_Nitrogen, Total\_Phosphorus, and Turbidity, which are assigned, respectively, variables Chla\_cond, OE5\_cond, PTL\_cond, NTL\_cond, and Turbidity\_cond in the NLA\_2007 data frame.
+The relrisk.analysis function will be used to calculate relative risk estimates.  Four data frames constitute the primary input to the relrisk.analysis function.  The first column (variable) in the four data frames provides the unique identifier (site ID) for each sample site and is used to connect records among the data frames.  The siteID variable in the NLA\_2007 data frame is assigned to the siteID variable in the data frames.  The four data frames that will be created are named as follows: sites, subpop, design, and data.risk.  The sites data frame identifies sites to use in the analysis and contains two variables: (1) siteID - site ID values and (2) Use - a logical vector indicating which sites to use in the analysis.  Since we want to include all sampled sites, the rep (repeat) function is used to assign the value TRUE to each element of the Use variable. Recall that nr is an object containing the number of rows in the NLA\_2007 data frame.  The subpop data frame defines populations and, optionally, subpopulations for which estimates are desired.  Unlike the sites and design data frames, the subpop data frame can contain an arbitrary number of columns.  The first variable in the subpop data frame identifies site ID values and each subsequent variable identifies a type of population, where the variable name is used to identify type.  A type variable identifies each site with a character value.  If the number of unique values for a type variable is greater than one, then the set of values represent subpopulations of that type.  When a type variable consists of a single unique value, then the type does not contain subpopulations.  For this analysis, the subpop data frame contains three variables: (1) siteID - site ID values, (2) Western\_US - which will be used to calculate estimates for all of the sample sites combined, and (3) Lake\_Origin - which will be used to calculate estimates for each of the two classes of lake origin (natural and manmade).  The rep function is used to assign values to the Western\_US variable, and the Lake\_Origin variable in the NLA\_2007 data frame is assigned to the Lake\_Origin variable in the subpop data frame.  The design data frame consists of survey design variables.  For the analysis under consideration, the design data frame contains the following variables: (1) siteID - site ID values; (2) wgt - final, adjusted, survey design weights; (3) xcoord - x-coordinates for location; and (4) ycoord - y-coordinates for location.  The wgt, xcoord, and ycoord variables in the design data frame are assigned values using variables with the same names in the NLA\_2007 data frame.  Like the subpop data frame, the data.risk data frame can contain an arbitrary number of columns.  The first variable in the data.risk data frame identifies site ID values and each subsequent variable identifies a response or stressor variable. For this analysis, the response variables are Chlorophyll\_a and MacroInvert\_OE, and the stressor variables are Total\_Nitrogen, Total\_Phosphorus, and Turbidity, which are assigned, respectively, variables Chla\_cond, OE5\_cond, NTL\_cond, PTL\_cond, and Turbidity\_cond in the NLA\_2007 data frame.
   
 Create the sites data frame.
 
@@ -160,10 +160,6 @@ Assign response and stressor variable names.
 \end{verbatim}
 
 <<Riskeval, echo=FALSE>>=
-#
-# Conduct a relative risk analysis
-#
-
 # Assign response and stressor variable names
 resp_vars <- c("Chlorophyll_a", "MacroInvert_OE")
 stress_vars <- c("Total_Nitrogen", "Total_Phosphorus", "Turbidity")
@@ -199,7 +195,7 @@ The write.csv function is used to store the relative risk estimates as a comma-s
 
 <<Riskeval, echo=FALSE>>=
 # Write results as a comma-separated value (csv) file
-write.csv(RelRisk_Estimates, file="RelRisk_Estimates.csv")
+write.csv(RelRisk_Estimates, file="RelRisk_Estimates.csv", row.names=FALSE)
 
 @
 \section{Attributable risk analysis}
@@ -234,7 +230,7 @@ The write.csv function is used to store the attributable risk estimates as a csv
 
 <<Riskeval, echo=FALSE>>=
 # Write results as a csv file
-write.csv(AttRisk_Estimates, file="AttRisk_Estimates.csv")
+write.csv(AttRisk_Estimates, file="AttRisk_Estimates.csv", row.names=FALSE)
 
 @
 \newpage

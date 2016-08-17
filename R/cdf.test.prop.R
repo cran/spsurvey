@@ -4,15 +4,16 @@ cdf.test.prop <- function(z, wgt, bounds, cluster.ind, cluster, wgt1) {
 # Function: cdf.test.prop
 # Programmer: Tom Kincaid
 # Date: November 5, 2007
+# Last Revised: January 11, 2016
 # Description:
-#   This function calculates a size-weighted estimate of the population 
-#   proportions in a set of intervals (classes).  The set of values defining the 
-#   upper bound of each class is supplied to the function.  The Horvitz-Thompson 
-#   ratio estimator, i.e., the ratio of two Horvitz-Thompson estimators, is used 
-#   to calculate the estimate.  The numerator of the ratio estimates the total 
-#   of the resource within a class.  The denominator of the ratio estimates the 
-#   size of the resource.  For a finite resource size is the number of units in 
-#   the resource.  For an extensive resource size is the extent (measure) of the 
+#   This function calculates an estimate of the population proportions in a set
+#   of intervals (classes).  The set of values defining the upper bound of each
+#   class is supplied to the function.  The Horvitz-Thompson ratio estimator,
+#   i.e., the ratio of two Horvitz-Thompson estimators, is used to calculate the
+#   estimate.  The numerator of the ratio estimates the total of the resource
+#   within a class.  The denominator of the ratio estimates the size of the
+#   resource.  For a finite resource size is the number of units in the
+#   resource.  For an extensive resource size is the extent (measure) of the 
 #   resource, i.e., length, area, or volume.  The function can accomodate single 
 #   stage and two-stage samples.  
 # Arguments:
@@ -35,7 +36,7 @@ cdf.test.prop <- function(z, wgt, bounds, cluster.ind, cluster, wgt1) {
 # Calculate additional required values
 
    m <- length(bounds)
-   ubound <- rep(bounds, m)
+   ubound <- bounds
    lbound <- c(-1e10, bounds[-m])
    if(cluster.ind) {
       cluster <- factor(cluster)

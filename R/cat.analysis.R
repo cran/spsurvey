@@ -96,8 +96,13 @@ cat.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
 #                      "Pop 3"=NULL)
 #   popcorrect = a logical value that indicates whether finite or continuous
 #     population correction factors should be employed during variance
-#     estimation, where TRUE = use the correction factors and FALSE = do not use
-#     the correction factors.  The default is FALSE.
+#     estimation, where TRUE = use the correction factor and FALSE = do not use
+#     the correction factor.  The default is FALSE.  To employ the correction
+#     factor for a single-stage sample, values must be supplied for argument
+#     pcfsize and for the support variable of the design argument.  To employ the
+#     correction factor for a two-stage sample, values must be supplied for
+#     arguments N.cluster and stage1size, and for the support variable of the
+#     design argument.
 #   pcfsize = size of the resource, which is required for calculation of finite
 #     and continuous population correction factors for a single-stage sample.
 #     For a stratified sample this argument must be a vector containing a value
@@ -122,7 +127,7 @@ cat.analysis <- function(sites=NULL, subpop=NULL, design=NULL, data.cat=NULL,
 #   vartype = the choice of variance estimator, where "Local" = local mean
 #     estimator and "SRS" = SRS estimator.  The default is "Local".
 #   conf = the confidence level.  The default is 95%.
-#   sspsurvey.obj = A list of class spsurvey.analysis that was produced by the
+#   spsurvey.obj = A list of class spsurvey.analysis that was produced by the
 #     function spsurvey.analysis.  Depending on input to that function, some
 #     elements of the list may be NULL.  The default is NULL.
 # Output:

@@ -31,7 +31,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.1 of the spsurvey package was loaded successfully.
+Version 3.2 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Load the survey design and analytical variables data set}
@@ -70,7 +70,7 @@ The sample of streams in Indiana is displayed in Figure~\ref{fig:INstreams}.  Th
 
 \section{Analysis of site status evaluation variables}
 
-The first analysis that will be examined is calculation of extent estimates for site status evaluation variables.  Extent is measured both by the proportion of the resource in status evaluation categories and by size of the resource in each category.  For a linear resource like streams, size refers to the length of streams in a category.  For calculating extent estimates (and for all of the analyses we will consider), the survey design weights are incorporated into the calculation process.  Two site status variables will be examined: (1) status, which classifies streams into seven evaluation categories and (2) TNT, which classifies streams as either "Target" or "NonTarget".  The table and addmargins functions are used to create tables displaying the count for each code (level) of the two status variables.
+The first analysis that will be examined is calculation of extent estimates for site status evaluation variables.  Extent is measured both by the proportion of the resource in status evaluation categories and by size of the resource in each category.  For a linear resource like streams, size refers to the length of streams in a category.  For calculating extent estimates (and for all of the analyses we will consider), the survey design weights are incorporated into the calculation process.  Weights used in the analyses were modified from the original survey design weights to ensure that the weights sum to the known size of the resource.  Further information regarding weight adjustment is provided in the help page for the adjwgt (weight adjustment) function.  Two site status variables will be examined: (1) status, which classifies streams into seven evaluation categories and (2) TNT, which classifies streams as either "Target" or "NonTarget".  The table and addmargins functions are used to create tables displaying the count for each code (level) of the two status variables.
 
 \begin{verbatim}
 > addmargins(table(IN_streams$Status))
@@ -169,7 +169,8 @@ Use the cat.analysis function to calculate extent estimates for the site status 
 Extent_Estimates <- cat.analysis(sites, subpop, design, data.cat)
 
 @
-The extent estimates for all basins combined are displayed using the print function.  The object produced by cat.analysis is a data frame containing thirteen columns.  The first five columns identify the population (Type), subpopulation (Subpopulation), response variable (Indicator), levels of the response variable (Category), and number of values in a category (NResp).  A category labeled "Total" is included for each combination of population, subpopulation, and response variable.  The next four columns in the data frame provide results for the proportion estimates: the proportion estimate (Estimate.P), standard error of the estimate (StdError.P), lower confidence bound (LCB95Pct.P), and upper confidence bound (UCB95Pct.P).  Argument conf for cat.analysis allows control of the confidence bound level.  The default value for conf is 95, hence the column names for confidence bounds contain the value 95.  Supplying a different value to the conf argument will be reflected in the confidence bound names.  Confidence bounds are obtained using the standard error and the Normal distribution multiplier corresponding to the confidence level.  The final four columns in the data frame provide results for the size (units) estimates: the units estimate (Estimate.U), standard error of the estimate (StdError.U), lower confidence bound (LCB95Pct.U), and upper confidence bound (UCB95Pct.U).
+The extent estimates for all basins combined are displayed using the print function.  The object produced by cat.analysis is a data frame containing thirteen columns.  The first five columns identify the population (Type), subpopulation (Subpopulation), response variable (Indicator), levels of the response variable (Category), and number of values in a category (NResp).  A category labeled "Total" is included for each combination of population, subpopulation, and response variable.  The next four columns in the data frame provide results for the proportion estimates: the proportion estimate (Estimate.P), standard error of the estimate (StdError.P), lower confidence bound (LCB95Pct.P), and upper confidence bound (UCB95Pct.P).  Argument conf for cat.analysis allows control of the confidence bound level.  The default value for conf is 95, hence the column names for confidence bounds contain the value 95.  Supplying a different value to the conf argument will be reflected in the confidence bound names.  Confidence bounds are obtained using the standard error and the Normal distribution multiplier corresponding to the confidence level.  The final four columns in the data frame provide results for the size (units) estimates: the units estimate (Estimate.U), standard error of the estimate (StdError.U), lower confidence bound (LCB95Pct.U), and upper confidence bound (UCB95Pct.U).  Note that the size estimate for the Total category will be equal to the sum of the survey design weights.
+
 
 <<Statuseval>>=
 # Print the extent estimates for all basins combined
@@ -184,8 +185,7 @@ The write.csv function is used to store the extent estimates as a comma-separate
 
 <<Statuseval, echo=FALSE>>=
 # Write results as a comma-separated value (csv) file
-write.csv(Extent_Estimates, file="Extent_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(Extent_Estimates, file="Extent_Estimates.csv", row.names=FALSE)
 
 @
 \section{Analysis of stream condition variables}
@@ -274,12 +274,12 @@ Use the write.csv function to write the condition estimates as a csv file.
 
 <<Conditioneval, echo=FALSE>>=
 # Write results as a csv file
-write.csv(Condition_Estimates, file="Condition_Estimates.csv")
+write.csv(Condition_Estimates, file="Condition_Estimates.csv", row.names=FALSE)
 
 @
 \section{Analysis of stream condition variables correcting for population size}
 
-The frame is a data structure containing spatial location data in addition to other attributes regarding a resource of interest and is used to create a survey design.  A frame often takes the form of a shapefile.  The frame can be used to obtain size values (e.g., length of streams) for the populations and subpopulations examined in an analysis.  Examination of the Estimates.U column in the Condition\_Estimates data frame produced by cat.analysis reveals that the estimated Total value for both condition variables and each combination of population value and subpopulation value does not sum to the corresponding frame size value.  For example, the Total entry in the Estimate.U column for the IBI\_status variable, population "Upper\_Wabash" and subpopulation "Upper Wabash" is 3,417 kilometers(rounded to a whole number).  The corresponding frame size value is 7,358 kilometers.  The popsize (population size) argument to cat.analysis provides a mechanism for forcing the Total category to equal a desired value.  First, the c (combine) function is used to create a named vector of frame size values for each basin. Output from the c function is assigned to an object named framesize.  The popsize argument is a list, which is a particular type of R object.  The popsize list must include an entry for each population type included in the subpop data frame, i.e., Upper\_Wabash and Strahler\_Order for this analysis.  The sum function applied to framesize is assigned to the Upper\_Wabash entry in the popsize list.  Recall that the Strahler order population type contains subpopulations, i.e., Strahler order categories.  When a population type contains subpopulations, the entry in the popsize list also is a list.  The as.list function is applied to framesize, and the result is assigned to the Strahler\_Order entry in the popsize list.
+The frame is a data structure containing spatial location data in addition to other attributes regarding a resource of interest and is used to create a survey design.  A frame often takes the form of a shapefile.  The frame can be used to obtain size values (e.g., length of streams) for the populations and subpopulations examined in an analysis.  Examination of the Estimates.U column in the Condition\_Estimates data frame produced by cat.analysis reveals that the estimated Total value for both condition variables and each combination of population value and subpopulation value does not sum to the corresponding frame size value.  For example, the Total entry in the Estimate.U column for the IBI\_status variable, population "Upper\_Wabash" and subpopulation "Upper Wabash" is 3,417 kilometers(rounded to a whole number).  The corresponding frame size value is 7,358 kilometers.  The popsize (population size) argument to cat.analysis provides a mechanism for forcing the size estimates to sum to a desired value, e.g., the frame size value.  Note that including popsize as an argument results in assigning the popsize value to the Total category of the size estimates.  Use of the popsize argument assumes that sites which were evaluated but not sampled were missing at random.  The missing at random asumption may not be a valid assumption, e.g., sites for which access was denied by the landowner may not be the same as sites that were sampled.  For the current analysis, we will assume that the assumption is valid.  As a first step for use of the popsize argument, the c (combine) function is used to create a named vector of frame size values for each basin. Output from the c function is assigned to an object named framesize.  The popsize argument is a list, which is a particular type of R object.  The popsize list must include an entry for each population type included in the subpop data frame, i.e., Upper\_Wabash and Strahler\_Order for this analysis.  The sum function applied to framesize is assigned to the Upper\_Wabash entry in the popsize list.  Recall that the Strahler order population type contains subpopulations, i.e., Strahler order categories.  When a population type contains subpopulations, the entry in the popsize list also is a list.  The as.list function is applied to framesize, and the result is assigned to the Strahler\_Order entry in the popsize list.
 
 Assign frame size values.
 \begin{verbatim}
@@ -328,7 +328,8 @@ Use the write.csv function to write the condition estimates as a csv file.
 
 <<Conditionevalpop, echo=FALSE>>=
 # Write results as a csv file
-write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv")
+write.csv(Condition_Estimates_popsize, file="Condition_Estimates_popsize.csv",
+   row.names=FALSE)
 
 @
 \section{Analysis of quantitative variables}
@@ -405,7 +406,7 @@ Use the write.csv function to write the CDF estimates as a csv file.
 
 <<Quanteval, echo=FALSE>>=
 # Write CDF estimates as a csv file
-write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv")
+write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv", row.names=FALSE)
 
 @
 The cont.cdfplot function in spsurvey can be used to produce a PDF file containing plots of the CDF estimates.  The primary arguments to cont.cdfplot are a character string containing a name for the PDF file and the CDF data frame in the CDF\_Estimates object.
@@ -431,7 +432,7 @@ Use the write.csv function to write the percentile estimates as a csv file.
 
 <<Quanteval, echo=FALSE>>=
 # Write percentile estimates as a csv file
-write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv")
+write.csv(CDF_Estimates$Pct, file="Percentile_Estimates.csv", row.names=FALSE)
 
 @
 The cont.cdftest function in spsurvey can be used to test for statistical difference between the CDFs from subpopulations.  For this analysis we will test for statistical difference between the CDFs for the four Strahler order categories.  The cont.cdftest function will test all possible pairs of Strahler order categories.  Arguments to cont.cdftest are the same as arguments to cont.analysis. Since we are interested only in testing among Strahler order categories, the subpop data frame is subsetted to include only the siteID and Strahler\_Order variables.  Note that the popsize argument was modified from prior examples to include only the entry for Strahler\_Order.
@@ -459,7 +460,7 @@ Use the write.csv function to write CDF test results as a csv file.
 
 <<Quanteval>>=
 # Write CDF test results as a csv file
-write.csv(CDF_Tests, file="CDF_Tests.csv")
+write.csv(CDF_Tests, file="CDF_Tests.csv", row.names=FALSE)
 
 @
 \end{document}

@@ -7,11 +7,11 @@
 }
 \usage{
 change.analysis(sites, repeats=NULL, subpop=NULL, design, data.cat=NULL,
-   data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL, popsize_2=NULL,
-   popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL, pcfsize_2=NULL,
-   N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL, stage1size_2=NULL,
-   sizeweight_1=FALSE, sizeweight_2=FALSE, vartype_1="Local", vartype_2="Local",
-   conf=95)
+   data.cont=NULL, revisitwgt=FALSE, test="mean", popsize_1=NULL,
+   popsize_2=NULL, popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL,
+   pcfsize_2=NULL, N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL,
+   stage1size_2=NULL, sizeweight_1=FALSE, sizeweight_2=FALSE, vartype_1="Local",
+   vartype_2="Local", conf=95)
 }
 \arguments{
   \item{sites}{a data frame consisting of three variables: the first variable is
@@ -68,6 +68,10 @@ change.analysis(sites, repeats=NULL, subpop=NULL, design, data.cat=NULL,
     of the repeat visit sites are assigned equal weights when calculating the
     covariance component of the change estimate standard error.  The default
     is FALSE.}
+  \item{test}{a character string or character vector providing the location
+    measure(s) to use for change estimation for continuous variables.  The
+    choices are "mean", "median", or c("mean", "median").  The default is
+    "mean".}
   \item{popsize_1}{known size of the resource for survey one, which is used to
     perform ratio adjustment to estimators expressed using measurement units for
     the resource and to calculate strata proportions for calculating estimates
@@ -111,12 +115,23 @@ change.analysis(sites, repeats=NULL, subpop=NULL, design, data.cat=NULL,
   \item{popsize_2}{known size of the resource for survey two.  The default is
     NULL.}
   \item{popcorrect_1}{a logical value that indicates whether finite or
-    continuous population correction factors should be employed during variance 
-    estimation for survey one, where TRUE = use the correction factors and FALSE
-    = do not use the correction factors.  The default is FALSE.}
+    continuous population correction factors should be employed during variance
+    estimation for survey one, where TRUE = use the correction factor and FALSE
+    = do not use the correction factor.  The default is FALSE.  To employ the
+    correction factor for a single-stage sample, values must be supplied for
+    argument pcfsize_1 and for the support variable of the design argument.  To
+    employ the correction factor for a two-stage sample, values must be supplied
+    for arguments N.cluster_1 and  stage1size_1 and for the support variable of
+    the design argument.}
   \item{popcorrect_2}{a logical value that indicates whether finite or
-    continuous population correction factors should be employed during variance 
-    estimation for survey two.  The default is FALSE.}
+    continuous population correction factors should be employed during variance
+    estimation for survey two, where TRUE = use the correction factor and FALSE
+    = do not use the correction factor.  The default is FALSE.  To employ the
+    correction factor for a single-stage sample, values must be supplied for
+    argument pcfsize_2 and for the support variable of the design argument.  To
+    employ the correction factor for a two-stage sample, values must be supplied
+    for arguments N.cluster_2 and  stage1size_2 and for the support variable of
+    the design argument.}
   \item{pcfsize_1}{size of the resource for survey one, which is required for
     calculation of finite and continuous population correction factors for a
     single-stage sample.  For a stratified sample this argument must be a vector

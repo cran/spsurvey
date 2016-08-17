@@ -47,12 +47,16 @@ total.est(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL, wgt1=NULL,
   \item{popcorrect}{a logical value that indicates whether finite or continuous 
     population correction factors should be employed during variance 
     estimation, where TRUE = use the correction factors and FALSE = do not 
-    use the correction factors.  The default is FALSE.}
+    use the correction factors.  The default is FALSE.  To employ the correction
+    factor for a single-stage sample, values must be supplied for arguments
+    pcfsize and support.  To employ the correction factor for a two-stage
+    sample, values must be supplied for arguments N.cluster, stage1size, and
+    support.}
   \item{pcfsize}{size of the resource, which is required for calculation of
     finite and continuous population correction factors for a single-stage
     sample.  For a stratified sample this argument must be a vector containing a
     value for each stratum and must have the names attribute set to identify the
-    stratum codes.  The default is NULLL.}
+    stratum codes.  The default is NULL.}
   \item{N.cluster}{the number of stage one sampling units in the resource, which 
     is required for calculation of finite and continuous population 
     correction factors for a two-stage sample.  For a stratified sample 

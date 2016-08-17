@@ -8,6 +8,7 @@ importFrom(deldir, deldir, tile.list)
 importFrom(foreign, read.ssd, read.xport)
 importFrom(graphics, axis, box, legend, lines, mtext, par, points, text, title)
 importFrom(grDevices, graphics.off, pdf, rainbow)
+importFrom(Hmisc, describe)
 importFrom(MASS, ginv)
 importFrom(rgeos, gIntersection)
 importFrom(stats, addmargins, dist, dnorm, ftable, model.frame, pchisq, pf,

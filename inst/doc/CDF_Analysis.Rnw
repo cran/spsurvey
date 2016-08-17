@@ -35,7 +35,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.1 of the spsurvey package was loaded successfully.
+Version 3.2 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Load the survey design and analytical variables data set}
@@ -153,7 +153,7 @@ data.cont <- data.frame(siteID=FL_lakes$siteID,
                         DissolvedOxygen=FL_lakes$Oxygen)
 
 @
-The frame is a data structure containing spatial location data in addition to other attributes regarding a resource of interest and is used to create a survey design.  A frame often takes the form of a shapefile.  The frame can be used to obtain size values (e.g., number of lakes) for the populations and subpopulations examined in an analysis.  The popsize (population size) argument to cont.analysis provides a mechanism for forcing the total number of lakes for each basin to equal a desired value, i.e., the known number of lakes in the basin.  First, the c (combine) function is used to create a named vector of frame size values for each basin. Output from the c function is assigned to an object named framesize.  The popsize argument is a list, which is a particular type of R object.  The popsize list must include an entry for each population type included in the subpop data frame, i.e., Basin for this analysis.  Recall that the Basin population type contains subpopulations, i.e., basins.  When a population type contains subpopulations, the entry in the popsize list also is a list.  The as.list function is applied to framesize, and the result is assigned to the Basin entry in the popsize list.  The popsize argument is included in the call to cont.analysis.
+The frame is a data structure containing spatial location data in addition to other attributes regarding a resource of interest and is used to create a survey design.  A frame often takes the form of a shapefile.  The frame can be used to obtain size values (e.g., number of lakes) for the populations and subpopulations examined in an analysis.  The popsize (population size) argument to cont.analysis provides a mechanism for forcing the size estimates of the number of lakes for each basin to sum to a desired value, i.e., the known number of lakes in each basin.  As a first step for use of the popsize argument, the c (combine) function is used to create a named vector of frame size values for each basin. Output from the c function is assigned to an object named framesize.  The popsize argument is a list, which is a particular type of R object.  The popsize list must include an entry for each population type included in the subpop data frame, i.e., Basin for this analysis.  Recall that the Basin population type contains subpopulations, i.e., basins.  When a population type contains subpopulations, the entry in the popsize list also is a list.  The as.list function is applied to framesize, and the result is assigned to the Basin entry in the popsize list.  The popsize argument is included in the call to cont.analysis.
 
 Assign frame size values.
 \begin{verbatim}
@@ -189,17 +189,15 @@ The object produced by cont.analysis is a list containing two objects: (1) CDF, 
 
 Unlike the CDF data frame, the Pct data frame contains only nine columns since there is a single set of estimates rather than two sets of estimates.  In addition, the fourth column is labeled Statistic and identifies either a percentile or the mean, variance, or standard deviation estimate.  Finally, since percentile estimates are obtained by inverting the CDF estimate, the percentile estimates do not have a standard error value associated with them.
 
-Use the write.table function to write the CDF estimates as a csv file.
+Use the write.csv function to write the CDF estimates as a csv file.
 
 \begin{verbatim}
-> write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-+             row.names=FALSE)
+> write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv", row.names=FALSE)
 \end{verbatim}
 
 <<Quanteval, echo=FALSE>>=
 # Write CDF estimates as a csv file
-write.table(CDF_Estimates$CDF, file="CDF_Estimates.csv", sep=",",
-            row.names=FALSE)
+write.csv(CDF_Estimates$CDF, file="CDF_Estimates.csv", row.names=FALSE)
 
 @
 The cont.cdfplot function in spsurvey can be used to produce a PDF file containing plots of the CDF estimates.  The primary arguments to cont.cdfplot are a character string containing a name for the PDF file and the CDF data frame in the CDF\_Estimates object.
@@ -262,11 +260,11 @@ abline(1, 1, col="red", lwd=2)
 \end{figure}
 \newpage
 
-Use the write.table function to write CDF test results as a csv file.
+Use the write.csv function to write CDF test results as a csv file.
 
 <<Quanteval>>=
 # Write CDF test results as a csv file
-write.table(CDF_Tests, file="CDF_Tests.csv", sep=",", row.names=FALSE)
+write.csv(CDF_Tests, file="CDF_Tests.csv", row.names=FALSE)
 
 @
 \newpage

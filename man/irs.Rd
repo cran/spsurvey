@@ -64,24 +64,26 @@ irs(design, DesignID="Site", SiteBegin=1, type.frame="finite",
     src.frame equals "att.frame", then att.frame includes columns that contain
     x-coordinates and y-coordinates for each element in the frame.  The default
     is NULL.}
-  \item{id}{name of the column from att.frame that identifies the ID value for
-    each element in the frame.  If id equals NULL, a column named "id" that
-    contains values from one through the number of rows in att.frame is added to
-    att.frame.  The default is NULL.}
-  \item{xcoord}{name of the column from att.frame that identifies x-coordinates
-    when src.frame equals "att.frame".  If xcoord equals NULL, then xcoord is
-    given the value "x".  The default is NULL.}
-  \item{ycoord}{name of the column from att.frame that identifies y-coordinates
-    when src.frame equals "att.frame".  If ycoord equals NULL, then ycoord is
-    given the value "y".  The default is NULL.}
-  \item{stratum}{name of the column from att.frame that identifies stratum
-    membership for each element in the frame.  If stratum equals NULL, the
-    design is unstratified, and a column named "stratum" (with all its elements
-    equal to the stratum name specified in design) is added to att.frame.  The
-    default is NULL.}
-  \item{mdcaty}{name of the column from att.frame that identifies the unequal
-    probability category for each element in the frame.  The default is
+  \item{id}{a character string containing the name of the column from att.frame
+    that identifies the ID value for each element in the frame.  If id equals
+    NULL, a column named "id" that contains values from one through the number
+    of rows in att.frame is added to att.frame.  The default is NULL.}
+  \item{xcoord}{a character string containing the name of the column from
+    att.frame that identifies x-coordinates when src.frame equals "att.frame".
+    If xcoord equals NULL, then xcoord is given the value "x".  The default is
     NULL.}
+  \item{ycoord}{a character string containing the name of the column from
+    att.frame that identifies y-coordinates when src.frame equals "att.frame".
+    If ycoord equals NULL, then ycoord is given the value "y".  The default is
+    NULL.}
+  \item{stratum}{a character string containing the name of the column from
+    att.frame that identifies stratum membership for each element in the frame.
+    If stratum equals NULL, the design is unstratified, and a column named
+    "stratum" (with all its elements equal to the stratum name specified in
+    design) is added to att.frame.  The default is NULL.}
+  \item{mdcaty}{a character string containing the name of the column from
+    att.frame that identifies the unequal probability category for each element
+    in the frame.  The default is NULL.}
   \item{maxtry}{maximum number of iterations for randomly generating a point
     within the frame to select a site when type.frame equals "area".  The
     default is 1000.}

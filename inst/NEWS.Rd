@@ -1,6 +1,60 @@
 \name{NEWS}
 \title{News for Package \pkg{spsurvey}}
 
+\section{CHANGES IN spsurvey VERSION 3.2 (Released 2016-08-16)}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Created a vignette for change estimation.
+
+      \item Modified functions \code{change.analysis} and \code{change.est} to
+        include estimation for difference in median values for change estimation
+        using continuous variables.
+      \item Created a function named \code{examine} that examines variables in a
+        data frame by printing either a table or the results of a call to the
+        describe function in the Hmisc package
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Modified function \code{sp2shape} to accommodate objects of class
+        "SpatialDesign" created by either the grts or irs functions.
+
+      \item Added a C header file named \code{order.h} that determines whether
+        the CPU employs big-endian or little-endian byte order.  Also, modified
+        C functions \code{readBigEndian} and \code{readLittleEndian} to use
+        constants created by the header file to ensure that computer words are
+        read in the correct byte order.
+
+      \item Modified function \code{input.check} to ensure that use of numeric
+        variables for arguments \code{stratum} and \code{cluster} are
+        handled correctly when finite or continuous population correction
+        factors are utilized.
+
+      \item Modified function \code{cdf.test} to ensure upper bounds that define
+        classes for the CDFs are unique. Also, modified functions
+        \code{cont.cdftest} and \code{cdf.test} to reduce the minimum number of
+        upper bounds that define classes for the CDFs from three to two.
+
+      \item Modified functions \code{sp2shape} and \code{read.dbf} to ensure
+        that missing values are handled without error for character vectors.
+
+      \item Modified functions \code{grts} and \code{irs} to ensure that a data
+        frame object is assigned to argument att.frame when argument src.frame
+        is assigned value "att.frame".
+
+      \item Modified function \code{change.analysis} to ensure that each
+        repeated visit site is present in both surveys for subpopulation
+        estimation.
+
+      \item Modified function \code{read.sas} to use 
+        "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe" as the default
+        value for argument \code{sascmd}. 
+    }
+  }
+}
+
+
 \section{CHANGES IN spsurvey VERSION 3.1 (Released 2015-10-23)}{
   \subsection{NEW FEATURES}{
     \itemize{
@@ -26,6 +80,7 @@
         used for the output objects created by functions \code{grts} and
         \code{irs}.  Objects of class SpatialDesign include the survey design
         list as a slot rather than as an attribute, which was used previously.
+
       \item Created S3 and S4 methods for generic functions plot and summary for
         objects of class SpatialDesign.
     }

@@ -4,7 +4,8 @@ cdf.test.size.prop <- function(z, wgt, bounds, cluster.ind, cluster, wgt1, swgt,
 ################################################################################
 # Function: cdf.test.size.prop
 # Programmer: Tom Kincaid
-# Last Revised: June 5, 2008
+# Date: November 5, 2007
+# Last Revised: January 11, 2016
 # Description:
 #   This function calculates a size-weighted estimate of the population 
 #   proportions in a set of intervals (classes).  The set of values defining the 
@@ -40,7 +41,7 @@ cdf.test.size.prop <- function(z, wgt, bounds, cluster.ind, cluster, wgt1, swgt,
 
    m <- length(bounds)
    wgt <- wgt*swgt
-   ubound <- rep(bounds, m)
+   ubound <- bounds
    lbound <- c(-1e10, bounds[-m])
    if(cluster.ind) {
       cluster <- factor(cluster)

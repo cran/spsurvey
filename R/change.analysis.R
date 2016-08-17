@@ -1,5 +1,5 @@
 change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
-   data.cat=NULL, data.cont=NULL, revisitwgt=FALSE, popsize_1=NULL,
+   data.cat=NULL, data.cont=NULL, revisitwgt=FALSE, test="mean", popsize_1=NULL,
    popsize_2=NULL, popcorrect_1=FALSE, popcorrect_2=FALSE, pcfsize_1=NULL,
    pcfsize_2=NULL, N.cluster_1=NULL, N.cluster_2=NULL, stage1size_1=NULL,
    stage1size_2=NULL, sizeweight_1=FALSE, sizeweight_2=FALSE, vartype_1="Local",
@@ -10,7 +10,7 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 # Purpose: Change Analysis for Probability Survey Data
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
-# Last Revised: August 19, 2014
+# Last Revised: March 29, 2016
 # Description:
 #   This function organizes input and output for estimation of change between
 #   two probability surveys.
@@ -68,6 +68,10 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 #     of the repeat visit sites are assigned equal weights when calculating the
 #     covariance component of the change estimate standard error.  The default
 #     is FALSE.
+#   test = a character string or character vector providing the location
+#     measure(s) to use for change estimation for continuous variables.  The
+#     choices are "mean", "median", or c("mean", "median").  The default is
+#     "mean".
 #   popsize_1 = known size of the resource for survey one, which is used to
 #     perform ratio adjustment to estimators expressed using measurement units
 #     for the resource and to calculate strata proportions for calculating
@@ -111,11 +115,22 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 #   popsize_2 = known size of the resource for survey two.  The default is NULL.
 #   popcorrect_1 = a logical value that indicates whether finite or continuous
 #     population correction factors should be employed during variance
-#     estimation for survey one, where TRUE = use the correction factors and
-#     FALSE = do not use the correction factors.  The default is FALSE.
+#     estimation for survey one, where TRUE = use the correction factor and
+#     FALSE = do not use the correction factor.  The default is FALSE.  To
+#     employ the correction factor for a single-stage sample, values must be
+#     supplied for argument pcfsize_1 and for the support variable of the design
+#     argument.  To employ the correction factor for a two-stage sample, values
+#     must be supplied for arguments N.cluster_1 and  stage1size_1 and for the
+#     support variable of the design argument.
 #   popcorrect_2 = a logical value that indicates whether finite or continuous
 #     population correction factors should be employed during variance
-#     estimation for survey two.  The default is FALSE.
+#     estimation for survey two, where TRUE = use the correction factor and
+#     FALSE = do not use the correction factor.  The default is FALSE.  To
+#     employ the correction factor for a single-stage sample, values must be
+#     supplied for argument pcfsize_2 and for the support variable of the design
+#     argument.  To employ the correction factor for a two-stage sample, values
+#     must be supplied for arguments N.cluster_2 and  stage1size_2 and for the
+#     support variable of the design argument.
 #   pcfsize_1 = size of the resource for survey one, which is required for
 #     calculation of finite and continuous population correction factors for a
 #     single-stage sample.  For a stratified sample this argument must be a
@@ -151,10 +166,16 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 #     "Local".
 #   conf = the confidence level.  The default is 95%.
 # Output:
-#   A data frame of change estimates for all combinations of population Types,
+#   A list of change estimates composed of three items: (1) catsum contains
+#   change estimates for categorical variables, (2) contsum_mean contains
+#   estimates for continuous variables using the mean, and (3) contsum_median
+#   contains estimates for continuous variables using the median.  The items in
+#   the list will contain NULL for estimates that were not calculated.  Each
+#   data frame includes estimates for all combinations of population Types,
 #   subpopulations within Types, response variables, and categories within each
-#   response variable (for categorical variables only).  Estimates provided plus
-#   standard error and confidence interval estimates.
+#   response variable (for categorical variables and continuous variables using
+#   the median).  Change estimates are provided plus standard error estimates
+#   and confidence interval estimates.
 # Other Functions Required:
 #   dframe.check - check site IDs, the sites data frame, the subpop data frame,
 #     and the data.cat data frame to assure valid contents and, as necessary,
@@ -745,6 +766,40 @@ if(!is.null(data.cat)) {
                next
             }
 
+# Create logical vectors for subsetting the repeat_1 and repeat_2 objects that
+# ensure both visits belong to the subpopulation.
+
+            indx_1 <- match(sites_1[subpop.ind_1, 1], repeats[, 1], nomatch=0)
+            indx_1 <- indx_1[indx_1 > 0]
+            indx_2 <- match(sites_2[subpop.ind_2, 1], repeats[, 2], nomatch=0)
+            indx_2 <- indx_2[indx_2 > 0]
+            repeat.ind_1 <- subpop.ind_1
+            ind <- indx_1 %in% indx_2
+            if(any(!ind)) {
+               repeat.ind_1[repeat_1 == TRUE & subpop.ind_1 == TRUE] <- ind
+               warn.ind <- TRUE
+               temp.str <- vecprint(repeats[indx_1[!ind], 1])
+               warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey one did not have analogous site IDs present in survey two:\n", temp.str, sep="")
+               act <- "The listed repeated visit sites were not used for covariance estimation.\n"
+               warn.df <- rbind(warn.df, data.frame(func=I(fname),
+                  subpoptype=I(typenames[itype]),
+                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
+                  stratum=NA,  warning=I(warn), action=I(act)))
+            }
+            repeat.ind_2 <- subpop.ind_2
+            ind <- indx_2 %in% indx_1
+            if(any(!ind)) {
+               repeat.ind_2[repeat_2 == TRUE & subpop.ind_2 == TRUE] <- ind
+               warn.ind <- TRUE
+               temp.str <- vecprint(repeats[indx_2[!ind], 2])
+               warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey two did not have analogous site IDs present in survey one:\n", temp.str, sep="")
+               act <- "The listed repeated visit sites were not used for covariance estimation.\n"
+               warn.df <- rbind(warn.df, data.frame(func=I(fname),
+                  subpoptype=I(typenames[itype]),
+                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
+                  stratum=NA,  warning=I(warn), action=I(act)))
+            }
+
 # For a stratified sample, remove values from pcfsize, N.cluster, and stage1size
 # for strata that do not occur in the subpopulation for survey one
 
@@ -798,12 +853,12 @@ if(!is.null(data.cat)) {
                                wgt_1=design_1[subpop.ind_1,2],
                                x_1=design_1[subpop.ind_1,3],
                                y_1=design_1[subpop.ind_1,4],
-                               repeat_1=repeat_1[subpop.ind_1],
+                               repeat_1=repeat_1[repeat.ind_1],
                                z_2=data.cat_2[subpop.ind_2,ivar],
                                wgt_2=design_2[subpop.ind_2,2],
                                x_2=design_2[subpop.ind_2,3],
                                y_2=design_2[subpop.ind_2,4],
-                               repeat_2=repeat_2[subpop.ind_2],
+                               repeat_2=repeat_2[repeat.ind_2],
                                revisitwgt=revisitwgt,
                                stratum_1=design_1[subpop.ind_1,5],
                                stratum_2=design_2[subpop.ind_2,5],
@@ -883,11 +938,13 @@ if(!is.null(data.cat)) {
 # Begin the section for continuous response variables
 #
 
-contsum <- NULL
+contsum_mean <- NULL
+contsum_median <- NULL
 if(!is.null(data.cont)) {
    nvar <- ncol(data.cont)
    varnames <- names(data.cont)
-   nrow <- 0 
+   nrow1 <- 0 
+   nrow2 <- 0 
 
 # Loop through all continuous response variables
 
@@ -957,6 +1014,40 @@ if(!is.null(data.cont)) {
                next
             }
 
+# Create logical vectors for subsetting the repeat_1 and repeat_2 objects that
+# ensure both visits belong to the subpopulation.
+
+            indx_1 <- match(sites_1[subpop.ind_1, 1], repeats[, 1], nomatch=0)
+            indx_1 <- indx_1[indx_1 > 0]
+            indx_2 <- match(sites_2[subpop.ind_2, 1], repeats[, 2], nomatch=0)
+            indx_2 <- indx_2[indx_2 > 0]
+            repeat.ind_1 <- subpop.ind_1
+            ind <- indx_1 %in% indx_2
+            if(any(!ind)) {
+               repeat.ind_1[repeat_1 == TRUE & subpop.ind_1 == TRUE] <- ind
+               warn.ind <- TRUE
+               temp.str <- vecprint(repeats[indx_1[!ind], 1])
+               warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey one did not have analogous site IDs present in survey two:\n", temp.str, sep="")
+               act <- "The listed repeated visit sites were not used for covariance estimation.\n"
+               warn.df <- rbind(warn.df, data.frame(func=I(fname),
+                  subpoptype=I(typenames[itype]),
+                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
+                  stratum=NA,  warning=I(warn), action=I(act)))
+            }
+            repeat.ind_2 <- subpop.ind_2
+            ind <- indx_2 %in% indx_1
+            if(any(!ind)) {
+               repeat.ind_2[repeat_2 == TRUE & subpop.ind_2 == TRUE] <- ind
+               warn.ind <- TRUE
+               temp.str <- vecprint(repeats[indx_2[!ind], 2])
+               warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey two did not have analogous site IDs present in survey one:\n", temp.str, sep="")
+               act <- "The listed repeated visit sites were not used for covariance estimation.\n"
+               warn.df <- rbind(warn.df, data.frame(func=I(fname),
+                  subpoptype=I(typenames[itype]),
+                  subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
+                  stratum=NA,  warning=I(warn), action=I(act)))
+            }
+
 # For a stratified sample, remove values from pcfsize, N.cluster, and stage1size
 # for strata that do not occur in the subpopulation for survey one
 
@@ -1010,13 +1101,14 @@ if(!is.null(data.cont)) {
                                wgt_1=design_1[subpop.ind_1,2],
                                x_1=design_1[subpop.ind_1,3],
                                y_1=design_1[subpop.ind_1,4],
-                               repeat_1=repeat_1[subpop.ind_1],
+                               repeat_1=repeat_1[repeat.ind_1],
                                z_2=data.cont_2[subpop.ind_2,ivar],
                                wgt_2=design_2[subpop.ind_2,2],
                                x_2=design_2[subpop.ind_2,3],
                                y_2=design_2[subpop.ind_2,4],
-                               repeat_2=repeat_2[subpop.ind_2],
+                               repeat_2=repeat_2[repeat.ind_2],
                                revisitwgt=revisitwgt,
+                               test=test,
                                stratum_1=design_1[subpop.ind_1,5],
                                stratum_2=design_2[subpop.ind_2,5],
                                cluster_1=design_1[subpop.ind_1,6],
@@ -1053,26 +1145,47 @@ if(!is.null(data.cont)) {
                                warn.vec=c(typenames[itype],
                                           subpopnames[isubpop],
                                           varnames[ivar]))
-            temp.cont <- temp$Results
+            temp.cont1 <- temp$Results$Mean
+            temp.cont2 <- temp$Results$Median
             warn.ind <- temp$warn.ind
             warn.df <- temp$warn.df
 
 # Assign change estimates for the response variable to a data frame
 
-            if(nrow == 0) {
-               nn <- nrow(temp.cont)
-               contsum <- data.frame(Type=rep(typenames[itype],nn), 
-                  Subpopulation=rep(subpopnames[isubpop],nn), 
-                  Indicator=rep(varnames[ivar],nn), temp.cont)
-               nrow <- nn
-            } else {
-               nn <- nrow(temp.cont)
-               contsum <- rbind(contsum,
-                  data.frame(Type=rep(typenames[itype],nn), 
+            if(nrow1 == 0 & nrow2 == 0) {
+               if(!is.null(temp.cont1)) {
+                  nn <- nrow(temp.cont1)
+                  contsum_mean <- data.frame(Type=rep(typenames[itype],nn), 
                      Subpopulation=rep(subpopnames[isubpop],nn), 
-                     Indicator=rep(varnames[ivar],nn), temp.cont, 
-                     row.names=(nrow+1):(nrow+nn)))
-               nrow <- nrow + nn
+                     Indicator=rep(varnames[ivar],nn), temp.cont1)
+                  nrow1 <- nn
+               }
+               if(!is.null(temp.cont2)) {
+                  nn <- nrow(temp.cont2)
+                  contsum_median <- data.frame(Type=rep(typenames[itype],nn), 
+                     Subpopulation=rep(subpopnames[isubpop],nn), 
+                     Indicator=rep(varnames[ivar],nn), temp.cont2)
+                  nrow2 <- nn
+               }
+            } else {
+               if(!is.null(temp.cont1)) {
+                  nn <- nrow(temp.cont1)
+                  contsum_mean <- rbind(contsum_mean,
+                     data.frame(Type=rep(typenames[itype],nn), 
+                     Subpopulation=rep(subpopnames[isubpop],nn), 
+                     Indicator=rep(varnames[ivar],nn), temp.cont1, 
+                     row.names=(nrow1+1):(nrow1+nn)))
+                  nrow1 <- nrow1 + nn
+               }
+               if(!is.null(temp.cont2)) {
+                  nn <- nrow(temp.cont2)
+                  contsum_median <- rbind(contsum_median,
+                     data.frame(Type=rep(typenames[itype],nn), 
+                     Subpopulation=rep(subpopnames[isubpop],nn), 
+                     Indicator=rep(varnames[ivar],nn), temp.cont2, 
+                     row.names=(nrow2+1):(nrow2+nn)))
+                  nrow2 <- nrow2 + nn
+               }
             }
 
 # End of the loop for subpopulations
@@ -1106,10 +1219,12 @@ if(!is.null(data.cont)) {
 
    if(!is.null(catsum))
       row.names(catsum) <- 1:nrow(catsum)
-   if(!is.null(contsum))
-      row.names(contsum) <- 1:nrow(contsum)
+   if(!is.null(contsum_mean))
+      row.names(contsum_mean) <- 1:nrow(contsum_mean)
+   if(!is.null(contsum_median))
+      row.names(contsum_median) <- 1:nrow(contsum_median)
 
 # Return the data frames as a list
 
-   list(catsum=catsum, contsum=contsum)
+   list(catsum=catsum, contsum_mean=contsum_mean, contsum_median=contsum_median)
 }

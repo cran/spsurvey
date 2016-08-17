@@ -46,7 +46,11 @@ cdfvar.size.prop <- function(z, wgt, x, y, val, cdfest, stratum.ind,
 #   y1 = the stage one y-coordinate for location for each site.
 #   pcfactor.ind = a logical value that indicates whether the population
 #     correction factor is used during variance estimation, where TRUE = use the
-#     population correction factor and FALSE = do not use the factor.
+#     population correction factor and FALSE = do not use the factor.  To employ
+#     the correction factor for a single-stage sample, values must be supplied
+#     for arguments pcfsize and support.  To employ the correction factor for a
+#     two-stage sample, values must be supplied for arguments N.cluster,
+#     stage1size, and support.
 #   pcfsize = size of the resource, which is required for calculation of finite
 #     and continuous population correction factors for a single-stage sample.
 #     For a stratified sample this argument must be a vector containing a value
