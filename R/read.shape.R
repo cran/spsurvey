@@ -5,7 +5,7 @@ read.shape <- function(filename=NULL) {
 # Purpose: Read an ESRI shapefile
 # Programmer: Tom Kincaid
 # Date: March 1, 2005
-# Last Revised: October 8, 2008
+# Last Revised: August 18, 2016
 # Description:
 #   This function reads either a single shapefile or multiple shapefiles.  For 
 #   multiple shapefiles, all of the shapefiles must be the same type, i.e., 
@@ -37,6 +37,11 @@ read.shape <- function(filename=NULL) {
 #   SpatialPolygonsDataFrame - sp package function to create an object of class
 #     SpatialPolygonsDataFrame
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+   if(.Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the read.shape function.")
 
 # If necessary, strip the file extension from the file name
 

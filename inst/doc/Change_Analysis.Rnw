@@ -36,7 +36,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.2 of the spsurvey package was loaded successfully.
+Version 3.3 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Load the survey design and analytical variables data set}

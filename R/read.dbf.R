@@ -5,7 +5,7 @@ read.dbf <- function(filename=NULL) {
 # Purpose: Read the dbf file of an ESRI shapefile
 # Programmer: Tom Kincaid
 # Date: March 1, 2005
-# Revised: February 17, 2016
+# Last Revised: August 18, 2016
 # Description:
 #   This function reads either a single dbf file or multiple dbf files.  For 
 #   multiple dbf files, all of the dbf files must have the same variable names.
@@ -21,6 +21,11 @@ read.dbf <- function(filename=NULL) {
 # Other Functions Required:
 #   readDbfFile - C function to read a single dbf file or multiple dbf files
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+   if(.Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the read.dbf function.")
 
 # If necessary, strip the file extension from the file name
 

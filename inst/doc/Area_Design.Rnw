@@ -17,6 +17,17 @@
 \tableofcontents
 \setkeys{Gin}{width=1.0\textwidth}
 
+\section{Processor}
+
+A little-endian processor is required for this vignette.  The .Platform function is used to ensure that the processor is little-endian.
+
+<<processor>>=
+# Ensure that the processor is little-endian
+
+if(.Platform$endian == "big") 
+   stop("\nA little-endian processor is required for this vignette.")
+
+@
 \section{Preliminaries}
 
 This document presents example GRTS survey designs for an area resource.  The area resource used in the designs is Omernik level 3 ecoregions within Utah.  Four survey designs will be presented: (1) an unstratified, equal probability design; (2) an unstratified, unequal probability design; (3) a stratified, equal probability design; and (4) an unstratified, unequal probability design with an oversample and a panel structure for survey over time.  The sampling frame used for the survey designs is contained in either an ESRI shapefile or an sp package object.  The frame contains the coordinates for a set of polygons that define the area resource in addition to attribute data associated with the polygons.  The coordinate system for the set of points in the sampling frame is an equal area projection rather than latitude and longitude.  An equal area projection is used so that calculation of distance between points is valid.
@@ -31,7 +42,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.2 of the spsurvey package was loaded successfully.
+Version 3.3 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Create a shapefile}

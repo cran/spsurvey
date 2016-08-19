@@ -5,7 +5,7 @@ irslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1) {
 # Purpose: Select an independent random sample (IRS) of a linear resource
 # Programmer: Tom Kincaid
 # Date: November 17, 2005
-# Last Revised: March 7, 2007
+# Last Revised: August 18, 2016
 # Description:      
 #   This function selects an IRS of a linear resource.  
 # Arguments:
@@ -20,6 +20,11 @@ irslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1) {
 #   and weight.
 # Other Functions Required: None
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+   if(.Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the irslin function.")
 
 # Pick sample points
 

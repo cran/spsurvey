@@ -6,7 +6,7 @@ irsarea <- function (shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
 # Purpose: Select an independent random sample (IRS) of an area resource
 # Programmer: Tom Kincaid
 # Date: November 30, 2005
-# Last Revised: February 23, 2007
+# Last Revised: August 18, 2016
 # Description:      
 #   This function selects an IRS of an area resource.  
 # Arguments:
@@ -31,6 +31,11 @@ irsarea <- function (shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
 #     probability values associated with a set of point, where polygons are
 #     specified by a shapefile
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+   if(.Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the irsarea function.")
 
 # Determine IDs for records that will contain sample points
 

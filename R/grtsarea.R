@@ -8,7 +8,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: May 19, 2004
-# Last Revised: January 27, 2015
+# Last Revised: August 18, 2016
 # Description:      
 #   This function select a GRTS sample of an area resource.  The function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -50,6 +50,11 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
 #   pickAreaSamplePoints - C function to pick sample points in the selected grid
 #     cells
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+   if(.Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the grtsarea function.")
 
 # Determine the number of levels for hierarchical randomization
 

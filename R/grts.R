@@ -10,7 +10,7 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: March 8, 2016
+# Last Revised: August 18, 2016
 # Description:
 #   This function select a GRTS sample of a finite, linear, or area resource.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -150,6 +150,11 @@ grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #      att.frame=test.attframe, stratum="test.stratum", mdcaty="test.mdcaty",
 #      shapefile=TRUE, out.shape="test.sample")
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+if(.Platform$endian == "big") 
+   stop("\nA little-endian processor is required for the grts function.")
 
 # Ensure that a design list is provided
 

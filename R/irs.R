@@ -8,7 +8,7 @@ irs <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 # Purpose: Select an independent random sample (IRS)
 # Programmer: Tom Kincaid
 # Date: November 28, 2005
-# Last Revised: March 8, 2016
+# Last Revised: August 18, 2016
 # Description:
 #   Select an independent random sample from a point, linear, or areal frame.
 #   Frame elements must be located in 1- or 2-dimensional coordinate system.
@@ -125,6 +125,11 @@ irs <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
 #      att.frame=test.attframe, stratum="test.stratum", mdcaty="test.mdcaty",
 #      shapefile=TRUE, out.shape="test.sample")
 ################################################################################
+
+# Ensure that the processor is little-endian
+
+if(.Platform$endian == "big") 
+   stop("\nA little-endian processor is required for the irs function.")
 
 # Ensure that a design list is provided
 

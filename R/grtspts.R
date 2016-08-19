@@ -9,7 +9,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: January 27, 2015
+# Last Revised: August 18, 2016
 # Description:
 #   This function select a GRTS sample of a finite resource.  This function uses
 #   hierarchical randomization to ensure that the sample will include no more
@@ -48,6 +48,11 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 #   pickGridCells - C function to select grid cells that get a sample point
 #   selectpts - pick sample point(s) from selected cells
 ################################################################################
+
+# If the source of the frame is a shapefile, ensure that the processor is little-endian
+
+   if(src.frame == "shapefile" & .Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the grtspts function when the source \nof the frame is a shapefile.")
 
 # If src.frame is not "shapefile", determine the minimum and maximum values for
 # the grid and extent of the grid

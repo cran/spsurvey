@@ -7,7 +7,7 @@ sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
 #          sample frame
 # Programmer: Tom Kincaid
 # Date: September 29, 2011
-# Revised: April 17, 2015
+# Last Revised: August 18, 2016
 # Description:      
 #   This function calculates spatial balance grid cell extent and proportions
 #   for the sample frame.  
@@ -47,6 +47,11 @@ sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
 # Check that either a shapefile name of a survey design frame object was provided
    if(is.null(shapefilename) & is.null(spframe))
       stop("\nEither a shapefile name or a survey design frame object must be provided.")
+
+# If a shapefile name is provided, ensure that the processor is little-endian
+
+   if(!is.null(shapefilename) & .Platform$endian == "big") 
+      stop("\nA little-endian processor is required for the sbcframe function when a \nshapefile name is assigned to argument shapefilename.  Assign an sp package \nobject to argument spframe.")
 
 # If necessary, strip the file extension from the shapefile name
    if(!is.null(shapefilename)) {

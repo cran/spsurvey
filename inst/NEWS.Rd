@@ -1,6 +1,26 @@
 \name{NEWS}
 \title{News for Package \pkg{spsurvey}}
 
+\section{CHANGES IN spsurvey VERSION 3.3 (Released 2016-08-19)}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Inserted a SystemRequirements field in the DESCRIPTION file and
+        modified functions \code{grts}, \code{grtsarea}, \code{grtslin},
+        \code{grtspts}, \code{irs}, \code{irsarea}, \code{irslin},
+        \code{read.dbf}, and \code{read.shape} to prevent the functions from
+        being executed on big-endian processors.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Removed the C header file named \code{order.h} and replaced C
+        functions \code{readBigEndian} and \code{readLittleEndian} with the
+        version of those functions from \pkg{spsurvey} version 3.1.  
+    }
+  }
+}
+
 \section{CHANGES IN spsurvey VERSION 3.2 (Released 2016-08-16)}{
   \subsection{NEW FEATURES}{
     \itemize{

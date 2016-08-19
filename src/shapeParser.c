@@ -36,6 +36,7 @@
 **  Revised:     June 12, 2015
 **  Revised:     November 5, 2015
 **  Revised:     August 15, 2016
+**  Revised:     August 18, 2016
 ******************************************************************************/
 
 #include <stdio.h>
@@ -48,7 +49,6 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include "shapeParser.h"
-#include "order.h"
 
 /* found in dbfFileParser.c */
 extern void deallocateDbf( Dbf * dbf );
@@ -74,19 +74,11 @@ unsigned int readBigEndian( unsigned char * buffer, int length ) {
   int i;
   unsigned int value = 0;
 
-  if (HOST_ORDER == LITTLE_ENDIAN) {
-    for ( i=0; i < length-1; ++i ) {
-      value += buffer[i];
-      value = value << 8;  
-    }
+  for ( i=0; i < length-1; ++i ) {
     value += buffer[i];
-  } else {
-    for ( i=length-1; i > 0; --i ) {
-      value += buffer[i];
-      value = value << 8;  
-    }
-    value += buffer[i];
+    value = value << 8;  
   }
+  value += buffer[i];
 
   return value;
 }
@@ -108,19 +100,11 @@ unsigned int readLittleEndian( unsigned char * buffer, int length ) {
   int i;
   unsigned int value = 0;
 
-  if (HOST_ORDER == LITTLE_ENDIAN) {
-    for ( i=length-1; i > 0; --i ) {
-      value += buffer[i];
-      value = value << 8;  
-    }
+  for ( i=length-1; i > 0; --i ) {
     value += buffer[i];
-  } else {
-    for ( i=0; i < length-1; ++i ) {
-      value += buffer[i];
-      value = value << 8;  
-    }
-    value += buffer[i];
+    value = value << 8;  
   }
+  value += buffer[i];
 
   return value;
 }
