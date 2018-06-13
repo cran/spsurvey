@@ -42,14 +42,20 @@ spbalance(spsample, spframe = NULL, tess_ind = TRUE, sbc_ind = FALSE, nrows = 5,
   \item{tess}{results for spatial balance metrics using tesselation polygons.}
   \item{sbc}{results for spatial balance metrics using a rectangular grid.}
   If either the tess_ind or sbc_ind arguments are set to FALSE, the
-  corresponding component in the list is set to NULL.  Otherwise, each
-  component of the list is a lists that contains the following components:
+  corresponding component in the list is set to NULL.  If tess_ind equals TRUE,
+  then the list named tess is a list containing the following components:
   \item{J_subp}{Pielou evenness measure.}
   \item{chi_sq}{chi-square statistic.}
-  \item{extent}{frame extent for each  Dirichlet tesselation polygon or
-   rectangular grid cell.}
-  \item{prop}{frame proportion for each Dirichlet tesselation polygon or
-   rectangular grid cell.}
+  \item{extent}{frame extent for each Dirichlet tesselation polygon.}
+  \item{prop}{frame proportion for each Dirichlet tesselation polygon.}
+  If sbc_ind equals TRUE, then the list named sbc is a list containing the
+  following components:
+  \item{J_subp}{Pielou evenness measure.}
+  \item{chi_sq}{chi-square statistic.}
+  \item{extent_f}{frame extent for each rectangular grid cell.}
+  \item{prop_f}{frame proportion for each rectangular grid cell.}
+  \item{extent_s}{sample extent for each rectangular grid cell.}
+  \item{prop_s}{sample proportion for each rectangular grid cell.}
 }
 \references{
   Olsen, A. R., T. M. Kincaid, and Q. Payton (2012). Spatially balanced survey

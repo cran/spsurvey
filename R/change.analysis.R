@@ -10,7 +10,7 @@ change.analysis <- function(sites, repeats=NULL, subpop=NULL, design,
 # Purpose: Change Analysis for Probability Survey Data
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
-# Last Revised: March 29, 2016
+# Last Revised: January 11, 2018
 # Description:
 #   This function organizes input and output for estimation of change between
 #   two probability surveys.
@@ -773,10 +773,10 @@ if(!is.null(data.cat)) {
             indx_1 <- indx_1[indx_1 > 0]
             indx_2 <- match(sites_2[subpop.ind_2, 1], repeats[, 2], nomatch=0)
             indx_2 <- indx_2[indx_2 > 0]
-            repeat.ind_1 <- subpop.ind_1
+            repeat.ind_1 <- repeat_1[subpop.ind_1]
             ind <- indx_1 %in% indx_2
             if(any(!ind)) {
-               repeat.ind_1[repeat_1 == TRUE & subpop.ind_1 == TRUE] <- ind
+               repeat.ind_1[repeat.ind_1 == TRUE] <- ind
                warn.ind <- TRUE
                temp.str <- vecprint(repeats[indx_1[!ind], 1])
                warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey one did not have analogous site IDs present in survey two:\n", temp.str, sep="")
@@ -786,10 +786,10 @@ if(!is.null(data.cat)) {
                   subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
                   stratum=NA,  warning=I(warn), action=I(act)))
             }
-            repeat.ind_2 <- subpop.ind_2
+            repeat.ind_2 <- repeat_2[subpop.ind_2]
             ind <- indx_2 %in% indx_1
             if(any(!ind)) {
-               repeat.ind_2[repeat_2 == TRUE & subpop.ind_2 == TRUE] <- ind
+               repeat.ind_2[repeat.ind_2 == TRUE] <- ind
                warn.ind <- TRUE
                temp.str <- vecprint(repeats[indx_2[!ind], 2])
                warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey two did not have analogous site IDs present in survey one:\n", temp.str, sep="")
@@ -853,12 +853,12 @@ if(!is.null(data.cat)) {
                                wgt_1=design_1[subpop.ind_1,2],
                                x_1=design_1[subpop.ind_1,3],
                                y_1=design_1[subpop.ind_1,4],
-                               repeat_1=repeat_1[repeat.ind_1],
+                               repeat_1=repeat.ind_1,
                                z_2=data.cat_2[subpop.ind_2,ivar],
                                wgt_2=design_2[subpop.ind_2,2],
                                x_2=design_2[subpop.ind_2,3],
                                y_2=design_2[subpop.ind_2,4],
-                               repeat_2=repeat_2[repeat.ind_2],
+                               repeat_2=repeat.ind_2,
                                revisitwgt=revisitwgt,
                                stratum_1=design_1[subpop.ind_1,5],
                                stratum_2=design_2[subpop.ind_2,5],
@@ -881,7 +881,7 @@ if(!is.null(data.cat)) {
                                pcfsize_2=temp.pcfsize_2,
                                N.cluster_2=temp.N.cluster_2,
                                stage1size_2=temp.stage1size_2,
-                               support_2=design_1[subpop.ind_2,10],
+                               support_2=design_2[subpop.ind_2,10],
                                sizeweight_1=swgt.ind_1,
                                swgt_1=design_1[subpop.ind_1,11],
                                swgt1_1=design_1[subpop.ind_1,12],
@@ -1021,10 +1021,10 @@ if(!is.null(data.cont)) {
             indx_1 <- indx_1[indx_1 > 0]
             indx_2 <- match(sites_2[subpop.ind_2, 1], repeats[, 2], nomatch=0)
             indx_2 <- indx_2[indx_2 > 0]
-            repeat.ind_1 <- subpop.ind_1
+            repeat.ind_1 <- repeat_1[subpop.ind_1]
             ind <- indx_1 %in% indx_2
             if(any(!ind)) {
-               repeat.ind_1[repeat_1 == TRUE & subpop.ind_1 == TRUE] <- ind
+               repeat.ind_1[repeat.ind_1 == TRUE] <- ind
                warn.ind <- TRUE
                temp.str <- vecprint(repeats[indx_1[!ind], 1])
                warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey one did not have analogous site IDs present in survey two:\n", temp.str, sep="")
@@ -1034,10 +1034,10 @@ if(!is.null(data.cont)) {
                   subpop=I(subpopnames[isubpop]), indicator=I(varnames[ivar]),
                   stratum=NA,  warning=I(warn), action=I(act)))
             }
-            repeat.ind_2 <- subpop.ind_2
+            repeat.ind_2 <- repeat_2[subpop.ind_2]
             ind <- indx_2 %in% indx_1
             if(any(!ind)) {
-               repeat.ind_2[repeat_2 == TRUE & subpop.ind_2 == TRUE] <- ind
+               repeat.ind_2[repeat.ind_2 == TRUE] <- ind
                warn.ind <- TRUE
                temp.str <- vecprint(repeats[indx_2[!ind], 2])
                warn <- paste("The following repeated visit site IDs for subpopulation ", subpopnames[isubpop], "\nof population type ", typenames[itype], " for indicator ", varnames[ivar], "\nin survey two did not have analogous site IDs present in survey one:\n", temp.str, sep="")
@@ -1101,12 +1101,12 @@ if(!is.null(data.cont)) {
                                wgt_1=design_1[subpop.ind_1,2],
                                x_1=design_1[subpop.ind_1,3],
                                y_1=design_1[subpop.ind_1,4],
-                               repeat_1=repeat_1[repeat.ind_1],
+                               repeat_1=repeat.ind_1,
                                z_2=data.cont_2[subpop.ind_2,ivar],
                                wgt_2=design_2[subpop.ind_2,2],
                                x_2=design_2[subpop.ind_2,3],
                                y_2=design_2[subpop.ind_2,4],
-                               repeat_2=repeat_2[repeat.ind_2],
+                               repeat_2=repeat.ind_2,
                                revisitwgt=revisitwgt,
                                test=test,
                                stratum_1=design_1[subpop.ind_1,5],
@@ -1129,7 +1129,7 @@ if(!is.null(data.cont)) {
                                pcfsize_2=temp.pcfsize_2,
                                N.cluster_2=temp.N.cluster_2,
                                stage1size_2=temp.stage1size_2,
-                               support_2=design_1[subpop.ind_2,10],
+                               support_2=design_2[subpop.ind_2,10],
                                sizeweight_1=swgt.ind_1,
                                swgt_1=design_1[subpop.ind_1,11],
                                swgt1_1=design_1[subpop.ind_1,12],

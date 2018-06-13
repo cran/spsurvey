@@ -7,6 +7,7 @@
 **  Revised:     May 5, 2015
 **  Revised:     June 15, 2015
 **  Revised:     November 5, 2015
+**  Revised:     August 10, 2017
 **  Description:
 **    For each value in the set of shapefile record IDs, select a sample point
 **    from the shapefile record 
@@ -136,11 +137,11 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
   /* copy the shapefile record IDs from the R vector to a C array */
   if((shpIDs = (unsigned int *) malloc(sizeof(unsigned int) * dsgSize)) == NULL) {
     Rprintf("Error: Allocating memory in C function pickAreaSamplePoints.\n");
-    PROTECT(results = allocVector(VECSXP, 1));
-    UNPROTECT(1);
     free( shpFileName );
     fclose(newShp);
     remove(TEMP_SHP_FILE);
+    PROTECT(results = allocVector(VECSXP, 1));
+    UNPROTECT(1);
     return results;
   }
   for(i = 0; i < dsgSize; ++i) {
@@ -151,26 +152,26 @@ SEXP pickAreaSamplePoints(SEXP fileNamePrefix, SEXP shpIDsVec, SEXP recordIDsVec
 
     /* create a temporary .shp file containing all the .shp files */
     if(combineShpFiles(newShp, shpIDs, dsgSize) == -1) {
-      PROTECT(results = allocVector(VECSXP, 1));
-      UNPROTECT(1);
+      Rprintf("Error: Combining multiple shapefiles in C function pickAreaSamplePoints.\n");
       free( shpIDs );
       free( shpFileName );
       fclose(newShp);
       remove(TEMP_SHP_FILE);
-      Rprintf("Error: Combining multiple shapefiles in C function pickAreaSamplePoints.\n");
+      PROTECT(results = allocVector(VECSXP, 1));
+      UNPROTECT(1);
       return results; 
     }
   } else {
 
     /* create a temporary .shp file containing the sent .shp file */
     if(createNewTempShpFile(newShp, shpFileName, shpIDs, dsgSize) == -1) {
-      PROTECT(results = allocVector(VECSXP, 1));
-      UNPROTECT(1);
+      Rprintf("Error: Creating temporary shapefile in C function pickAreaSamplePoints.\n");
       free( shpIDs );
       free( shpFileName );
       fclose(newShp);
       remove(TEMP_SHP_FILE);
-      Rprintf("Error: Creating temporary shapefile in C function pickAreaSamplePoints.\n");
+      PROTECT(results = allocVector(VECSXP, 1));
+      UNPROTECT(1);
       return results; 
     }
   }

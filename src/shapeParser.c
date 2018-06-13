@@ -37,6 +37,7 @@
 **  Revised:     November 5, 2015
 **  Revised:     August 15, 2016
 **  Revised:     August 18, 2016
+**  Revised:     June 12, 2018
 ******************************************************************************/
 
 #include <stdio.h>
@@ -3878,10 +3879,10 @@ SEXP writeShapeFilePoint( SEXP xVec, SEXP yVec, SEXP prjFileNameVec,
 
   /* write Zmin, Zmax, Mmin, and Mmax as 0's */
   /* little endian byte order */
-  tempInt = 0;
+  tempDbl = 0.0;
   for ( i = 0; i < 4; ++i ) {
-    fwrite( &tempInt, sizeof(char), 8, fptrShp );
-    fwrite( &tempInt, sizeof(char), 8, fptrShx );
+    fwrite( &tempDbl, sizeof(double), 1, fptrShp );
+    fwrite( &tempDbl, sizeof(double), 1, fptrShx );
   }
 
   /* initialize offset for index file to just past the main header */
@@ -4504,10 +4505,10 @@ SEXP writeShapeFilePolygon( SEXP shapeTypeVal, SEXP fileLengthVal,
 
   /* write Zmin, Zmax, Mmin, and Mmax as 0's */
   /* little endian byte order */
-  tempInt = 0;
+  tempDbl = 0.0;
   for ( i = 0; i < 4; ++i ) {
-    fwrite( &tempInt, sizeof(char), 8, fptrShp );
-    fwrite( &tempInt, sizeof(char), 8, fptrShx );
+    fwrite( &tempDbl, sizeof(double), 1, fptrShp );
+    fwrite( &tempDbl, sizeof(double), 1, fptrShx );
   }
 
   /* initialize offset for index file to just past the index header */

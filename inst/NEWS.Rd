@@ -1,6 +1,38 @@
 \name{NEWS}
 \title{News for Package \pkg{spsurvey}}
 
+\section{CHANGES IN spsurvey VERSION 3.4 (Released 2018-06-12)}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item None.
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Modified C functions \code{insideAreaGridCell},
+        \code{insideLinearGridCell}, \code{linSample}, \code{linSampleIRS},
+        \code{numLevels}, \code{pickAreaSamplePoints},
+        \code{pickLinearSamplePoints}, and \code{pointInPolygonFile} to avoid
+        PROTECT errors.
+
+      \item Modified function \code{change.analysis} to assign the support_2
+        variable from the design_2 data frame rather than from the design_1 data
+        frame.
+
+      \item Modified function \code{change.analysis} to use a revised procedure
+        for ensuring that each repeated visit site is present in both surveys
+        for subpopulation estimation.
+
+      \item Modified C functions \code{writeShapeFilePoint} and
+        \code{writeShapeFilePolygon} to correct memory access errors.
+
+      \item Modified C function \code{readDbfFile} to ensure that missing values
+        (NA) are handled correctly.
+    }
+  }
+}
+
 \section{CHANGES IN spsurvey VERSION 3.3 (Released 2016-08-19)}{
   \subsection{NEW FEATURES}{
     \itemize{
@@ -29,6 +61,7 @@
       \item Modified functions \code{change.analysis} and \code{change.est} to
         include estimation for difference in median values for change estimation
         using continuous variables.
+
       \item Created a function named \code{examine} that examines variables in a
         data frame by printing either a table or the results of a call to the
         describe function in the Hmisc package

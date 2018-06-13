@@ -12,6 +12,7 @@
 **  Revised:      February 23, 2015
 **  Revised:      May 5, 2015
 **  Revised:      June 15, 2015
+**  Revised:      August 10, 2017
 ******************************************************************************/
 
 #include <stdio.h>
@@ -735,10 +736,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   if ( (dsgnmdID = (unsigned int *) malloc( sizeof( unsigned int ) * dsgSize))
                                                          == NULL ) {
     Rprintf( "Error: Allocating memory in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     fclose( newShp );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
   for ( i = 0; i < dsgSize; ++i ) {
@@ -749,11 +750,11 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
     /* create a temporary .shp file containing all the .shp files */
     if ( combineShpFiles( newShp, dsgnmdID, dsgSize ) == -1 ) {
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Combining multiple shapefiles in C function linSample.\n" );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Combining multiple shapefiles in C function linSample.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
     fclose( newShp );
@@ -762,11 +763,11 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
     /* create a temporary .shp file containing the sent .shp file */
     if (createNewTempShpFile(newShp,shpFileName,dsgnmdID,dsgSize) == -1 ){
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Creating temporary shapefile in C function linSample.\n" );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Creating temporary shapefile in C function linSample.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
     fclose( newShp );
@@ -783,20 +784,20 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   /* parse main file header */
   if ( parseHeader( fptr, &shape ) == -1 ) {
     Rprintf( "Error: Reading main file header in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
 
   /* copy the dsgnmd mdm weights into an C array */
   if ( (dsgnmd = (double *) malloc( sizeof( double ) * dsgSize )) == NULL ){
     Rprintf( "Error: Allocating memory in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT( 1 );
     return results;
   }
   for ( i = 0; i < dsgSize; ++i ) {
@@ -817,10 +818,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   /* copy the points into C arrays */
   if ( (xc = (double *) malloc( sizeof( double ) * vecSize )) == NULL ) {
     Rprintf( "Error: Allocating memory in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT( 1 );
     return results;
   }
   for ( i = 0; i < vecSize; ++i ) {
@@ -829,10 +830,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
 
   if ( (yc = (double *) malloc( sizeof( double ) * vecSize ) ) == NULL ) {
     Rprintf( "Error: Allocating memory in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT( 1 );
     return results;
   }
   for ( i = 0; i < vecSize; ++i ) {
@@ -845,26 +846,26 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
   if ( ( samp = (unsigned int *) malloc( sizeof( unsigned int ) * vecSize ))
                                                              == NULL ) {
     Rprintf( "Error: Allocating memory in C function linSample.c\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT( 1 );
     return results;
   }
   if ( ( x = (double *) malloc( sizeof( double ) * vecSize ) ) == NULL ) {
     Rprintf( "Error: Allocating memory in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT( 1 );
     return results;
   }
   if ( ( y = (double *) malloc( sizeof( double ) * vecSize ) ) == NULL ) {
     Rprintf( "Error: Allocating memory in C function linSample.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT( 1 );
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT( 1 );
     return results;
   }
 
@@ -906,10 +907,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         /* allocate a new polygon */
         if ( (poly = (Polygon *) malloc( sizeof(Polygon) )) == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
 
@@ -932,10 +933,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         /* read in parts info */ 
         if ((poly->parts = (int *) malloc( sizeof(int) * poly->numParts ))==NULL) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < poly->numParts; ++i ) {
@@ -947,10 +948,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((poly->points = (Point *) malloc( sizeof(Point) * poly->numPoints ))
                                                                        == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < poly->numPoints; ++i ) {
@@ -958,10 +959,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
           filePosition += 8;
           if ( fread( &(poly->points[i].Y), sizeof(double), 1, fptr ) == 0 ) {
             Rprintf( "Error: reading shape file in C function linSample.\n" );
-            PROTECT( results = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
             fclose( fptr );
             remove( TEMP_SHP_FILE );
+            PROTECT( results = allocVector( VECSXP, 1 ) );
+            UNPROTECT( 1 );
             return results;
           }
           filePosition += 8;
@@ -977,10 +978,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         /* allocate a new polygon */
         if ( (polyZ = (PolygonZ *) malloc( sizeof(PolygonZ) )) == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
 
@@ -1004,10 +1005,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyZ->parts = (int *) malloc( sizeof(int) * polyZ->numParts))
              == NULL) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyZ->numParts; ++i ) {
@@ -1019,10 +1020,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyZ->points = (Point *) malloc( sizeof(Point)*polyZ->numPoints ))
              == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyZ->numPoints; ++i ) {
@@ -1030,10 +1031,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
           filePosition += 8;
           if ( fread( &(polyZ->points[i].Y), sizeof(double), 1, fptr ) == 0 ) {
             Rprintf( "Error: reading shape file in C function linSample.\n" );
-            PROTECT( results = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
             fclose( fptr );
             remove( TEMP_SHP_FILE );
+            PROTECT( results = allocVector( VECSXP, 1 ) );
+            UNPROTECT( 1 );
             return results;
           }
           filePosition += 8;
@@ -1049,10 +1050,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyZ->zArray = (double *) malloc( sizeof(double) *
         	   polyZ->numPoints)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyZ->numPoints; ++i ) {
@@ -1070,10 +1071,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyZ->mArray = (double *) malloc( sizeof(double) *
         	   polyZ->numPoints)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyZ->numPoints; ++i ) {
@@ -1091,10 +1092,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         /* allocate a new polygon */
         if ( (polyM = (PolygonM *) malloc( sizeof(PolygonM) )) == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
 
@@ -1118,10 +1119,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyM->parts = (int *) malloc( sizeof(int) * polyM->numParts))
              == NULL) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyM->numParts; ++i ) {
@@ -1133,10 +1134,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyM->points = (Point *) malloc( sizeof(Point)*polyM->numPoints ))
              == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyM->numPoints; ++i ) {
@@ -1144,10 +1145,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
           filePosition += 8;
           if ( fread( &(polyM->points[i].Y), sizeof(double), 1, fptr ) == 0 ) {
             Rprintf( "Error: reading shape file in C function linSample.\n" );
-            PROTECT( results = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
             fclose( fptr );
             remove( TEMP_SHP_FILE );
+            PROTECT( results = allocVector( VECSXP, 1 ) );
+            UNPROTECT( 1 );
             return results;
           }
           filePosition += 8;
@@ -1163,10 +1164,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
         if ((polyM->mArray = (double *) malloc( sizeof(double) *
         	   polyM->numPoints)) == NULL ) {
           Rprintf( "Error: Allocating memory in C function linSample.\n" );
-          PROTECT( results = allocVector( VECSXP, 1 ) );
-          UNPROTECT( 1 );
           fclose( fptr );
           remove( TEMP_SHP_FILE );
+          PROTECT( results = allocVector( VECSXP, 1 ) );
+          UNPROTECT( 1 );
           return results;
         }
         for ( i=0; i < polyM->numPoints; ++i ) {
@@ -1205,10 +1206,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
           /* allocate new segment struct */
           if ( (seg = (Segment *) malloc( sizeof( Segment ) )) == NULL ) {
             Rprintf( "Error: Allocating memory in C function linSample.\n" );
-            PROTECT( results = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
             fclose( fptr );
             remove( TEMP_SHP_FILE );
+            PROTECT( results = allocVector( VECSXP, 1 ) );
+            UNPROTECT( 1 );
             return results;
           }
 
@@ -1252,10 +1253,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
           /* allocate new segment struct */
           if ( (seg = (Segment *) malloc( sizeof( Segment ) )) == NULL ) {
             Rprintf( "Error: Allocating memory in C function linSample.\n" );
-            PROTECT( results = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
             fclose( fptr );
             remove( TEMP_SHP_FILE );
+            PROTECT( results = allocVector( VECSXP, 1 ) );
+            UNPROTECT( 1 );
             return results;
           }
 
@@ -1301,10 +1302,10 @@ SEXP linSample( SEXP fileNamePrefix, SEXP xcVec, SEXP ycVec, SEXP dxVec,
           /* allocate new segment struct */
           if ( (seg = (Segment *) malloc( sizeof( Segment ) )) == NULL ) {
             Rprintf( "Error: Allocating memory in C function linSample.\n" );
-            PROTECT( results = allocVector( VECSXP, 1 ) );
-            UNPROTECT( 1 );
             fclose( fptr );
             remove( TEMP_SHP_FILE );
+            PROTECT( results = allocVector( VECSXP, 1 ) );
+            UNPROTECT( 1 );
             return results;
           }
 

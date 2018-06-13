@@ -2,7 +2,7 @@
 **  File:        dbfFileParser.c  
 **
 **  Purpose:     This is the C version of parsing a dbf file.  There are
-**               functions for readin a dbf file and for writing a dbf file.
+**               functions for reading a dbf file and for writing a dbf file.
 **  Programmers: Christian Platt, Tom Kincaid
 **  Notes:       There is a sketch of the C struct dbf on paper that diagrams
 **               how all the information is stored before being written to
@@ -15,6 +15,7 @@
 **  Revised:     May 5, 2015
 **  Revised:     June 12, 2015
 **  Revised:     November 5, 2015
+**  Revised:     June 6, 2018
 ******************************************************************************/
 
 #include <stdio.h>
@@ -285,6 +286,7 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
   int singleFile = FALSE;  /* flag signalling when we are only looking for a */
                            /* single specified shapefile */
   SEXP tempVec;    /* temp vector for writing results to data vector */
+  SEXP tempStr;    /* temp vector for determining length of a string */
   SEXP fieldsVec;  /* vector of field labels */
   unsigned int numRecords = 0;
   SEXP attribs, class, sizesVec;
@@ -565,24 +567,35 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       } else {
         PROTECT( tempVec = allocVector( LGLSXP, numRecords ) );
       }
+      PROTECT( tempStr = allocVector( STRSXP, 1 ) );
 
       tempDbf = headDbf;
       while ( tempDbf ) {
         for ( row = 0; row < dbf->numRecords; ++row ) {
           if ( dbf->fields[col].type == 'F' ||
                dbf->fields[col].type == 'N' ) {
-            REAL( tempVec )[idx] = asReal( mkChar( tempDbf->fields[col].data[row] ) );
+            SET_STRING_ELT(tempStr, 0, asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
+            if (strncmp(CHAR(STRING_ELT(tempStr, 0)), "*", 1) == 0 ) {
+              REAL( tempVec )[idx] = NA_REAL;
+            } else {
+              REAL( tempVec )[idx] = asReal( mkChar( tempDbf->fields[col].data[row] ) );
+            }
           } else if ( dbf->fields[col].type == 'C' ) {
-            SET_STRING_ELT(tempVec,idx,asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
+            SET_STRING_ELT(tempVec, idx, asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
           } else {
-            LOGICAL( tempVec )[idx] = asLogical( mkChar( tempDbf->fields[col].data[row] ) );
+            SET_STRING_ELT(tempStr, 0, asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
+            if (strncmp(CHAR(STRING_ELT(tempStr, 0)), "?", 1) == 0 ) {
+              LOGICAL( tempVec )[idx] = NA_LOGICAL;
+            } else {
+              LOGICAL( tempVec )[idx] = asLogical( mkChar( tempDbf->fields[col].data[row] ) );
+            }
           }
           ++idx;
         }
         tempDbf = tempDbf->next;
       }
       SET_VECTOR_ELT( data, col, tempVec );
-      UNPROTECT( 1 );
+      UNPROTECT( 2 );
     }
 
     /* add the area_mdm or length_mdm values */
@@ -628,24 +641,35 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       } else {
         PROTECT( tempVec = allocVector( LGLSXP, numRecords ) );
       }
+      PROTECT( tempStr = allocVector( STRSXP, 1 ) );
 
       tempDbf = headDbf;
       while ( tempDbf ) {
         for ( row = 0; row < tempDbf->numRecords; ++row ) {
           if ( dbf->fields[col].type == 'F' ||
                dbf->fields[col].type == 'N' ) {
-            REAL( tempVec )[idx] = asReal( mkChar( tempDbf->fields[col].data[row] ) );
+            SET_STRING_ELT(tempStr, 0, asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
+            if (strncmp(CHAR(STRING_ELT(tempStr, 0)), "*", 1) == 0 ) {
+              REAL( tempVec )[idx] = NA_REAL;
+            } else {
+              REAL( tempVec )[idx] = asReal( mkChar( tempDbf->fields[col].data[row] ) );
+            }
           } else if ( dbf->fields[col].type == 'C' ) {
-            SET_STRING_ELT(tempVec,idx,asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
+            SET_STRING_ELT(tempVec, idx, asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
           } else {
-            LOGICAL( tempVec )[idx] = asLogical( mkChar( tempDbf->fields[col].data[row] ) );
+            SET_STRING_ELT(tempStr, 0, asChar( mkChar( tempDbf->fields[col].data[row] ) ) );
+            if (strncmp(CHAR(STRING_ELT(tempStr, 0)), "?", 1) == 0 ) {
+              LOGICAL( tempVec )[idx] = NA_LOGICAL;
+            } else {
+              LOGICAL( tempVec )[idx] = asLogical( mkChar( tempDbf->fields[col].data[row] ) );
+            }
           }
           ++idx;
         }
         tempDbf = tempDbf->next;
       }
       SET_VECTOR_ELT( data, col, tempVec );
-      UNPROTECT( 1 );
+      UNPROTECT( 2 );
     }
 
     /* add field names (column names) to the R object */

@@ -9,8 +9,9 @@
 **  Created:      November 30, 2005
 **  Revised:      October 18, 2007
 **  Revised:      February 23, 2015
-**  Revised:     May 5, 2015
-**  Revised:     June 15, 2015
+**  Revised:      May 5, 2015
+**  Revised:      June 15, 2015
+**  Revised:      August 10, 2017
 ******************************************************************************/
 
 #include <stdio.h>
@@ -249,11 +250,11 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
     /* combine all the shapefiles into one shapefile, subset by dsgnID, */
     /* and create a temporary shapefile */
     if ( combineShpFiles( newShp, dsgnID, dsgnSize ) == -1 ) {
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Combining multiple shapefiles in C function linSampleIRS.\n" );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Combining multiple shapefiles in C function linSampleIRS.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
     fclose( newShp );
@@ -262,11 +263,11 @@ SEXP linSampleIRS( SEXP fileNamePrefix, SEXP lenCumSumVec, SEXP sampPosVec,
 
     /* else subset the shapefile by dsgnID and create a temporary shapefile */
     if (createNewTempShpFile(newShp, shpFileName, dsgnID, dsgnSize) == -1 ){
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Creating temporary shapefile in C function linSampleIRS.\n" );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Creating temporary shapefile in C function linSampleIRS.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
     fclose( newShp );

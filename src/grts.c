@@ -18,6 +18,7 @@
 **  Revised:     May 5, 2015
 **  Revised:     June 15, 2015
 **  Revised:     November 5, 2015
+**  Revised:     August 10, 2017
 ******************************************************************************/
 
 #include <stdio.h>
@@ -1320,11 +1321,11 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   if ( (dsgnmdID = (unsigned int *) malloc( sizeof( unsigned int ) * dsgSize))
                                                          == NULL ) {
     Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     free( shpFileName );
     fclose( newShp );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
   for ( i = 0; i < dsgSize; ++i ) {
@@ -1335,12 +1336,12 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
 
     /* create a temporary .shp file containing all the .shp files */
     if ( combineShpFiles( newShp, dsgnmdID, dsgSize ) == -1 ) {
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Combining multiple shapefiles in C function numLevels.\n" );
       free( shpFileName );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Combining multiple shapefiles in C function numLevels.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
 
@@ -1348,12 +1349,12 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
 
     /* create a temporary .shp file containing the sent .shp file */
     if (createNewTempShpFile(newShp,shpFileName,dsgnmdID,dsgSize) == -1 ){
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Creating temporary shapefile in C function numLevels.\n" );
       free( shpFileName );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Creating temporary shapefile in C function numLevels.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
   }
@@ -1375,10 +1376,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   /* parse main file header */
   if ( parseHeader( fptr, &shape ) == -1 ) {
     Rprintf( "Error: Reading main file header in C function numLevels.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
 
@@ -1408,10 +1409,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   /* copy the dsgnmd mdm weights into an C array */
   if ( (dsgnmd = (double *) malloc( sizeof( double ) * dsgSize )) == NULL ) {
     Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
   for ( i = 0; i < dsgSize; ++i ) {
@@ -1421,10 +1422,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
   /* allocate memory for initial cell weights */
   if ( (celWts = (double *) malloc( sizeof(double) ) ) == NULL ) {
     Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     fclose( fptr );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
   celWtsSize = 1;
@@ -1473,10 +1474,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     }
     if ( (tempXc = (double *) malloc( sizeof(double) * (nlv2+1) )) == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
       fclose( fptr );
       remove( TEMP_SHP_FILE );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results;
     }
 
@@ -1486,10 +1487,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     }
     if ( (tempYc = (double *) malloc( sizeof(double) * (nlv2+1) )) == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
       fclose( fptr );
       remove( TEMP_SHP_FILE );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results;
     }
 
@@ -1503,10 +1504,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     if ( (xc = (double *) malloc( sizeof(double) * (nlv2+1) * (nlv2+1) )) 
                                                               == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
       fclose( fptr );
       remove( TEMP_SHP_FILE );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results;
     }
 
@@ -1517,10 +1518,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     if ( (yc = (double *) malloc( sizeof(double) * (nlv2+1) * (nlv2+1) )) 
                                                                == NULL ) {
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
       fclose( fptr );
       remove( TEMP_SHP_FILE );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results;
     }
 
@@ -1540,10 +1541,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
     celWtsSize = (nlv2+1) * (nlv2+1);
     if ( (celWts = (double *) malloc( sizeof(double) * celWtsSize ) ) == NULL){
       Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
       fclose( fptr );
       remove( TEMP_SHP_FILE );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results;
     }
 
@@ -1553,10 +1554,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       if ( areaIntersection( &celWts, xc, yc, dx, dy, celWtsSize , &shape, fptr,
            dsgnmdID, dsgnmd, dsgSize ) == - 1) {
         Rprintf( "Error: In C function areaIntersection.\n" ); 
-        PROTECT( results = allocVector( VECSXP, 1 ) );
-        UNPROTECT(1);
         fclose( fptr );
         remove( TEMP_SHP_FILE );
+        PROTECT( results = allocVector( VECSXP, 1 ) );
+        UNPROTECT(1);
         return results;
       }
    
@@ -1566,10 +1567,10 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       if ( lintFcn ( &celWts, xc, yc, dx , dy, celWtsSize, &shape, fptr,
            dsgnmdID, dsgnmd, dsgSize ) == -1 ) {
         Rprintf( "Error: In C function lintFcn.\n" ); 
-        PROTECT( results = allocVector( VECSXP, 1 ) );
-        UNPROTECT(1); 
         fclose( fptr );
         remove( TEMP_SHP_FILE );
+        PROTECT( results = allocVector( VECSXP, 1 ) );
+        UNPROTECT(1); 
         return results;
       }
 
@@ -1579,20 +1580,20 @@ SEXP numLevels( SEXP fileNamePrefix, SEXP nsmpVec, SEXP shiftGridVec,
       if ( cWtFcn( &celWts, xc, yc, dx , dy, celWtsSize, &shape, fptr,
                    dsgnmdID, dsgnmd, dsgSize ) == -1 ) {
         Rprintf( "Error: In C function cWtFcn.\n" ); 
-        PROTECT( results = allocVector( VECSXP, 1 ) );
-        UNPROTECT(1); 
         fclose( fptr );
         remove( TEMP_SHP_FILE );
+        PROTECT( results = allocVector( VECSXP, 1 ) );
+        UNPROTECT(1); 
         return results;
       }
 
     /* else unrecognized shape type */
     } else {
       Rprintf( "Error: Invalid shapefile type in C function numLevels.\n" ); 
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1); 
       fclose( fptr );
       remove( TEMP_SHP_FILE );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1); 
       return results;
     }
     sint = sum( celWts, celWtsSize ) / nsmp; 

@@ -13,6 +13,7 @@
 **  Revised:     February 23, 2015
 **  Revised:     May 5, 2015
 **  Revised:     June 15, 2015
+**  Revised:     August 10, 2017
 ******************************************************************************/
 
 #include <stdio.h>
@@ -1571,10 +1572,10 @@ SEXP pointInPolygonFile( SEXP fileNamePrefix, SEXP xcsVec, SEXP ycsVec,
   if ( (dsgnmdID = (unsigned int *) malloc( sizeof( unsigned int ) * dsgSize))
                                                          == NULL ) {
     Rprintf( "Error: Allocating memory in C function numLevels.\n" );
-    PROTECT( results = allocVector( VECSXP, 1 ) );
-    UNPROTECT(1);
     fclose( newShp );
     remove( TEMP_SHP_FILE );
+    PROTECT( results = allocVector( VECSXP, 1 ) );
+    UNPROTECT(1);
     return results;
   }
   for ( i = 0; i < dsgSize; ++i ) {
@@ -1585,11 +1586,11 @@ SEXP pointInPolygonFile( SEXP fileNamePrefix, SEXP xcsVec, SEXP ycsVec,
 
     /* create a temporary .shp file containing all the .shp files */
     if ( combineShpFiles( newShp, dsgnmdID, dsgSize ) == -1 ) {
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Combining multiple shapefiles in C function pointInPolygonFile.\n" );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Combining multiple shapefiles in C function pointInPolygonFile.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
     fclose( newShp );
@@ -1598,11 +1599,11 @@ SEXP pointInPolygonFile( SEXP fileNamePrefix, SEXP xcsVec, SEXP ycsVec,
 
     /* create a temporary .shp file containing the sent .shp file */
     if (createNewTempShpFile( newShp, shpFileName, dsgnmdID, dsgSize ) == -1 ) {
-      PROTECT( results = allocVector( VECSXP, 1 ) );
-      UNPROTECT(1);
+      Rprintf( "Error: Creating temporary shapefile in C function pointInPolygonFile.\n" );
       fclose( newShp );
       remove( TEMP_SHP_FILE );
-      Rprintf( "Error: Creating temporary shapefile in C function pointInPolygonFile.\n" );
+      PROTECT( results = allocVector( VECSXP, 1 ) );
+      UNPROTECT(1);
       return results; 
     }
     fclose( newShp );

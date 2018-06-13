@@ -1,6 +1,6 @@
 Package: spsurvey
-Version: 3.3
-Date: 2016-08-19
+Version: 3.4
+Date: 2018-06-12
 Title: Spatial Survey Design and Analysis
 Authors@R: c(
     person("Tom", "Kincaid", role=c("aut", "cre"),
@@ -22,7 +22,7 @@ License: GPL (>= 2)
 SystemRequirements: little-endian processor required for some functions
         (see README)
 NeedsCompilation: yes
-Packaged: 2016-08-19 17:15:25 UTC; tkincaid
+Packaged: 2018-06-12 20:17:29 UTC; tkincaid
 Author: Tom Kincaid [aut, cre],
   Tony Olsen [aut],
   Don Stevens [ctb],
@@ -31,4 +31,4 @@ Author: Tom Kincaid [aut, cre],
   Richard Remington [ctb]
 Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
 Repository: CRAN
-Date/Publication: 2016-08-19 21:38:56
+Date/Publication: 2018-06-13 22:02:56 UTC

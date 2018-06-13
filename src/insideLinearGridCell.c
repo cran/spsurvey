@@ -7,6 +7,7 @@
 **  Revised:     May 5, 2015
 **  Revised:     June 15, 2015
 **  Revised:     November 5, 2015
+**  Revised:     August 10, 2017
 **  Description:
 **    For each grid cell, this function determines the set of shapefile records
 **    contained in the cell and returns the shapefile record IDs and the clipped
@@ -129,11 +130,11 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
   /* copy the record IDs from the R vector to a C array */
   if((dsgnmdID = (unsigned int *) malloc(sizeof(unsigned int) * dsgSize)) == NULL) {
     Rprintf("Error: Allocating memory in C function insideLinearGridCell.\n");
-    PROTECT(results = allocVector(VECSXP, 1));
-    UNPROTECT(1);
     free( shpFileName );
     fclose(newShp);
     remove(TEMP_SHP_FILE);
+    PROTECT(results = allocVector(VECSXP, 1));
+    UNPROTECT(1);
     return results;
   }
   for(i = 0; i < dsgSize; ++i) {
@@ -144,13 +145,13 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
 
     /* create a temporary .shp file containing all the .shp files */
     if(combineShpFiles(newShp, dsgnmdID, dsgSize) == -1) {
-      PROTECT(results = allocVector(VECSXP, 1));
-      UNPROTECT(1);
+      Rprintf("Error: Combining multiple shapefiles in C function insideLinearGridCell.\n");
       free( dsgnmdID );
       free( shpFileName );
       fclose(newShp);
       remove(TEMP_SHP_FILE);
-      Rprintf("Error: Combining multiple shapefiles in C function insideLinearGridCell.\n");
+      PROTECT(results = allocVector(VECSXP, 1));
+      UNPROTECT(1);
       return results; 
     }
   } else {
@@ -162,7 +163,6 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
       free( shpFileName );
       fclose(newShp);
       remove(TEMP_SHP_FILE);
-      Rprintf("Error: Creating temporary shapefile in C function insideLinearGridCell.\n");
       PROTECT(results = allocVector(VECSXP, 1));
       UNPROTECT(1);
       return results; 
@@ -564,10 +564,10 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
           }
           if((seg = (Segment *) malloc(sizeof(Segment))) == NULL) {
             Rprintf("Error: Allocating memory in C function linSample.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
 
@@ -606,10 +606,10 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
           }
           if((seg = (Segment *) malloc(sizeof(Segment))) == NULL) {
             Rprintf("Error: Allocating memory in C function linSample.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
 
@@ -648,10 +648,10 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
           }
           if((seg = (Segment *) malloc(sizeof(Segment))) == NULL) {
             Rprintf("Error: Allocating memory in C function linSample.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
 
@@ -678,18 +678,18 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
         if(numIDs[i] > 1) {
           if((newIDs = (unsigned int *) malloc(sizeof(unsigned int) * numIDs[i])) == NULL) {
             Rprintf("Error: Allocating memory in C function insideLinearGridCell.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
           if((newLengths = (double *) malloc(sizeof(double) * numIDs[i])) == NULL) {
             Rprintf("Error: Allocating memory in C function insideLinearGridCell.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
           for(j = 0; j < (numIDs[i]-1); ++j) {
@@ -703,18 +703,18 @@ SEXP insideLinearGridCell(SEXP fileNamePrefix, SEXP dsgnmdIDVec, SEXP cellIDsVec
         } else {
           if((newIDs = (unsigned int *) malloc(sizeof(unsigned int))) == NULL) {
             Rprintf("Error: Allocating memory in C function insideLinearGridCell.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
           if((newLengths = (double *) malloc(sizeof(double))) == NULL) {
             Rprintf("Error: Allocating memory in C function insideLinearGridCell.\n");
-            PROTECT(results = allocVector(VECSXP, 1));
-            UNPROTECT(1);
             fclose(fptr);
             remove(TEMP_SHP_FILE);
+            PROTECT(results = allocVector(VECSXP, 1));
+            UNPROTECT(1);
             return results;
           }
           newIDs[0] = tempID;

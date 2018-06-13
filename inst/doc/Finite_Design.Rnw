@@ -42,7 +42,7 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.3 of the spsurvey package was loaded successfully.
+Version 3.4 of the spsurvey package was loaded successfully.
 \end{verbatim}
 
 \section{Create a shapefile}
