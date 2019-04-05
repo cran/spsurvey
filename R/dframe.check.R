@@ -1,33 +1,47 @@
-dframe.check <- function(sites, design, subpop, data.cat, data.cont,
-   data.risk, design.names) {
-
 ################################################################################
 # Function: dframe.check
 # Programmer: Tom Kincaid
 # Date: September 26, 2003
 # Last Revised: October 10, 2012
-# Description:
-#   This function checks site IDs, the sites data frame, the subpop data frame,
-#      the data.cat data frame, the data.cont data frame, the data.ar data
-#      frame, and the data.rr data frame to assure valid contents.  If they do
-#      not exist, then the sites data frame and the subpop data frame are
-#      created.
-#   Input:
-#      design = the design data frame.
-#      sites = the sites data frame.
-#      subpop = the subpop data frame.
-#      data.cat = the data.cat data frame of categorical response variables.
-#      data.cont = the data.cont data frame of continuous response variables.
-#      data.risk = the data.ar or data.rr data frame of categorical response and
-#                  stressor variables.
-#      design.names = names for the design data frame.
-#   Output:
-#      A list consisting of the sites data frame, design data frame, subpop data
-#      frame, data.cat data frame, and data.cont data frame.
-#   Other Functions Required:
-#      vecprint - takes an input vector and outputs a character string with
-#         line breaks inserted
+#
+#' Internal Check on Survey Analysis Data Frames
+#'
+#' This function checks site IDs, the sites data frame, the subpop data frame,
+#' the data.cat data frame, the data.cont data frame, the data.ar data frame,
+#' and the data.rr data frame to assure valid contents.  If they do not exist,
+#' then the sites data frame and the subpop data frame are created.
+#'
+#' @param design The design data frame.
+#'
+#' @param sites The sites data frame.
+#'
+#' @param  subpop The subpop data frame.
+#'
+#' @param data.cat The data.cat data frame of categorical response variables.
+#'
+#' @param data.cont The data.cont data frame of continuous response variables.
+#'
+#' @param data.risk The data.ar or data.rr data frame of categorical response
+#'   and stressor variables.
+#'
+#' @param design.names The names for the design data frame.
+#'
+#' @return List consisting of the sites data frame, design data frame, subpop
+#'   data frame, data.cat data frame, and data.cont data frame.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{vecprint}}}{takes an input vector and outputs a
+#'       character string with line breaks inserted}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+dframe.check <- function(sites, design, subpop, data.cat, data.cont, data.risk,
+   design.names) {
 
 # Check the sites data frame for contents
 

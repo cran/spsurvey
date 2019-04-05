@@ -1,237 +1,305 @@
-change.est <- function(resp.ind, z_1, wgt_1, x_1=NULL, y_1=NULL, repeat_1, z_2,
-   wgt_2, x_2=NULL, y_2=NULL, repeat_2, revisitwgt=FALSE, test="mean",
-   stratum_1=NULL, stratum_2=NULL, cluster_1=NULL, cluster_2=NULL, wgt1_1=NULL,
-   x1_1=NULL, y1_1=NULL, wgt1_2=NULL, x1_2=NULL, y1_2=NULL, popsize_1=NULL,
-   popsize_2=NULL, popcorrect_1=FALSE, pcfsize_1=NULL, N.cluster_1=NULL,
-   stage1size_1=NULL, support_1=NULL, popcorrect_2=FALSE, pcfsize_2=NULL,
-   N.cluster_2=NULL, stage1size_2=NULL, support_2=NULL, sizeweight_1=FALSE,
-   swgt_1=NULL, swgt1_1=NULL, sizeweight_2=FALSE, swgt_2=NULL, swgt1_2=NULL,
-   vartype_1="Local", vartype_2="Local", conf=95, check.ind=TRUE, warn.ind=NULL,
-   warn.df=NULL, warn.vec=NULL) {
-
 ################################################################################
 # Function: change.est
-# Purpose: Estimate change between two probability surveys
 # Programmer: Tom Kincaid
 # Date: January 27, 2012
 # Last Revised: February 11, 2016
-# Description:
-#   This function estimates change between two probability surveys.  The
-#   function can accommodate both categorical and continuous response variables.
-#   For a categorical response variable, change is estimated by the difference
-#   in category estimates for the two surveys, where a category estimate is the
-#   estimated proportion of values in a category.  Note that a separate change
-#   estimate is calculated for each category of a categorical response variable.
-#   For a continuous response variable, change can be estimated for the mean,
-#   the median, or for both the mean and median. For a continuous response
-#   variable using the mean, change is estimated by the difference in estimated
-#   mean values for the two surveys.  For change estimates using the median, the
-#   first step is to calculate an estimate of the median for the first survey.
-#   The estimated median from the first survey is then used to define two
-#   categories: (1) values that are less than or equal to the estimated median
-#   and (2) values that are greater than the estimated median.  Once the
-#   categories are defined, change analysis for the median is identical to
-#   change analysis for a categorical variable, i.e., change is estimated by the
-#   difference in category estimates for the two surveys. In addition to change
-#   estimates, the standard error of the change estimates and confidence bounds
-#   are calculated.  Variance estimates are calculated using either the local
-#   mean variance estimator or the simple random sampling (SRS) variance
-#   estimator.  The choice of variance estimator is subject to user control.
-#   The local mean variance estimator requires the x-coordinate and y-coordinate
-#   of each site.  The SRS variance estimator uses the independent random sample
-#   approximation to calculate joint inclusion probabilities.  Confidence bounds
-#   are calculated using a Normal distribution multiplier.  The function can
-#   accommodate a stratified sample.  For a stratified sample, separate
-#   estimates and standard errors are calculated for each stratum, which are
-#   used to produce estimates and standard errors for all strata combined.
-#   Strata that contain a single value are removed.  For a stratified sample,
-#   when either the size of the resource or the sum of the size-weights of the
-#   resource is provided for each stratum, those values are used as stratum
-#   weights for calculating the estimates and standard errors for all strata
-#   combined.  For a stratified sample when neither the size of the resource nor
-#   the sum of the size-weights of the resource is provided for each stratum,
-#   estimated values are used as stratum weights for calculating the estimates
-#   and standard errors for all strata combined.  The function can accommodate
-#   single-stage and two-stage samples for both stratified and unstratified
-#   sampling designs.  It is assumed that both surveys employ the same type of
-#   survey design.  Finite population and continuous population correction
-#   factors can be utilized in variance estimation.  The function checks for
-#   compatibility of input values and removes missing values.
-# Arguments:
-#   resp.ind = a character value that indicates the type of response variable,
-#     where "cat" indicates a categorical variable and "cont" indicates a
-#     continuous variable.
-#   z_1 = response value for each survey one site.
-#   wgt_1 = final adjusted weight (inverse of the sample inclusion probability)
-#     for each survey one site, which is either the weight for a single- stage
-#     sample or the stage two weight for a two-stage sample.
-#   x_1 = x-coordinate for location for each survey one site, which is either
-#     the x-coordinate for a single-stage sample or the stage two x-coordinate
-#     for a two-stage sample.  The default is NULL.
-#   y_1 = y-coordinate for location for each survey one site, which is either
-#     the y-coordinate for a single-stage sample or the stage two y-coordinate
-#     for a two-stage sample.  The default is NULL.
-#   repeat_1 = a logical variable that identifies repeat visit sites for survey
-#     one.
-#   z_2 = response value for each survey two site.
-#   wgt_2 = final adjusted weight  for each survey two site.
-#   x_2 = x-coordinate for location for each survey two site.  The default is
-#     NULL.
-#   y_2 = y-coordinate for location for each survey two site.  The default is
-#     NULL.
-#   repeat_2 = a logical variable that identifies repeat visit sites for survey
-#     two.
-#   revisitwgt = a logical value that indicates whether each repeat visit site
-#     has the same survey design weight in the two surveys, where TRUE = the
-#     weight for each repeat visit site is the same and FALSE = the weight for
-#     each repeat visit site is not the same.  When this argument is FALSE, all
-#     of the repeat visit sites are assigned equal weights when calculating the
-#     covariance component of the change estimate standard error.  The default
-#     is FALSE.
-#   test = a character string or character vector providing the location
-#     measure(s) to use for change estimation for continuous variables.  The
-#     choices are "mean", "median", or c("mean", "median").  The default is
-#     "mean".
-#   stratum_1 = the stratum for each survey one site.  The default is NULL.
-#   stratum_2 = the stratum for each survey two site.  The default is NULL.
-#   cluster_1 = the stage one sampling unit (primary sampling unit or cluster)
-#     code for each survey one site.  The default is NULL.
-#   cluster_2 = the stage one sampling unit (primary sampling unit or cluster)
-#     code for each survey two site.  The default is NULL.
-#   wgt1_1 = the final adjusted stage one weight for each survey one site.  The
-#     default is NULL.
-#   x1_1 = the stage one x-coordinate for location for each survey one site.
-#     The default is NULL.
-#   y1_1 = the stage one y-coordinate for location for each survey one site.
-#     The default is NULL.
-#   wgt1_2 = the final adjusted stage one weight for each survey two site.  The
-#     default is NULL.
-#   x1_2 = the stage one x-coordinate for location for each survey two site.
-#     The default is NULL.
-#   y1_2 = the stage one y-coordinate for location for each survey two site.
-#     The default is NULL.
-#   popsize_1 = the known size of the survey one resource - the total number of
-#     sampling units of a finite resource or the measure of an extensive
-#     resource, which is required for calculation of finite and continuous
-#     population correction factors for a single-stage sample.  For a stratified
-#     sample, this variable also is used to calculate strata weights.  For a
-#     stratified sample, this variable must be a vector containing a value for
-#     each stratum and must have the names attribute set to identify the stratum
-#     codes.  The default is NULL.
-#   popsize_2 = the known size of the survey two resource.  The default is NULL.
-#   popcorrect_1 = a logical value that indicates whether finite or continuous
-#     population correction factors should be employed during variance
-#     estimation for survey one, where TRUE = use the correction factor and
-#     FALSE = do not use the correction factor.  The default is FALSE.  To
-#     employ the correction factor for a single-stage sample, values must be
-#     supplied for arguments pcfsize_1 and support_1.  To employ the correction
-#     factor for a two-stage sample, values must be supplied for arguments
-#     N.cluster_1, stage1size_1, and support_1.
-#   pcfsize_1 = size of the survey one resource, which is required for
-#     calculation of finite and continuous population correction factors for a
-#     single-stage sample.  For a stratified sample this argument must be a
-#     vector containing a value for each stratum and must have the names
-#     attribute set to identify the stratum codes.  The default is NULL.
-#   N.cluster_1 = the number of stage one sampling units in the survey one
-#     resource, which is required for calculation of finite and continuous
-#     population correction factors for a two-stage sample.  For a stratified
-#     sample this variable must be a vector containing a value for each stratum
-#     and must have the names attribute set to identify the stratum codes.  The
-#     default is NULL.
-#   stage1size_1 = size of the stage one sampling units of a two-stage sample
-#     for survey one, which is required for calculation of finite and continuous
-#     population correction factors for a two-stage sample and must have the
-#     names attribute set to identify the stage one sampling unit codes.  For a
-#     stratified sample, the names attribute must be set to identify both
-#     stratum codes and stage one sampling unit codes using a convention where
-#     the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
-#     The default is NULL.
-#   support_1 = the support value for each survey one site - the value one (1)
-#     for a site from a finite resource or the measure of the sampling unit
-#     associated with a site from an extensive resource, which is required for
-#     calculation of finite and continuous population correction factors.  The
-#     default is NULL.
-#   popcorrect_2 = a logical value that indicates whether finite or continuous
-#     population correction factors should be employed during variance
-#     estimation for survey two, where TRUE = use the correction factor and
-#     FALSE = do not use the correction factor.  The default is FALSE.  To
-#     employ the correction factor for a single-stage sample, values must be
-#     supplied for arguments pcfsize_2 and support_2.  To employ the correction
-#     factor for a two-stage sample, values must be supplied for arguments
-#     N.cluster_2, stage1size_2, and support_2.
-#   pcfsize_2 = size of the survey two resource.  The default is NULL.
-#   N.cluster_2 = the number of stage one sampling units in the survey two
-#     resource.  The default is NULL.
-#   stage1size_2 = size of the stage one sampling units of a two-stage survey
-#     for survey two.  The default is NULL.
-#   support_2 = the support value for each survey two site.  The default is
-#     NULL.
-#   sizeweight_1 = a logical value that indicates whether size-weights should
-#     be used in the analysis for survey one, where TRUE = use the size-weights
-#     and FALSE = do not use the size-weights.  The default is FALSE.
-#   swgt_1 = the size-weight for each survey one site, which is the stage two
-#     size-weight for a two-stage sample.  The default is NULL.
-#   swgt1_1 = the stage one size-weight for each survey one site.  The default
-#     is NULL.
-#   sizeweight_2 = a logical value that indicates whether size-weights should
-#     be used in the analysis for survey two.  The default is FALSE.
-#   swgt_2 = the size-weight for each survey two site.  The default is NULL.
-#   swgt1_2 = the stage one size-weight for each survey two site.  The default
-#     is NULL.
-#   vartype_1 = the choice of variance estimator for survey one, where "Local" =
-#     local mean estimator and "SRS" = SRS estimator.  The default is "Local".
-#   vartype_2 = the choice of variance estimator for survey two.  The default is
-#     "Local".
-#   conf = the confidence level.  The default is 95%.
-#   check.ind = a logical value that indicates whether compatability checking of
-#     the input values is conducted, where TRUE = conduct compatibility checking
-#     and FALSE = do not conduct compatibility checking.  The default is TRUE.
-#   warn.ind = a logical value that indicates whether warning messages were
-#     generated, where TRUE = warning messages were generated and FALSE =
-#     warning messages were not generated.  The default is NULL.
-#   warn.df = a data frame for storing warning messages.  The default is NULL.
-#   warn.vec = a vector that contains names of the population type, the
-#     subpopulation, and an indicator.  The default is NULL.
-# Output:
-#   If the function was called by the change.analysis function, then output is
-#   an object in list format composed of the Results data frame, which contains
-#   estimates and confidence bounds, and the warn.df data frame, which contains
-#   warning messages.  If the function was called directly, then output is the
-#   Results data frame.
-# Other Functions Required:
-#   input.check - check input values for errors, consistency, and compatibility
-#     with analytical functions
-#   wnas - remove missing values
-#   vecprint - takes an input vector and outputs a character string with line
-#     breaks inserted
-#   category.est - estimate proportion (expressed as percent) and size of a
-#     resource in each of a set of categories
-#   changevar.prop - calculate covariance or correlation estimates of the
-#     estimated change in class proportion estimates between two probability
-#     surveys
-#   cdf.est - estimate the cumulative distribution function (CDF) for the 
-#     proportion (expressed as percent) and the total of a response variable
-#   total.est - estimate the population total, mean, variance, and standard
-#     deviation of a response variable
-#   changevar.mean - calculate the covariance or correlation estimate of the
-#     estimated change in means between two probability surveys
-# Examples:
-#   z_1 <- sample(c("Good","Fair","Poor"), 100, replace=TRUE)
-#   z_2 <- sample(c("Good","Fair","Poor"), 100, replace=TRUE)
-#   wgt_1 <- runif(100, 10, 100)
-#   wgt_2 <- runif(100, 10, 100)
-#   repeat_1 <- rep(c(TRUE,FALSE), c(20,80))
-#   repeat_2 <- rep(c(TRUE,FALSE), c(20,80))
-#   change.est(resp.ind="cat", z_1=z_1, wgt_1=wgt_1, repeat_1=repeat_1,
-#      z_2=z_2, wgt_2=wgt_2, repeat_2=repeat_2, vartype_1="SRS",
-#      vartype_2="SRS")
-#
-#   z_1 <- rnorm(100, 10,10)
-#   z_2 <- rnorm(100, 12, 10)
-#   change.est(resp.ind="cont", z_1=z_1, wgt_1=wgt_1, repeat_1=repeat_1,
-#      z_2=z_2, wgt_2=wgt_2, repeat_2=repeat_2, vartype_1="SRS",
-#      vartype_2="SRS")
+#'
+#' Estimate Change between Two Surveys
+#'
+#' This function estimates change between two probability surveys.  The function
+#' can accommodate both categorical and continuous response variables. For a
+#' categorical response variable, change is estimated by the difference in
+#' category estimates for the two surveys, where a category estimate is the
+#' estimated proportion of values in a category.  Note that a separate change
+#' estimate is calculated for each category of a categorical response variable.
+#' For a continuous response variable, change can be estimated for the mean, the
+#' median, or for both the mean and median. For a continuous response variable
+#' using the mean, change is estimated by the difference in estimated mean
+#' values for the two surveys.  For change estimates using the median, the first
+#' step is to calculate an estimate of the median for the first survey. The
+#' estimated median from the first survey is then used to define two categories:
+#' (1) values that are less than or equal to the estimated median and (2) values
+#' that are greater than the estimated median.  Once the categories are defined,
+#' change analysis for the median is identical to change analysis for a
+#' categorical variable, i.e., change is estimated by the difference in category
+#' estimates for the two surveys. In addition to change estimates, the standard
+#' error of the change estimates and confidence bounds are calculated.  Variance
+#' estimates are calculated using either the local mean variance estimator or
+#' the simple random sampling (SRS) variance estimator.  The choice of variance
+#' estimator is subject to user control. The local mean variance estimator
+#' requires the x-coordinate and y-coordinate of each site.  The SRS variance
+#' estimator uses the independent random sample approximation to calculate joint
+#' inclusion probabilities.  Confidence bounds are calculated using a Normal
+#' distribution multiplier.  The function can accommodate a stratified sample.
+#' For a stratified sample, separate estimates and standard errors are
+#' calculated for each stratum, which are used to produce estimates and standard
+#' errors for all strata combined. Strata that contain a single value are
+#' removed.  For a stratified sample, when either the size of the resource or
+#' the sum of the size-weights of the resource is provided for each stratum,
+#' those values are used as stratum weights for calculating the estimates and
+#' standard errors for all strata combined.  For a stratified sample when
+#' neither the size of the resource nor the sum of the size-weights of the
+#' resource is provided for each stratum, estimated values are used as stratum
+#' weights for calculating the estimates and standard errors for all strata
+#' combined.  The function can accommodate single-stage and two-stage samples
+#' for both stratified and unstratified sampling designs.  It is assumed that
+#' both surveys employ the same type of survey design.  Finite population and
+#' continuous population correction factors can be utilized in variance
+#' estimation.  The function checks for compatibility of input values and
+#' removes missing values.
+#'
+#' @param resp.ind A character value that indicates the type of response
+#'   variable, where "cat" indicates a categorical variable and "cont" indicates
+#'   a continuous variable.
+#'
+#' @param z_1 Vector of response value for each survey one site.
+#'
+#' @param wgt_1 Vector of final adjusted weight (inverse of the sample
+#'   inclusion probability) for each survey one site, which is either the weight
+#'   for a single- stage sample or the stage two weight for a two-stage sample.
+#'
+#' @param x_1 Vector of x-coordinate for location for each survey one site,
+#'   which is either the x-coordinate for a single-stage sample or the stage two
+#'   x-coordinate for a two-stage sample.  The default is NULL.
+#'
+#' @param y_1 Vector of y-coordinate for location for each survey one site,
+#'   which is either the y-coordinate for a single-stage sample or the stage two
+#'   y-coordinate for a two-stage sample.  The default is NULL.
+#'
+#' @param repeat_1 Logical variable that identifies repeat visit sites for
+#'   survey one.
+#'
+#' @param z_2 Vector of response value for each survey two site.
+#'
+#' @param wgt_2 Vector of final adjusted weight  for each survey two site.
+#'
+#' @param x_2 Vector of x-coordinate for location for each survey two site.
+#'   The default is NULL.
+#'
+#' @param y_2 Vector of y-coordinate for location for each survey two site.
+#'   The default is NULL.
+#'
+#' @param repeat_2 Logical variable that identifies repeat visit sites for
+#'   survey two.
+#'
+#' @param revisitwgt Logical value that indicates whether each repeat visit
+#'   site has the same survey design weight in the two surveys, where TRUE = the
+#'   weight for each repeat visit site is the same and FALSE = the weight for
+#'   each repeat visit site is not the same.  When this argument is FALSE, all
+#'   of the repeat visit sites are assigned equal weights when calculating the
+#'   covariance component of the change estimate standard error.  The default is
+#'   FALSE.
+#'
+#' @param test A character string or character vector providing the location
+#'   measure(s) to use for change estimation for continuous variables.  The
+#'   choices are "mean", "median", or c("mean", "median").  The default is
+#'   "mean".
+#'
+#' @param stratum_1 Vector of the stratum for each survey one site.  The
+#'   default is NULL.
+#'
+#' @param stratum_2 Vector of the stratum for each survey two site.  The
+#'   default is NULL.
+#'
+#' @param cluster_1 Vector of the stage one sampling unit (primary sampling
+#'   unit or cluster) code for each survey one site.  The default is NULL.
+#'
+#' @param cluster_2 Vector of the stage one sampling unit (primary sampling
+#'   unit or cluster) code for each survey two site.  The default is NULL.
+#'
+#' @param wgt1_1 Vector of the final adjusted stage one weight for each survey
+#'   one site.  The default is NULL.
+#'
+#' @param x1_1 Vector of the stage one x-coordinate for location for each
+#'   survey one site. The default is NULL.
+#'
+#' @param y1_1 Vector of the stage one y-coordinate for location for each
+#'   survey one site. The default is NULL.
+#'
+#' @param wgt1_2 Vector of the final adjusted stage one weight for each survey
+#'   two site.  The default is NULL.
+#'
+#' @param x1_2 Vector of the stage one x-coordinate for location for each
+#'   survey two site. The default is NULL.
+#'
+#' @param y1_2 Vector of the stage one y-coordinate for location for each
+#'   survey two site. The default is NULL.
+#'
+#' @param popsize_1 The known size of the survey one resource - the total
+#'   number of sampling units of a finite resource or the measure of an
+#'   extensive resource, which is required for calculation of finite and
+#'   continuous population correction factors for a single-stage sample.  For a
+#'   stratified sample, this variable also is used to calculate strata weights.
+#'   For a stratified sample, this variable must be a vector containing a value
+#'   for each stratum and must have the names attribute set to identify the
+#'   stratum codes.  The default is NULL.
+#'
+#' @param popsize_2 The known size of the survey two resource.  The default is
+#'   NULL.
+#'
+#' @param popcorrect_1 = a logical value that indicates whether finite or
+#'   continuous population correction factors should be employed during variance
+#'   estimation for survey one, where TRUE = use the correction factor and FALSE
+#'   = do not use the correction factor.  The default is FALSE.  To employ the
+#'   correction factor for a single-stage sample, values must be supplied for
+#'   arguments pcfsize_1 and support_1.  To employ the correction factor for a
+#'   two-stage sample, values must be supplied for arguments N.cluster_1,
+#'   stage1size_1, and support_1.
+#'
+#' @param pcfsize_1 Size of the survey one resource, which is required for
+#'   calculation of finite and continuous population correction factors for a
+#'   single-stage sample.  For a stratified sample this argument must be a
+#'   vector containing a value for each stratum and must have the names
+#'   attribute set to identify the stratum codes.  The default is NULL.
+#'
+#' @param N.cluster_1 The number of stage one sampling units in the survey one
+#'   resource, which is required for calculation of finite and continuous
+#'   population correction factors for a two-stage sample.  For a stratified
+#'   sample this variable must be a vector containing a value for each stratum
+#'   and must have the names attribute set to identify the stratum codes.  The
+#'   default is NULL.
+#'
+#' @param stage1size_1 Size of the stage one sampling units of a two-stage
+#'   sample for survey one, which is required for calculation of finite and
+#'   continuous population correction factors for a two-stage sample and must
+#'   have the names attribute set to identify the stage one sampling unit codes.
+#'   For a stratified sample, the names attribute must be set to identify both
+#'   stratum codes and stage one sampling unit codes using a convention where
+#'   the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
+#'   The default is NULL.
+#'
+#' @param support_1 Vector of the support value for each survey one site - the
+#'   value one (1) for a site from a finite resource or the measure of the
+#'   sampling unit associated with a site from an extensive resource, which is
+#'   required for calculation of finite and continuous population correction
+#'   factors.  The default is NULL.
+#'
+#' @param popcorrect_2 Logical value that indicates whether finite or
+#'   continuous population correction factors should be employed during variance
+#'   estimation for survey two, where TRUE = use the correction factor and FALSE
+#'   = do not use the correction factor.  The default is FALSE.  To employ the
+#'   correction factor for a single-stage sample, values must be supplied for
+#'   arguments pcfsize_2 and support_2.  To employ the correction factor for a
+#'   two-stage sample, values must be supplied for arguments N.cluster_2,
+#'   stage1size_2, and support_2.
+#'
+#' @param pcfsize_2 Size of the survey two resource.  The default is NULL.
+#'
+#' @param N.cluster_2  The number of stage one sampling units in the survey two
+#'   resource.  The default is NULL.
+#'
+#' @param stage1size_2 Size of the stage one sampling units of a two-stage
+#'   survey for survey two.  The default is NULL.
+#'
+#' @param support_2 Vector of the support value for each survey two site.  The
+#'   default is NULL.
+#'
+#' @param sizeweight_1 Logical value that indicates whether size-weights
+#'   should be used in the analysis for survey one, where TRUE = use the
+#'   size-weights and FALSE = do not use the size-weights.  The default is
+#'   FALSE.
+#'
+#' @param swgt_1 Vector of  size-weight for each survey one site, which is the
+#'   stage two size-weight for a two-stage sample.  The default is NULL.
+#'
+#' @param swgt1_1 Vector of the stage one size-weight for each survey one
+#'   site.  The default is NULL.
+#'
+#' @param sizeweight_2 Logical value that indicates whether size-weights
+#'   should be used in the analysis for survey two.  The default is FALSE.
+#'
+#' @param swgt_2 Vector of the size-weight for each survey two site.  The
+#'   default is NULL.
+#'
+#' @param swgt1_2 Vector of the stage one size-weight for each survey two
+#'   site.  The default is NULL.
+#'
+#' @param vartype_1 The choice of variance estimator for survey one, where
+#'   "Local" = local mean estimator and "SRS" = SRS estimator.  The default is
+#'   "Local".
+#'
+#' @param vartype_2 The choice of variance estimator for survey two.  The
+#'   default is "Local".
+#'
+#' @param conf Numeric value for the confidence level.  The default is 95.
+#'
+#' @param check.ind Logical value that indicates whether compatability
+#'   checking of the input values is conducted, where TRUE = conduct
+#'   compatibility checking and FALSE = do not conduct compatibility checking.
+#'   The default is TRUE.
+#'
+#' @param warn.ind  Logical value that indicates whether warning messages were
+#'   generated, where TRUE = warning messages were generated and FALSE = warning
+#'   messages were not generated.  The default is NULL.
+#'
+#' @param warn.df Data frame for storing warning messages.  The default is
+#'   NULL.
+#'
+#' @param warn.vec Vector that contains names of the population type, the
+#'   subpopulation, and an indicator.  The default is NULL.
+#'
+#' @return If the function was called by the change.analysis function, then output is
+#'   an object in list format composed of the Results data frame, which contains
+#'   estimates and confidence bounds, and the warn.df data frame, which contains
+#'   warning messages.  If the function was called directly, then output is the
+#'   Results data frame.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{input.check}}}{check input values for errors,
+#'       consistency, and compatibility with analytical functions}
+#'     \item{\code{\link{wnas}}}{remove missing values}
+#'     \item{\code{\link{vecprint}}}{takes an input vector and outputs a
+#'       character string with line breaks inserted}
+#'     \item{\code{\link{category.est}}}{estimate proportion (expressed as
+#'       percent) and size of a resource in each of a set of categories}
+#'     \item{\code{\link{changevar.prop}}}{calculate covariance or correlation
+#'       estimates of the estimated change in class proportion estimates between
+#'       two probability surveys}
+#'     \item{\code{\link{cdf.est}}}{estimate the cumulative distribution
+#'       function (CDF) for the proportion (expressed as percent) and the total
+#'       of a response variable}
+#'     \item{\code{\link{total.est}}}{estimate the population total, mean,
+#'       variance, and standard deviation of a response variable}
+#'     \item{\code{\link{changevar.mean}}}{calculate the covariance or
+#'       correlation estimate of the estimated change in means between two
+#'       probability surveys}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @examples
+#' z_1 <- sample(c("Good","Fair","Poor"), 100, replace=TRUE)
+#' z_2 <- sample(c("Good","Fair","Poor"), 100, replace=TRUE)
+#' wgt_1 <- runif(100, 10, 100)
+#' wgt_2 <- runif(100, 10, 100)
+#' repeat_1 <- rep(c(TRUE,FALSE), c(20,80))
+#' repeat_2 <- rep(c(TRUE,FALSE), c(20,80))
+#' change.est(resp.ind="cat", z_1=z_1, wgt_1=wgt_1, repeat_1=repeat_1,
+#'   z_2=z_2, wgt_2=wgt_2, repeat_2=repeat_2, vartype_1="SRS", vartype_2="SRS")
+#'
+#' z_1 <- rnorm(100, 10,10)
+#' z_2 <- rnorm(100, 12, 10)
+#' change.est(resp.ind="cont", z_1=z_1, wgt_1=wgt_1, repeat_1=repeat_1,
+#'   z_2=z_2, wgt_2=wgt_2, repeat_2=repeat_2, vartype_1="SRS", vartype_2="SRS")
+#'
+#' @export
 ################################################################################
+
+change.est <- function(resp.ind, z_1, wgt_1, x_1 = NULL, y_1 = NULL, repeat_1,
+   z_2, wgt_2, x_2 = NULL, y_2 = NULL, repeat_2, revisitwgt = FALSE,
+   test = "mean", stratum_1 = NULL, stratum_2 = NULL, cluster_1 = NULL,
+   cluster_2 = NULL, wgt1_1 = NULL, x1_1 = NULL, y1_1 = NULL, wgt1_2 = NULL,
+   x1_2 = NULL, y1_2 = NULL, popsize_1 = NULL, popsize_2 = NULL,
+   popcorrect_1 = FALSE, pcfsize_1 = NULL, N.cluster_1 = NULL,
+   stage1size_1 = NULL, support_1 = NULL, popcorrect_2 = FALSE,
+   pcfsize_2 = NULL, N.cluster_2 = NULL, stage1size_2 = NULL, support_2 = NULL,
+   sizeweight_1 = FALSE, swgt_1=NULL, swgt1_1 = NULL, sizeweight_2 = FALSE,
+   swgt_2 = NULL, swgt1_2 = NULL, vartype_1 = "Local", vartype_2 = "Local",
+   conf = 95, check.ind = TRUE, warn.ind = NULL, warn.df = NULL,
+   warn.vec = NULL) {
 
 # As necessary, create a data frame for warning messages
 if(is.null(warn.ind)) {
@@ -350,7 +418,7 @@ if(resp.ind == "cat") {
       wgt <- rep(1, length(catvar_1))
    }
    x <- x_1[repeat_1]
-   y <- y_1[repeat_1] 
+   y <- y_1[repeat_1]
    stratum <- stratum_1[repeat_1]
    cluster <- cluster_1[repeat_1]
    wgt1 <- wgt1_1[repeat_1]
@@ -365,7 +433,7 @@ if(resp.ind == "cat") {
 # Assign a logical value to the indicator variable for a stratified sample
    stratum.ind <- length(unique(stratum)) > 1
 
-# If the sample is stratified, convert stratum to a factor, determine stratum 
+# If the sample is stratified, convert stratum to a factor, determine stratum
 # levels, and calculate number of strata,
    if(stratum.ind) {
       stratum <- factor(stratum)
@@ -1082,7 +1150,7 @@ if(resp.ind == "cat") {
       wgt <- rep(1, length(contvar_1))
    }
    x <- x_1[repeat_1]
-   y <- y_1[repeat_1] 
+   y <- y_1[repeat_1]
    stratum <- stratum_1[repeat_1]
    cluster <- cluster_1[repeat_1]
    wgt1 <- wgt1_1[repeat_1]
@@ -1097,7 +1165,7 @@ if(resp.ind == "cat") {
 # Assign a logical value to the indicator variable for a stratified sample
    stratum.ind <- length(unique(stratum)) > 1
 
-# If the sample is stratified, convert stratum to a factor, determine stratum 
+# If the sample is stratified, convert stratum to a factor, determine stratum
 # levels, and calculate number of strata,
    if(stratum.ind) {
       stratum <- factor(stratum)
@@ -1621,7 +1689,7 @@ if(resp.ind == "cat") {
 #
 
    }
-   
+
    if("median" %in% test) {
 
 #
@@ -1735,7 +1803,7 @@ if(resp.ind == "cat") {
       wgt <- rep(1, length(catvar_1))
    }
    x <- x_1[repeat_1]
-   y <- y_1[repeat_1] 
+   y <- y_1[repeat_1]
    stratum <- stratum_1[repeat_1]
    cluster <- cluster_1[repeat_1]
    wgt1 <- wgt1_1[repeat_1]
@@ -1750,7 +1818,7 @@ if(resp.ind == "cat") {
 # Assign a logical value to the indicator variable for a stratified sample
    stratum.ind <- length(unique(stratum)) > 1
 
-# If the sample is stratified, convert stratum to a factor, determine stratum 
+# If the sample is stratified, convert stratum to a factor, determine stratum
 # levels, and calculate number of strata,
    if(stratum.ind) {
       stratum <- factor(stratum)

@@ -1,59 +1,79 @@
-grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
-   SiteBegin=1, shift.grid=TRUE, startlev=NULL, maxlev=11, maxtry=1000){
-
 ################################################################################
 # Function: grtsarea
-# Purpose: Select a generalized random-tesselation stratified (GRTS) sample of
-#    an area resource
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: May 19, 2004
 # Last Revised: August 18, 2016
-# Description:      
-#   This function select a GRTS sample of an area resource.  The function uses
-#   hierarchical randomization to ensure that the sample will include no more
-#   than one point per cell and then picks a point in selected cells.  
-# Arguments:
-#   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
-#     then the shapefile or shapefiles in the working directory are used.  The
-#     default is NULL.
-#   areaframe = a data frame containing id, mdcaty and mdm.
-#   samplesize = number of points to select in the sample.  The default is 100.
-#   SiteBegin = first number to start siteID numbering.  The default is 1.
-#   shift.grid = the option to randomly shift the hierarchical grid.  The
-#     default is TRUE.
-#   startlev = initial number of hierarchical levels to use for the GRTS grid,
-#     which must be less than or equal to maxlev (if maxlev is specified) and
-#     cannot be greater than 11.  The default is NULL.
-#   maxlev = maximum number of hierarchical levels to use for the GRTS grid,
-#     which cannot be greater than 11.  The default is 11.
-#   maxtry = maximum number of iterations for randomly generating a point within
-#     a grid cell to select a site when type.frame equals "area".  The default
-#     is 1000.
-# Results: 
-#   A data frame of sample points containing: siteID, id, x, y, mdcaty,
-#     and weight.
-# Other Functions Required:
-#   pointInPolygonObj - C function to determine which points in a set of points
-#     are located within a specified polygon
-#   numLevels - C function to determine the number of levels for hierarchical
-#     randomization
-#   constructAddr - C function to construct the hierarchical address for all
-#     points
-#   ranho - C function to construct the randomized hierarchical address for all
-#     points
-#   pickGridCells - C function to select grid cells that get a sample point
-#   insideAreaGridCell - C function to determine ID value and clipped polygon area
-#     for shapefile records contained in the selected grid cells
-#   selectrecordID - select a shapefile record from which to select a sample
-#     point
-#   pickAreaSamplePoints - C function to pick sample points in the selected grid
-#     cells
+#
+#' Select a Generalized Random-Tesselation Stratified (GRTS) Sample of an Area Resource
+#'
+#' This function select a GRTS sample of an area resource.  The function uses
+#' hierarchical randomization to ensure that the sample will include no more
+#' than one point per cell and then picks a point in selected cells.
+#'
+#' @param shapefilename Name of the input shapefile.  If shapefilename equals
+#'   NULL, then the shapefile or shapefiles in the working directory are used.
+#'   The default is NULL.
+#'
+#' @param areaframe Data frame containing id, mdcaty and mdm.
+#'
+#' @param samplesize Number of points to select in the sample.  The default is
+#'   100.
+#'
+#' @param SiteBegin First number to start siteID numbering.  The default is 1.
+#'
+#' @param shift.grid Option to randomly shift the hierarchical grid.  The
+#'   default is TRUE.
+#'
+#' @param startlev Initial number of hierarchical levels to use for the GRTS
+#'   grid, which must be less than or equal to maxlev (if maxlev is specified)
+#'   and cannot be greater than 11.  The default is NULL.
+#'
+#' @param maxlev Maximum number of hierarchical levels to use for the GRTS
+#'   grid, which cannot be greater than 11.  The default is 11.
+#'
+#' @param maxtry Maximum number of iterations for randomly generating a point
+#'   within a grid cell to select a site when type.frame equals "area".  The
+#'   default is 1000.
+#'
+#' @return Data frame of sample points containing: siteID, id, x, y, mdcaty,
+#'   and weight.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{pointInPolygonObj}}{C function to determine which
+#'       points in a set of points are located within a specified polygon}
+#'     \item{\code{numLevels}}{C function to determine the number of
+#'       levels for hierarchical randomization}
+#'     \item{\code{constructAddr}}{C function to construct the
+#'       hierarchical address for all points}
+#'     \item{\code{ranho}}{C function to construct the randomized
+#'       hierarchical address for all points}
+#'     \item{\code{pickGridCells}}{C function to select grid cells that
+#'       get a sample point}
+#'     \item{\code{insideAreaGridCell}}{C function to determine ID value
+#'       and clipped polygon area for shapefile records contained in the
+#'       selected grid cells}
+#'     \item{\code{\link{selectrecordID}}}{select a shapefile record from which
+#'       to select a sample point}
+#'     \item{\code{pickAreaSamplePoints}}{C function to pick sample
+#'       points in the selected grid cells}
+#'   }
+#'
+#' @author Tony Olsen \email{Olsen.Tony@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
+
+grtsarea <- function (shapefilename = NULL, areaframe, samplesize = 100,
+   SiteBegin = 1, shift.grid = TRUE, startlev = NULL, maxlev = 1,
+   maxtry = 1000){
 
 # Ensure that the processor is little-endian
 
-   if(.Platform$endian == "big") 
+   if(.Platform$endian == "big")
       stop("\nA little-endian processor is required for the grtsarea function.")
 
 # Determine the number of levels for hierarchical randomization
@@ -61,7 +81,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
    temp <- .Call("numLevels", shapefilename, samplesize, shift.grid,
       startlev, maxlev, areaframe$id, areaframe$mdm)
    if(is.null(temp[[1]]))
-      stop("\nAn error occured while determining the number of levels for hierarchical \nrandomization.") 
+      stop("\nAn error occured while determining the number of levels for hierarchical \nrandomization.")
    nlev <- temp$nlev
    dx <- temp$dx
    dy <- temp$dy
@@ -90,7 +110,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
    rord <- order(ranhadr)
 
 # Select grid cells that get a sample point
-        
+
    rstrt <- runif(1, 0, sint)
    ttl.wt <- c(0, cumsum(cel.wt[rord]))
    idx <- ceiling((ttl.wt - rstrt)/sint)
@@ -135,7 +155,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
    }
 
 # Construct sample line in reverse hierarchical order
- 
+
    nlv4 <- max(1, ceiling(logb(samplesize, 4)))
    rho <- matrix(0, 4^nlv4, nlv4)
    rv4 <- 0:3
@@ -144,7 +164,7 @@ grtsarea <- function (shapefilename=NULL, areaframe, samplesize=100,
       rho[, i] <- rep(rep(rv4, rep(pwr4[i], 4)),pwr4[nlv4]/pwr4[i])
    rho4 <- rho%*%matrix(rev(pwr4), nlv4, 1)
 
-# Place weighted points on line in reverse hierarchical order 
+# Place weighted points on line in reverse hierarchical order
 
    rh.ord <- unique(floor(rho4 * samplesize/4^nlv4)) + 1
    id <- id[rh.ord]

@@ -1,48 +1,67 @@
-sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
-   dxdy = TRUE) {
-
 ################################################################################
 # Function: sbcframe
-# Purpose: Calculate spatial balance grid cell extent and proportions for a
-#          sample frame
 # Programmer: Tom Kincaid
 # Date: September 29, 2011
 # Last Revised: August 18, 2016
-# Description:      
-#   This function calculates spatial balance grid cell extent and proportions
-#   for the sample frame.  
-# Arguments:
-#   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
-#     then the shapefile or shapefiles in the working directory are used.  The
-#     default is NULL.
-#   spframe = an sp package object of class SpatialPointsDataFrame,
-#     SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the
-#     survey design frame.  The default is NULL.
-#   nrows = number of rows (and columns) for the grid of cells.  The default is
-#     5.
-#   dxdy = indicator for equal x-coordinate and y-coordinate grid cell
-#     increments, where TRUE means the increments are equal and FALSE means the
-#     increments are not equal.  The default is TRUE.
-# Results: 
-#   A list containing the following components: (1) extent - the frame extent
-#   for each grid cell, (2) prop - the frame proportion for each grid cell,
-#  (3) xmin - the grid x-coordinate minimum value, (4) xmax - the grid
-#   x-coordinate maximum value, (5) ymin - the grid y-coordinate minimum value,
-#  (6) ymax - the grid y-coordinate maximum value, (7) dx - the grid cell
-#   x-coordinate increment value, (8) dy - the grid cell y-coordinate increment
-#   value, (9) xc - the vector of grid cell x-coordinates, and (10) yc - the
-#   vector of grid cell y-coordinates.
-# Other Functions Required:
-#   readShapeFile - C function to read a single shapefile or multiple shapefiles
-#   readShapeFilePts - C function to read the shp file of a point shapefile and
-#     return a data frame containing the x-coordinates and y-coordinates for
-#     elements in the frame
-#   cell.wt - calculates number of points in a cell for a points object
-#   insideLinearGridCell - C function to determine ID value and clipped polyline
-#     length for shapefile records contained in the selected grid cells
-#   insideAreaGridCell - C function to determine ID value and clipped polygon
-#     area for shapefile records contained in the selected grid cells
+#
+#' Calculate Spatial Balance Grid Cell Extent and Proportions for a Sample Frame
+#'
+#' This function calculates spatial balance grid cell extent and proportions
+#' for the sample frame.  
+#'      
+#' @param shapefilename Name of the input shapefile.  If shapefilename equals
+#'   NULL, then the shapefile or shapefiles in the working directory are used.
+#'   The default is NULL.
+#'      
+#' @param spframe An sp package object of class SpatialPointsDataFrame,
+#'   SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the
+#'   survey design frame.  The default is NULL.
+#'      
+#' @param nrows Number of rows (and columns) for the grid of cells.  The
+#'   default is 5.
+#'      
+#' @param dxdy Indicator for equal x-coordinate and y-coordinate grid cell
+#'   increments, where TRUE means the increments are equal and FALSE means the
+#'   increments are not equal.  The default is TRUE.
+#'      
+#' @return List containing the following components:
+#'   \describe{
+#'     \item{extent}{the frame extent for each grid cell}
+#'     \item{prop}{the frame proportion for each grid cell}
+#'     \item{xmin}{the grid x-coordinate minimum value}
+#'     \item{xmax}{the grid x-coordinate maximum value}
+#'     \item{ymin}{the grid y-coordinate minimum value}
+#'     \item{ymax}{the grid y-coordinate maximum value}
+#'     \item{dx}{the grid cell x-coordinate increment value}
+#'     \item{dy}{the grid cell y-coordinate increment value}
+#'     \item{xc}{the vector of grid cell x-coordinates}
+#'     \item{yc}{the vector of grid cell y-coordinates}
+#'   }
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{readShapeFile}}{C function to read a single shapefile
+#'       or multiple shapefiles}
+#'     \item{\code{readShapeFilePts}}{C function to read the shp file of
+#'       a point shapefile and return a data frame containing the x-coordinates
+#'       and y-coordinates for elements in the frame}
+#'     \item{\code{\link{cell.wt}}}{calculates number of points in a cell for a
+#'       points object}
+#'     \item{\code{insideLinearGridCell}}{C function to determine ID
+#'       value and clipped polyline length for shapefile records contained in
+#'       the selected grid cells}
+#'     \item{\code{insideAreaGridCell}}{C function to determine ID value
+#'       and clipped polygon area for shapefile records contained in the
+#'       selected grid cells}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
+   dxdy = TRUE) {
 
 # Check that either a shapefile name of a survey design frame object was provided
    if(is.null(shapefilename) & is.null(spframe))

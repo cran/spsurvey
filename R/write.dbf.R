@@ -1,23 +1,33 @@
-write.dbf <- function(dframe, filename) {
-
 ################################################################################
 # Function: write.dbf
-# Purpose: Write a data frame to the dbf file of an ESRI shapefile
 # Programmer: Tom Kincaid
 # Date: September 30, 2009
 # Revised: February 17, 2016
-# Description:
-#   This function writes a data frame to a dbf file.
-# Arguments:
-#   dframe = a data frame to be written to the dbf file
-#   filename = name of the dbf file without any extension.
-# Results:
-#   A data frame composed of either the contents of the single dbf file, when 
-#     filename is provided, or the contents of the dbf file(s) in the working
-#      directory, when filename is NULL.
-# Other Functions Required:
-#   writeDbfFile - C function to write a single dbf file or multiple dbf files
+#
+#' Write a Data Frame as the dbf File of an ESRI Shapefile
+#'
+#' This function writes a data frame to a dbf file.
+#'
+#' @param dframe Data frame to be written to the dbf file
+#'
+#' @param filename Name of the dbf file without any extension.
+#'
+#' @return  Data frame composed of either the contents of the single dbf file,
+#'   when filename is provided, or the contents of the dbf file(s) in the
+#'   working directory, when filename is NULL.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{writeDbfFile}}{C function to write a single dbf file
+#'       or multiple dbf files}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+write.dbf <- function(dframe, filename) {
 
 # If necessary, strip the file extension from the file name
    if(!is.null(filename)) {
@@ -53,4 +63,3 @@ write.dbf <- function(dframe, filename) {
 # Return NULL
    invisible(NULL)
 }
-   

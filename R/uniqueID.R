@@ -1,20 +1,25 @@
-uniqueID <- function(siteID) {
-
 ################################################################################
 # Function: uniqueID
 # Programmer: Tom Kincaid
 # Date: February 23, 2004
 # Last Revised: June 27, 2005
-# Description:
-#   This function creates unique site IDs by appending a unique number to each
-#   occurrence of a site ID.  It is intended for survey designs that have repeat
-#   visits to sites.
-#   Input:
-#      siteID = the vector of site IDs.
-#   Output:
-#      A vector of unique site IDs.
-#   Other Functions Required: None
+#
+#' Internal Function: Create Unique IDs for a Survey Design
+#'
+#' This function creates unique site IDs by appending a unique number to each
+#' occurrence of a site ID.  It is intended for survey designs that have repeat
+#' visits to sites.
+#'
+#' @param siteID  Vector of site IDs.
+#'
+#' @return Vector of unique site IDs.
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+uniqueID <- function(siteID) {
 
 # If siteID is a factor, convert the input vector to character data
 

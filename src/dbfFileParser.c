@@ -16,6 +16,7 @@
 **  Revised:     June 12, 2015
 **  Revised:     November 5, 2015
 **  Revised:     June 6, 2018
+**  Revised:     March 8, 2019
 ******************************************************************************/
 
 #include <stdio.h>
@@ -561,13 +562,13 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       /* as appropriate, assign fileds as real, character, or logical */
       if ( dbf->fields[col].type == 'F' || 
            dbf->fields[col].type == 'N' ) {
-        PROTECT( tempVec = allocVector( REALSXP, numRecords ) );
+        tempVec = PROTECT( allocVector( REALSXP, numRecords ) );
       } else if ( dbf->fields[col].type == 'C' ) {
-        PROTECT( tempVec = allocVector( STRSXP, numRecords ) );
+        tempVec = PROTECT( allocVector( STRSXP, numRecords ) );
       } else {
-        PROTECT( tempVec = allocVector( LGLSXP, numRecords ) );
+        tempVec = PROTECT( allocVector( LGLSXP, numRecords ) );
       }
-      PROTECT( tempStr = allocVector( STRSXP, 1 ) );
+      tempStr = PROTECT( allocVector( STRSXP, 1 ) );
 
       tempDbf = headDbf;
       while ( tempDbf ) {
@@ -635,13 +636,13 @@ SEXP readDbfFile( SEXP fileNamePrefix ) {
       /* as appropriate, assign fileds as real, character, or logical */
       if ( dbf->fields[col].type == 'F' || 
            dbf->fields[col].type == 'N' ) {
-        PROTECT( tempVec = allocVector( REALSXP, numRecords ) );
+        tempVec = PROTECT( allocVector( REALSXP, numRecords ) );
       } else if ( dbf->fields[col].type == 'C' ) {
-        PROTECT( tempVec = allocVector( STRSXP, numRecords ) );
+        tempVec = PROTECT( allocVector( STRSXP, numRecords ) );
       } else {
-        PROTECT( tempVec = allocVector( LGLSXP, numRecords ) );
+        tempVec = PROTECT( allocVector( LGLSXP, numRecords ) );
       }
-      PROTECT( tempStr = allocVector( STRSXP, 1 ) );
+      tempStr = PROTECT( allocVector( STRSXP, 1 ) );
 
       tempDbf = headDbf;
       while ( tempDbf ) {

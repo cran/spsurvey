@@ -1,24 +1,33 @@
-irspts <- function(ptsframe, samplesize=100, SiteBegin=1) {
-
 ################################################################################
 # Function: irspts
-# Purpose: Select an independent random sample (IRS) of a finite resource
 # Programmer: Tom Kincaid
 # Date: November 16, 2005
 # Last Revised: December 15, 2005
-# Description:
-#   This function selects an IRS of a finite resource (discrete points).  
-# Arguments:
-#   ptsframe = a data frame containing id, x, y, mdcaty, and mdm.
-#   samplesize = number of points to select in the sample.  The default is 100.
-#   SiteBegin = first number to start siteID numbering.  The default is 1.
-# Results: 
-#   A data frame of sample points containing: siteID, id, x, y, mdcaty,
-#   and weight.
-# Other Functions Required: None
+#'
+#' Select an Independent Random Sample (IRS) of a Finite Resource
+#'
+#' This function selects an IRS of a finite resource (discrete points).
+#'
+#' @param ptsframe Data frame containing id, x, y, mdcaty, and mdm.
+#'
+#' @param samplesize Number of points to select in the sample.  The default is
+#'   100.
+#'
+#' @param SiteBegin First number to start siteID numbering.  The default is 1.
+#'
+#' @return  Data frame of sample points containing: siteID, id, x, y, mdcaty,
+#'   and weight.
+#'
+#' @author Tom Kincaid   \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
 
-# Pick sample points
+irspts <- function(ptsframe, samplesize = 100, SiteBegin = 1) {
+
+  # Pick sample points
 
    if(nrow(ptsframe) <= samplesize) {
       id <- ptsframe$id

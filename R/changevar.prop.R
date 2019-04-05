@@ -1,110 +1,144 @@
+################################################################################
+# Function: changevar.prop
+# Programmer: Tom Kincaid
+# Date: January 10, 2012
+#'
+#' Covariance or Correlation Matrix Estimate of Change in Class Proportions between
+#' Two Surveys
+#'
+#' This function uses the repeat visit sites for two probability surveys to
+#' calculate either covariance or correlation estimates of estimated change in
+#' the  proportion in each of a set of categories.  Covariance estimates are
+#' calculated when the resivit sites have the same survey design weight in both
+#' surveys.  Correlation estimates are calculated when the revisit sites do not
+#' have the same weight in both surveys, in which case the sites are assigned
+#' equal weights.  The revisitwgt argument controls whether covariance or
+#' correlation estimates are calculated.  Either the simple random sampling
+#' (SRS) variance/covariance estimator or the local mean variance/covariance
+#' estimator is calculated, which is subject to user control.  The simple random
+#' sampling variance/covariance estimator uses the independent random sample
+#' approximation to calculate joint inclusion probabilities.  The function can
+#' accomodate single-stage and two-stage samples.  Finite population and
+#' continuous population correction factors can be utilized in variance
+#' estimation.
+#'
+#' @param catvar.levels Vector of the set of categorical response values.
+#'
+#' @param catvar1 Vector of the response value for each site for survey one.
+#'
+#' @param catvar2 Vector of the response value for each site for survey two.
+#'
+#' @param wgt Vector of the final adjusted weight (inverse of the sample
+#'   inclusion probability) for each site, which is either the weight for a
+#'   single-stage sample or the stage two weight for a two-stage sample.
+#'
+#' @param x Vector of x-coordinate for location for each site, which is either
+#'   the x- coordinate for a single-stage sample or the stage two x-coordinate
+#'   for a two-stage sample.
+#'
+#' @param y Vector of y-coordinate for location for each site, which is either
+#'   the y- coordinate for a single-stage sample or the stage two y-coordinate
+#'   for a two-stage sample.
+#'
+#' @param revisitwgt Logical value that indicates whether each repeat visit
+#'   site has the same survey design weight in the two surveys, where TRUE = the
+#'   weight for each repeat visit site is the same and FALSE = the weight for
+#'   each repeat visit site is not the same.  When this argument is FALSE, all
+#'   of the repeat visit sites are assigned equal weights when calculating the
+#'   covariance component of the change estimate standard error.
+#'
+#' @param prop1 The set of category proportion estimates for survey one.
+#'
+#' @param prop2 The set of category proportion estimates for survey two.
+#'
+#' @param stratum.ind Logical value that indicates whether the sample is
+#'   stratified, where TRUE = a stratified sample and FALSE = not a stratified
+#'   sample.
+#'
+#' @param stratum.level The stratum level.
+#'
+#' @param cluster.ind Logical value that indicates whether the sample is a
+#'   two- stage sample, where TRUE = a two-stage sample and FALSE = not a
+#'   two-stage sample.
+#'
+#' @param cluster Vector of the stage one sampling unit (primary sampling unit
+#'   or cluster) code for each site.
+#'
+#' @param wgt1 Vector of the final adjusted stage one weight for each site.
+#'
+#' @param x1 Vector of the stage one x-coordinate for location for each site.
+#'
+#' @param y1 Vector of the stage one y-coordinate for location for each site.
+#'
+#' @param pcfactor.ind Logical value that indicates whether the population
+#'   correction factor is used during variance estimation, where TRUE = use the
+#'   population correction factor and FALSE = do not use the factor.  To employ
+#'   the correction factor for a single-stage sample, values must be supplied
+#'   for arguments pcfsize and support.  To employ the correction factor for a
+#'   two-stage sample, values must be supplied for arguments N.cluster,
+#'   stage1size, and support.
+#'
+#' @param pcfsize Size of the resource, which is required for calculation of
+#'   finite and continuous population correction factors for a single-stage
+#'   sample. For a stratified sample this argument must be a vector containing a
+#'   value for each stratum and must have the names attribute set to identify
+#'   the stratum codes.
+#'
+#' @param N.cluster The number of stage one sampling units in the resource,
+#'   which is required for calculation of finite and continuous population
+#'   correction factors for a two-stage sample.  For a stratified sample this
+#'   variable must be a vector containing a value for each stratum and must have
+#'   the names attribute set to identify the stratum codes.
+#'
+#' @param stage1size Size of the stage one sampling units of a two-stage
+#'   sample, which is required for calculation of finite and continuous
+#'   population correction factors for a two-stage sample and must have the
+#'   names attribute set to identify the stage one sampling unit codes.  For a
+#'   stratified sample, the names attribute must be set to identify both stratum
+#'   codes and stage one sampling unit codes using a convention where the two
+#'   codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
+#'
+#' @param support Vector of the support value for each site - the value one
+#'   (1) for a site from a finite resource or the measure of the sampling unit
+#'   associated with a site from a continuous resource, which is required for
+#'   calculation of finite and continuous population correction factors.
+#'
+#' @param vartype The choice of variance estimator, where "Local" = local mean
+#'   estimator and "SRS" = SRS estimator.
+#'
+#' @param warn.ind Logical value that indicates whether warning messages were
+#'   generated, where TRUE = warning messages were generated and FALSE = warning
+#'   messages were not generated.
+#'
+#' @param warn.df Data frame for storing warning messages.
+#'
+#' @param warn.vec Vector that contains names of the population type, the
+#'   subpopulation, and an indicator.
+#'
+#' @return An object in list format composed of a vector named rslt, which
+#'   contains the covariance or correlation estimates, a logical variable named
+#'   warn,ind, which is the indicator for warning messges, and a data frame
+#'   named warn.df, which contains warning messages.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{localmean.weight}}}{calculate the weighting matrix for
+#'       the local mean variance estimator}
+#'     \item{\code{\link{localmean.cov}}}{calculate the variance/covariance
+#'       matrix using the local mean estimator}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
+################################################################################
+
 changevar.prop <- function(catvar.levels, catvar1, catvar2, wgt, x, y,
    revisitwgt, prop1, prop2, stratum.ind, stratum.level, cluster.ind, cluster,
    wgt1, x1, y1, pcfactor.ind, pcfsize, N.cluster, stage1size, support, vartype,
    warn.ind, warn.df, warn.vec) {
-
-################################################################################
-# Function: changevar.prop
-# Purpose: Calculate covariance or correlation estimates of the estimated change
-#          in class proportion estimates between two probability surveys
-# Programmer: Tom Kincaid
-# Date: January 10, 2012
-# Description:
-#   This function uses the repeat visit sites for two probability surveys to
-#   calculate either covariance or correlation estimates of estimated change in
-#   the  proportion in each of a set of categories.  Covariance estimates are
-#   calculated when the resivit sites have the same survey design weight in both
-#   surveys.  Correlation estimates are calculated when the revisit sites do not
-#   have the same weight in both surveys, in which case the sites are assigned
-#   equal weights.  The revisitwgt argument controls whether covariance or
-#   correlation estimates are calculated.  Either the simple random sampling
-#   (SRS) variance/covariance estimator or the local mean variance/covariance
-#   estimator is calculated, which is subject to user control.  The simple
-#   random sampling variance/covariance estimator uses the independent random
-#   sample approximation to calculate joint inclusion probabilities.  The
-#   function can accomodate single-stage and two-stage samples.  Finite
-#   population and continuous population correction factors can be utilized in
-#   variance estimation.
-# Arguments:
-#   catvar.levels = the set of categorical response values.
-#   catvar1 = the response value for each site for survey one.
-#   catvar2 = the response value for each site for survey two.
-#   wgt = the final adjusted weight (inverse of the sample inclusion
-#     probability) for each site, which is either the weight for a single-stage
-#     sample or the stage two weight for a two-stage sample.
-#   x = x-coordinate for location for each site, which is either the x-
-#     coordinate for a single-stage sample or the stage two x-coordinate for a
-#     two-stage sample.
-#   y = y-coordinate for location for each site, which is either the y-
-#     coordinate for a single-stage sample or the stage two y-coordinate for a
-#     two-stage sample.
-#   revisitwgt = a logical value that indicates whether each repeat visit site
-#     has the same survey design weight in the two surveys, where TRUE = the
-#     weight for each repeat visit site is the same and FALSE = the weight for
-#     each repeat visit site is not the same.  When this argument is FALSE, all
-#     of the repeat visit sites are assigned equal weights when calculating the
-#     covariance component of the change estimate standard error.
-#   prop1 = the set of category proportion estimates for survey one.
-#   prop2 = the set of category proportion estimates for survey two.
-#   stratum.ind = a logical value that indicates whether the sample is
-#     stratified, where TRUE = a stratified sample and FALSE = not a stratified
-#     sample.
-#   stratum.level = the stratum level.
-#   cluster.ind = a logical value that indicates whether the sample is a two-
-#     stage sample, where TRUE = a two-stage sample and FALSE = not a two-stage
-#     sample.
-#   cluster = the stage one sampling unit (primary sampling unit or cluster)
-#     code for each site.
-#   wgt1 = the final adjusted stage one weight for each site.
-#   x1 = the stage one x-coordinate for location for each site.
-#   y1 = the stage one y-coordinate for location for each site.
-#   pcfactor.ind = a logical value that indicates whether the population
-#     correction factor is used during variance estimation, where TRUE = use the
-#     population correction factor and FALSE = do not use the factor.  To employ
-#     the correction factor for a single-stage sample, values must be supplied
-#     for arguments pcfsize and support.  To employ the correction factor for a
-#     two-stage sample, values must be supplied for arguments N.cluster,
-#     stage1size, and support.
-#   pcfsize = size of the resource, which is required for calculation of finite
-#     and continuous population correction factors for a single-stage sample.
-#     For a stratified sample this argument must be a vector containing a value
-#     for each stratum and must have the names attribute set to identify the
-#     stratum codes.
-#   N.cluster = the number of stage one sampling units in the resource, which is
-#     required for calculation of finite and continuous population correction
-#     factors for a two-stage sample.  For a stratified sample this variable
-#     must be a vector containing a value for each stratum and must have the
-#     names attribute set to identify the stratum codes.
-#   stage1size = size of the stage one sampling units of a two-stage sample,
-#     which is required for calculation of finite and continuous population
-#     correction factors for a two-stage sample and must have the names
-#     attribute set to identify the stage one sampling unit codes.  For a
-#     stratified sample, the names attribute must be set to identify both
-#     stratum codes and stage one sampling unit codes using a convention where
-#     the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
-#   support = the support value for each site - the value one (1) for a site
-#     from a finite resource or the measure of the sampling unit associated with
-#     a site from a continuous resource, which is required for calculation of
-#     finite and continuous population correction factors.
-#   vartype = the choice of variance estimator, where "Local" = local mean
-#     estimator and "SRS" = SRS estimator.
-#   warn.ind = a logical value that indicates whether warning messages were
-#     generated, where TRUE = warning messages were generated and FALSE =
-#     warning messages were not generated.
-#   warn.df = a data frame for storing warning messages.
-#   warn.vec = a vector that contains names of the population type, the
-#     subpopulation, and an indicator.
-# Output:
-#   An object in list format composed of a vector named rslt, which contains the
-#   covariance or correlation estimates, a logical variable named warn,ind,
-#   which is the indicator for warning messges, and a data frame named warn.df,
-#   which contains warning messages.
-# Other Functions Required:
-#   localmean.weight - calculate the weighting matrix for the local mean
-#     variance/covariance estimator
-#   localmean.cov - calculate the variance/covariance matrix using the local
-#     mean estimator
-################################################################################
 
 # Assign the function name
 fname <- "changevar.prop"
@@ -163,7 +197,7 @@ if(cluster.ind) {
          next
       }
 
-# Calculate estimates of the total of the stage two sampling unit residuals 
+# Calculate estimates of the total of the stage two sampling unit residuals
 # and the variance/covariance of those totals for each stage one sampling unit
       total2est <- matrix(0, ncluster, 2)
       var2est <- matrix(0, ncluster, 4)

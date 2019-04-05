@@ -1,31 +1,50 @@
-albersgeod <- function(x, y, sph="GRS80", clon=-96, clat=23, sp1=29.5,
-   sp2=45.5) {
-
 ################################################################################
 # Function: albersgeod
-# Purpose: Project Albers projection in plane to latitude and longitude
-#   (spheroid)
 # Programmer: Tony Olsen translated from Denis White C program
 # Date: September 4, 2003 (White November 2001)
-# Arguments:
-#   x = Albers x-coordinate vector to be projected to latitude/longitude.
-#   y = Albers y-coordinate vector to be projected to latitude/longitude.
-#   sph = Spheroid options: Clarke1866, GRS80, WGS84.  The default is
-#     GRS80.
-#   clon = Center longitude (decimal degrees).  The default is -96.
-#   clat = Origin latitude (decimal degrees).  The default is 23.
-#   sp1 = Standard parallel 1 (decimal degrees).  The default is 29.5.
-#   sp2 = Standard parallel 2 (decimal degrees).  The default is 45.5.
-# Output:
-#   A data frame of latitude and longitude projections for Albers x-coordinates
-#   and y-coordinates.
+#
+#' Project Albers Projection in Plane to Latitude and Longitude (Spheroid)
+#'
+#' Convert x-coordinates and y-coordinates given in Albers projection to
+#' latitude and longitude in Clarke1866, GRS80 or WGS84 spheriod with
+#' specified parameters.
+#'
+#' @param x Vector of Albers x-coordinates to be projected to latitude/longitude.
+#'
+#' @param y Vector of Albers y-coordinates to be projected to latitude/longitude.
+#'
+#' @param sph Spheroid options: Clarke1866, GRS80, WGS84.  The default is
+#'   GRS80.
+#'
+#' @param clon Center longitude (decimal degrees).  The default is -96.
+#'
+#' @param clat Origin latitude (decimal degrees).  The default is 23.
+#'
+#' @param sp1 Standard parallel 1 (decimal degrees).  The default is 29.5.
+#'
+#' @param sp2 Standard parallel 2 (decimal degrees).  The default is 45.5.
+#'
+#' @return A data frame of latitude and longitude projections for Albers
+#'   x-coordinates and y-coordinates
+#'
+#' @references
+#'   J. Snyder, USGS Professional Paper 1395.
+#'
+#' @author Tony Olsen \email{Olsen.Tony@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
 
-# Specify parameters for selected spheroid
-  if(sph == "Clarke1866") { 
+albersgeod <- function(x, y, sph = "GRS80", clon = -96, clat = 23, sp1 = 29.5,
+   sp2 = 45.5) {
+
+  # Specify parameters for selected spheroid
+  if(sph == "Clarke1866") {
     a <- 6378206.4
-    b <- 6356583.8 
-  } else if(sph == "GRS80") { 
+    b <- 6356583.8
+  } else if(sph == "GRS80") {
     a <- 6378137.0
     b <- 6356752.31414
   } else if(sph == "WGS84") {
@@ -34,29 +53,29 @@ albersgeod <- function(x, y, sph="GRS80", clon=-96, clat=23, sp1=29.5,
   } else {
     stop("\nSpheroid does not match available options.")
   }
-# Do calculations for selected spheroid
+  # Do calculations for selected spheroid
   RADDEG <- (180/pi)
   DEGRAD <- (pi/180)
-  clat <- clat*DEGRAD 
+  clat <- clat*DEGRAD
   clon <- clon*DEGRAD
   sp1 <- sp1*DEGRAD
   sp2 <- sp2*DEGRAD
   e2 <- 1.0 - (b*b) / (a*a)
-  e4 <- e2*e2 
-  e6 <- e4*e2 
+  e4 <- e2*e2
+  e6 <- e4*e2
   e <- sqrt(e2)
   t1 <- 1.0 - e2
   t2 <- 1.0 / (2.0*e)
-  sinlat <- sin(clat) 
+  sinlat <- sin(clat)
   t3 <- 1.0 - e2*sinlat*sinlat
   q0 <- t2 * log((1.0 - e*sinlat)/(1.0 + e*sinlat))
   q0 <- t1 * (sinlat/t3 - q0)
-  sinlat <- sin(sp1) 
+  sinlat <- sin(sp1)
   t3 <- 1.0 - e2*sinlat*sinlat
   q1 <- t2 * log((1.0 - e*sinlat)/(1.0 + e*sinlat))
   q1 <- t1 * (sinlat/t3 - q1)
   m1 <- cos(sp1) / sqrt(t3)
-  sinlat <- sin(sp2) 
+  sinlat <- sin(sp2)
   t3 <- 1.0 - e2*sinlat*sinlat
   q2 <- t2 * log((1.0 - e*sinlat)/(1.0 + e*sinlat))
   q2 <- t1 * (sinlat/t3 - q2)

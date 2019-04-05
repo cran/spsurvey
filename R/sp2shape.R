@@ -1,31 +1,43 @@
-sp2shape <- function (sp.obj, shpfilename="tempfile", prjfilename=NULL) {
-
 ################################################################################
 # Function: sp2shape
-# Purpose: Create an ESRI shapefile from an sp package object
 # Programmer: Tom Kincaid
 # Date: June 6, 2006
 # Last Revised: June 10, 2016
-# Description:
-#   This function creates an ESRI shapefile from an sp package object.  The
-#   function can also accommodate an object created by the grts or irs functions
-#   in spsurvey.  The type of shapefile, i.e., point, polyline, or polygon, is
-#   determined by the class of the input object, which must be either
-#   "SpatialDesign", "SpatialPointsDataFrame", "SpatialLinesDataFrame", or
-#   "SpatialPolygonsDataFrame".
-# Arguments:
-#   sp.obj = the sp package object or object created by either the grts or irs
-#     functions.
-#   shpfilename = name (without any extension) of the output shapefile.  The
-#     default is "tempfile".
-#   prjfilename = name (without any extension) of the projection file for the
-#     output shapefile.  The default is NULL.
-# Results:
-#   An ESRI shapefile of type point, polyline, or polygon.
-# Other Functions Required:
-#   writeShapeFilePoint - C function to create a point shapefile
-#   writeShapeFilePolygon - C function to create a polyline or polygon shapefile
+#
+#' Create ESRI Shapefile from sp Package Object
+#'
+#' This function creates an ESRI shapefile from an sp package object.  The
+#' function can also accommodate an object created by the grts or irs functions
+#' in spsurvey.  The type of shapefile, i.e., point, polyline, or polygon, is
+#' determined by the class of the input object, which must be either
+#' "SpatialDesign", "SpatialPointsDataFrame", "SpatialLinesDataFrame", or
+#' "SpatialPolygonsDataFrame".
+#'
+#' @param sp.obj The sp package object or object created by either the grts or
+#'   irs functions.
+#'
+#' @param shpfilename Name (without any extension) of the output shapefile.
+#'   The default is "tempfile".
+#'
+#' @param prjfilename Name (without any extension) of the projection file for
+#'   the output shapefile.  The default is NULL.
+#'
+#' @return An ESRI shapefile of type point, polyline, or polygon.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{writeShapeFilePoint}}{C function to create a point
+#'       shapefile}
+#'     \item{\code{writeShapeFilePolygon}}{C function to create a
+#'       polyline or polygon shapefile}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+sp2shape <- function (sp.obj, shpfilename = "tempfile", prjfilename = NULL) {
 
 # Create a Point shapefile
 

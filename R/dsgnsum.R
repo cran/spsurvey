@@ -1,49 +1,68 @@
-dsgnsum <- function(spsample, auxvar = NULL) {
-
 ################################################################################
 # Function: dsgnsum
-# Purpose: Summarize the sites selected for a survey design
 # Programmers: Tony Olsen, Tom Kincaid
 # Date: April 26, 2005
 # Last Revised: May 4, 2015
-# Description:
-#   This function summarizes the sites selected for a survey design by producing
-#   contingency tables containing the cross-tabluation of number of sites for
-#   survey design variables and, optionally, for auxiliary variables.
-# Arguments:
-#   spsample = an object of class SpatialDesign produced by either the grts or
-#     irs functions that contains survey design information and additional
-#     attribute (auxiliary) variables.
-#   auxvar = a vector containing the names of columns in the data slot of the
-#   SpatialDesign object that identify auxiliary variables to be used to
-#  	summarize the survey design. 
-# Results:
-#   A list containing two components named DesignSum and AuxVarSum.  DesignSum
-#   is a list of contingency tables containing the cross-tabulation of number of
-#   sites for the following combinations of survey design variables:
-#     (1) multidensity category (mdcaty) and stratum
-#     (2) stratum and panel 
-#     (3) mdcaty, panel, and stratum
-#   AuxVarSum is a list of contingency tables containing the cross-tabulation of
-#   number of sites for each auxiliary variable and the design variables mdcaty,
-#   panel, and stratum.
-#   In addition the output list plus labeling information is printed to the
-#   console.
-# Other Functions Required:
-#   vecprint - takes an input vector and outputs a character string with
-#     line breaks inserted
-# Examples:
-#   design <- list(Stratum1=list(panel=c(PanelOne=50), seltype="Equal",
-#      over=10), Stratum2=list(panel=c(PanelOne=50, PanelTwo=50),
-#      seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
-#      CatyFour=25), over=75))
-#   attframe <- read.dbf("shapefile")
-#   samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
-#      src.frame="shapefile", in.shape="shapefile", att.frame=attframe,
-#      stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
-#      shapefilename="sample")
-#   dsgnsum(samp, auxvar=c("ecoregion", "state"))
+#
+#' Summary of a Survey Design
+#'
+#' This function summarizes the sites selected for a survey design by producing
+#' contingency tables containing the cross-tabluation of number of sites for
+#' survey design variables and, optionally, for auxiliary variables.
+#'
+#' @param spsample An object of class SpatialDesign produced by either the
+#'   grts or irs functions that contains survey design information and
+#'   additional attribute (auxiliary) variables.
+#'
+#' @param auxvar Vector containing the names of columns in the data slot of
+#'   the
+#'
+#' @return A list containing two components named DesignSum and AuxVarSum.
+#'   DesignSum is a list of contingency tables containing the cross-tabulation
+#'   of number of sites for the following combinations of survey design
+#'   variables:
+#'
+#'   \itemize{
+#'     \item multidensity category (mdcaty) and stratum
+#'     \item stratum and panel
+#'     \item mdcaty, panel, and stratum
+#'   }
+#'
+#'   AuxVarSum is a list of contingency tables containing the cross-tabulation
+#'   of number of sites for each auxiliary variable and the design variables
+#'   mdcaty, panel, and stratum.
+#'
+#'   In addition the output list plus labeling information is printed to the
+#'   console.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{vecprint}}}{takes an input vector and outputs a
+#'       character string with line breaks inserted}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @examples
+#' \dontrun{
+#' design <- list(
+#'   Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
+#'   Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
+#'     caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
+#' attframe <- read.dbf("shapefile")
+#' samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
+#'   src.frame="shapefile", in.shape="shapefile", att.frame=attframe,
+#'   stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
+#'   shapefilename="sample")
+#' dsgnsum(samp, auxvar=c("ecoregion", "state"))
+#' }
+#'
+#' @export
 ################################################################################
+
+dsgnsum <- function(spsample, auxvar = NULL) {
 
 # Assign the data slot form the spsample SpatialDesign object to the sites data
 # frame and the design slot to the design list
@@ -198,7 +217,7 @@ dsgnsum <- function(spsample, auxvar = NULL) {
 
 # Create the output list
 
-   if(mdcaty.ind) { 
+   if(mdcaty.ind) {
       if(panel.ind) {
          if(stratum.ind) {
             rslt <- list(DesignSum=list("mdcaty by stratum"=comb1,

@@ -1,34 +1,46 @@
-sbcsamp <- function(sp.sample, sbc.frame=NULL, dx=NULL, dy=NULL,
-   xc=NULL, yc=NULL) {
-
 ################################################################################
 # Function: sbcsamp
-# Purpose: Calculate spatial balance grid cell extent and proportions for a
-#          survey design
 # Programmer: Tom Kincaid
 # Date: September 29, 2011
-# Description:      
-#   This function calculates spatial balance grid cell extent and proportions
-#   for a survey design.  The user must provide either sbc.frame or values for
-#   dx, dy, xc, and yc.
-# Arguments:
-#   sp.sample = the sp package object of class "SpatialPointsDataFrame" produced by
-#     the grts or irs functions that contains survey design information.
-#   sbc.frame = the object created by the sbcframe function.  The default is
-#     NULL.
-#   dx = grid cell x-coordinate increment value.  The default is NULL.
-#   dy = grid cell y-coordinate increment value.  The default is NULL.
-#   xc = vector of grid cell x-coordinates.  The default is NULL.
-#   yc = vector of grid cell y-coordinates.  The default is NULL.
-# Results: 
-#   A list containing the following components: (1) extent - the sample extent
-#   for each grid cell and (2) prop - the sample proportion for each grid cell
-# Other Functions Required:
-#   readShapeFilePts - C function to read the shp file of a point shapefile and
-#     return a data frame containing the x-coordinates and y-coordinates for
-#     elements in the frame
-#   cell.wt - calculates number of points in a cell for a points object
+#
+#' Calculate Spatial Balance Grid Cell Extent and Proportions for a Survey Design
+#'
+#' This function calculates spatial balance grid cell extent and proportions
+#' for a survey design.  The user must provide either sbc.frame or values for
+#' dx, dy, xc, and yc.
+#'
+#' @param sp.sample The sp package object of class "SpatialPointsDataFrame"
+#'   produced by the grts or irs functions that contains survey design
+#'   information.
+#' @param sbc.frame The object created by the sbcframe function.  The default is
+#'   NULL.
+#' @param dx Grid cell x-coordinate increment value.  The default is NULL.
+#' @param dy Grid cell y-coordinate increment value.  The default is NULL.
+#' @param xc Vector of grid cell x-coordinates.  The default is NULL.
+#' @param yc Vector of grid cell y-coordinates.  The default is NULL.
+#'
+#' @return List containing the following components:
+#'   \describe{
+#'     \item{extent}{the sample extent for each grid cell}
+#'     \item{prop}{the sample proportion for each grid cell}
+#'   }
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{readShapeFilePts}}{C function to read the shp file of
+#'       a point shapefile and return a data frame containing the x-coordinates
+#'       and y-coordinates for elements in the frame}
+#'     \item{\code{\link{cell.wt}}}{calculates number of points in a cell for a
+#'       points object}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+sbcsamp <- function(sp.sample, sbc.frame = NULL, dx = NULL, dy = NULL,
+   xc = NULL, yc = NULL) {
 
 # Obtain the sample x-coordinates and y-coordinates from the sp.sample object
    xcoord <- sp.sample@data$xcoord

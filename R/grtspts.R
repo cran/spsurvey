@@ -1,57 +1,77 @@
-grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
-   samplesize=100, SiteBegin=1, shift.grid=TRUE, do.sample=TRUE, startlev=NULL,
-   maxlev=11) {
-
 ################################################################################
 # Function: grtspts.r
-# Purpose: Select a generalized random-tesselation stratified (GRTS) sample of a
-#    finite resource
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: October 8, 2002
 # Last Revised: August 18, 2016
-# Description:
-#   This function select a GRTS sample of a finite resource.  This function uses
-#   hierarchical randomization to ensure that the sample will include no more
-#   than one point per cell and then picks a point in selected cells.  
-# Arguments:
-#   src.frame = source of the frame, which equals "shapefile" if the frame is to
-#     be read from a shapefile, or "att.frame" if the frame is included in
-#     ptsframe.  The default is "shapefile".
-#   shapefilename = name of the input shapefile. If src.frame equals "shapefile"
-#     and shapefilename equals NULL, then the shapefile or shapefiles in the
-#     working directory are used.  The default is NULL.
-#   ptsframe = a data frame containing id, x, y, mdcaty, and mdm.
-#   samplesize = number of points to select in the sample.  The default is 100.
-#   SiteBegin = first number to start siteID numbering.  The default is 1.
-#   shift.grid = the option to randomly shift the hierarchical grid.  The
-#     default is TRUE.
-#   do.sample = option to select a sample, where TRUE means select a sample and
-#     FALSE means return the entire sample frame in reverse hierarchical order.
-#     The default is TRUE.  
-#   startlev = initial number of hierarchical levels to use for the GRTS grid,
-#     which must be less than or equal to maxlev (if maxlev is specified) and
-#     cannot be greater than 11.  The default is NULL.
-#   maxlev = maximum number of hierarchical levels to use for the GRTS grid,
-#     which cannot be greater than 11.  The default is 11.
-# Results: 
-#   A data frame of sample points containing: siteID, id, x, y, mdcaty,
-#   and weight.
-# Other Functions Required:
-#   numLevels - C function to determine the number of levels for hierarchical
-#     randomization
-#   cell.wt - calculates total inclusion probability for a cell
-#   constructAddr - C function to construct the hierarchical address for all
-#     points
-#   ranho - C function to construct the randomized hierarchical address for all
-#     points
-#   pickGridCells - C function to select grid cells that get a sample point
-#   selectpts - pick sample point(s) from selected cells
+#
+#' Select a Generalized Random-Tesselation Stratified (GRTS) Sample of a Finite Resource
+#'
+#' This function select a GRTS sample of a finite resource.  This function uses
+#' hierarchical randomization to ensure that the sample will include no more
+#' than one point per cell and then picks a point in selected cells.
+#'
+#' @param src.frame Source of the frame, which equals "shapefile" if the frame
+#'   is to be read from a shapefile, or "att.frame" if the frame is included in
+#'   ptsframe.  The default is "shapefile".
+#'
+#' @param shapefilename Name of the input shapefile. If src.frame equals
+#'   "shapefile" and shapefilename equals NULL, then the shapefile or shapefiles
+#'   in the working directory are used.  The default is NULL.
+#'
+#' @param ptsframe Data frame containing id, x, y, mdcaty, and mdm.
+#'
+#' @param samplesize Number of points to select in the sample.  The default is
+#'   100.
+#'
+#' @param SiteBegin First number to start siteID numbering.  The default is 1.
+#'
+#' @param shift.grid Option to randomly shift the hierarchical grid.  The
+#'   default is TRUE.
+#'
+#' @param do.sample Option to select a sample, where TRUE means select a
+#'   sample and FALSE means return the entire sample frame in reverse
+#'   hierarchical order. The default is TRUE.
+#'
+#' @param startlev Initial number of hierarchical levels to use for the GRTS
+#'   grid, which must be less than or equal to maxlev (if maxlev is specified)
+#'   and cannot be greater than 11.  The default is NULL.
+#'
+#' @param maxlev Maximum number of hierarchical levels to use for the GRTS
+#'   grid, which cannot be greater than 11.  The default is 11.
+#'
+#' @return Data frame of sample points containing: siteID, id, x, y, mdcaty,
+#'   and weight.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{numLevels}}{C function to determine the number of
+#'       levels for hierarchical randomization}
+#'     \item{\code{\link{cell.wt}}}{calculates total inclusion probability for a
+#'       cell}
+#'     \item{\code{constructAddr}}{C function to construct the
+#'       hierarchical address for all points}
+#'     \item{\code{ranho}}{C function to construct the randomized
+#'       hierarchical address for all points}
+#'     \item{\code{pickGridCells}}{C function to select grid cells that
+#'       get a sample point}
+#'     \item{\code{\link{selectpts}}}{pick sample point(s) from selected cells}
+#'   }
+#'
+#' @author Tony Olsen \email{Olsen.Tony@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
+
+grtspts <- function(src.frame = "shapefile", shapefilename = NULL, ptsframe,
+   samplesize = 100, SiteBegin = 1, shift.grid = TRUE, do.sample = TRUE,
+   startlev = NULL, maxlev = 11) {
 
 # If the source of the frame is a shapefile, ensure that the processor is little-endian
 
-   if(src.frame == "shapefile" & .Platform$endian == "big") 
+   if(src.frame == "shapefile" & .Platform$endian == "big")
       stop("\nA little-endian processor is required for the grtspts function when the source \nof the frame is a shapefile.")
 
 # If src.frame is not "shapefile", determine the minimum and maximum values for
@@ -75,7 +95,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
       temp <- .Call("numLevels", shapefilename, samplesize, shift.grid,
          startlev, maxlev, ptsframe$id, ptsframe$mdm)
       if(is.null(temp[[1]]))
-         stop("\nAn error occured while determining the number of levels for hierarchical \nrandomization.") 
+         stop("\nAn error occured while determining the number of levels for hierarchical \nrandomization.")
       nlev <- temp$nlev
       dx <- temp$dx
       dy <- temp$dy
@@ -112,10 +132,10 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
             xc <- rep(xc, nlv2+1)
             yc <- rep(yc, rep(nlv2+1, nlv2+1))
          }
-         
-# Determine total inclusion probability for each grid cell and, as necessary, 
+
+# Determine total inclusion probability for each grid cell and, as necessary,
 # adjust the indicator for whether maximum of the total inclusion probabilities
-# is changing   
+# is changing
 
          cel.wt <- sapply(1:length(xc), cell.wt, xc, yc, dx, dy, ptsframe)
          if(max(cel.wt) == celmax) {
@@ -163,7 +183,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
    if(do.sample) {
 
 # Select grid cells that get a sample point
-        
+
       rstrt <- runif(1, 0, sint)
       ttl.wt <- c(0, cumsum(cel.wt[rord]))
       idx <- ceiling((ttl.wt - rstrt)/sint)
@@ -179,7 +199,7 @@ grtspts <- function(src.frame="shapefile", shapefilename=NULL, ptsframe,
 
       id <- selectpts(rdx, xc, yc, dx, dy, ptsframe)
       rho <- ptsframe[match(id, ptsframe$id), ]
-   
+
    } else {
 
 # Pick all points in the frame

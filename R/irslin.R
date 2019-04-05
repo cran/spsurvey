@@ -1,29 +1,46 @@
-irslin <- function (shapefilename=NULL, linframe, samplesize=100, SiteBegin=1) {
-
 ################################################################################
 # Function: irslin
-# Purpose: Select an independent random sample (IRS) of a linear resource
 # Programmer: Tom Kincaid
 # Date: November 17, 2005
 # Last Revised: August 18, 2016
-# Description:      
-#   This function selects an IRS of a linear resource.  
-# Arguments:
-#   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
-#     then the shapefile or shapefiles in the working directory are used.  The
-#     default is NULL.
-#   linframe = a data frame containing id, mdcaty, len, and mdm.
-#   samplesize = number of points to select in the sample.  The default is 100.
-#   SiteBegin = first number to start siteID numbering.  The default is 1.
-# Results: 
-#   A data frame of sample points containing: siteID, id, x, y, mdcaty,
-#   and weight.
-# Other Functions Required: None
+#'
+#' Select an Independent Random Sample (IRS) of a Linear Resource
+#'
+#' This function selects an IRS of a linear resource.
+#'
+#' @param shapefilename Name of the input shapefile.  If shapefilename equals
+#'   NULL, then the shapefile or shapefiles in the working directory are used.
+#'   The default is NULL.
+#'
+#' @param linframe Data frame containing id, mdcaty, len, and mdm.
+#'
+#' @param samplesize Number of points to select in the sample.  The default is
+#'   100.
+#'
+#' @param SiteBegin First number to start siteID numbering.  The default is 1.
+#'
+#' @return Data frame of sample points containing: siteID, id, x, y, mdcaty,
+#'   and weight.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{linSampleIRS}}{C function to select a sample from a linear
+#'       resource}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
+
+irslin <- function (shapefilename = NULL, linframe, samplesize = 100,
+   SiteBegin = 1) {
 
 # Ensure that the processor is little-endian
 
-   if(.Platform$endian == "big") 
+   if(.Platform$endian == "big")
       stop("\nA little-endian processor is required for the irslin function.")
 
 # Pick sample points

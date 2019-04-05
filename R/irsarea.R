@@ -1,40 +1,55 @@
-irsarea <- function (shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
-   maxtry=1000) {
-
 ################################################################################
 # Function: irsarea
-# Purpose: Select an independent random sample (IRS) of an area resource
 # Programmer: Tom Kincaid
 # Date: November 30, 2005
 # Last Revised: August 18, 2016
-# Description:      
-#   This function selects an IRS of an area resource.  
-# Arguments:
-#   shapefilename = name of the input shapefile.  If shapefilename equals NULL,
-#     then the shapefile or shapefiles in the working directory are used.  The
-#     default is NULL.
-#   areaframe = a data frame containing id, mdcaty, area, and mdm.
-#   samplesize = number of points to select in the sample.  The default is 100.
-#   SiteBegin = first number to start siteID numbering.  The default is 1.
-#   maxtry = maximum number of iterations for randomly generating a point within
-#     the frame to select a site when type.frame equals "area".  The default
-#     is 1000.
-# Results: 
-#   A data frame of sample points containing: siteID, id, x, y, mdcaty,
-#     and weight.
-# Other Functions Required:
-#   getRecordIDs - C function to obtain the shapefile record IDs for records
-#     from which sample points will be selected
-#   getShapeBox - C function to obtain the shapefile minimum and maximum values
-#     for the x and y coordinates
-#   pointInPolygonFile - C function to determine the polygon IDs and the
-#     probability values associated with a set of point, where polygons are
-#     specified by a shapefile
+#'
+#' Select an Independent Random Sample (IRS) of an Area Resource
+#'
+#' This function selects an IRS of an area resource.
+#'
+#' @param shapefilename Name of the input shapefile.  If shapefilename equals
+#'   NULL, then the shapefile or shapefiles in the working directory are used.
+#'   The default is NULL.
+#'
+#' @param areaframe Data frame containing id, mdcaty, area, and mdm.
+#'
+#' @param samplesize Number of points to select in the sample.  The default is
+#'   100.
+#'
+#' @param SiteBegin First number to start siteID numbering.  The default is 1.
+#'
+#' @param maxtry Maximum number of iterations for randomly generating a point
+#'   within the frame to select a site when type.frame equals "area".  The
+#'   default is 1000.
+#'
+#' @return data frame of sample points containing: siteID, id, x, y, mdcaty,
+#'   and weight.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{getRecordIDs}}{C function to obtain the shapefile
+#'       record IDs for records from which sample points will be selected}
+#'     \item{\code{getShapeBox}}{C function to obtain the shapefile
+#'       minimum and maximum values for the x and y coordinates}
+#'     \item{\code{pointInPolygonFile}}{C function to determine the
+#'       polygon IDs and the probability values associated with a set of point,
+#'       where polygons are specified by a shapefile}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
+
+irsarea <- function (shapefilename = NULL, areaframe, samplesize = 100,
+   SiteBegin = 1, maxtry = 1000) {
 
 # Ensure that the processor is little-endian
 
-   if(.Platform$endian == "big") 
+   if(.Platform$endian == "big")
       stop("\nA little-endian processor is required for the irsarea function.")
 
 # Determine IDs for records that will contain sample points
@@ -50,7 +65,7 @@ irsarea <- function (shapefilename=NULL, areaframe, samplesize=100, SiteBegin=1,
    for(i in unique(samp.id)) {
       npt <- sum(samp.id == i)
       bp <- !logical(npt)
-      ntry <- 0    
+      ntry <- 0
       idx <- seq(j, j+npt-1)
       temp <- .Call("getShapeBox", shapefilename, i)
       xmin <- temp$xmin

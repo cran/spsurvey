@@ -1,29 +1,39 @@
-wnas <- function(data) {
-
 ################################################################################
 # Function: wnas
 # Programmer: Tom Kincaid
 # Date: November 16, 2000
 # Last Revised: May 5, 2006
-# Description:
-#   This function removes missing values from data for which the mode is one of 
-#   the following: numeric, logical, or character.  Data that is not one of 
-#   those modes will cause the function to terminate with an error message.  
-#   For numeric data this function removes values that are not finite, i.e., 
-#   missing value (NA), not a number (NaN), infinity (Inf), and minus infinity
-#   (-Inf).  For logical data this function removes missing values (NA).  For 
-#   character data the following values are removed: "", "NA", NA (R only), 
-#   "NaN", "Inf", and "-Inf".  For a factor this function removes the following 
-#   values: NA, NaN, Inf, and -Inf.  For a vector this function returns the 
-#   vector with the indicated values removed.  For a data frame this function 
-#   returns the data frame with rows removed that contain at least one indicated 
-#   value.  For a list with components that are the same length, the list is 
-#   converted to a data frame.  For a list with components that are not the same 
-#   length, the function prints an error message and terminates.  When the 
-#   process of removing missing values produces an object that no longer
-#   contains any elements (vector) or rows (data frame or list), then a NULL
-#   object is returned.
+#
+#' Internal Function:  Remove NAs from Data
+#'
+#' This function removes missing values from data for which the mode is one of
+#' the following: numeric, logical, or character.  Data that is not one of those
+#' modes will cause the function to terminate with an error message. For numeric
+#' data this function removes values that are not finite, i.e., missing value
+#' (NA), not a number (NaN), infinity (Inf), and minus infinity (-Inf).  For
+#' logical data this function removes missing values (NA).  For character data
+#' the following values are removed: "", "NA", NA (R only), "NaN", "Inf", and
+#' "-Inf".  For a factor this function removes the following values: NA, NaN,
+#' Inf, and -Inf.  For a vector this function returns the vector with the
+#' indicated values removed.  For a data frame this function returns the data
+#' frame with rows removed that contain at least one indicated value.  For a
+#' list with components that are the same length, the list is converted to a
+#' data frame.  For a list with components that are not the same length, the
+#' function prints an error message and terminates.  When the process of
+#' removing missing values produces an object that no longer contains any
+#' elements (vector) or rows (data frame or list), then a NULL object is
+#' returned.
+#'
+#' @param data Object of type numeric, logical, or character.
+#'
+#' @return Object with NAs removed.
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+wnas <- function(data) {
 
    if(is.list(data)) {
       if(any(match(sapply(data, mode), c("numeric", "logical", "character"), nomatch=0) == 0))

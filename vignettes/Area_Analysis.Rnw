@@ -13,6 +13,7 @@
 \setlength{\parskip}{.1in}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 \maketitle
 \tableofcontents
 \setkeys{Gin}{width=1.0\textwidth}
@@ -31,7 +32,8 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.4 of the spsurvey package was loaded successfully.
+Version 3.5.0 of the spsurvey package was loaded successfully.
+
 \end{verbatim}
 
 \section{Load the survey design and analytical variables data set}
@@ -115,7 +117,7 @@ Create the subpop data frame.
 # Create the subpop data frame, which defines populations and subpopulations for
 # which estimates are desired
 subpop <- data.frame(siteID=SC_estuaries$siteID,
-                     All_Estuaries=rep("All Estuaries", nr), 
+                     All_Estuaries=rep("All Estuaries", nr),
 							       Estuary_Type=SC_estuaries$Stratum)
 
 @
@@ -156,7 +158,7 @@ Use the cat.analysis function to calculate extent estimates for the site status 
 Extent_Estimates <- cat.analysis(sites, subpop, design, data.cat)
 
 @
-The extent estimates are displayed using the print function.  The object produced by cat.analysis is a data frame containing thirteen columns.  The first five columns identify the population (Type), subpopulation (Subpopulation), response variable (Indicator), levels of the response variable (Category), and number of values in a category (NResp).  A category labeled "Total" is included for each combination of population, subpopulation, and response variable.  The next four columns in the data frame provide results for the proportion estimates: the proportion estimate (Estimate.P), standard error of the estimate (StdError.P), lower confidence bound (LCB95Pct.P), and upper confidence bound (UCB95Pct.P).  Argument conf for cat.analysis allows control of the confidence bound level.  The default value for conf is 95, hence the column names for confidence bounds contain the value 95.  Supplying a different value to the conf argument will be reflected in the confidence bound names.  Confidence bounds are obtained using the standard error and the Normal distribution multiplier corresponding to the confidence level.  The final four columns in the data frame provide results for the size (units) estimates: the units estimate (Estimate.U), standard error of the estimate (StdError.U), lower confidence bound (LCB95Pct.U), and upper confidence bound (UCB95Pct.U).  Note that the size estimate for the Total category will be equal to the sum of the survey design weights.
+The extent estimates are displayed using the print function.  The object produced by cat.analysis is a data frame containing thirteen columns.  The first five columns identify the population (Type), subpopulation (Subpopulation), response variable (Indicator), levels of the response variable (Category), and number of values in a category (NResp).  A category labeled "Total" is included for each combination of population, subpopulation, and response variable.  The next four columns in the data frame provide results for the proportion (percent scale) estimates: the proportion estimate (Estimate.P), standard error of the estimate (StdError.P), lower confidence bound (LCB95Pct.P), and upper confidence bound (UCB95Pct.P).  Argument conf for cat.analysis allows control of the confidence bound level.  The default value for conf is 95, hence the column names for confidence bounds contain the value 95.  Supplying a different value to the conf argument will be reflected in the confidence bound names.  Confidence bounds are obtained using the standard error and the Normal distribution multiplier corresponding to the confidence level.  The final four columns in the data frame provide results for the size (units scale) estimates: the size estimate (Estimate.U), standard error of the estimate (StdError.U), lower confidence bound (LCB95Pct.U), and upper confidence bound (UCB95Pct.U).  Note that the size estimate for the Total category will be equal to the sum of the survey design weights.
 
 <<Statuseval>>=
 # Print the extent estimates
@@ -201,7 +203,7 @@ addmargins(table(SC_estuaries$WQ_status))
 
 @
 As for extent estimates, the cat.analysis function will be used to calculate condition estimates.  The sites data frame for this analysis differs from the one used to calculate extent estimates.  The Use logical variables in sites is set equal to the value "Sampled", so that only sampled sites are used in the analysis. The subpop and design data frames created in the prior analysis can be reused for this analysis.  The data.cat data frame contains the two estuary condition variables: IBI\_Status and WQ\_Status.  Variables IBI\_status and WQ\_status in the SC\_estuaries data frame are assigned to IBI\_Status and WQ\_Status, respectively.
-  
+
 Create the sites data frame.
 
 \begin{verbatim}
@@ -342,7 +344,7 @@ summary(SC_estuaries$WQ_score)
 
 @
 The cont.analysis function will be used to calculate estimates for quantitative variables.  Input to the cont.analysis function is the same as input for the cat.analysis function except that the data frame containing response variables is named cont.data rather than cat.data.  The sites, subpop, and design data frames created in the analysis of estuary condition variables can be reused for this analysis.  The data.cont data frame contains the two quantitative variables: IBI\_Score and WQ\_Score, which contain the numeric scores for the IBI and WQ variables, respectively.  Variables IBI\_score and WQ\_score in the SC\_estuaries data frame are assigned to IBI\_Score and WQ\_Score, respectively.  The popsize argument is included in the call to cont.analysis.
-  
+
 Create the data.cont data frame.
 \begin{verbatim}
 > data.cont <- data.frame(siteID=SC_estuaries$siteID,

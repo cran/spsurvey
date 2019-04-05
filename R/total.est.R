@@ -1,143 +1,185 @@
-total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
-   wgt1=NULL, x1=NULL, y1=NULL, popsize=NULL, popcorrect=FALSE, pcfsize=NULL,
-   N.cluster=NULL, stage1size=NULL, support=NULL, sizeweight=FALSE, swgt=NULL,
-   swgt1=NULL, vartype="Local", conf=95, check.ind=TRUE, warn.ind=NULL,
-   warn.df=NULL, warn.vec=NULL) {
-
 ################################################################################
 # Function: total.est
 # Programmer: Tom Kincaid
 # Date: December 18, 2000
 # Last Revised: April 6, 2011
-# Description:
-#   This function calculates estimates of the population total, mean, variance, 
-#   and standard deviation of a response variable, where the response variable
-#   may be defined for either a finite or an extensive resource.  In addition 
-#   the standard error of the population estimates and confidence bounds are 
-#   calculated.  The Horvitz-Thompson estimator is used to calculate the 
-#   total, variance, and standard deviation estimates.  The Horvitz-Thompson 
-#   ratio estimator, i.e., the ratio of two Horvitz-Thompson estimators, is used 
-#   to calculate the mean estimate.  Variance estimates are calculated using 
-#   either the local mean variance estimator or the simple random sampling (SRS) 
-#   variance estimator.  The choice of variance estimator is subject to user 
-#   control.  The local mean variance estimator requires the x-coordinate and the
-#   y-coordinate of each site.  The SRS variance estimator uses the independent 
-#   random sample approximation to calculate joint inclusion probabilities.  
-#   Confidence bounds are calculated using a Normal distribution multiplier.
-#   The function can accommodate a stratified sample.  For a stratified sample, 
-#   separate estimates and standard errors are calculated for each stratum, which
-#   are used to produce estimates and standard errors for all strata combined.  
-#   Strata that contain a single value are removed.  For a stratified sample, 
-#   when either the size of the resource or the sum of the size-weights of the 
-#   resource is provided for each stratum, those values are used as stratum 
-#   weights for calculating the estimates and standard errors for all strata 
-#   combined.  For a stratified sample when neither the size of the resource nor 
-#   the sum of the size-weights of the resource is provided for each stratum, 
-#   estimated values are used as stratum weights for calculating the estimates 
-#   and standard errors for all strata combined.  The function can accommodate 
-#   single-stage and two-stage samples for both stratified and unstratified 
-#   sampling designs.  Finite population and continuous population correction 
-#   factors can be utilized in variance estimation.  The function checks for 
-#   compatibility of input values and removes missing values.
-# Arguments:
-#   z = the response value for each site.
-#   wgt = the final adjusted weight (inverse of the sample inclusion
-#     probability) for each site, which is either the weight for a single-stage
-#     sample or the stage two weight for a two-stage sample.
-#   x = x-coordinate for location for each site, which is either the
-#     x-coordinate for a single-stage sample or the stage two x-coordinate for a
-#     two-stage sample.  The default is NULL.
-#   y = y-coordinate for location for each site, which is either the
-#     y-coordinate for a single-stage sample or the stage two y-coordinate for a
-#     two-stage sample.  The default is NULL.
-#   stratum = the stratum for each site.  The default is NULL.
-#   cluster = the stage one sampling unit (primary sampling unit or cluster)
-#     code for each site.  The default is NULL.
-#   wgt1 = the final adjusted stage one weight for each site.  The default is
-#     NULL.
-#   x1 = the stage one x-coordinate for location for each site.  The default is
-#     NULL.
-#   y1 = the stage one y-coordinate for location for each site.  The default is
-#     NULL.
-#   popsize = known size of the resource, which is used to calculate strata
-#     proportions for calculating estimates for a stratified sample.  For a
-#     finite resource, this argument is either the total number of sampling
-#     units or the known sum of size-weights.  For an extensive resource, this
-#     argument is the measure of the resource, i.e., either known total length
-#     for a linear resource or known total area for an areal resource.  For a
-#     stratified sample this variable must be a vector containing a value for
-#     each stratum and must have the names attribute set to identify the stratum
-#     codes.  The default is NULL.
-#   popcorrect = a logical value that indicates whether finite or continuous
-#     population correction factors should be employed during variance
-#     estimation, where TRUE = use the correction factor and FALSE = do not use
-#     the correction factor.  The default is FALSE.  To employ the correction
-#     factor for a single-stage sample, values must be supplied for arguments
-#     pcfsize and support.  To employ the correction factor for a two-stage
-#     sample, values must be supplied for arguments N.cluster, stage1size, and
-#     support.
-#   pcfsize = size of the resource, which is required for calculation of finite
-#     and continuous population correction factors for a single-stage sample.
-#     For a stratified sample this argument must be a vector containing a value
-#     for each stratum and must have the names attribute set to identify the
-#     stratum codes.  The default is NULL.
-#   N.cluster = the number of stage one sampling units in the resource, which is
-#     required for calculation of finite and continuous population correction
-#     factors for a two-stage sample.  For a stratified sample this argument
-#     must be a vector containing a value for each stratum and must have the
-#     names attribute set to identify the stratum codes.  The default is NULL.
-#   stage1size = size of the stage one sampling units of a two-stage sample,
-#     which is required for calculation of finite and continuous population
-#     correction factors for a two-stage sample and must have the names
-#     attribute set to identify the stage one sampling unit codes.  For a
-#     stratified sample, the names attribute must be set to identify both
-#     stratum codes and stage one sampling unit codes using a convention where
-#     the two codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1".
-#     The default is NULL.
-#   support = the support value for each site - the value one (1) for a site
-#     from a finite resource or the measure of the sampling unit associated with
-#     a site from an extensive resource, which is required for calculation of
-#     finite and continuous population correction factors.  The default is NULL.
-#   sizeweight = a logical value that indicates whether size-weights should be
-#     used in the analysis, where TRUE = use the size-weights and FALSE = do not
-#     use the size-weights.  The default is FALSE.
-#   swgt = the size-weight for each site, which is the stage two size-weight for
-#     a two-stage sample.  The default is NULL.
-#   swgt1 = the stage one size-weight for each site.  The default is NULL.
-#   vartype = the choice of variance estimator, where "Local" = local mean
-#     estimator and "SRS" = SRS estimator.  The default is "Local".
-#   check.ind = a logical value that indicates whether compatability checking of
-#     the input values is conducted, where TRUE = conduct compatibility checking
-#     and FALSE = do not conduct compatibility checking.  The default is TRUE.
-#   warn.ind = a logical value that indicates whether warning messages were
-#     generated, where TRUE = warning messages were generated and FALSE =
-#     warning messages were not generated.  The default is NULL.
-#   warn.df = a data frame for storing warning messages.  The default is NULL.
-#   warn.vec = a vector that contains names of the population type, the
-#     subpopulation, and an indicator.  The default is NULL.
-# Output:
-#   If the function was called by the cont.analysis function, then output is an
-#   object in list format composed of the Results data frame, which contains
-#   estimates and confidence bounds, and the warn.df data frame, which contains
-#   warning messages.  If the function was called directly, then output is the
-#   Results data frame.
-# Other Functions Required:
-#   input.check - check input values for errors, consistency, and compatibility
-#     with analytical functions
-#   wnas - remove missing values
-#   vecprint - takes an input vector and outputs a character string with line
-#     breaks inserted
-#   total.var - calculate variance of the total, mean, variance, and standard
-#     deviation estimates
-# Examples:
-#   z <- rnorm(100, 10, 1)
-#   wgt <- runif(100, 10, 100)
-#   total.est(z, wgt, vartype="SRS")
 #
-#   x <- runif(100)
-#   y <- runif(100)
-#   total.est(z, wgt, x, y)
+#' Estimators for Population Total, Mean, Variance, and Standard Deviation
+#'
+#' This function calculates estimates of the population total, mean, variance,
+#' and standard deviation of a response variable, where the response variable
+#' may be defined for either a finite or an extensive resource.  In addition the
+#' standard error of the population estimates and confidence bounds are
+#' calculated.  The Horvitz-Thompson estimator is used to calculate the total,
+#' variance, and standard deviation estimates.  The Horvitz-Thompson ratio
+#' estimator, i.e., the ratio of two Horvitz-Thompson estimators, is used to
+#' calculate the mean estimate.  Variance estimates are calculated using either
+#' the local mean variance estimator or the simple random sampling (SRS)
+#' variance estimator.  The choice of variance estimator is subject to user
+#' control.  The local mean variance estimator requires the x-coordinate and the
+#' y-coordinate of each site.  The SRS variance estimator uses the independent
+#' random sample approximation to calculate joint inclusion probabilities.
+#' Confidence bounds are calculated using a Normal distribution multiplier. The
+#' function can accommodate a stratified sample.  For a stratified sample,
+#' separate estimates and standard errors are calculated for each stratum, which
+#' are used to produce estimates and standard errors for all strata combined.
+#' Strata that contain a single value are removed.  For a stratified sample,
+#' when either the size of the resource or the sum of the size-weights of the
+#' resource is provided for each stratum, those values are used as stratum
+#' weights for calculating the estimates and standard errors for all strata
+#' combined.  For a stratified sample when neither the size of the resource nor
+#' the sum of the size-weights of the resource is provided for each stratum,
+#' estimated values are used as stratum weights for calculating the estimates
+#' and standard errors for all strata combined.  The function can accommodate
+#' single-stage and two-stage samples for both stratified and unstratified
+#' sampling designs.  Finite population and continuous population correction
+#' factors can be utilized in variance estimation.  The function checks for
+#' compatibility of input values and removes missing values.
+#'
+#' @param z Vector of the response value for each site.
+#'
+#' @param wgt Vector of the final adjusted weight (inverse of the sample
+#'   inclusion probability) for each site, which is either the weight for a
+#'   single-stage sample or the stage two weight for a two-stage sample.
+#'
+#' @param x Vector of x-coordinate for location for each site, which is either
+#'   the x-coordinate for a single-stage sample or the stage two x-coordinate
+#'   for a two-stage sample.  The default is NULL.
+#'
+#' @param y Vector of y-coordinate for location for each site, which is either
+#'   the y-coordinate for a single-stage sample or the stage two y-coordinate
+#'   for a two-stage sample.  The default is NULL.
+#'
+#' @param stratum Vector of the stratum for each site.  The default is NULL.
+#'
+#' @param cluster Vector of the stage one sampling unit (primary sampling unit
+#'   or cluster) code for each site.  The default is NULL.
+#'
+#' @param wgt1 Vector of the final adjusted stage one weight for each site.
+#'   The default is NULL.
+#'
+#' @param x1 Vector of the stage one x-coordinate for location for each site.
+#'   The default is NULL.
+#'
+#' @param y1 Vector of the stage one y-coordinate for location for each site.
+#'   The default is NULL.
+#'
+#' @param popsize Known size of the resource, which is used to calculate
+#'   strata proportions for calculating estimates for a stratified sample.  For
+#'   a finite resource, this argument is either the total number of sampling
+#'   units or the known sum of size-weights.  For an extensive resource, this
+#'   argument is the measure of the resource, i.e., either known total length
+#'   for a linear resource or known total area for an areal resource.  For a
+#'   stratified sample this variable must be a vector containing a value for
+#'   each stratum and must have the names attribute set to identify the stratum
+#'   codes.  The default is NULL.
+#'
+#' @param popcorrect Logical value that indicates whether finite or continuous
+#'   population correction factors should be employed during variance
+#'   estimation, where TRUE = use the correction factor and FALSE = do not use
+#'   the correction factor.  The default is FALSE.  To employ the correction
+#'   factor for a single-stage sample, values must be supplied for arguments
+#'   pcfsize and support.  To employ the correction factor for a two-stage
+#'   sample, values must be supplied for arguments N.cluster, stage1size, and
+#'   support.
+#'
+#' @param pcfsize Size of the resource, which is required for calculation of
+#'   finite and continuous population correction factors for a single-stage
+#'   sample. For a stratified sample this argument must be a vector containing a
+#'   value for each stratum and must have the names attribute set to identify
+#'   the stratum codes.  The default is NULL.
+#'
+#' @param N.cluster The number of stage one sampling units in the resource,
+#'   which is required for calculation of finite and continuous population
+#'   correction factors for a two-stage sample.  For a stratified sample this
+#'   argument must be a vector containing a value for each stratum and must have
+#'   the names attribute set to identify the stratum codes.  The default is
+#'   NULL.
+#'
+#' @param stage1size Size of the stage one sampling units of a two-stage
+#'   sample, which is required for calculation of finite and continuous
+#'   population correction factors for a two-stage sample and must have the
+#'   names attribute set to identify the stage one sampling unit codes.  For a
+#'   stratified sample, the names attribute must be set to identify both stratum
+#'   codes and stage one sampling unit codes using a convention where the two
+#'   codes are separated by the & symbol, e.g., "Stratum 1&Cluster 1". The
+#'   default is NULL.
+#'
+#' @param support Vector of the support value for each site - the value one
+#'   (1) for a site from a finite resource or the measure of the sampling unit
+#'   associated with a site from an extensive resource, which is required for
+#'   calculation of finite and continuous population correction factors.  The
+#'   default is NULL.
+#'
+#' @param sizeweight Logical value that indicates whether size-weights should
+#'   be used in the analysis, where TRUE = use the size-weights and FALSE = do
+#'   not use the size-weights.  The default is FALSE.
+#'
+#' @param swgt Vector of the size-weight for each site, which is the stage two
+#'   size-weight for a two-stage sample.  The default is NULL.
+#'
+#' @param swgt1  Vector of the stage one size-weight for each site.  The
+#'   default is NULL.
+#'
+#' @param vartype The choice of variance estimator, where "Local" = local mean
+#'   estimator and "SRS" = SRS estimator.  The default is "Local".
+#'
+#' @param conf  Numeric value for the confidence level.  The default is 95.
+#'
+#' @param check.ind Logical value that indicates whether compatability
+#'   checking of the input values is conducted, where TRUE = conduct
+#'   compatibility checking and FALSE = do not conduct compatibility checking.
+#'   The default is TRUE.
+#'
+#' @param warn.ind Logical value that indicates whether warning messages were
+#'   generated, where TRUE = warning messages were generated and FALSE = warning
+#'   messages were not generated.  The default is NULL.
+#'
+#' @param warn.df Data frame for storing warning messages.  The default is
+#'   NULL.
+#'
+#' @param warn.vec Vector that contains names of the population type, the
+#'   subpopulation, and an indicator.  The default is NULL.
+#'
+#' @return If the function was called by the cont.analysis function, then
+#'   output is an object in list format composed of the Results data frame,
+#'   which contains estimates and confidence bounds, and the warn.df data frame,
+#'   which contains warning messages.  If the function was called directly, then
+#'   output is the Results data frame.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{input.check}}}{check input values for errors,
+#'       consistency, and compatibility with analytical functions}
+#'     \item{\code{\link{wnas}}}{remove missing values}
+#'     \item{\code{\link{vecprint}}}{takes an input vector and outputs a
+#'       character string with line breaks inserted}
+#'     \item{\code{\link{total.var}}}{calculate variance of the total, mean,
+#'       variance, and standard deviation estimates}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @examples
+#' z <- rnorm(100, 10, 1)
+#' wgt <- runif(100, 10, 100)
+#' total.est(z, wgt, vartype="SRS")
+#'
+#' x <- runif(100)
+#' y <- runif(100)
+#' total.est(z, wgt, x, y)
+#'
+#' @export
 ################################################################################
+
+total.est <- function(z, wgt, x = NULL, y = NULL, stratum = NULL,
+   cluster = NULL, wgt1 = NULL, x1 = NULL, y1 = NULL, popsize = NULL,
+   popcorrect = FALSE, pcfsize = NULL, N.cluster = NULL, stage1size = NULL,
+   support = NULL, sizeweight = FALSE, swgt = NULL, swgt1 = NULL,
+   vartype = "Local", conf = 95, check.ind = TRUE, warn.ind = NULL,
+   warn.df = NULL, warn.vec = NULL) {
 
 # As necessary, create a data frame for warning messages
 
@@ -160,7 +202,7 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
    stratum.ind <- length(unique(stratum)) > 1
 
-# If the sample is stratified, convert stratum to a factor, determine stratum 
+# If the sample is stratified, convert stratum to a factor, determine stratum
 # levels, and calculate number of strata,
 
    if(stratum.ind) {
@@ -190,7 +232,7 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
 
    if(check.ind) {
 
-# If the sample has two stages, convert cluster to a factor, determine cluster 
+# If the sample has two stages, convert cluster to a factor, determine cluster
 # levels, and calculate number of clusters
 
    if(cluster.ind) {
@@ -218,7 +260,7 @@ total.est <- function(z, wgt, x=NULL, y=NULL, stratum=NULL, cluster=NULL,
       N.cluster <- temp$N.cluster
       stage1size <- temp$stage1size
 
-# If the sample was stratified and had two stages, then reset cluster to its 
+# If the sample was stratified and had two stages, then reset cluster to its
 # input value
 
    if(stratum.ind && cluster.ind)

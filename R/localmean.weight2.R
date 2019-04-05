@@ -1,24 +1,33 @@
-localmean.weight2 <- function(x, y, prb, nbh) {
-
 ################################################################################
 # Function: localmean.weight2
 # Programmers: Don Stevens and Tom Kincaid
 # Date: September 17, 2013
-# Description:
-#   This function calculates the initial section of the localmean.weight
-#   function and serves to allow recovery from an error in the singular value
-#   decomposition function (La.svd) that is called by the generalized inverse
-#   function (ginv) in the MASS package.
-#   Input:
-#      x = x-coordinates for location of the sample points.
-#      y = y-coordinates for location of the sample points.
-#      prb = inclusion probabilities for the sample points.
-#      nbh = number of neighboring points to use in the calculations.
-#   Output:
-#      Either an object of class "try-error" when the ginv function terminates
-#      with an error or a generalized inverse matrix when the ginv function
-#      terminates normally.
+#'
+#' Internal Function: Recovery from a Singular Value Decomposition Error
+#'
+#' This function calculates the initial section of the localmean.weight function
+#' and serves to allow recovery from an error in the singular value
+#' decomposition function (La.svd) that is called by the generalized inverse
+#' function (ginv) in the MASS package.
+#'
+#' @param  x  Vector of x-coordinates for location of the sample points.
+#'
+#' @param  y  Vector of y-coordinates for location of the sample points.
+#'
+#' @param  prb  Vector of inclusion probabilities for the sample points.
+#'
+#' @param  nbh  Number of neighboring points to use in the calculations.
+#'
+#' @return Either an object of class "try-error" when the ginv function
+#'   terminates with an error or a generalized inverse matrix when the ginv
+#'   function terminates normally.
+#'
+#' @author Don Stevens  Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+localmean.weight2 <- function(x, y, prb, nbh) {
 
    n <- length(x)
 

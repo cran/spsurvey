@@ -42,7 +42,8 @@ library(spsurvey)
 
 @
 \begin{verbatim}
-Version 3.4 of the spsurvey package was loaded successfully.
+Version 3.5.0 of the spsurvey package was loaded successfully.
+
 \end{verbatim}
 
 \section{Create a shapefile}
@@ -354,7 +355,7 @@ Select the sample
 +                    DesignID="UNEQUAL",
 +                    type.frame="area",
 +                    src.frame="shapefile",
-+                    in.shape="reg1_lakes",
++                    in.shape="UT_ecoregions",
 +                    att.frame=att,
 +                    mdcaty="Level3_Nam",
 +                    shapefile=FALSE)

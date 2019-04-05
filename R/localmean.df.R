@@ -1,20 +1,27 @@
-localmean.df <- function(weight.lst) {
-
-################################################################################
+##############################################################################
 # Function: localmean.df
 # Programmer: Tom Kincaid
 # Date: April 8, 2003
-# Description:
-#   This function calculates the degrees of freedom of the local mean variance-
-#   covariance estimator.
-#   Input:
-#      weight.lst = list from the local mean weight function containing two 
-#         elements: a matrix named ij composed of the index values of 
-#         neighboring points and a vector named gwt composed of weights.
-#   Output:
-#      The degrees of freedom of the local mean variance-covariance estimator.
-#   Other Functions Required: None
-################################################################################
+#
+#' Internal Function: Degrees of Freedom for Local Mean Variance-Covariance
+#' Estimator
+#'
+#' This function calculates the degrees of freedom of the local mean variance-
+#' covariance estimator.
+#'
+#' @param weight.lst List from the local mean weight function containing two
+#'   elements: a matrix named ij composed of the index values of neighboring
+#'   points and a vector named gwt composed of weights.
+#'
+#' @return The degrees of freedom of the local mean variance-covariance
+#'   estimator.
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
+###############################################################################
+
+localmean.df <- function(weight.lst) {
 
 # Create the matrix of coefficients used in calculating the local mean variance
 # estimator

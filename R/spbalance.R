@@ -1,81 +1,105 @@
-spbalance <- function(spsample, spframe = NULL, tess_ind = TRUE,
-   sbc_ind = FALSE, nrows = 5, dxdy = TRUE) {
-
 ################################################################################
 # Function: spbalance
-# Purpose: Calculate spatial balance metrics for a survey design
 # Programmer: Tom Kincaid
 # Date: February 17, 2012
 # Last Revised: April 17, 2015
-# Description:      
-#   This function calculates spatial balance metrics for a survey design.    Two
-#  options for calculation of spatial balance metrics are available: (1) use
-#  proportions obtained from the intersection of Dirichlet tesselation polygons
-#  for the sample points with the frame object and (2) use proportions obtained
-#  from a rectangular grid superimposed on the sample points and the frame
-#  object.  In both cases the proportions are used to calculate the spatial
-#  balance metrics.  Two metrics are calculated: (1) the Pielou evenness measure
-#  and (2) the chi-square statistic.
-# Arguments:
-#   spsample = an object of class SpatialDesign produced by either the grts or
-#     irs functions that contains survey design information and additional
-#     attribute (auxiliary) variables.
-#   spframe = an sp package object of class SpatialPointsDataFrame,
-#     SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the
-#     survey design frame.  The default is NULL.
-#   tess_ind = a logical variable indicating whether spatial balance metrics are
-#     calculated using proportions obtained from the intersection of Dirichlet
-#     tesselation polygons for the sample points with the frame object.  TRUE
-#     means calculate the metrics.  FALSE means do not calculate the metrics.
-#     The default is TRUE. 
-#   sbc_ind = a logical variable indicating whether spatial balance metrics are
-#     calculated using proportions obtained from a rectangular grid superimposed
-#     on the sample points and the frame.  TRUE means calculate the metrics.
-#     FALSE means do not calculate the metrics. The default is FALSE. 
-#   nrows = number of rows (and columns) for the grid of cells.  The default is
-#     5.
-#   dxdy = indicator for equal x-coordinate and y-coordinate grid cell
-#     increments, where TRUE means the increments are equal and FALSE means the
-#     increments are not equal.  The default is TRUE.
-# Results: 
-#   A list containing the following components:
-#     (1) tess - results for spatial balance metrics using tesselation polygons
-#     (2) sbc - results for spatial balance metrics using a rectangular grid
-#   If either the tess_ind or sbc_ind arguments are set to FALSE, the
-#   corresponding component in the list is set to NULL.  Otherwise, each
-#   components of the list is a lists that contains the following components:
-#     (1) J_subp - Pielou evenness measure
-#     (2) chi_sq - Chi-square statistic
-#     (3) extent - frame extent for each  Dirichlet tesselation polygon or
-#                  rectangular grid cell
-#     (4) prop - frame proportion for each Dirichlet tesselation polygon or
-#                rectangular grid cell
-# Other Functions Required:
-#   deldir - deldir package function that computes the Delaunay triangulation
-#     and Dirichlet tesselation of a set of points.
-#   tile.list - deldir package function that extracts coordinates of the
-#     Dirichlet tesselation polygons from the object produced by the deldir
-#     function.
-#   gIntersection - rgeos package function that determines the intersection
-#     between two sp package objects
-#   LinesLength - sp package function that determines length of the line
-#     segemnts in a class Lines object
-#   sbcframe - function to calculate spatial balance grid cell extent and
-#     proportions for a sample frame
-#   sbcsamp - function to calculate spatial balance grid cell extent and
-#     proportions for a survey design
-# Example:
-#   design <- list(Stratum1=list(panel=c(PanelOne=50), seltype="Equal",
-#      over=10), Stratum2=list(panel=c(PanelOne=50, PanelTwo=50),
-#      seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
-#      CatyFour=25), over=75))
-#   frame <- read.shp("shapefile")
-#   samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
-#      src.frame="shapefile", in.shape="shapefile", att.frame=frame@data,
-#      stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
-#      shapefilename="sample")
-#   spbalance(samp, frame, sbc_ind = TRUE)
+#
+#' Calculate Spatial Balance Metrics for a Survey Design
+#'
+#' This function calculates spatial balance metrics for a survey design.    Two
+#' options for calculation of spatial balance metrics are available: (1) use
+#' proportions obtained from the intersection of Dirichlet tesselation polygons
+#' for the sample points with the frame object and (2) use proportions obtained
+#' from a rectangular grid superimposed on the sample points and the frame
+#' object.  In both cases the proportions are used to calculate the spatial
+#' balance metrics.  Two metrics are calculated: (1) the Pielou evenness measure
+#' and (2) the chi-square statistic.
+#'
+#' @param spsample Object of class SpatialDesign produced by either the
+#'   grts or irs functions that contains survey design information and
+#'   additional attribute (auxiliary) variables.
+#'
+#' @param spframe An sp package object of class SpatialPointsDataFrame,
+#'   SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the survey
+#'   design frame.  The default is NULL.
+#'
+#' @param tess_ind Logical variable indicating whether spatial balance metrics
+#'   are calculated using proportions obtained from the intersection of
+#'   Dirichlet tesselation polygons for the sample points with the frame object.
+#'   TRUE means calculate the metrics.  FALSE means do not calculate the
+#'   metrics. The default is TRUE.
+#'
+#' @param sbc_ind Logical variable indicating whether spatial balance metrics
+#'   are calculated using proportions obtained from a rectangular grid
+#'   superimposed on the sample points and the frame.  TRUE means calculate the
+#'   metrics. FALSE means do not calculate the metrics. The default is FALSE.
+#'
+#' @param nrows Number of rows (and columns) for the grid of cells. The
+#'   default is 5.
+#'
+#' @param dxdy Indicator for equal x-coordinate and y-coordinate grid cell
+#'   increments, where TRUE means the increments are equal and FALSE means the
+#'   increments are not equal.  The default is TRUE.
+#'
+#' @return  List containing the following components:
+#'   \describe{
+#'     \item{\code{tess}}{results for spatial balance metrics using
+#'       tesselation polygons}
+#'     \item{\code{sbc}}{results for spatial balance metrics using a
+#'       rectangular grid}
+#'   }
+#'   If either the tess_ind or sbc_ind arguments are set to FALSE, the
+#'   corresponding component in the list is set to NULL.  Otherwise, each
+#'   components of the list is a lists that contains the following components:
+#'   \describe{
+#'     \item{\code{J_subp}}{Pielou evenness measure}
+#'     \item{\code{chi_sq}}{Chi-square statistic}
+#'     \item{\code{extent}}{frame extent for each  Dirichlet tesselation
+#'       polygon or rectangular grid cell}
+#'     \item{\code{prop}}{frame proportion for each Dirichlet tesselation
+#'       polygon or rectangular grid cell}
+#'   }
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{deldir}}}{deldir package function that computes the
+#'       Delaunay triangulation and Dirichlet tesselation of a set of points}
+#'     \item{\code{\link{tile.list}}}{deldir package function that extracts
+#'       coordinates of the Dirichlet tesselation polygons from the object
+#'       produced by the deldir function}
+#'     \item{\code{\link{gIntersection}}}{rgeos package function that determines
+#'       the intersection between two sp package objects}
+#'     \item{\code{\link{LinesLength}}}{sp package function that determines
+#'       length of the line segemnts in a class Lines object}
+#'     \item{\code{\link{sbcframe}}}{function to calculate spatial balance grid
+#'       cell extent and  proportions for a sample frame}
+#'     \item{\code{\link{sbcsamp}}}{function to calculate spatial balance grid
+#'       cell extent and proportions for a survey design}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @examples
+#' \dontrun{
+#' design <- list(
+#'   Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
+#'   Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
+#'     caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
+#' sframe <- read.shp("shapefile")
+#' samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
+#'   src.frame="shapefile", in.shape="shapefile", att.frame=frame@data,
+#'   stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
+#'   shapefilename="sample")
+#' spbalance(samp, frame, sbc_ind = TRUE)
+#' }
+#'
+#' @export
 ################################################################################
+
+spbalance <- function(spsample, spframe = NULL, tess_ind = TRUE,
+   sbc_ind = FALSE, nrows = 5, dxdy = TRUE) {
 
 # Obtain the sample x-coordinates, y-coordinates, survey design weights,
 # multidensity category values, and  stratum names from the spsample object
@@ -187,7 +211,7 @@ if(sbc_ind) {
    sbc.frame <- sbcframe(spframe = spframe, nrows = nrows, dxdy = dxdy)
 
 # Calculate grid cell extent and proportion for the sample
-   sbc.sample <- sbcsamp(spsample, sbc.frame)      
+   sbc.sample <- sbcsamp(spsample, sbc.frame)
 
 # Calculate the spatial balance metrics
    prop_f <- sbc.frame$prop[sbc.frame$prop != 0]

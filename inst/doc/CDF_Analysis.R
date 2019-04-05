@@ -1,4 +1,5 @@
 ### R code from vignette source 'CDF_Analysis.Rnw'
+### Encoding: ISO8859-1
 
 ###################################################
 ### code chunk number 1: preliminaries

@@ -1,24 +1,41 @@
-simex <- function(z, val, sigma, var.sigma, cluster.ind, cluster) {
-
 ################################################################################
 # Function: simex
 # Programmer: Tom Kincaid
 # Date: December 2, 2002
 # Last Revised: February 18, 2004
-# Description:
-#   This function executes the extrapolation step of the simulation
-#   extrapolation deconvolution method (Stefanski and Bay, 1996).  The function 
-#   can accomodate single-stage and two-stage samples.
-#   Input:
-#      z = the response value for each site.
-#      val = set of values at which the CDF is estimated.
-#      sigma = measurement error variance.
-#      var.sigma = variance of the estimated measurement error variance.
-#   Output is a list containing the following matrices:
-#      g = values of the function g(.) evaluated at val for each value of z.
-#      dg = values of the derivative of the function g(.).
-#   Other Functions Required: None
+#
+#' Internal Function: Extrapolation for Simulation-Extrapolation Function
+#'
+#' This function executes the extrapolation step of the simulation extrapolation
+#' deconvolution method (Stefanski and Bay, 1996).  The function can accomodate
+#' single-stage and two-stage samples.
+#'
+#' @param z Vector of the response value for each site.
+#'
+#' @param val Vector of the set of values at which the CDF is estimated.
+#'
+#' @param sigma Measurement error variance.
+#'
+#' @param var.sigma Variance of the estimated measurement error variance.
+#'
+#' @param cluster.ind  Logical value that indicates whether the survey design
+#'   utilizes two stages.
+#'
+#' @param cluster Vector of the stage one sampling unit (primary sampling unit
+#'  or cluster) code for each site.
+#'
+#' @return Output is a list containing the following matrices:
+#'   \describe{
+#'     \item{g}{values of the function g(.) evaluated at val for each value of z}
+#'     \item{dg}{values of the derivative of the function g(.)}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+simex <- function(z, val, sigma, var.sigma, cluster.ind, cluster) {
 
 # Assign additional required values
 

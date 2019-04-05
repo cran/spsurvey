@@ -4,9 +4,9 @@ citEntry(
    entry="Manual",
    title="spsurvey: Spatial Survey Design and Analysis",
    author="Thomas M. Kincaid and Anthony R. Olsen",
-   year=2018,
-   note="R package version 3.4",
-   textVersion=paste("Kincaid, T. M. and Olsen, A. R. (2017).",
+   year=2019,
+   note="R package version 4.0.0",
+   textVersion=paste("Kincaid, T. M. and Olsen, A. R. (2019).",
                       "spsurvey: Spatial Survey Design and Analysis.",
-                      "R package version 3.4.")
+                      "R package version 4.0.0.")
 )

@@ -1,25 +1,36 @@
-localmean.weight <- function(x, y, prb, nbh=4, vincr=0.00001*abs(mean(y))) {
-
 ################################################################################
 # Function: localmean.weight
 # Programmers: Don Stevens and Tom Kincaid
 # Date: September 5, 2001
 # Last Revised: September 27, 2013
-# Description:
-#   This function calculates the index values of neighboring points and
-#   associated weights required by the local mean variance estimator.
-#   Input:
-#      x = x-coordinates for location of the sample points.
-#      y = y-coordinates for location of the sample points.
-#      prb = inclusion probabilities for the sample points.
-#      nbh = number of neighboring points to use in the calculations.
-#      vincr = the variance increment for correcting an La.svd error.  The
-#        default is 0.00001*abs(mean(y)).
-#   Output:
-#      An object in list format containing two elements: a matrix named ij 
-#      composed of the index values of neighboring points and a vector named gwt
-#      composed of weights.
+#
+#' Internal Function: Local Mean Variance Neighbors and Weights
+#'
+#' This function calculates the index values of neighboring points and
+#' associated weights required by the local mean variance estimator.
+#'
+#' @param x Vector of x-coordinates for location of the sample points.
+#'
+#' @param y Vector of y-coordinates for location of the sample points.
+#'
+#' @param prb Vector of inclusion probabilities for the sample points.
+#'
+#' @param nbh Number of neighboring points to use in the calculations.
+#'
+#' @param vincr The variance increment for correcting an La.svd error.  The
+#'   default is 0.00001*abs(mean(y)).
+#'
+#' @return List containing two elements: a matrix named ij composed of the index
+#'   values of neighboring points and a vector named gwt composed of weights.
+#'
+#' @author  Don Stevens \email{Kincaid.Tom@epa.gov}
+#'
+#' @seealso \code{\link{localmean.weight2}}
+#'
+#' @export
 ################################################################################
+
+localmean.weight <- function(x, y, prb, nbh = 4, vincr = 0.00001*abs(mean(y))) {
 
    n <- length(x)
 

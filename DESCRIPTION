@@ -1,6 +1,6 @@
 Package: spsurvey
-Version: 3.4
-Date: 2018-06-12
+Version: 4.0.0
+Date: 2019-04-04
 Title: Spatial Survey Design and Analysis
 Authors@R: c(
     person("Tom", "Kincaid", role=c("aut", "cre"),
@@ -12,17 +12,6 @@ Authors@R: c(
     person("Denis", "White",  role="ctb"),
     person("Richard", "Remington",  role="ctb")
     )
-Depends: R (>= 2.10), sp
-Imports: methods, deldir, foreign, graphics, grDevices, Hmisc, MASS,
-        rgeos, stats
-Description: This group of functions implements algorithms for design and
-    analysis of probability surveys.  The functions are tailored for Generalized
-    Random Tessellation Stratified survey designs.
-License: GPL (>= 2)
-SystemRequirements: little-endian processor required for some functions
-        (see README)
-NeedsCompilation: yes
-Packaged: 2018-06-12 20:17:29 UTC; tkincaid
 Author: Tom Kincaid [aut, cre],
   Tony Olsen [aut],
   Don Stevens [ctb],
@@ -30,5 +19,37 @@ Author: Tom Kincaid [aut, cre],
   Denis White [ctb],
   Richard Remington [ctb]
 Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
+Depends: R (>= 2.10), sp
+Suggests: knitr (>= 1.19)
+Description: These functions provide procedures for selecting sites for spatial
+    surveys using spatially balanced algorithms applied to discrete points,
+    linear networks, or polygons. The probability survey designs available
+    include independent random samples, stratified random samples, and unequal
+    probability random samples (categorical or probability proportional to
+    size).  Design-based estimation based on the results from surveys is
+    available for estimating totals, means, quantiles, CDFs, and linear models.
+    The analyses rely on package survey for most results.  Variance estimation
+    options include a local neighborhood variance estimator that is appropriate
+    for spatially-balanced survey designs.  A reference for the survey design
+    portion of the package is: D. L. Stevens, Jr. and A. R. Olsen (2004),
+    "Spatially-balanced sampling of natural resources.", Journal of the American
+    Statistical Association 99(465): 262-278, <DOI:10.1198/016214504000000250>.
+    Additional helpful references for this package are A. R. Olsen, T. M.
+    Kincaid, and Q. Payton (2012) and T. M. Kincaid and A. R. Olsen (2012), both
+    of which are chapters in the book "Design and Analysis of Long-Term
+    Ecological Monitoring Studies" (R. A. Gitzen, J. J. Millspaugh, A. B.
+    Cooper, and D. S. Licht (eds.), Cambridge University Press, New York,
+    <Online ISBN:9781139022422>).
+License: GPL (>= 3)
+Imports: crossdes, deldir, foreign, graphics, grDevices, Hmisc, MASS,
+        methods, rgeos, stats
+SystemRequirements: A little-endian processor is required for some
+        functions (see the README file).
+VignetteBuilder: knitr
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.1
+NeedsCompilation: yes
+Packaged: 2019-04-04 21:06:15 UTC; tkincaid
 Repository: CRAN
-Date/Publication: 2018-06-13 22:02:56 UTC
+Date/Publication: 2019-04-05 10:10:04 UTC

@@ -1,23 +1,31 @@
-localmean.cov <- function(zmat, weight.lst) {
-
 ################################################################################
 # Function: localmean.cov
 # Programmer: Tom Kincaid
 # Date: November 2, 2000
 # Last Revised: September 5, 2001
-# Description:
-#   This function calculates the variance-covariance matrix using the local mean
-#   estimator.
-#   Input:
-#      zmat = matrix of weighted response values or weighted residual values for
-#         the sample points.
-#      weight.lst = list from the local mean weight function containing two 
-#         elements: a matrix named ij composed of the index values of 
-#         neighboring points and a vector named gwt composed of weights.
-#   Output: 
-#      The local mean estimator of the variance-covariance matrix.
-#   Other Functions Required: None
+#
+#' Internal Function: Variance-Covariance Matrix Based on Local Mean Estimator
+#'
+#' This function calculates the variance-covariance matrix using the local mean
+#' estimator.
+#'
+#' @param zmat Matrix of weighted response values or weighted residual values
+#'   for the sample points.
+#'
+#' @param weight.lst List from the local mean weight function containing two
+#'   elements: a matrix named ij composed of the index values of neighboring
+#'   points and a vector named gwt composed of weights.
+#'
+#' @return The local mean estimator of the variance-covariance matrix.
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @export
 ################################################################################
+
+localmean.cov <- function(zmat, weight.lst) {
 
 # Calculate additional required values
 

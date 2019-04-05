@@ -1,22 +1,33 @@
-selectframe <- function(rord, xc, yc, dx, dy, pts) {
-
 ################################################################################
 # Function: selectframe
-# Purpose: Selects all of the points in the frame using the order of cells
-#    specified by rord
 # Programmer: Tom Kincaid
 # Date: February 28, 2006
-# Input:
-#   rord = the index value for all cells.
-#   xc = x-coordinates that define the cells.
-#   yc = y-coordinates that define the cells.
-#   dx = width of the cells along the x-axis.
-#   dy = width of the cells along the y-axis.
-#   pts = a data frame containing id values, x-coordinates, y-coordinates, and
-#      mdm values.
-# Output:
-#   The id value for all points in the frame.
+#
+#' Internal Function: Select All Points in Survey Frame
+#'
+#' Internal Function: Select All Points in Frame
+#'
+#' @param rord Vector of the index value for all cells.
+#'
+#' @param xc Vector of x-coordinates that define the cells.
+#'
+#' @param yc Vector of y-coordinates that define the cells.
+#'
+#' @param dx Width of the cells along the x-axis.
+#'
+#' @param dy Width of the cells along the y-axis.
+#'
+#' @param pts Data frame containing id values, x-coordinates, y-coordinates,
+#'   and mdm values.
+#'
+#' @return The id value for all points in the frame.
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+selectframe <- function(rord, xc, yc, dx, dy, pts) {
 
    id <- NULL
    for(cel in rord) {

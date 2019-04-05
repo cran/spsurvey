@@ -1,8 +1,89 @@
 ################################################################################
-# File: SpatialDesign-methods
-# Purpose: Define S3 and S4 methods for class SpatialDesign
+# File: SpatialDesign_methods
 # Programmer: Tom Kincaid
-# Date: June 5, 2015
+# Date: November 5, 2018
+#'
+#' Class SpatialDesign
+#'
+#' Define S3 and S4 methods for summary and plot for class \code{SpatialDesign}.
+#'
+#' @name SpatialDesign-method
+#'
+#' @rdname SpatialDesign-class
+#'
+#' @param object \code{SpatialDesign} object.
+#'
+#' @param x \code{SpatialDesign} object.
+#'
+#' @param y Missing - this argument is not used.
+#'
+#' @param ... Arguments passed through.
+#'
+#' @param auxvar Vector containing the names of variables in the data slot of
+#'   the \code{SpatialDesign} object that identify auxiliary variables to be
+#'   used to summarize the survey design or create plots of the survey design.
+#'    The default is NULL.
+#'
+#' @param spframe Object of class \code{SpatialPointsDataFrame},
+#'   \code{SpatialLinesDataFrame}, or \code{SpatialPolygonsDataFrame} that
+#'   contains the survey design frame.  The default is NULL.
+#'
+#' @param tess_ind a logical variable indicating whether spatial balance
+#'   metrics are calculated using proportions obtained from the intersection of
+#'   Dirichlet tesselation polygons for the sample points with the frame object.
+#'   TRUE means calculate the metrics.  FALSE means do not calculate the
+#'   metrics.  The default is TRUE.
+#'
+#' @param sbc_ind a logical variable indicating whether spatial balance metrics
+#'   are calculated using proportions obtained from a rectangular grid
+#'   superimposed on the sample points and the frame.  TRUE means calculate the
+#'   metrics. FALSE means do not calculate the metrics. The default is FALSE.
+#'
+#' @param nrows number of rows (and columns) for the grid of cells.  The default
+#'   is 5.
+#'
+#' @param dxdy indicator for equal x-coordinate and y-coordinate grid cell
+#'   increments, where TRUE means the increments are equal and FALSE means the
+#'   increments are not equal.  The default is TRUE.
+#'
+#' @param stratum name of the column from the data slot of the spframe object
+#'   that identifies stratum membership for each element in the frame.  If
+#'   stratum equals NULL, the design is unstratified, and a column named
+#'   "stratum" (with all its elements equal to the stratum name specified in
+#'   design) is added to the data slot of the spframe object.  The default is
+#'    NULL.
+#'
+#' @param mdcaty name of the column from the data slot of the spframe object
+#'   that identifies the unequal probability category for each element in the
+#'   frame.  The default is NULL.
+#'
+#' @param pdffile a character variable containing the name of the pdf file to
+#'   which output is written. If a value is not provided, output is written to
+#'   the graphics window.  The default is NULL.
+#'
+#' @param width width of the graphic region in inches.  The default is 8.
+#'
+#' @param height height of the graphic region in inches.  The default is 10.
+#'
+#' @section Extends:
+#' Class \code{"SpatialPointsDataFrame"}, directly.\cr\cr
+#' Class \code{"SpatialPoints"}, by class \code{"SpatialPointsDataFrame"}.\cr\cr
+#' Class \code{"Spatial"}, by class \code{"SpatialPoints"}.
+#'
+#' @return A summary or plot depending on the method called.
+################################################################################
+
+
+################################################################################
+# Create S3 Method for summary for Class SpatialDesign
+#
+#' @rdname SpatialDesign-class
+#'
+#' @aliases summary, SpatialDesign-method
+#'
+#' @method summary SpatialDesign
+#'
+#' @export
 ################################################################################
 
 summary.SpatialDesign <- function(object, ..., auxvar = NULL, spframe = NULL,
@@ -28,8 +109,31 @@ summary.SpatialDesign <- function(object, ..., auxvar = NULL, spframe = NULL,
 # Return the results list
 	invisible(list("design summary" = dsum, "spatial balance statistics" = spbal))
 }
+
+################################################################################
+# Create S4 Method for summary for Class SpatialDesign
+#
+#' @rdname SpatialDesign-class
+#'
+#' @aliases summary, SpatialDesign-method
+#'
+#' @export
+################################################################################
+
 setMethod("summary", signature(object = "SpatialDesign"),
 	summary.SpatialDesign)
+
+################################################################################
+# Create S3 Method for plot for Class SpatialDesign
+#
+#' @rdname SpatialDesign-class
+#'
+#' @aliases plot, SpatialDesign-method
+#'
+#' @method plot SpatialDesign
+#'
+#' @export
+################################################################################
 
 plot.SpatialDesign <- function(x, y, ..., spframe = NULL, stratum = NULL,
 	mdcaty = NULL, auxvar = NULL, pdffile = NULL, width = 8, height = 10) {
@@ -118,7 +222,7 @@ plot.SpatialDesign <- function(x, y, ..., spframe = NULL, stratum = NULL,
 
 #
 # This section handles finite survey designs
-# 
+#
 
 	if(class(spframe) == "SpatialPointsDataFrame") {
 
@@ -189,7 +293,7 @@ plot.SpatialDesign <- function(x, y, ..., spframe = NULL, stratum = NULL,
 
 #
 # This section handles linear and area survey designs
-# 
+#
 
 	} else {
 
@@ -265,5 +369,16 @@ plot.SpatialDesign <- function(x, y, ..., spframe = NULL, stratum = NULL,
 		graphics.off()
 
 }
+
+################################################################################
+# Create S4 Method for plot for Class SpatialDesign
+#
+#' @rdname SpatialDesign-class
+#'
+#' @aliases plot, SpatialDesign-method
+#'
+#' @export
+################################################################################
+
 setMethod("plot", signature(x = "SpatialDesign", y = "missing"),
 	plot.SpatialDesign)

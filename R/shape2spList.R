@@ -1,29 +1,43 @@
-shape2spList <- function (shape, shp.type, ID) {
-
 ################################################################################
 # Function: shape2spList
-# Purpose: Create an object of class Lines or class Polygons
 # Programmer: Tom Kincaid
 # Date: July 21, 2005
 # Last Revised: January 18, 2006
-# Description:
-#   This function creates an object of class Lines for a Polyline shapefile or
-#   class Polygons for a Polygon shapefile.
-# Arguments:
-#   shape = a single record from the .shp file of the shapefile.
-#   shp.type - the type of shapefile, which is either "arc" for a Polyline
-#      shapefile or "poly" for a Polygon shapefile.
-#   ID - the shape ID value, i.e., the shapefile record number.
-# Results:
-#   An object of class Lines for a Polyline shapefile or class Polygons for a
-#   Polygon shapefile - see documentation for the sp package for further
-#   details.
-# Other Functions Required:
-#   Line - sp package function to create an object of class Line
-#   Lines - sp package function to create an object of class Lines
-#   Polygon - sp package function to create an object of class Polygon
-#   Polygons - sp package function to create an object of class Polygons
+#
+#' Internal Function: Create Object of Class Lines or Class Polygons
+#'
+#' This function creates an object of class Lines for a Polyline shapefile or
+#' class Polygons for a Polygon shapefile.
+#'
+#' @param shape A single record from the .shp file of the shapefile.
+#'
+#' @param shp.type The type of shapefile, which is either "arc" for a Polyline
+#'   shapefile or "poly" for a Polygon shapefile.
+#'
+#' @param ID The shape ID value, i.e., the shapefile record number.
+#'
+#' @return Object of class Lines for a Polyline shapefile or class Polygons
+#'   for a Polygon shapefile - see documentation for the sp package for further
+#'   details.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{Line}}}{sp package function to create an object of
+#'       class Line}
+#'     \item{\code{\link{Lines}}}{sp package function to create an object of
+#'       class Lines}
+#'     \item{\code{\link{Polygon}}}{sp package function to create an object of
+#'       class Polygon}
+#'     \item{\code{\link{Polygons}}}{sp package function to create an object of
+#'       class Polygons}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+shape2spList <- function (shape, shp.type, ID) {
 
    nParts <- shape$nParts
    nVerts <- shape$nVerts

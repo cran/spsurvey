@@ -1,73 +1,113 @@
-input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
-   stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster,
-   cluster.levels, ncluster, wgt1, xcoord1, ycoord1, popsize, pcfactor.ind,
-   pcfsize, N.cluster, stage1size, support, swgt.ind, swgt, swgt1, vartype,
-   conf, cdfval=NULL, pctval=NULL, subpop=NULL) {
-
 ################################################################################
 # Function: input.check
 # Programmer: Tom Kincaid
 # Date: September 25, 2003
 # Last Revised: November 11, 2015
-# Description:
-#   This function checks input values for errors, consistency, and compatibility
-#   with analytical functions.
-#   Input:
-#      nresp = the number of response values.
-#      wgt = the final adjusted weights.
-#      sigma = measurement error variance.
-#      var.sigma = variance of the measurement error variance.
-#      xcoord = the x-coordinates for location.
-#      ycoord = the y-coordinates for location.
-#      stratum.ind = a logical value that indicates whether the sample is
-#         stratified, where TRUE = a stratified sample and FALSE = not a
-#         stratified sample.
-#      stratum = the stratum codes.
-#      stratum.levels = levels of the stratum variable.
-#      nstrata = the number of strata.
-#      cluster.ind = a logical value that indicates whether the sample is a two-
-#         stage sample, where TRUE = a two-stage sample and FALSE = not a two-
-#         stage sample.
-#      cluster = the stage one sampling unit codes.
-#      cluster.levels = factor levels of the stage one sampling unit codes.
-#      ncluster = the number of stage one sampling units in the sample.
-#      wgt1 = the final adjusted stage one weights.
-#      xcoord1 = the stage one x-coordinates for location.
-#      ycoord1 = the stage one y-coordinates for location.
-#      popsize = the known size of the resource.
-#      pcfactor.ind = a logical value that indicates whether the population
-#         correction factor is used during variance estimation, where TRUE = use
-#         the population correction factor and FALSE = do not use the factor.
-#         To employ the correction factor for a single-stage sample, values must
-#         be supplied for arguments pcfsize and support.  To employ the
-#         correction factor for a two-stage sample, values must be supplied for
-#         arguments N.cluster, stage1size, and support.
-#      pcfsize = size of the resource, which is required for calculation of
-#         finite and continuous population correction factors for a single-stage
-#         sample.  For a stratified sample this argument must be a vector
-#         containing a value for each stratum and must have the names attribute
-#         set to identify the stratum codes.
-#      N.cluster = the number of stage one sampling units in the resource.
-#      stage1size = the known size of the stage one sampling units.
-#      support = the support for each sampling unit.
-#      swgt.ind = a logical value that indicates whether the sample is a size-
-#         weighted sample, where TRUE = a size-weighted sample and FALSE = not a
-#         size-weighted sample.
-#      swgt = the size-weight for each site.
-#      swgt1 = the stage one size-weight for each site.
-#      vartype = the choice of variance estimator, where "Local" = local mean
-#         estimator and "SRS" = SRS estimator.
-#      conf = the confidence level.
-#      cdfval = the set of values at which the CDF is estimated.
-#      pctval = the set of values at which percentiles are estimated.
-#      subpop = a data frame describing sets of populations and subpopulations 
-#         for which estimates will be calculated.
-#   Output:
-#      A list consisting of popsize, pcfsize, N.cluster, and stage1size.
-#   Other Functions Required:
-#      vecprint - takes an input vector and outputs a character string with
-#         line breaks inserted
+#'
+#' Check Input Values for Analytical Functions
+#'
+#' This function checks input values for errors, consistency, and compatibility
+#' with analytical functions.
+#'
+#' @param nresp The number of response values.
+#'
+#' @param wgt Vector of the final adjusted weights.
+#'
+#' @param sigma Measurement error variance.
+#'
+#' @param var.sigma Variance of the measurement error variance.
+#'
+#' @param xcoord Vector of the x-coordinates for location.
+#'
+#' @param ycoord Vector of the y-coordinates for location.
+#'
+#' @param stratum.ind Logical value that indicates whether the sample is
+#'   stratified, where TRUE = a stratified sample and FALSE = not a stratified
+#'   sample.
+#'
+#' @param stratum Vector of the stratum codes.
+#'
+#' @param stratum.levels Levels of the stratum variable.
+#'
+#' @param nstrata Number of strata.
+#'
+#' @param cluster.ind Logical value that indicates whether the sample is a
+#'   two- stage sample, where TRUE = a two-stage sample and FALSE = not a two-
+#'   stage sample.
+#'
+#' @param cluster Vector of the stage one sampling unit codes.
+#'
+#' @param cluster.levels Factor levels of the stage one sampling unit codes.
+#'
+#' @param ncluster The number of stage one sampling units in the sample.
+#'
+#' @param wgt1 Vector of the final adjusted stage one weights.
+#'
+#' @param xcoord1 Vector of the stage one x-coordinates for location.
+#'
+#' @param ycoord1 Vector of the stage one y-coordinates for location.
+#'
+#' @param popsize Known size of the resource.
+#'
+#' @param pcfactor.ind Logical value that indicates whether the population
+#'   correction factor is used during variance estimation, where TRUE = use the
+#'   population correction factor and FALSE = do not use the factor. To employ
+#'   the correction factor for a single-stage sample, values must be supplied
+#'   for arguments pcfsize and support.  To employ the correction factor for a
+#'   two-stage sample, values must be supplied for arguments N.cluster,
+#'   stage1size, and support.
+#'
+#' @param pcfsize Size of the resource, which is required for calculation of
+#'   finite and continuous population correction factors for a single-stage
+#'   sample.  For a stratified sample this argument must be a vector containing
+#'   a value for each stratum and must have the names attribute set to identify
+#'   the stratum codes.
+#'
+#' @param N.cluster Number of stage one sampling units in the resource.
+#'
+#' @param stage1size Known size of the stage one sampling units.
+#'
+#' @param support Vector of the support for each sampling unit.
+#'
+#' @param swgt.ind Logical value that indicates whether the sample is a size-
+#'   weighted sample, where TRUE = a size-weighted sample and FALSE = not a
+#'   size-weighted sample.
+#'
+#' @param swgt Vector of  the size-weight for each site.
+#'
+#' @param swgt1 Vector of the stage one size-weight for each site.
+#'
+#' @param vartype  The choice of variance estimator, where "Local" = local mean
+#'   estimator and "SRS" = SRS estimator.
+#'
+#' @param conf The confidence level.
+#'
+#' @param cdfval Vector of the set of values at which the CDF is estimated.
+#'
+#' @param pctval Vector of the set of values at which percentiles are
+#'   estimated.
+#'
+#' @param subpop Data frame describing sets of populations and subpopulations
+#'   for which estimates will be calculated.
+#'
+#' @return A list consisting of popsize, pcfsize, N.cluster, and stage1size.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{vecprint}}}{takes an input vector and outputs a
+#'       character string with line breaks inserted}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+input.check <- function(nresp, wgt, sigma, var.sigma, xcoord, ycoord,
+   stratum.ind, stratum, stratum.levels, nstrata, cluster.ind, cluster,
+   cluster.levels, ncluster, wgt1, xcoord1, ycoord1, popsize, pcfactor.ind,
+   pcfsize, N.cluster, stage1size, support, swgt.ind, swgt, swgt1, vartype,
+   conf, cdfval=NULL, pctval=NULL, subpop=NULL) {
 
 # Check measurement error arguments
 
@@ -172,7 +212,7 @@ if(!is.null(popsize)) {
             stop("\nThe list of known size of the resource for each population must be named.")
          popnames <- names(subpop)[-1]
          temp <- match(popnames, names(popsize))
-         if(any(is.na(temp))) 
+         if(any(is.na(temp)))
             stop("\nThe names for the list of known size of the resource for each population must \nmatch the population names.")
          popsize <- popsize[temp]
          for(ipop in 1:npop) {
@@ -181,7 +221,7 @@ if(!is.null(popsize)) {
                if(is.null(names(popsize[[ipop]])))
                   stop(paste("\nThe list of known size of the resource for each subpopulation of \npopulation ", popnames[ipop], " must be named.", sep=""))
                temp <- match(subpopnames, names(popsize[[ipop]]))
-               if(any(is.na(temp))) 
+               if(any(is.na(temp)))
                   stop(paste("\nThe names for the list of known size of the resource for each subpopulation of \npopulation ", popnames[ipop], " must match the subpopulation codes.", sep=""))
                popsize[[ipop]] <- popsize[[ipop]][temp]
                for(isubpop in 1:length(subpopnames)) {
@@ -225,7 +265,7 @@ if(!is.null(popsize)) {
             stop("\nThe list of known size of the resource for each population must be named.")
          popnames <- names(subpop)[-1]
          temp <- match(popnames, names(popsize))
-         if(any(is.na(temp))) 
+         if(any(is.na(temp)))
             stop("\nThe names for the list of known size of the resource for each population must \nmatch the population names.")
          popsize <- popsize[temp]
          for(ipop in 1:npop) {
@@ -234,7 +274,7 @@ if(!is.null(popsize)) {
                if(is.null(names(popsize[[ipop]])))
                   stop(paste("\nThe list of known size of the resource for each subpopulation of \npopulation ", popnames[ipop], " must be named.", sep=""))
                temp <- match(subpopnames, names(popsize[[ipop]]))
-               if(any(is.na(temp))) 
+               if(any(is.na(temp)))
                   stop("\nThe names for the list of known size of the resource for each subpopulation of \npopulation ", popnames[ipop], " must match the subpopulation codes.")
                popsize[[ipop]] <- popsize[[ipop]][temp]
                for(isubpop in 1:length(subpopnames)) {

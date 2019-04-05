@@ -1,4 +1,5 @@
 ### R code from vignette source 'Area_Analysis.Rnw'
+### Encoding: ISO8859-1
 
 ###################################################
 ### code chunk number 1: preliminaries
@@ -64,7 +65,7 @@ sites <- data.frame(siteID=SC_estuaries$siteID,
 # Create the subpop data frame, which defines populations and subpopulations for
 # which estimates are desired
 subpop <- data.frame(siteID=SC_estuaries$siteID,
-                     All_Estuaries=rep("All Estuaries", nr), 
+                     All_Estuaries=rep("All Estuaries", nr),
 							       Estuary_Type=SC_estuaries$Stratum)
 
 

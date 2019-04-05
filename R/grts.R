@@ -1,159 +1,196 @@
-grts <- function(design, DesignID="Site", SiteBegin=1, type.frame="finite",
-   src.frame="shapefile", in.shape=NULL, sp.object=NULL, att.frame=NULL,
-   id=NULL, xcoord=NULL, ycoord=NULL, stratum=NULL, mdcaty=NULL, startlev=NULL,
-   maxlev=11, maxtry=1000, shift.grid=TRUE, do.sample=rep(TRUE, length(design)),
-   shapefile=TRUE, prjfilename=NULL, out.shape="sample") {
-
 ################################################################################
 # Function: grts
-# Purpose: Select a generalized random-tesselation stratified (GRTS) sample
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
 # Last Revised: August 18, 2016
-# Description:
-#   This function select a GRTS sample of a finite, linear, or area resource.
-#   Frame elements must be located in 1- or 2-dimensional coordinate system.
-#   Random selection may be generalized random tessellation stratified (GRTS),
-#   independent random sample (IRS), or systematic sample.  Sample may be
-#   equal probability or unequal probability (either categorical or proportional
-#   to auxiliary variable).  May designate panels of sites for surveys over
-#   time.
-# Arguments:
-#   design = named list of stratum design specifications, where each element of
-#     design is a list containing the design specifications for a stratum.  For
-#     an unstratified sample, design contains a single list.  If the sample is
-#     stratified, the names in design must occur among the strata names in the
-#     stratum column of the attributes data frame (att.frame).  If the sample is
-#     unstratified, the name of the single list in design is arbitrary.  Each
-#     list in design has four components:
-#       panel = named vector of sample sizes for each panel in the stratum
-#       seltype = the type of random selection, which must be one of following:
-#         "Equal" - equal probability selection, "Unequal" - unequal probability
-#         selection by the categories specified in caty.n and mdcaty, or
-#         "Continuous" - unequal probability selection proportional to auxiliary
-#         variable mdcaty
-#       caty.n = if seltype equals "Unequal", a named vector of sample sizes for
-#         each category specified by mdcaty, where sum of the sample sizes must
-#         equal sum of the panel sample sizes, and names must be a subset of
-#         values in mdcaty
-#       over = number of replacement sites ("oversample" sites) for the entire
-#         design, which is set equal to 0 if none are required
-#     Example design for a stratified sample: 
-#       design <- list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
-#         over=10), "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50),
-#         seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
-#         CatyFour=25), over=75))
-#     Example design for an unstratified sample: 
-#       design <- list(None=list(panel=c(Panel1=50, Panel2=100, Panel3=50),
-#         seltype="Unequal", caty.n=c("Caty 1"=50, "Caty 2"=25, "Caty 3"=25,
-#         "Caty 4"=25, "Caty 5"=75), over=100))
-#   DesignID = name for the design, which is used to create a site ID
-#      for each site.  The default is "Site".
-#   SiteBegin = number to use for first site in the design.  The default is 1.
-#   type.frame = the type of frame, which must be one of following: "finite",
-#     "linear", or "area".  The default is "finite".
-#   src.frame = source of the frame, which equals "shapefile" if the frame is to
-#     be read from a shapefile, "sp.object" if the frame is obtained from an sp
-#     package object, or "att.frame" if type.frame equals "finite" and the frame
-#     is included in att.frame.  The default is "shapefile".
-#   in.shape = name (without any extension) of the input shapefile.  If
-#     src.frame equal "shapefile" and in.shape equals NULL, then the shapefile
-#     or shapefiles in the working directory are used.  The default is NULL.
-#   sp.object = name of the sp package object when src.frame equals "sp.object".
-#     The default is NULL.
-#   att.frame = a data frame composed of attributes associated with elements in
-#     the frame, which must contain the columns used for stratum and mdcaty (if
-#     required).  If src.frame equals "shapefile" and att.frame equals NULL,
-#     then att.frame is created from the dbf file(s) in the working directory.
-#     If src.frame equals "sp.object" and att.frame equals NULL, then att.frame
-#     is created from the sp object.  If src.frame equals "att.frame", then
-#     att.frame must include columns that contain x-coordinates and
-#     y-coordinates for each element in the frame.  The default is NULL.
-#   id = a character string containing the name of the column from att.frame
-#     that identifies the ID value for each element in the frame.  If id equals
-#     NULL, a column named "id" that contains values from one through the number
-#     of rows in att.frame is added to att.frame.  The default is NULL.
-#   xcoord = a character string containing the name of the column from att.frame
-#     that identifies x-coordinates when src.frame equals "att.frame".  If
-#     xcoord equals NULL, then xcoord is given the value "x".  The default is
-#     NULL.
-#   ycoord = a character string containing the name of the column from att.frame
-#     that identifies y-coordinates when src.frame equals "att.frame".  If
-#     ycoord equals NULL, then ycoord is given the value "y".  The default is
-#     NULL.
-#   stratum = a character string containing the name of the column from
-#     att.frame that identifies stratum membership for each element in the
-#     frame.  If stratum equals NULL, the design is unstratified, and a column
-#     named "stratum" (with all of its elements equal to the stratum name
-#     specified in design) is added to att.frame.  The default is NULL.
-#   mdcaty = a character string containing the name of the column from att.frame
-#     that identifies the unequal probability category for each element in the
-#     frame.  The default is NULL.
-#   startlev = initial number of hierarchical levels to use for the GRTS grid,
-#     which must be less than or equal to maxlev (if maxlev is specified) and
-#     cannot be greater than 11.  The default is NULL.
-#   maxlev = maximum number of hierarchical levels to use for the GRTS grid,
-#     which cannot be greater than 11.  The default is 11.
-#   maxtry = maximum number of iterations for randomly generating a point within
-#     a grid cell to select a site when type.frame equals "area".  The default
-#     is 1000.
-#   shift.grid = option to randomly shift the hierarchical grid, where TRUE
-#     means shift the grid and FALSE means do not shift the grid, which is
-#     useful if one desires strict spatial stratification by hierarchical grid
-#     cells.  The default is TRUE.
-#   do.sample = named vector that provides the option controlling sample
-#     selection for each stratum, where TRUE means select a sample from a
-#     stratum and FALSE means return the sample frame for a stratum in reverse
-#     hierarchical order.  Note that FALSE can only be used when type.frame
-#     equals "points" and seltype equals "Equal".  Names for the vector must
-#     match the names in design.  If the vector is not named, then the names in
-#     design are used.  The default is TRUE for each stratum.
-#   shapefile = option to create a shapefile containing the survey design
-#     information,  where TRUE equals create a shapefile and FALSE equals do
-#     not create a shapefile.  The default is TRUE.
-#   prjfilename = name (without any extension) of the projection file for the
-#     input shapefile, which is used to name the projection file for the output
-#     shapefile.  The default is NULL.
-#   out.shape = name (without any extension) of the output shapefile containing
-#     the survey design information.  The default is "sample".
-# Results:
-#   An object of class SpatialDesign containing the survey design information
-#   and any additional attribute variables that were provided.  Optionally, a
-#   shapefile can be created that contains the survey design information.
-# Other Functions Required:
-#   sp2shape - converts an sp package object to a shapefile
-#   getRecordShapeSizes - C function to read the shp file of a line or polygon
-#     shapefile and return the length or area for each record in the shapefile
-#   grtsarea - select a GRTS sample of an area resource
-#   grtslin - select a GRTS sample of a linear resource
-#   grtspts - select a GRTS sample of a finite resource
-#   read.dbf - function to read the dbf file of a shapefile and return a 
-#     data frame containing contents of the file
-#   readShapeFilePts - C function to read the shp file of a point shapefile and
-#     return a data frame containing the x-coordinates and y-coordinates for
-#     elements in the frame
-#   SpatialPoints - sp package function to create an object of class
-#     SpatialPoints
-#   SpatialPointsDataFrame - sp package function to create an object of class
-#     SpatialPointsDataFrame
-#   writeShapeFilePoint - C function to create a shapefile containing the survey
-#     design information
-# Example:
-#   test.design <- list("Stratum 1"=list(panel=c(Panel=50), seltype="Equal",
-#      over=10), "Stratum 2"=list(panel=c("Panel One"=50, "Panel Two"=50),
-#      seltype="Unequal", caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25,
-#      CatyFour=25), over=75))
-#   test.attframe <- read.dbf("test.shapefile")
-#   test.sample <- grts(design=test.design, DesignID="Test.Site",
-#      type.frame="area", src.frame="shapefile", in.shape="test.shapefile",
-#      att.frame=test.attframe, stratum="test.stratum", mdcaty="test.mdcaty",
-#      shapefile=TRUE, out.shape="test.sample")
+#'
+#' Select a Generalized Random-Tesselation Stratified (GRTS) Sample
+#'
+#' This function select a GRTS sample of a finite, linear, or area resource.
+#' Frame elements must be located in 1- or 2-dimensional coordinate system.
+#' Random selection may be generalized random tessellation stratified (GRTS),
+#' independent random sample (IRS), or systematic sample.  Sample may be equal
+#' probability or unequal probability (either categorical or proportional to
+#' auxiliary variable).  May designate panels of sites for surveys over time.
+#'
+#' @param design Named list of stratum design specifications which are also
+#'   lists.  Stratum names must be subset of values in stratum argument.  Each
+#'   stratum list has four components:
+#'   \describe{
+#'     \item{panel}{named vector of sample sizes for each panel in stratum}
+#'     \item{seltype}{the type of random selection, which must be one of
+#'       following: "Equal" - equal probability selection, "Unequal" - unequal
+#'       probability selection by the categories specified in caty.n and mdcaty,
+#'       or "Continuous" - unequal probability selection proportional to
+#'       auxiliary variable mdcaty}
+#'     \item{caty.n}{if seltype equals "Unequal", a named vector of sample sizes
+#'       for each category specified by mdcaty, where sum of the sample sizes
+#'       must equal sum of the panel sample sizes, and names must be a subset of
+#'       values in mdcaty}
+#'     \item{over}{number of replacement sites ("oversample" sites) for the
+#'       entire design, which is set equal to 0 if none are required)}
+#'   }
+#'   Example design for a stratified sample:\cr
+#'     design=list(
+#'       Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
+#'       Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
+#'         caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25),
+#'         over=75))
+#'   Example design for an unstratified sample:\cr
+#'     design <- list(
+#'       None=list(panel=c(Panel1=50, Panel2=100, Panel3=50), seltype="Unequal",
+#'         caty.n=c("Caty 1"=50, "Caty 2"=25, "Caty 3"=25, "Caty 4"=25,
+#'         "Caty 5"=75), over=100))
+#'
+#' @param DesignID Name for the design, which is used to create a site ID for
+#'   each site.  The default is "Site".
+#'
+#' @param SiteBegin Number to use for first site in the design.  The default
+#'   is 1.
+#'
+#' @param type.frame The type of frame, which must be one of following:
+#'   "finite", "linear", or "area".  The default is "finite".
+#'
+#' @param src.frame Source of the frame, which equals "shapefile" if the frame
+#'   is to be read from a shapefile, "sp.object" if the frame is obtained from
+#'   an sp package object, or "att.frame" if type.frame equals "finite" and the
+#'   frame is included in att.frame.  The default is "shapefile".
+#'
+#' @param in.shape Name (without any extension) of the input shapefile.  If
+#'   src.frame equal "shapefile" and in.shape equals NULL, then the shapefile or
+#'   shapefiles in the working directory are used.  The default is NULL.
+#'
+#' @param sp.object Name of the sp package object when src.frame equals
+#'   "sp.object". The default is NULL.
+#'
+#' @param att.frame Data frame composed of attributes associated with elements
+#'   in the frame, which must contain the columns used for stratum and mdcaty
+#'   (if required).  If src.frame equals "shapefile" and att.frame equals NULL,
+#'   then att.frame is created from the dbf file(s) in the working directory. If
+#'   src.frame equals "sp.object" and att.frame equals NULL, then att.frame is
+#'   created from the sp object.  If src.frame equals "att.frame", then
+#'   att.frame must include columns that contain x-coordinates and y-coordinates
+#'   for each element in the frame.  The default is NULL.
+#'
+#' @param id Character string containing the name of the column from att.frame
+#'   that identifies the ID value for each element in the frame.  If id equals
+#'   NULL, a column named "id" that contains values from one through the number
+#'   of rows in att.frame is added to att.frame.  The default is NULL.
+#'
+#' @param xcoord Character string containing the name of the column from
+#'   att.frame that identifies x-coordinates when src.frame equals "att.frame".
+#'   If xcoord equals NULL, then xcoord is given the value "x".  The default is
+#'   NULL.
+#'
+#' @param ycoord Character string containing the name of the column from
+#'   att.frame that identifies y-coordinates when src.frame equals "att.frame".
+#'   If ycoord equals NULL, then ycoord is given the value "y".  The default is
+#'   NULL.
+#'
+#' @param stratum Character string containing the name of the column from
+#'   att.frame that identifies stratum membership for each element in the frame.
+#'   If stratum equals NULL, the design is unstratified, and a column named
+#'   "stratum" (with all of its elements equal to the stratum name specified in
+#'   design) is added to att.frame.  The default is NULL.
+#'
+#' @param mdcaty Character string containing the name of the column from
+#'   att.frame that identifies the unequal probability category for each element
+#'   in the frame.  The default is NULL.
+#'
+#' @param startlev Initial number of hierarchical levels to use for the GRTS
+#'   grid, which must be less than or equal to maxlev (if maxlev is specified)
+#'   and cannot be greater than 11.  The default is NULL.
+#'
+#' @param maxlev Maxmum number of hierarchical levels to use for the GRTS
+#'   grid, which cannot be greater than 11.  The default is 11.
+#'
+#' @param maxtry Maximum number of iterations for randomly generating a point
+#'   within a grid cell to select a site when type.frame equals "area".  The
+#'   default is 1000.
+#'
+#' @param shift.grid Option to randomly shift the hierarchical grid, where
+#'   TRUE means shift the grid and FALSE means do not shift the grid, which is
+#'   useful if one desires strict spatial stratification by hierarchical grid
+#'   cells.  The default is TRUE.
+#'
+#' @param do.sample Named vector that provides the option controlling sample
+#'   selection for each stratum, where TRUE means select a sample from a stratum
+#'   and FALSE means return the sample frame for a stratum in reverse
+#'   hierarchical order.  Note that FALSE can only be used when type.frame
+#'   equals "points" and seltype equals "Equal".  Names for the vector must
+#'   match the names in design.  If the vector is not named, then the names in
+#'   design are used.  The default is TRUE for each stratum.
+#'
+#' @param shapefile Option to create a shapefile containing the survey design
+#'   information,  where TRUE equals create a shapefile and FALSE equals do not
+#'   create a shapefile.  The default is TRUE.
+#'
+#' @param prjfilename Name (without any extension) of the projection file for
+#'   the input shapefile, which is used to name the projection file for the
+#'   output shapefile.  The default is NULL.
+#'
+#' @param out.shape Name (without any extension) of the output shapefile
+#'   containing the survey design information.  The default is "sample".
+#'
+#' @return  An object of class SpatialDesign containing the survey design
+#'   information and any additional attribute variables that were provided.
+#'   Optionally, a shapefile can be created that contains the survey design
+#'   information.
+#'
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{sp2shape}}}{converts an sp package object to a
+#'       shapefile}
+#'     \item{\code{getRecordShapeSizes}}{C function to read the shp file
+#'       of a line or polygon shapefile and return the length or area for each
+#'       record in the shapefile}
+#'     \item{\code{\link{grtsarea}}}{select a GRTS sample of an area resource}
+#'     \item{\code{\link{grtslin}}}{select a GRTS sample of a linear resource}
+#'     \item{\code{\link{grtspts}}}{select a GRTS sample of a finite resource}
+#'     \item{\code{\link{read.dbf}}}{function to read the dbf file of a
+#'       shapefile and return a data frame containing contents of the file}
+#'     \item{\code{readShapeFilePts}}{C function to read the shp file of
+#'       a point shapefile and return a data frame containing the x-coordinates
+#'       and y-coordinates for elements in the frame}
+#'     \item{\code{\link{SpatialPoints}}}{sp package function to create an
+#'       object of class SpatialPoints}
+#'     \item{\code{\link{SpatialPointsDataFrame}}}{sp package function to create
+#'       an object of class SpatialPointsDataFrame}
+#'     \item{\code{writeShapeFilePoint}}{C function to create a shapefile
+#'       containing the survey design information}
+#'   }
+#'
+#' @author Tom Kincaid  email{Kincaid.Tom@epa.gov}
+#'
+#' @keywords survey
+#'
+#' @examples
+#' \dontrun{
+#'   test.design <- list(
+#'     Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
+#'     Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
+#'       caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
+#'   test.attframe <- read.dbf("test.shapefile")
+#'   test.sample <- grts(design=test.design, DesignID="Test.Site",
+#'     type.frame="area", src.frame="shapefile", in.shape="test.shapefile",
+#'     att.frame=test.attframe, stratum="test.stratum", mdcaty="test.mdcaty",
+#'     shapefile=TRUE, out.shape="test.sample")
+#' }
+#'
+#' @export
 ################################################################################
+
+grts <- function(design, DesignID = "Site", SiteBegin = 1,
+   type.frame = "finite", src.frame = "shapefile", in.shape = NULL,
+   sp.object = NULL, att.frame = NULL, id = NULL, xcoord = NULL, ycoord = NULL,
+   stratum = NULL, mdcaty = NULL, startlev = NULL, maxlev = 11, maxtry = 1000,
+   shift.grid = TRUE, do.sample = rep(TRUE, length(design)), shapefile = TRUE,
+   prjfilename = NULL, out.shape = "sample") {
 
 # Ensure that the processor is little-endian
 
-if(.Platform$endian == "big") 
+if(.Platform$endian == "big")
    stop("\nA little-endian processor is required for the grts function.")
 
 # Ensure that a design list is provided
@@ -267,7 +304,7 @@ if(!is.factor(att.frame[,stratum]))
 
 # If seltype is not "Equal" for every stratum, then do the following: (1) ensure
 # that mdcaty is not NULL and (2) ensure that the name provided for mdcaty
-# identifies a column in the attributes data frame 
+# identifies a column in the attributes data frame
 
 seltype.ind <- FALSE
 for(s in strata.names) {
@@ -382,7 +419,7 @@ if(type.frame == "finite") {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
 
-# If seltype is not "Equal", ensure that mdcaty contains valid values 
+# If seltype is not "Equal", ensure that mdcaty contains valid values
 
       if(design[[s]]$seltype == "Unequal") {
          if(any(is.na(sframe$mdcaty)))
@@ -454,7 +491,7 @@ if(type.frame == "finite") {
          } else {
             over.n <- design[[s]]$over * design[[s]]$caty.n /
                sum(design[[s]]$caty.n)
-            if(any(over.n != floor(over.n))) 
+            if(any(over.n != floor(over.n)))
                warning(paste("\nOversample size is not proportional to category sample sizes for stratum\n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
          }
@@ -462,9 +499,9 @@ if(type.frame == "finite") {
 
 # Calculate mdm - inclusion probabilities
 
-      if(design[[s]]$seltype == "Equal") 
+      if(design[[s]]$seltype == "Equal")
          	sframe$mdm <- mdmpts(sframe$mdcaty, c(Equal=n.desired))
-      else if(design[[s]]$seltype == "Unequal") 
+      else if(design[[s]]$seltype == "Unequal")
          sframe$mdm <- mdmpts(sframe$mdcaty, n.desired)
       else
          sframe$mdm <- n.desired * sframe$mdcaty / sum(sframe$mdcaty)
@@ -603,7 +640,7 @@ if(type.frame == "finite") {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
 
-# If seltype is not "Equal", ensure that mdcaty contains valid values 
+# If seltype is not "Equal", ensure that mdcaty contains valid values
 
       if(design[[s]]$seltype == "Unequal") {
          if(any(is.na(sframe$mdcaty)))
@@ -675,7 +712,7 @@ if(type.frame == "finite") {
          } else {
             over.n <- design[[s]]$over * design[[s]]$caty.n /
                sum(design[[s]]$caty.n)
-            if(any(over.n != floor(over.n))) 
+            if(any(over.n != floor(over.n)))
                warning(paste("\nOversample size is not proportional to category sample sizes for stratum\n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
          }
@@ -787,7 +824,7 @@ if(type.frame == "finite") {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
 
-# If seltype is not "Equal", ensure that mdcaty contains valid values 
+# If seltype is not "Equal", ensure that mdcaty contains valid values
 
       if(design[[s]]$seltype == "Unequal") {
          if(any(is.na(sframe$mdcaty)))
@@ -859,7 +896,7 @@ if(type.frame == "finite") {
          } else {
             over.n <- design[[s]]$over * design[[s]]$caty.n /
                sum(design[[s]]$caty.n)
-            if(any(over.n != floor(over.n))) 
+            if(any(over.n != floor(over.n)))
                warning(paste("\nOversample size is not proportional to category sample sizes for stratum\n\"", s, "\".\n", sep=""))
             n.desired <- design[[s]]$caty.n + ceiling(over.n)
          }
@@ -867,9 +904,9 @@ if(type.frame == "finite") {
 
 # Calculate mdm - inclusion probabilities
 
-      if(design[[s]]$seltype == "Equal") 
+      if(design[[s]]$seltype == "Equal")
          sframe$mdm <- mdmarea(sframe$area, sframe$mdcaty, c(Equal=n.desired))
-      else if(design[[s]]$seltype == "Unequal") 
+      else if(design[[s]]$seltype == "Unequal")
          sframe$mdm <- mdmarea(sframe$area, sframe$mdcaty, n.desired)
       else
          sframe$mdm <- n.desired * sframe$mdcaty /

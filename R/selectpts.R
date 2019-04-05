@@ -1,23 +1,36 @@
-selectpts <- function(rdx, xc, yc, dx, dy, pts) {
-
 ################################################################################
 # Function: selectpts
-# Purpose: Selects a sample of size one or larger from a set of cells based on
-#   inclusion probabilities.
 # Programmers: Tony Olsen, Tom Kincaid
 # Date: October 27, 2004
 # Last Revised: March 9, 2005
-# Input:
-#   rdx = the index value for selected cells.
-#   xc = x-coordinates that define the cells.
-#   yc = y-coordinates that define the cells.
-#   dx = width of the cells along the x-axis.
-#   dy = width of the cells along the y-axis.
-#   pts = a data frame containing id values, x-coordinates, y-coordinates, and
-#      mdm values.
-# Output:
-#   The id value for the sample points.
+#
+#' Internal Function: Select Probability Sample from a Set of Cells
+#'
+#' Selects a sample of size one or larger from a set of cells based on inclusion
+#' probabilities.
+#'
+#' @param rdx Vector of the index value for selected cells.
+#'
+#' @param xc Vector of x-coordinates that define the cells.
+#'
+#' @param yc Vector of y-coordinates that define the cells.
+#'
+#' @param dx Width of the cells along the x-axis.
+#'
+#' @param dy Width of the cells along the y-axis.
+#'
+#' @param pts Data frame containing id values, x-coordinates, y-coordinates,
+#'   and mdm values.
+#'
+#' @return The id value for the sample points.
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'         Tony Olsen \email{olsen.tony@epa.gov}
+#'
+#' @export
 ################################################################################
+
+selectpts <- function(rdx, xc, yc, dx, dy, pts) {
 
    id <- NULL
    for(cel in unique(rdx)) {

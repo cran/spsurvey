@@ -1,22 +1,37 @@
-isotonic <- function(y, minval, maxval) {
-
 ################################################################################
 # Function: isotonic
 # Programmer: Tom Kincaid
 # Date: August 15, 2001
-# Description:
-#   This function performs isotonic regression of an input set of values so that
-#   the output set of values is a nondecreasing sequence.  The output set of
-#   values is truncated to the range: [minval, maxval]. 
-#   Input:
-#      y = the set of values on which to perform isotonic regression.
-#      minval = the minimum value for the output set of values.
-#      maxval = the maximum value for the output set of values.
-#   Output is the revised set of values
-#   Other Functions Required:
-#      sorted - determine whether a set of values is a nondecreasing
-#         sequence
+#
+#' Internal Function: Isotonic Regression
+#'
+#' This function performs isotonic regression of an input set of values so that
+#' the output set of values is a nondecreasing sequence.  The output set of
+#' values is truncated to the range: [minval, maxval].
+#'
+#' @param y Vector of the set of values on which to perform isotonic
+#'   regression.
+#'
+#' @param minval Minimum value for the output set of values.
+#'
+#' @param maxval Maximum value for the output set of values.
+#'
+#' @return The revised set of input values
+#'
+#'   Other Functions Required:
+#'      sorted - determine whether a set of values is a nondecreasing sequence
+#' @section Other Functions Required:
+#'   \describe{
+#'     \item{\code{\link{sorted}}}{determines whether a set of values is a
+#'       nondecreasing sequence}
+#'   }
+#'
+#' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'
+#' @export
 ################################################################################
+
+isotonic <- function(y, minval, maxval) {
 
 # Calculate additional required values
 

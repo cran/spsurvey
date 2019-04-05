@@ -1,6 +1,33 @@
 \name{NEWS}
 \title{News for Package \pkg{spsurvey}}
 
+\section{CHANGES IN spsurvey VERSION 4.0.0 (Released 2019-04-04)}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Necessary changes were enacted so that the package can be built
+        within RStudio, e.g., roxygen comments were added to R source files.
+
+      \item Created functions that create panel designs and that compute and
+        plot power for panel designs given a linear trend.  Function
+        \code{revisit_dsgn} creates a panel revisit design.  Function
+        \code{revisit_bibd} creates a balanced incomplete block panel revisit
+        design.  Function \code{revisit_rand} creates a revisit design with
+        random assignment to panels and time periods.  Function
+        \code{panel_summary} summarizes characteristics of a revisit panel
+        design.  Function \code{power.dsgn} calculates power for multiple panel
+        designs.  Function \code{cov.panel.dsgn} creates the covariance matrix
+        for a panel design.  Function \code{plot.powerpaneldesign} plots power
+        curves for panel designs.  
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item Modified C function \code{readDbfFile} to avoid PROTECT errors.
+    }
+  }
+}
+
 \section{CHANGES IN spsurvey VERSION 3.4 (Released 2018-06-12)}{
   \subsection{NEW FEATURES}{
     \itemize{
