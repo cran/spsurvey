@@ -27,20 +27,20 @@
 #' continuous data, estimation of the deconvoluted CDF and estimation of
 #' percentiles using the deconvoluted CDF are available.
 #'
-# Register spsurvey as a dynamic library
-#' @useDynLib spsurvey, .registration = TRUE
-#'
 # Import all packages listed as Depends or Imports
-#' @import sp
 #' @import methods
+#' @import sf
 #' @importFrom crossdes find.BIB
 #' @importFrom deldir deldir tile.list
 #' @importFrom foreign read.ssd read.xport
-#' @importFrom graphics axis box legend lines mtext par points text title
+#' @importFrom graphics axis box legend lines mtext par plot points text title
 #' @importFrom grDevices graphics.off pdf rainbow
 #' @importFrom Hmisc describe
 #' @importFrom MASS ginv
+#' @importFrom parallel clusterEvalQ clusterExport detectCores getDefaultCluster
+#'   makeCluster parLapply setDefaultCluster stopCluster
 #' @importFrom rgeos gIntersection
+#' @importFrom sp SpatialPoints SpatialPointsDataFrame
 #' @importFrom stats addmargins dist dnorm ftable model.frame optimize pchisq pf
 #'   pnorm qnorm rnorm runif var
 #'

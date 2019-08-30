@@ -4,7 +4,7 @@
 \name{NLA_2007}
 \alias{NLA_2007}
 \title{Western Mountains Ecoregion Lakes}
-\format{A data frame with 236 rows and 15 variables:
+\format{A data frame with 236 rows and 15 attributes:
 \describe{
   \item{siteID}{site ID value.}
   \item{xcoord}{Albers projection x-coordinate.}

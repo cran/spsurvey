@@ -1,268 +1,134 @@
-### R code from vignette source 'Area_Design.Rnw'
-### Encoding: ISO8859-1
+## ----setup, include = FALSE----------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 
-###################################################
-### code chunk number 1: processor
-###################################################
-# Ensure that the processor is little-endian
-
-if(.Platform$endian == "big") 
-   stop("\nA little-endian processor is required for this vignette.")
-
-
-
-###################################################
-### code chunk number 2: preliminaries
-###################################################
-# Load the spsurvey package
+## ----load-spsurvey-------------------------------------------------------
 library(spsurvey)
 
-
-
-###################################################
-### code chunk number 3: createshape
-###################################################
-# Load the sp object in the data directory
+## ----UT-ecoregions-------------------------------------------------------
 data(UT_ecoregions)
 
-# Create a shapefile
-sp2shape(sp.obj=UT_ecoregions, shpfilename="UT_ecoregions")
+## ----head-ecoregions-----------------------------------------------------
+head(UT_ecoregions)
 
-
-
-###################################################
-### code chunk number 4: att
-###################################################
-# Read the attribute table from the shapefile
-att <- read.dbf("UT_ecoregions")
-
-
-
-###################################################
-### code chunk number 5: att
-###################################################
-# Display the attribute data frame
-att
-
-
-
-###################################################
-### code chunk number 6: att
-###################################################
-# Summarize frame area by ecoregion
-temp <- tapply(att$Area_ha, att$Level3_Nam, sum)
+## ----summarize-ecoregions------------------------------------------------
+temp <- with(UT_ecoregions, tapply(Area_ha, Level3_Nam, sum))
 temp <- round(addmargins(temp), 0)
 temp
 
-
-
-###################################################
-### code chunk number 7: Equalsites
-###################################################
-# Call the set.seed function so that the survey designs can be replicate
+## ----setseed-------------------------------------------------------------
 set.seed(4447864)
 
+## ----equaldesign---------------------------------------------------------
+Equaldsgn <- list(None=list(panel=c(PanelOne=50), seltype="Equal"))
 
-
-###################################################
-### code chunk number 8: Equalsites
-###################################################
-# Create the design list
-Equaldsgn <- list(None=list(panel=c(PanelOne=115), seltype="Equal"))
-
-
-
-###################################################
-### code chunk number 9: Equalsites
-###################################################
-# Select the sample
+## ----select_equalsites---------------------------------------------------
 Equalsites <- grts(design=Equaldsgn,
                    DesignID="EQUAL",
                    type.frame="area",
-                   src.frame="shapefile",
-                   in.shape="UT_ecoregions", 
-                   att.frame=att,
+                   src.frame="sf.object",
+                   sf.object=UT_ecoregions,
                    shapefile=FALSE)
 
+## ----head_design---------------------------------------------------------
+head(Equalsites)
 
-
-###################################################
-### code chunk number 10: Equalsites
-###################################################
-# Print the initial six lines of the survey design
-head(Equalsites@data)
-
-
-
-###################################################
-### code chunk number 11: Equalsites
-###################################################
-# Print the survey design summary
+## ----surveydesign_summary------------------------------------------------
 summary(Equalsites)
 
+## ----write_design--------------------------------------------------------
+st_write(UT_ecoregions, "UT_ecoregions.shp", quiet = TRUE, delete_dsn = TRUE)
 
-
-###################################################
-### code chunk number 12: Unequalsites
-###################################################
-# Create the design list
-Unequaldsgn <- list(None=list(panel=c(PanelOne=115),
+## ----design_list---------------------------------------------------------
+Unequaldsgn <- list(None=list(panel=c(PanelOne=50),
                               seltype="Unequal",
-                              caty.n=c("Central Basin and Range"=25,
-                                       "Colorado Plateaus"=25,
-                                       "Mojave Basin and Range"=10,
-                                       "Northern Basin and Range"=10,
-                                       "Southern Rockies"=10,
-                                       "Wasatch and Uinta Mountains"=25,
-                                       "Wyoming Basin"=10)))
+                              caty.n=c("Central Basin and Range"=10,
+                                       "Colorado Plateaus"=10,
+                                       "Mojave Basin and Range"=5,
+                                       "Northern Basin and Range"=5,
+                                       "Southern Rockies"=5,
+                                       "Wasatch and Uinta Mountains"=10,
+                                       "Wyoming Basin"=5)))
 
-
-
-###################################################
-### code chunk number 13: Unequalsites
-###################################################
-# Select the sample
+## ----select_unequalsites-------------------------------------------------
 Unequalsites <- grts(design=Unequaldsgn,
                      DesignID="UNEQUAL",
                      type.frame="area",
                      src.frame="shapefile",
-                     in.shape="UT_ecoregions", 
-                     att.frame=att,
+                     in.shape="UT_ecoregions.shp",
                      mdcaty="Level3_Nam",									
                      shapefile=FALSE)
 
+## ----head_unequalsites---------------------------------------------------
+head(Unequalsites)
 
-
-###################################################
-### code chunk number 14: Unequalsites
-###################################################
-# Print the initial six lines of the survey design
-head(Unequalsites@data)
-
-
-
-###################################################
-### code chunk number 15: Unequalsites
-###################################################
-# Print the survey design summary
+## ----summary_unequalsites------------------------------------------------
 summary(Unequalsites)
 
+## ----create_spobject-----------------------------------------------------
+UT_ecoregions_sp <- as_Spatial(UT_ecoregions)
 
-
-###################################################
-### code chunk number 16: Stratsites
-###################################################
-# Read the shapefile
-shp <- read.shape("UT_ecoregions")
-
-
-
-###################################################
-### code chunk number 17: Stratsites
-###################################################
-# Create the design list
-Stratdsgn <- list("Central Basin and Range"=list(panel=c(PanelOne=25),
+## ----create_designlist---------------------------------------------------
+Stratdsgn <- list("Central Basin and Range"=list(panel=c(PanelOne=10),
                                                  seltype="Equal"),
-                  "Colorado Plateaus"=list(panel=c(PanelOne=25),
+                  "Colorado Plateaus"=list(panel=c(PanelOne=10),
                                            seltype="Equal"),
-                  "Mojave Basin and Range"=list(panel=c(PanelOne=10),
+                  "Mojave Basin and Range"=list(panel=c(PanelOne=5),
                                                 seltype="Equal"),
-                  "Northern Basin and Range"=list(panel=c(PanelOne=10),
+                  "Northern Basin and Range"=list(panel=c(PanelOne=5),
                                                   seltype="Equal"),
-                  "Southern Rockies"=list(panel=c(PanelOne=10),
+                  "Southern Rockies"=list(panel=c(PanelOne=5),
                                           seltype="Equal"),
-                  "Wasatch and Uinta Mountains"=list(panel=c(PanelOne=25),
+                  "Wasatch and Uinta Mountains"=list(panel=c(PanelOne=10),
                                                      seltype="Equal"),
-                  "Wyoming Basin"=list(panel=c(PanelOne=10),
+                  "Wyoming Basin"=list(panel=c(PanelOne=5),
                                        seltype="Equal"))
 
-
-
-###################################################
-### code chunk number 18: Stratsites
-###################################################
-# Select the sample
+## ----select_strat_sample-------------------------------------------------
 Stratsites <- grts(design=Stratdsgn,
                    DesignID="STRATIFIED",
                    type.frame="area",
                    src.frame="sp.object",
-                   sp.object=shp,
-                   att.frame=att,
+                   sp.object=UT_ecoregions_sp,
                    stratum="Level3_Nam",									
                    shapefile=FALSE)
 
+## ----head_stratsites-----------------------------------------------------
+head(Stratsites)
 
-
-###################################################
-### code chunk number 19: Stratsites
-###################################################
-# Print the initial six lines of the survey design
-head(Stratsites@data)
-
-
-
-###################################################
-### code chunk number 20: Stratsites
-###################################################
-# Print the survey design summary
+## ----stratsites_summary--------------------------------------------------
 summary(Stratsites)
 
-
-
-###################################################
-### code chunk number 21: Panelsites
-###################################################
-# Create the design list
-Paneldsgn <- list(None=list(panel=c(Year1=50, Year2=50, Year3=50,
-                                    Year4=50, Year5=50),
+## ----create_paneldesign--------------------------------------------------
+Paneldsgn <- list(None=list(panel=c(Year1=10, Year2=10, Year3=10,
+                                    Year4=10, Year5=10),
                             seltype="Unequal",
-                            caty.n=c("Central Basin and Range"=64,
-                                     "Colorado Plateaus"=63,
-                                     "Mojave Basin and Range"=15,
-                                     "Northern Basin and Range"=15,
-                                     "Southern Rockies"=15,
-                                     "Wasatch and Uinta Mountains"=63,
-                                     "Wyoming Basin"=15),
-                            over=100))
+                            caty.n=c("Central Basin and Range"=10,
+                                     "Colorado Plateaus"=10,
+                                     "Mojave Basin and Range"=5,
+                                     "Northern Basin and Range"=5,
+                                     "Southern Rockies"=5,
+                                     "Wasatch and Uinta Mountains"=10,
+                                     "Wyoming Basin"=5),
+                            over=5))
 
-
-
-###################################################
-### code chunk number 22: Panelsites
-###################################################
-# Select the sample
+## ----select_panelsites---------------------------------------------------
 Panelsites <- grts(design=Paneldsgn,
                    DesignID="UNEQUAL",
                    type.frame="area",
-                   src.frame="shapefile",
-                   in.shape="UT_ecoregions", 
-                   att.frame=att,
+                   src.frame="sf.object",
+                   sf.object=UT_ecoregions,
                    mdcaty="Level3_Nam",									
                    shapefile=FALSE)
 
+## ----warnings------------------------------------------------------------
+warnings()
 
+## ----head_panelsites-----------------------------------------------------
+head(Panelsites)
 
-###################################################
-### code chunk number 23: Panelsites (eval = FALSE)
-###################################################
-## # Print the warning message
-## warnings()
-## 
-
-
-###################################################
-### code chunk number 24: Panelsites
-###################################################
-# Print the initial six lines of the survey design
-head(Panelsites@data)
-
-
-
-###################################################
-### code chunk number 25: Panelsites
-###################################################
-# Print the survey design summary
+## ----summary_panelsites--------------------------------------------------
 summary(Panelsites)
-
-
 

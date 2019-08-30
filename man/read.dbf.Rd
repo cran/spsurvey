@@ -4,31 +4,20 @@
 \alias{read.dbf}
 \title{Read the dbf File of an ESRI Shapefile}
 \usage{
-read.dbf(filename = NULL)
+read.dbf(filename)
 }
 \arguments{
-\item{filename}{Name of the dbf file without any extension.  If filename
-equals a dbf file name, then that dbf file is read.  If filename equals
-NULL, then all of the dbf files in the working directory are read.  The
-default is NULL.}
+\item{filename}{Character string containing the name of the shapefile.}
 }
 \value{
-Data frame composed of either the contents of the single dbf file,
-  when filename is provided, or the contents of the dbf file(s) in the
-  working directory, when filename is NULL.
+Data frame containing contents of the dbf file.
 }
 \description{
-This function reads either a single dbf file or multiple dbf files.  For
-multiple dbf files, all of the dbf files must have the same variable names.
+This function reads the dbf file of an ESRI shapefile and creates a data
+  frame.
 }
-\section{Other Functions Required}{
-
-  \describe{
-    \item{\code{readDbfFile}}{C function to read a single dbf file or
-      multiple dbf files}
-  }
-}
-
 \author{
 Tom Kincaid \email{Kincaid.Tom@epa.gov}
+
+Marc Weber  \email{Weber.Marc@epa.gov}
 }

@@ -7,7 +7,7 @@
 irspts(ptsframe, samplesize = 100, SiteBegin = 1)
 }
 \arguments{
-\item{ptsframe}{Data frame containing id, x, y, mdcaty, and mdm.}
+\item{ptsframe}{The sf object containing attributes: id, mdcaty, and mdm.}
 
 \item{samplesize}{Number of points to select in the sample.  The default is
 100.}
@@ -15,8 +15,8 @@ irspts(ptsframe, samplesize = 100, SiteBegin = 1)
 \item{SiteBegin}{First number to start siteID numbering.  The default is 1.}
 }
 \value{
-Data frame of sample points containing: siteID, id, x, y, mdcaty,
-  and weight.
+An sf object of sample points containing attributes: siteID, id,
+  mdcaty, and wgt.
 }
 \description{
 This function selects an IRS of a finite resource (discrete points).

@@ -83,6 +83,7 @@ Type, and indicator.  Output from the function is placed in a PDF file.
 }
 
 \examples{
+\dontrun{
 mysiteID <- paste("Site", 1:100, sep="")
 mysites <- data.frame(siteID=mysiteID, Active=rep(TRUE, 100))
 mysubpop <- data.frame(
@@ -104,6 +105,7 @@ mypopsize <- list(
 myanalysis <- cont.analysis(sites=mysites, subpop=mysubpop, design=mydesign,
      data.cont=mydata.cont, popsize=mypopsize)
 cont.cdfplot("myanalysis.pdf", myanalysis$CDF, ylbl.r="Stream Length (km)")
+}
 
 }
 \author{
@@ -111,4 +113,4 @@ Tony Olsen \email{Olsen.Tony@epa.gov}\cr
  Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }
 \keyword{plot}
-\keyword{survey,}
+\keyword{survey}

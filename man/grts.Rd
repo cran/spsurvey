@@ -5,12 +5,12 @@
 \title{Select a Generalized Random-Tesselation Stratified (GRTS) Sample}
 \usage{
 grts(design, DesignID = "Site", SiteBegin = 1, type.frame = "finite",
-  src.frame = "shapefile", in.shape = NULL, sp.object = NULL,
-  att.frame = NULL, id = NULL, xcoord = NULL, ycoord = NULL,
-  stratum = NULL, mdcaty = NULL, startlev = NULL, maxlev = 11,
-  maxtry = 1000, shift.grid = TRUE, do.sample = rep(TRUE,
-  length(design)), shapefile = TRUE, prjfilename = NULL,
-  out.shape = "sample")
+  src.frame = "shapefile", in.shape = NULL, sf.object = NULL,
+  sp.object = NULL, att.frame = NULL, id = NULL, xcoord = NULL,
+  ycoord = NULL, stratum = NULL, mdcaty = NULL, startlev = NULL,
+  maxlev = 11, maxtry = NULL, shift.grid = TRUE,
+  do.sample = rep(TRUE, length(design)), shapefile = TRUE,
+  prjfilename = NULL, out.shape = "sample.shp")
 }
 \arguments{
 \item{design}{Named list of stratum design specifications which are also
@@ -51,14 +51,19 @@ is 1.}
 \item{type.frame}{The type of frame, which must be one of following:
 "finite", "linear", or "area".  The default is "finite".}
 
-\item{src.frame}{Source of the frame, which equals "shapefile" if the frame
-is to be read from a shapefile, "sp.object" if the frame is obtained from
-an sp package object, or "att.frame" if type.frame equals "finite" and the
+\item{src.frame}{Source of the frame, which equals "sf.object" if the frame
+is contained in an sf package object, "shapefile" if the frame is to be
+read from a shapefile, "sp.object" if the frame is obtained from an sp
+package object, or "att.frame" if type.frame equals "finite" and the
 frame is included in att.frame.  The default is "shapefile".}
 
-\item{in.shape}{Name (without any extension) of the input shapefile.  If
-src.frame equal "shapefile" and in.shape equals NULL, then the shapefile or
-shapefiles in the working directory are used.  The default is NULL.}
+\item{in.shape}{Name of a shapefile containing the frame, which is required
+when src.frame equals "shapefile".  The shapefile name should include the
+".shp" extension.  If the name does not include that extension, it will be
+added.  The default is NULL.}
+
+\item{sf.object}{An sf package object containing the frame, which is required
+when src.frame equals "sf.object".  The default is NULL.}
 
 \item{sp.object}{Name of the sp package object when src.frame equals
 "sp.object". The default is NULL.}
@@ -72,10 +77,7 @@ created from the sp object.  If src.frame equals "att.frame", then
 att.frame must include columns that contain x-coordinates and y-coordinates
 for each element in the frame.  The default is NULL.}
 
-\item{id}{Character string containing the name of the column from att.frame
-that identifies the ID value for each element in the frame.  If id equals
-NULL, a column named "id" that contains values from one through the number
-of rows in att.frame is added to att.frame.  The default is NULL.}
+\item{id}{This argument is depricated.}
 
 \item{xcoord}{Character string containing the name of the column from
 att.frame that identifies x-coordinates when src.frame equals "att.frame".
@@ -104,9 +106,7 @@ and cannot be greater than 11.  The default is NULL.}
 \item{maxlev}{Maxmum number of hierarchical levels to use for the GRTS
 grid, which cannot be greater than 11.  The default is 11.}
 
-\item{maxtry}{Maximum number of iterations for randomly generating a point
-within a grid cell to select a site when type.frame equals "area".  The
-default is 1000.}
+\item{maxtry}{This argument is depricated.}
 
 \item{shift.grid}{Option to randomly shift the hierarchical grid, where
 TRUE means shift the grid and FALSE means do not shift the grid, which is
@@ -125,12 +125,9 @@ design are used.  The default is TRUE for each stratum.}
 information,  where TRUE equals create a shapefile and FALSE equals do not
 create a shapefile.  The default is TRUE.}
 
-\item{prjfilename}{Name (without any extension) of the projection file for
-the input shapefile, which is used to name the projection file for the
-output shapefile.  The default is NULL.}
+\item{prjfilename}{This argument is depricated.}
 
-\item{out.shape}{Name (without any extension) of the output shapefile
-containing the survey design information.  The default is "sample".}
+\item{out.shape}{Name of the output shapefile.  The default is "sample.shp".}
 }
 \value{
 An object of class SpatialDesign containing the survey design
@@ -149,39 +146,26 @@ auxiliary variable).  May designate panels of sites for surveys over time.
 \section{Other Functions Required}{
 
   \describe{
-    \item{\code{\link{sp2shape}}}{converts an sp package object to a
-      shapefile}
-    \item{\code{getRecordShapeSizes}}{C function to read the shp file
-      of a line or polygon shapefile and return the length or area for each
-      record in the shapefile}
     \item{\code{\link{grtsarea}}}{select a GRTS sample of an area resource}
     \item{\code{\link{grtslin}}}{select a GRTS sample of a linear resource}
     \item{\code{\link{grtspts}}}{select a GRTS sample of a finite resource}
-    \item{\code{\link{read.dbf}}}{function to read the dbf file of a
-      shapefile and return a data frame containing contents of the file}
-    \item{\code{readShapeFilePts}}{C function to read the shp file of
-      a point shapefile and return a data frame containing the x-coordinates
-      and y-coordinates for elements in the frame}
     \item{\code{\link{SpatialPoints}}}{sp package function to create an
       object of class SpatialPoints}
     \item{\code{\link{SpatialPointsDataFrame}}}{sp package function to create
       an object of class SpatialPointsDataFrame}
-    \item{\code{writeShapeFilePoint}}{C function to create a shapefile
-      containing the survey design information}
   }
 }
 
 \examples{
 \dontrun{
-  test.design <- list(
+  test_design <- list(
     Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
     Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
       caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
-  test.attframe <- read.dbf("test.shapefile")
-  test.sample <- grts(design=test.design, DesignID="Test.Site",
-    type.frame="area", src.frame="shapefile", in.shape="test.shapefile",
-    att.frame=test.attframe, stratum="test.stratum", mdcaty="test.mdcaty",
-    shapefile=TRUE, out.shape="test.sample")
+  test.sample <- grts(design=test_design, DesignID="TestSite",
+    type.frame="area", src.frame="shapefile", in.shape="test_shapefile.shp",
+    stratum="test_stratum", mdcaty="test_mdcaty", shapefile=TRUE,
+    out.shape="test_sample.shp")
 }
 
 }

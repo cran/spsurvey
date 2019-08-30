@@ -4,15 +4,11 @@
 \alias{irslin}
 \title{Select an Independent Random Sample (IRS) of a Linear Resource}
 \usage{
-irslin(shapefilename = NULL, linframe, samplesize = 100,
-  SiteBegin = 1)
+irslin(linframe, samplesize = 100, SiteBegin = 1)
 }
 \arguments{
-\item{shapefilename}{Name of the input shapefile.  If shapefilename equals
-NULL, then the shapefile or shapefiles in the working directory are used.
-The default is NULL.}
-
-\item{linframe}{Data frame containing id, mdcaty, len, and mdm.}
+\item{linframe}{The sf object containing attributes: id, mdcaty, length_mdm,
+and mdm.}
 
 \item{samplesize}{Number of points to select in the sample.  The default is
 100.}
@@ -20,20 +16,12 @@ The default is NULL.}
 \item{SiteBegin}{First number to start siteID numbering.  The default is 1.}
 }
 \value{
-Data frame of sample points containing: siteID, id, x, y, mdcaty,
-  and weight.
+An sf object of sample points containing attributes: siteID, id,
+  mdcaty, and wgt.
 }
 \description{
 This function selects an IRS of a linear resource.
 }
-\section{Other Functions Required}{
-
-  \describe{
-    \item{\code{linSampleIRS}}{C function to select a sample from a linear
-      resource}
-  }
-}
-
 \author{
 Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }

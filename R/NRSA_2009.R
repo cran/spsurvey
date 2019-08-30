@@ -11,7 +11,7 @@
 #'
 #' @usage NRSA_2009
 #'
-#' @format A data frame with 668 rows and 13 variables:
+#' @format A data frame with 668 rows and 13 attributes:
 #' \describe{
 #'   \item{siteID}{site ID value.}
 #'   \item{xcoord}{Albers projection x-coordinate.}

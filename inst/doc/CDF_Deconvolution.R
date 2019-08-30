@@ -1,83 +1,41 @@
-### R code from vignette source 'CDF_Deconvolution.Rnw'
-### Encoding: ISO8859-1
+## ----setup, include = FALSE----------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 
-###################################################
-### code chunk number 1: preliminaries
-###################################################
-# Load the spsurvey package
+## ----load-spsurvey-------------------------------------------------------
 library(spsurvey)
 
-
-
-###################################################
-### code chunk number 2: data
-###################################################
-# Load the data set and determine the number of rows in the data frame
+## ----load_decon----------------------------------------------------------
 data(decon_data)
 nr <- nrow(decon_data)
 
-
-
-###################################################
-### code chunk number 3: data
-###################################################
-# Display the initial six lines in the data file
+## ----head_decon----------------------------------------------------------
 head(decon_data)
 
-
-
-###################################################
-### code chunk number 4: data
-###################################################
-# Display the final six lines in the data file
+## ----tail_decon----------------------------------------------------------
 tail(decon_data)
 
-
-
-###################################################
-### code chunk number 5: summary
-###################################################
-# Use the summary function to summarize the data structure of the species
-# richness variable
+## ----summary_decon-------------------------------------------------------
 cat("\nSummarize the data structure of the species richness variable:\n")
 summary(decon_data$Richness)
 
-
-
-###################################################
-### code chunk number 6: summary
-###################################################
-# Use the summary function to summarize the data structure of the species
-# richness variable plus 100\% measurrement error
+## ----summarize_decon_richness--------------------------------------------
 cat("\nSummarize the data structure of the species richness variable plus \n100% measurrement error:\n")
 summary(decon_data$Richness_100)
 
-
-
-###################################################
-### code chunk number 7: estimates
-###################################################
-# Assign a set of values at which to calculate CDF estimates
+## ----cdfvals-------------------------------------------------------------
 cdfvals <- seq(0,40,length=25)
 
-
-
-###################################################
-### code chunk number 8: estimates
-###################################################
-# Calculate a CDF estimate for the original species richness variable
+## ----cdf_richness--------------------------------------------------------
 CDF_org <- cdf.est(z=decon_data$Richness,
                    wgt=rep(1, nr),
                    x=decon_data$xcoord,
                    y=decon_data$ycoord,
                    cdfval=cdfvals)
 
-
-
-
-###################################################
-### code chunk number 9: estimates
-###################################################
+## ----cdf_ests------------------------------------------------------------
 # Calculate a CDF estimate for the variable plus 25% extraneous variance
 CDF_25 <- cdf.est(z=decon_data$Richness_25,
                   wgt=rep(1, nrow(decon_data)),
@@ -99,22 +57,13 @@ CDF_100 <- cdf.est(z=decon_data$Richness_100,
                    y=decon_data$ycoord,
                    cdfval=cdfvals)
 
-
-
-###################################################
-### code chunk number 10: estimates
-###################################################
-# Calculate density estimates
+## ----dens_ests-----------------------------------------------------------
 Density_org <- ash1.wgt(decon_data$Richness, nbin=25)
 Density_25 <- ash1.wgt(decon_data$Richness_25, nbin=25)
 Density_50 <- ash1.wgt(decon_data$Richness_50, nbin=25)
 Density_100 <- ash1.wgt(decon_data$Richness_100, nbin=25)
 
-
-
-###################################################
-### code chunk number 11: figure1
-###################################################
+## ----cdf_dens_est, fig.cap="CDF and Density Estimates for Species Richness Variables."----
 op <- par(mfrow=c(2,1), mgp=c(2.2,0.6,0), mar=c(3,3,2,0)+0.1)
 
 plot(CDF_org$CDF$Value, CDF_org$CDF$Estimate.P, type="l", lwd=2, col="red",
@@ -146,12 +95,7 @@ lines(Density_100$x, Density_100$y, lty=4, lwd=2.5, col="blue")
 
 par(op)
 
-
-
-###################################################
-### code chunk number 12: decon
-###################################################
-# Calculate the deconvoluted CDF estimate
+## ----decon_est-----------------------------------------------------------
 extvar <- var(decon_data$Richness_100) - var(decon_data$Richness)
 CDF_decon <- cdf.decon(z=decon_data$Richness_100,
                        wgt=rep(1,nr),
@@ -160,11 +104,7 @@ CDF_decon <- cdf.decon(z=decon_data$Richness_100,
                        y=decon_data$ycoord,
                        cdfval=cdfvals)
 
-
-
-###################################################
-### code chunk number 13: figure2
-###################################################
+## ----deconvolution, fig.cap="Original and Deconvoluted CDF Estimates for a Species Richness Variable with Added Measurement Error."----
 op <- par(mgp=c(2.2,0.6,0), mar=c(3,3,1,0)+0.1)
 
 plot(CDF_100$CDF$Value, CDF_100$CDF$Estimate.P, type="l", lwd=2, col="red",
@@ -200,6 +140,4 @@ legend(x="bottomright", inset=0.05, legend=c("Original CDF",
        col=c("red", "red", "blue", "blue"))
 
 par(op)
-
-
 

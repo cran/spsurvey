@@ -2,31 +2,22 @@
 # Function: irslin
 # Programmer: Tom Kincaid
 # Date: November 17, 2005
-# Last Revised: August 18, 2016
+# Last Revised: May 31, 2019
 #'
 #' Select an Independent Random Sample (IRS) of a Linear Resource
 #'
 #' This function selects an IRS of a linear resource.
 #'
-#' @param shapefilename Name of the input shapefile.  If shapefilename equals
-#'   NULL, then the shapefile or shapefiles in the working directory are used.
-#'   The default is NULL.
-#'
-#' @param linframe Data frame containing id, mdcaty, len, and mdm.
+#' @param linframe The sf object containing attributes: id, mdcaty, length_mdm,
+#'   and mdm.
 #'
 #' @param samplesize Number of points to select in the sample.  The default is
 #'   100.
 #'
 #' @param SiteBegin First number to start siteID numbering.  The default is 1.
 #'
-#' @return Data frame of sample points containing: siteID, id, x, y, mdcaty,
-#'   and weight.
-#'
-#' @section Other Functions Required:
-#'   \describe{
-#'     \item{\code{linSampleIRS}}{C function to select a sample from a linear
-#'       resource}
-#'   }
+#' @return An sf object of sample points containing attributes: siteID, id,
+#'   mdcaty, and wgt.
 #'
 #' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
 #'
@@ -35,39 +26,43 @@
 #' @export
 ################################################################################
 
-irslin <- function (shapefilename = NULL, linframe, samplesize = 100,
-   SiteBegin = 1) {
+irslin <- function (linframe, samplesize = 100, SiteBegin = 1) {
 
-# Ensure that the processor is little-endian
+# Determine IDs for features that will contain sample points
 
-   if(.Platform$endian == "big")
-      stop("\nA little-endian processor is required for the irslin function.")
-
+   len.cumsum <- cumsum(linframe$length_mdm * linframe$mdm)
+   samp.pos <- runif(samplesize, 0, len.cumsum[nrow(linframe)])
+   samp.id <- numeric(samplesize)
+   indx <- numeric(samplesize)
+   for(j in 1:samplesize) {
+      for(i in 1:nrow(linframe)) {
+         if(samp.pos[j] < len.cumsum[i]) {
+            samp.id[j] <- linframe$id[i]
+            indx[j] <- i
+    	      break;
+         }
+      }
+   }
+ 
 # Pick sample points
 
-   len.cumsum <- cumsum(linframe$len*linframe$mdm)
-   samp.pos <- runif(samplesize, 0, len.cumsum[nrow(linframe)])
-   ordr <- rank(samp.pos)
-   samp.pos <- sort(samp.pos)
-   temp <- .Call("linSampleIRS", shapefilename, len.cumsum, samp.pos,
-      linframe$id, linframe$len, linframe$mdm)
-   temp$id <- temp$id[ordr]
-   temp$x <- temp$x[ordr]
-   temp$y <- temp$y[ordr]
-   mdcaty <- linframe$mdcaty[match(temp$id, linframe$id)]
-   mdm <- linframe$mdm[match(temp$id, linframe$id)]
+   samp <- st_sample(linframe[indx,], rep(1, samplesize))
+   samp <- st_cast(samp, "POINT")
 
-# Assign Site ID
+# Create desired attributes
 
-   siteID <- SiteBegin - 1 + 1:length(temp$id)
+   siteID <- SiteBegin - 1 + 1:length(samp)
+   temp <- st_coordinates(samp)
+   xcoord <- temp[,1]
+   ycoord <- temp[,2]
 
-# Create the output data frame
+# Create the output sf object
 
-   rho <- data.frame(siteID=siteID, id=temp$id, xcoord=temp$x, ycoord=temp$y,
-      mdcaty=mdcaty, wgt=1/mdm)
+   rho <- st_sf(siteID=siteID, id=samp.id, xcoord=xcoord, ycoord=ycoord,
+      mdcaty=linframe$mdcaty[indx], wgt=1/linframe$mdm[indx], geometry=samp)
    row.names(rho) <- 1:nrow(rho)
 
 # Return the sample
 
-   rho
+   return(rho)
 }

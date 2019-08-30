@@ -3,7 +3,7 @@
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: August 18, 2016
+# Last Revised: July 31, 2019
 #'
 #' Select a Generalized Random-Tesselation Stratified (GRTS) Sample
 #'
@@ -52,14 +52,19 @@
 #' @param type.frame The type of frame, which must be one of following:
 #'   "finite", "linear", or "area".  The default is "finite".
 #'
-#' @param src.frame Source of the frame, which equals "shapefile" if the frame
-#'   is to be read from a shapefile, "sp.object" if the frame is obtained from
-#'   an sp package object, or "att.frame" if type.frame equals "finite" and the
+#' @param src.frame Source of the frame, which equals "sf.object" if the frame
+#'   is contained in an sf package object, "shapefile" if the frame is to be
+#'   read from a shapefile, "sp.object" if the frame is obtained from an sp
+#'   package object, or "att.frame" if type.frame equals "finite" and the
 #'   frame is included in att.frame.  The default is "shapefile".
 #'
-#' @param in.shape Name (without any extension) of the input shapefile.  If
-#'   src.frame equal "shapefile" and in.shape equals NULL, then the shapefile or
-#'   shapefiles in the working directory are used.  The default is NULL.
+#' @param in.shape Name of a shapefile containing the frame, which is required
+#'   when src.frame equals "shapefile".  The shapefile name should include the
+#'   ".shp" extension.  If the name does not include that extension, it will be
+#'   added.  The default is NULL.
+#'
+#' @param sf.object An sf package object containing the frame, which is required
+#'   when src.frame equals "sf.object".  The default is NULL.
 #'
 #' @param sp.object Name of the sp package object when src.frame equals
 #'   "sp.object". The default is NULL.
@@ -73,10 +78,7 @@
 #'   att.frame must include columns that contain x-coordinates and y-coordinates
 #'   for each element in the frame.  The default is NULL.
 #'
-#' @param id Character string containing the name of the column from att.frame
-#'   that identifies the ID value for each element in the frame.  If id equals
-#'   NULL, a column named "id" that contains values from one through the number
-#'   of rows in att.frame is added to att.frame.  The default is NULL.
+#' @param id This argument is depricated.
 #'
 #' @param xcoord Character string containing the name of the column from
 #'   att.frame that identifies x-coordinates when src.frame equals "att.frame".
@@ -105,9 +107,7 @@
 #' @param maxlev Maxmum number of hierarchical levels to use for the GRTS
 #'   grid, which cannot be greater than 11.  The default is 11.
 #'
-#' @param maxtry Maximum number of iterations for randomly generating a point
-#'   within a grid cell to select a site when type.frame equals "area".  The
-#'   default is 1000.
+#' @param maxtry This argument is depricated.
 #'
 #' @param shift.grid Option to randomly shift the hierarchical grid, where
 #'   TRUE means shift the grid and FALSE means do not shift the grid, which is
@@ -126,12 +126,9 @@
 #'   information,  where TRUE equals create a shapefile and FALSE equals do not
 #'   create a shapefile.  The default is TRUE.
 #'
-#' @param prjfilename Name (without any extension) of the projection file for
-#'   the input shapefile, which is used to name the projection file for the
-#'   output shapefile.  The default is NULL.
+#' @param prjfilename This argument is depricated.
 #'
-#' @param out.shape Name (without any extension) of the output shapefile
-#'   containing the survey design information.  The default is "sample".
+#' @param out.shape  Name of the output shapefile.  The default is "sample.shp".
 #'
 #' @return  An object of class SpatialDesign containing the survey design
 #'   information and any additional attribute variables that were provided.
@@ -140,25 +137,13 @@
 #'
 #' @section Other Functions Required:
 #'   \describe{
-#'     \item{\code{\link{sp2shape}}}{converts an sp package object to a
-#'       shapefile}
-#'     \item{\code{getRecordShapeSizes}}{C function to read the shp file
-#'       of a line or polygon shapefile and return the length or area for each
-#'       record in the shapefile}
 #'     \item{\code{\link{grtsarea}}}{select a GRTS sample of an area resource}
 #'     \item{\code{\link{grtslin}}}{select a GRTS sample of a linear resource}
 #'     \item{\code{\link{grtspts}}}{select a GRTS sample of a finite resource}
-#'     \item{\code{\link{read.dbf}}}{function to read the dbf file of a
-#'       shapefile and return a data frame containing contents of the file}
-#'     \item{\code{readShapeFilePts}}{C function to read the shp file of
-#'       a point shapefile and return a data frame containing the x-coordinates
-#'       and y-coordinates for elements in the frame}
 #'     \item{\code{\link{SpatialPoints}}}{sp package function to create an
 #'       object of class SpatialPoints}
 #'     \item{\code{\link{SpatialPointsDataFrame}}}{sp package function to create
 #'       an object of class SpatialPointsDataFrame}
-#'     \item{\code{writeShapeFilePoint}}{C function to create a shapefile
-#'       containing the survey design information}
 #'   }
 #'
 #' @author Tom Kincaid  email{Kincaid.Tom@epa.gov}
@@ -167,31 +152,25 @@
 #'
 #' @examples
 #' \dontrun{
-#'   test.design <- list(
+#'   test_design <- list(
 #'     Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
 #'     Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
 #'       caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
-#'   test.attframe <- read.dbf("test.shapefile")
-#'   test.sample <- grts(design=test.design, DesignID="Test.Site",
-#'     type.frame="area", src.frame="shapefile", in.shape="test.shapefile",
-#'     att.frame=test.attframe, stratum="test.stratum", mdcaty="test.mdcaty",
-#'     shapefile=TRUE, out.shape="test.sample")
+#'   test.sample <- grts(design=test_design, DesignID="TestSite",
+#'     type.frame="area", src.frame="shapefile", in.shape="test_shapefile.shp",
+#'     stratum="test_stratum", mdcaty="test_mdcaty", shapefile=TRUE,
+#'     out.shape="test_sample.shp")
 #' }
 #'
 #' @export
 ################################################################################
 
-grts <- function(design, DesignID = "Site", SiteBegin = 1,
-   type.frame = "finite", src.frame = "shapefile", in.shape = NULL,
+grts <- function(design, DesignID = "Site", SiteBegin = 1, type.frame =
+   "finite", src.frame = "shapefile", in.shape = NULL, sf.object = NULL,
    sp.object = NULL, att.frame = NULL, id = NULL, xcoord = NULL, ycoord = NULL,
-   stratum = NULL, mdcaty = NULL, startlev = NULL, maxlev = 11, maxtry = 1000,
+   stratum = NULL, mdcaty = NULL, startlev = NULL, maxlev = 11, maxtry = NULL,
    shift.grid = TRUE, do.sample = rep(TRUE, length(design)), shapefile = TRUE,
-   prjfilename = NULL, out.shape = "sample") {
-
-# Ensure that the processor is little-endian
-
-if(.Platform$endian == "big")
-   stop("\nA little-endian processor is required for the grts function.")
+   prjfilename = NULL, out.shape = "sample.shp") {
 
 # Ensure that a design list is provided
 
@@ -214,97 +193,108 @@ if(is.null(strata.names)) {
 
 # Ensure that src.frame contains a valid value
 
-temp <- match(src.frame, c("shapefile", "sp.object", "att.frame"), nomatch=0)
+temp <- match(src.frame, c("sf.object", "shapefile", "sp.object", "att.frame"),
+   nomatch=0)
 if(temp == 0)
    stop(paste("\nThe value provided for argument src.frame, \"", src.frame, "\" is not a valid value.", sep=""))
 
-# If src,frame equals "sp.object", then create a temporary shapefile
+# If src.frame equals "shapefile", then create an sf object from the shapefile
 
-sp.ind <- FALSE
+if(src.frame == "shapefile") {
+   if(is.null(shapefile))
+      stop("\nA shapefile name is required when the value provided for argument src.frame \nequals \"shapefile\".")
+   nc <- nchar(in.shape)
+   if(substr(in.shape, nc-3, nc) != ".shp") {
+      if(substr(in.shape, nc-3, nc-3) == ".") {
+         in.shape <- paste(substr(in.shape, 1, nc-4), ".shp", sep="")
+      } else {
+         in.shape <- paste(in.shape, ".shp", sep="")
+      }
+   }
+   sf.object <- st_read(in.shape, quiet = TRUE)
+}
+
+# If src,frame equals "sf.object", ensure that an sf object was provided
+
+if(src.frame == "sf.object") {
+   if(is.null(sf.object))
+      stop("\nAn sf package object is required when the value provided for argument src.frame \nequals \"sf.object\".")
+}
+
 if(src.frame == "sp.object") {
    if(is.null(sp.object))
       stop("\nAn sp package object is required when the value provided for argument src.frame \nequals \"sp.object\".")
-   sp.ind <- TRUE
-   src.frame <- "shapefile"
-   in.shape <- "tempfile0921"
-   sp2shape(sp.object, in.shape)
+   sf.object <- st_as_sf(sp.object)
 }
 
-# If src.frame equals "shapefile" and att.frame equals NULL, then create
-# att.frame
+# If src.frame equals "att.frame", ensure that type.frame equals "finite",
+# ensure that a data frame object is assigned to argument att.frame, and create
+# an sf object from att.frame
 
-if(src.frame == "shapefile" && is.null(att.frame))
-   att.frame <- read.dbf(in.shape)
-
-# If src.frame equals "att.frame", ensure that type.frame equals "finite" and to
-# ensure that a data frame object is assigned to argument att.frame
-
-if(src.frame == "att.frame" && type.frame != "finite")
-   stop(paste("\nThe value provided for argument type.frame must equal \"finite\" when argument \nsrc.frame equals \"att.frame\"  The value provided for argument type.frame was \n\"", type.frame, "\".", sep=""))
-if(src.frame == "att.frame" && is.null(att.frame))
-   stop(paste("\nA data frame object must be assigned to argument att.frame when argument\nsrc.frame equals \"att.frame\"."))
-
-# If id equals NULL, create ID values
-# Otherwise, ensure that the name provided for id identifies a column in
-# the attributes data frame, values in the column are unique, the column is
-# not a factor (when src.frame equals "att.frame"), and the column contains
-# valid values (when src.frame does not equals "att.frame")
-
-if(is.null(id)) {
-   id <- "id"
-   att.frame$id <- 1:nrow(att.frame)
-} else {
-   temp <- match(id, names(att.frame), nomatch=0)
-   if(temp == 0)
-      stop(paste("\nThe value provided for the column from att.frame that identifies ID value for \neach element in the frame, \"", id, "\", does not occur among the columns in \natt.frame.", sep=""))
-   if(length(unique(att.frame[, id])) != nrow(att.frame))
-      stop(paste("\nThe ID values for elements of the frame that are provided in att.frame are not \nunique.", sep=""))
-   if(src.frame == "att.frame") {
-      if(is.factor(att.frame[, id]))
-         att.frame[, id] <- as.character(att.frame[, id])
-   } else {
-      if(sp.ind) {
-         src.temp <- "sp.object"
-      } else {
-         src.temp <- "shapefile"
-      }
-      if(!is.numeric(att.frame[, id]))
-         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must be numeric when argument \nsrc.frame equals \"", src.temp, "\".", sep=""))
-      if(any(att.frame[, id] < 1))
-         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must be positive integers when \nargument src.frame equals \"", src.temp, "\".", sep=""))
-      att.temp <- read.dbf(in.shape)
-      if(any(att.frame[, id] > nrow(att.temp)))
-         stop(paste("\nThe ID values in column \"", id, "\" of att.frame must not exceed the number of \nrecords when argument src.frame equals \"", src.temp, "\".", sep=""))
-      rm(att.temp)
-      if(!is.integer(att.frame[, id]))
-         att.frame[, id] <- as.integer(att.frame[, id])
+if(src.frame == "att.frame") {
+   if(type.frame != "finite") {
+      stop(paste("\nThe value provided for argument type.frame must equal \"finite\" when argument \nsrc.frame equals \"att.frame\"  The value provided for argument type.frame was \n\"", type.frame, "\".", sep=""))
    }
+   if(is.null(att.frame)) {
+      stop(paste("\nA data frame object must be assigned to argument att.frame when argument\nsrc.frame equals \"att.frame\"."))
+   }
+   if(is.null(xcoord) | is.null(ycoord)) {
+      stop(paste("\nValues must be provided for arguments xcoord and ycoord when argument src.frame \nequals \"att.frame\"."))
+   }
+   if(!(all(c(xcoord, ycoord) %in% names(att.frame)))) {
+      stop(paste("\nThe values provided for arguments xcoord and ycoord do not occur among the \nnames for att.frame."))
+   }
+   sf.object <- st_as_sf(att.frame, coords = c(xcoord, ycoord))
 }
+
+# Check that the geometry types for the survey frame object are consistent
+
+temp <- st_geometry_type(sf.object)
+tst <- all(temp %in% c("POINT", "MULTIPOINT")) |
+       all(temp %in% c("LINESTRING", "MULTILINESTRING")) |
+       all(temp %in% c("POLYGON", "MULTIPOLYGON"))
+if(!tst) {
+   stop(paste("\nThe geometry types for the survey frame object passed to function IRS: \n\"", unique(st_geometry_type(sf.object)), "\" are not consistent.", sep=""))
+}
+
+# Create ID values
+
+id <- "id"
+sf.object$id <- 1:nrow(sf.object)
 
 # If stratum equals NULL, ensure that the design list specifies a single stratum
-# and add a column named "stratum" to the attributes data frame
-# Otherwise, ensure that the name provided for stratum identifies a column in
-# the attributes data frame
+# and add an attribute named "stratum" to sf.object.  Otherwise, ensure that the
+# name provided for stratum identifies an attribute in sf.object.
 
 if(is.null(stratum)) {
    if(length(strata.names) > 1)
-      stop("\nThe column from att.frame that identifies stratum membership was not provided \nand design specifies more than one stratum.")
+      stop("\nThe attribute in sf.object that identifies stratum membership was not provided \nand the design list specifies more than one stratum.")
    stratum <- "stratum"
-   att.frame$stratum <- factor(rep(strata.names, nrow(att.frame)))
+   sf.object$stratum <- factor(rep(strata.names, nrow(sf.object)))
 } else {
-   temp <- match(stratum, names(att.frame), nomatch=0)
+   temp <- match(stratum, names(sf.object), nomatch=0)
    if(temp == 0)
-      stop(paste("\nThe value provided for the column from att.frame that identifies stratum \nmembership for each element in the frame, \"", stratum, "\", does not occur \namong the columns in att.frame.", sep=""))
+      stop(paste("\nThe value provided for the attribute in sf.object that identifies stratum \nmembership for each feature, \"", stratum, "\", does not occur among the \nattributes in sf.object.", sep=""))
 }
 
-# Ensure that the stratum variable in the attributes data frame is a factor
+# Ensure that the stratum attribute in sf.object is a factor
 
-if(!is.factor(att.frame[,stratum]))
-   att.frame[,stratum] <- as.factor(att.frame[,stratum])
+if(!is.factor(sf.object$stratum))
+   sf.object[, stratum] <- as.factor(sf.object[, stratum, drop = TRUE])
+
+# Check whether strata names from the design list occur among the values for the
+# stratum attribute in sf.object
+
+temp <- match(strata.names, levels(sf.object[, stratum, drop = TRUE]),
+   nomatch=0)
+if(any(temp == 0)) {
+   temp.str <- vecprint(strata.names[temp == 0])
+   stop(paste("\nThe following strata names in the design list do not occur among the strata \nnames in the stratum attribute in sf.object:\n", temp.str, sep=""))
+}
 
 # If seltype is not "Equal" for every stratum, then do the following: (1) ensure
 # that mdcaty is not NULL and (2) ensure that the name provided for mdcaty
-# identifies a column in the attributes data frame
+# identifies an attribute in sf.object
 
 seltype.ind <- FALSE
 for(s in strata.names) {
@@ -314,10 +304,10 @@ for(s in strata.names) {
 }
 if(seltype.ind) {
    if(is.null(mdcaty))
-      stop(paste("\nThe name of the column from att.frame that identifies the unequal probability \ncategory for each element in the frame must be provided.", sep=""))
-   temp <- match(mdcaty, names(att.frame), nomatch=0)
+      stop(paste("\nThe name of the attribute in sf.object that identifies the unequal probability \ncategory for each feature must be provided.", sep=""))
+   temp <- match(mdcaty, names(sf.object), nomatch=0)
    if(temp == 0)
-      stop(paste("\nThe value provided for the column from att.frame that identifies the unequal \nprobability category for each element in the frame, \"", mdcaty, "\", \ndoes not occur among the columns in att.frame.", sep=""))
+      stop(paste("\nThe value provided for the attribute in sf.object that identifies the unequal \nprobability category for each feature, \"", mdcaty, "\", does not occur among \nthe attributes in sf.object.", sep=""))
 }
 
 # Ensure that startlev and maxlev are valid and compatible values
@@ -340,35 +330,28 @@ if(!is.null(startlev)) {
       stop("\nThe value for maxlev cannot be greater than 11")
 }
 
+# As necessary, initialize parallel processing
+
+if(type.frame != "finite") {
+   ncore <- detectCores()
+   tst <- Sys.getenv("_R_CHECK_LIMIT_CORES_", "")
+   if(nzchar(tst)) {
+      ncore <- ifelse(ncore == 1L, 1L, 2L)
+   } else {
+      temp <- as.integer(floor(0.1 * ncore))
+      ncore <- ifelse(ncore == 1L, 1L, ifelse(temp == 0, ncore - 1L, ncore - temp))
+   }
+   cl <- makeCluster(ncore, methods=FALSE)
+   invisible(clusterEvalQ(cl, library(sf)))
+   setDefaultCluster(cl)
+}
+
 # Begin the section for a finite population (discrete points)
 
 if(type.frame == "finite") {
 
    first <- TRUE
    SiteBegin <- SiteBegin
-
-# If src.frame equals "shapefile", then add x-coordinates and y-coordinates to
-# att.frame
-
-   if(src.frame == "shapefile") {
-      temp <- .Call("readShapeFilePts", in.shape)
-      xcoord <- "x"
-      ycoord <- "y"
-      att.frame$x <- temp$x[att.frame[,id]]
-      att.frame$y <- temp$y[att.frame[,id]]
-
-# If src.frame equals "att.frame", ensure that att.frame includes columns
-# containing x-coordinates and y-coordinates
-
-   } else if(src.frame == "att.frame") {
-      if(is.null(xcoord))
-         xcoord <- "x"
-      if(is.null(ycoord))
-         ycoord <- "y"
-      temp <- match(c(xcoord, ycoord), names(att.frame), nomatch=0)
-      if(any(temp == 0))
-         stop(paste("\nThe names for one or both of the columns containing the x-coordinates and \ny-coordinates, \"", xcoord, "\" and \"", ycoord, "\", \ndo not occur among the column names in att.frame.", sep=""))
-   }
 
 # Ensure that do.sample is the correct length and is named
 
@@ -395,7 +378,7 @@ if(type.frame == "finite") {
 
 # Create the sample frame
 
-      temp <- att.frame[,stratum] == s
+      temp <- sf.object[, stratum, drop = TRUE] == s
       grtspts.ind <- TRUE
       if(sum(temp) == 0) {
          warning(paste("\nThe stratum column in the attributes data frame contains no values that match \nthe stratum named \"", s, "\" in the design list.\n", sep=""))
@@ -405,16 +388,13 @@ if(type.frame == "finite") {
          grtspts.ind <- FALSE
       }
 
+      sframe <- subset(sf.object, temp)
       if(design[[s]]$seltype == "Equal") {
-         sframe <- data.frame(id=I(att.frame[temp, id]),
-            x=att.frame[temp, xcoord], y=att.frame[temp, ycoord],
-            mdcaty=rep("Equal", nrow(att.frame[temp,])))
+         sframe$mdcaty <- "Equal"
       } else if(design[[s]]$seltype == "Unequal") {
-         sframe <- data.frame(id=I(att.frame[temp, id]), x=att.frame[temp, xcoord],
-            y=att.frame[temp, ycoord], mdcaty=factor(att.frame[temp, mdcaty]))
+         sframe$mdcaty <- factor(sframe[, mdcaty, drop = TRUE])
       } else if(design[[s]]$seltype == "Continuous") {
-         sframe <- data.frame(id=I(att.frame[temp, id]), x=att.frame[temp, xcoord],
-            y=att.frame[temp, ycoord], mdcaty=att.frame[temp, mdcaty])
+         sframe$mdcaty <- sframe[, mdcaty, drop = TRUE]
       } else {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
@@ -508,12 +488,15 @@ if(type.frame == "finite") {
 
 # Select the sample
 
+      st_agr(sframe) <- "constant"
       if(grtspts.ind) {
-         stmp <- grtspts(src.frame, in.shape, sframe, sum(n.desired), SiteBegin,
+         stmp <- grtspts(sframe, sum(n.desired), SiteBegin,
             shift.grid, do.sample[s], startlev, maxlev)
       } else {
-         stmp <- data.frame(siteID=SiteBegin, id=sframe$id, xcoord=sframe$x,
-            ycoord=sframe$y, mdcaty=sframe$mdcaty, wgt=1/sframe$mdm)
+         stmp <- sframe
+         stmp$siteID <- SiteBegin
+         stmp$wgt <- 1/sframe$mdm
+         stmp <- subset(stmp, select = c("siteID", "id", "mdcaty", "wgt"))
          row.names(stmp) <- 1
          attr(stmp, "nlev") <- NA
       }
@@ -574,7 +557,7 @@ if(type.frame == "finite") {
          }
       }
 
-# Add stratum sample to the output data frame
+# Add stratum sample to the output object
 
       if(first) {
          sites <- stmp
@@ -597,18 +580,7 @@ if(type.frame == "finite") {
 
    first <- TRUE
    SiteBegin <- SiteBegin
-
-# Ensure that att.frame includes a variable named length_mdm that provides the
-# length for each record of the shapefile(s) in the working directory and create
-# the variable when necessary
-
-   if(is.null(att.frame$length_mdm)) {
-      temp <- .Call("getRecordShapeSizes", in.shape)
-      if(length(temp) != nrow(att.frame))
-         stop("\nThe number of rows in the attribute data frame does not equal the number of \nrecords in the shapefile(s) in the working directory.")
-      att.frame$length_mdm <- temp
-   }
-   elmsize <- "length_mdm"
+   sf.object$length_mdm <- as.numeric(st_length(sf.object))
 
 # Begin the loop for strata
 
@@ -618,24 +590,19 @@ if(type.frame == "finite") {
 
 # Create the sample frame
 
-      temp <- att.frame[,stratum] == s
+      temp <- sf.object[, stratum, drop = TRUE] == s
       if(sum(temp) == 0) {
          warning(paste("\nThe stratum column in the attributes data frame contains no values that match \nthe stratum named \"", s, "\" in the design list.\n", sep=""))
          next
       }
 
+      sframe <- subset(sf.object, temp)
       if(design[[s]]$seltype == "Equal") {
-         sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=rep("Equal", nrow(att.frame[temp,])),
-            len=att.frame[temp, elmsize])
+         sframe$mdcaty <- "Equal"
       } else if(design[[s]]$seltype == "Unequal") {
-         sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=factor(att.frame[temp, mdcaty]),
-            len=att.frame[temp, elmsize])
+         sframe$mdcaty <- factor(sframe[, mdcaty, drop = TRUE])
       } else if(design[[s]]$seltype == "Continuous") {
-         sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=att.frame[temp, mdcaty],
-            len=att.frame[temp, elmsize])
+         sframe$mdcaty <- sframe[, mdcaty, drop = TRUE]
       } else {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
@@ -730,8 +697,9 @@ if(type.frame == "finite") {
 
 # Select the sample
 
-      stmp <- grtslin(in.shape, sframe, sum(n.desired), SiteBegin, shift.grid,
-         startlev, maxlev)
+      st_agr(sframe) <- "constant"
+      stmp <- grtslin(sframe, sum(n.desired), SiteBegin, shift.grid, startlev,
+         maxlev)
 
 # Add the stratum variable
 
@@ -781,18 +749,7 @@ if(type.frame == "finite") {
 
    first <- TRUE
    SiteBegin <- SiteBegin
-
-# Ensure that att.frame includes a variable named area_mdm that provides the
-# area for each record of the shapefile(s) in the working directory and create
-# the variable when necessary
-
-   if(is.null(att.frame$area_mdm)) {
-      temp <- .Call("getRecordShapeSizes", in.shape)
-      if(length(temp) != nrow(att.frame))
-         stop("\nThe number of rows in the attribute data frame does not equal the number of \nrecords in the shapefile(s) in the working directory.")
-      att.frame$area_mdm <- temp
-   }
-   elmsize <- "area_mdm"
+   sf.object$area_mdm <- as.numeric(st_area(sf.object))
 
 # Begin the loop for strata
 
@@ -802,24 +759,19 @@ if(type.frame == "finite") {
 
 # Create the sample frame
 
-      temp <- att.frame[,stratum] == s
+      temp <- sf.object[, stratum, drop = TRUE] == s
       if(sum(temp) == 0) {
          warning(paste("\nThe stratum column in the attributes data frame contains no values that match \nthe stratum named \"", s, "\" in the design list.\n", sep=""))
          next
       }
 
+      sframe <- subset(sf.object, temp)
       if(design[[s]]$seltype == "Equal") {
-         sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=rep("Equal", nrow(att.frame[temp,])),
-            area=att.frame[temp, elmsize])
+         sframe$mdcaty <- "Equal"
       } else if(design[[s]]$seltype == "Unequal") {
-         sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=factor(att.frame[temp, mdcaty]),
-            area=att.frame[temp, elmsize])
+         sframe$mdcaty <- factor(sframe[, mdcaty, drop = TRUE])
       } else if(design[[s]]$seltype == "Continuous") {
-         sframe <- data.frame(id=att.frame[temp, id],
-            mdcaty=att.frame[temp, mdcaty],
-            area=att.frame[temp, elmsize])
+         sframe$mdcaty <- sframe[, mdcaty, drop = TRUE]
       } else {
          stop(paste("\nThe value provided for the type of random selection, \"", design[[s]]$seltype, "\", \nfor stratum \"", s, "\" is not valid.", sep=""))
       }
@@ -905,7 +857,7 @@ if(type.frame == "finite") {
 # Calculate mdm - inclusion probabilities
 
       if(design[[s]]$seltype == "Equal")
-         sframe$mdm <- mdmarea(sframe$area, sframe$mdcaty, c(Equal=n.desired))
+         sframe$mdm <- mdmarea(sframe$area_mdm, sframe$mdcaty, c(Equal=n.desired))
       else if(design[[s]]$seltype == "Unequal")
          sframe$mdm <- mdmarea(sframe$area, sframe$mdcaty, n.desired)
       else
@@ -914,7 +866,8 @@ if(type.frame == "finite") {
 
 # Select the sample
 
-      stmp <- grtsarea(in.shape, sframe, sum(n.desired), SiteBegin, shift.grid,
+      st_agr(sframe) <- "constant"
+      stmp <- grtsarea(sframe, sum(n.desired), SiteBegin, shift.grid,
          startlev, maxlev, maxtry)
 
 # Determine whether the realized sample size is less than the desired size
@@ -996,10 +949,10 @@ if(type.frame == "finite") {
 
 }
 
-# If src.frame equals "sp.object", then remove the temporary shapefile
+# As necessary, terminate parallel processing
 
-if(sp.ind) {
-   file.remove(paste(in.shape, ".dbf", sep=""), paste(in.shape, ".shp", sep=""), paste(in.shape, ".shx", sep=""))
+if(type.frame != "finite") {
+   stopCluster(cl)
 }
 
 # Add DesignID name to the numeric siteID value to create a new siteID
@@ -1012,49 +965,36 @@ sites$siteID <- as.character(gsub(" ","0", paste(DesignID,"-",
 sites$EvalStatus <- rep("NotEval", nrow(sites))
 sites$EvalReason <- rep(" ", nrow(sites))
 
-# Add variables from the attributes data frame that are not contained in the
-# output data frame
+# Add attributes from sf.object that are not included in sites
 
-tm <- match(sites$id, att.frame[,id])
-if(design[[s]]$seltype == "Equal")
-   td <- match(c(id, stratum), names(att.frame))
-else
-   td <- match(c(id, stratum, mdcaty), names(att.frame))
-temp <- names(att.frame)[-td]
+tm <- match(sites$id, sf.object$id)
+if(design[[s]]$seltype == "Equal") {
+   td <- match(c(id, stratum, "length_mdm", "area_mdm", "geometry"),
+      names(sf.object), nomatch=0)
+} else {
+   td <- match(c(id, stratum, mdcaty, "length_mdm", "area_mdm", "geometry"),
+      names(sf.object), nomatch=0)
+}
+temp <- names(sf.object)[-td]
 if(length(temp) > 0) {
-   sites <- cbind(sites, att.frame[tm,-td])
-   if(length(temp) == 1)
-      names(sites)[ncol(sites)] <- temp
+   for(i in temp) {
+      sites[, i] <- sf.object[tm, i, drop = TRUE]
+   }
 }
 
-# Remove id from the output data frame
+# Remove the id attribute from sites
 
-sites <- sites[,-match("id", names(sites))]
+temp <- names(sites)
+temp <- temp[!(temp %in% c("id", "geometry"))]
+sites <- subset(sites, select=temp)
 
-# If type.frame equals "finite" and src.frame equals "shapefile", then remove x
-# and y from the output data frame
-
-if(type.frame == "finite" && src.frame == "shapefile")
-   sites <- sites[,-match(c("x", "y"), names(sites))]
-
-# If src.frame equals "shapefile" and type.frame is either "linear" or "area",
-# then remove either length_mdm or area_mdm from the output data frame, as
-# appropriate
-
-if(src.frame == "shapefile") {
-   if(type.frame == "linear")
-      sites <- sites[,-match("length_mdm", names(sites))]
-   else if(type.frame == "area")
-      sites <- sites[,-match("area_mdm", names(sites))]
-}
-
-# Add row names to the output data frame
+# Add row names to sites
 
 n <- nrow(sites)
 IDs <- as.character(1:n)
 row.names(sites) <- IDs
 
-# Assign attributes to the output data frame
+# Assign attributes to sites
 
 ifelse(is.null(startlev),
    attr(sites, "startlev") <- "Not specified",
@@ -1063,40 +1003,35 @@ ifelse(is.null(maxlev),
    attr(sites, "maxlev") <- "Not specified",
    attr(sites, "maxlev") <- maxlev)
 attr(sites, "endlev") <- attributes(stmp)$nlev
-attr(sites, "maxtry") <- maxtry
 attr(sites, "shift.grid") <- shift.grid
 attr(sites, "do.sample") <- do.sample
 
-# Create an object of class SpatialDesign
-
-SpointsMat <- matrix(0, nrow=n, ncol=2)
-rownames(SpointsMat) <- IDs
-SpointsMat[,1] <- sites[,2]
-SpointsMat[,2] <- sites[,3]
-sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),
-   data = sites)
-rslt <- SpatialDesign(design = design, sp_obj = sp_obj)
-
-# Create a shapefile containing the sample information
+# If requested, create a shapefile containing the sample information
 
 if(shapefile == TRUE) {
-   temp <- sapply(sites, is.factor)
-   if(any(temp)) {
-      sites.tmp <- sites
-      for(i in seq(ncol(sites.tmp))[temp]) {
-         sites.tmp[,i] <- as.character(sites.tmp[,i])
-         temp <- sites.tmp[,i] == "" | is.na(sites.tmp[,i])
-         if(any(temp)) {
-            sites.tmp[temp,i] <- " "
-         }
+   nc <- nchar(out.shape)
+   if(substr(out.shape, nc-3, nc) != ".shp") {
+      if(substr(out.shape, nc-3, nc-3) == ".") {
+         out.shape <- paste(substr(out.shape, 1, nc-4), ".shp", sep="")
+      } else {
+         out.shape <- paste(out.shape, ".shp", sep="")
       }
-      temp <- .Call("writeShapeFilePoint", sites.tmp$xcoord, sites.tmp$ycoord,
-         prjfilename, names(sites.tmp), sites.tmp, out.shape)
+   }
+   if(out.shape %in% list.files()) {
+      warning(paste("\nThe output shapefile named \"", out.shape, "\" already exists and was \noverwritten.\n", sep=""))
+      st_write(sites, out.shape, quiet = TRUE, delete_dsn = TRUE)
    } else {
-      temp <- .Call("writeShapeFilePoint", sites$xcoord, sites$ycoord,
-         prjfilename, names(sites), sites, out.shape)
+      st_write(sites, out.shape, quiet = TRUE)
    }
 }
+
+# Create an object of class SpatialDesign
+
+SpointsMat <- st_coordinates(sites)
+rownames(SpointsMat) <- IDs
+sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),
+   data = sites[, 1:(ncol(sites)-1), drop = TRUE])
+rslt <- SpatialDesign(design = design, sp_obj = sp_obj)
 
 # Return the SpatialDesign object
 

@@ -4,8 +4,8 @@
 \name{UT_ecoregions}
 \alias{UT_ecoregions}
 \title{Ecoregions in Utah}
-\format{An object of class SpatialPolygonsDataFrame.\cr
-The data slot contains 10 rows and 3 variables:
+\format{An object of class sf (simple features) containing 10 features and
+  3 attributes:
 \describe{
   \item{Level3}{Level 3 ecoregion code for the polygon.}
   \item{Level3_Nam}{Level 3 ecoregion name for the polygon.}

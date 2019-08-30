@@ -4,13 +4,13 @@
 \alias{sbcsamp}
 \title{Calculate Spatial Balance Grid Cell Extent and Proportions for a Survey Design}
 \usage{
-sbcsamp(sp.sample, sbc.frame = NULL, dx = NULL, dy = NULL,
+sbcsamp(spsample, sbc.frame = NULL, dx = NULL, dy = NULL,
   xc = NULL, yc = NULL)
 }
 \arguments{
-\item{sp.sample}{The sp package object of class "SpatialPointsDataFrame"
-produced by the grts or irs functions that contains survey design
-information.}
+\item{spsample}{Object of class SpatialDesign produced by either the grts or
+irs functions that contains survey design information and additional
+attribute (auxiliary) variables.}
 
 \item{sbc.frame}{The object created by the sbcframe function.  The default is
 NULL.}
@@ -35,17 +35,6 @@ This function calculates spatial balance grid cell extent and proportions
 for a survey design.  The user must provide either sbc.frame or values for
 dx, dy, xc, and yc.
 }
-\section{Other Functions Required}{
-
-  \describe{
-    \item{\code{readShapeFilePts}}{C function to read the shp file of
-      a point shapefile and return a data frame containing the x-coordinates
-      and y-coordinates for elements in the frame}
-    \item{\code{\link{cell.wt}}}{calculates number of points in a cell for a
-      points object}
-  }
-}
-
 \author{
 Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }

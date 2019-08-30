@@ -10,7 +10,7 @@
 #'
 #' @usage NLA_2007
 #'
-#' @format A data frame with 236 rows and 15 variables:
+#' @format A data frame with 236 rows and 15 attributes:
 #' \describe{
 #'   \item{siteID}{site ID value.}
 #'   \item{xcoord}{Albers projection x-coordinate.}

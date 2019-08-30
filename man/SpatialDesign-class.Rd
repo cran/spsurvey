@@ -17,18 +17,18 @@
 SpatialDesign(design, sp_obj)
 
 \method{summary}{SpatialDesign}(object, ..., auxvar = NULL,
-  spframe = NULL, tess_ind = TRUE, sbc_ind = FALSE, nrows = 5,
+  sfframe = NULL, tess_ind = TRUE, sbc_ind = FALSE, nrows = 5,
   dxdy = TRUE)
 
 \S4method{summary}{SpatialDesign}(object, ..., auxvar = NULL,
-  spframe = NULL, tess_ind = TRUE, sbc_ind = FALSE, nrows = 5,
+  sfframe = NULL, tess_ind = TRUE, sbc_ind = FALSE, nrows = 5,
   dxdy = TRUE)
 
-\method{plot}{SpatialDesign}(x, y, ..., spframe = NULL, stratum = NULL,
+\method{plot}{SpatialDesign}(x, y, ..., sfframe = NULL, stratum = NULL,
   mdcaty = NULL, auxvar = NULL, pdffile = NULL, width = 8,
   height = 10)
 
-\S4method{plot}{SpatialDesign,missing}(x, y, ..., spframe = NULL,
+\S4method{plot}{SpatialDesign,missing}(x, y, ..., sfframe = NULL,
   stratum = NULL, mdcaty = NULL, auxvar = NULL, pdffile = NULL,
   width = 8, height = 10)
 }
@@ -48,9 +48,8 @@ the \code{SpatialDesign} object that identify auxiliary variables to be
 used to summarize the survey design or create plots of the survey design.
  The default is NULL.}
 
-\item{spframe}{Object of class \code{SpatialPointsDataFrame},
-\code{SpatialLinesDataFrame}, or \code{SpatialPolygonsDataFrame} that
-contains the survey design frame.  The default is NULL.}
+\item{sfframe}{Object of class \code{sf} that contains the survey design
+frame.  The default is NULL.}
 
 \item{tess_ind}{a logical variable indicating whether spatial balance
 metrics are calculated using proportions obtained from the intersection of
@@ -74,16 +73,15 @@ increments are not equal.  The default is TRUE.}
 
 \item{y}{Missing - this argument is not used.}
 
-\item{stratum}{name of the column from the data slot of the spframe object
-that identifies stratum membership for each element in the frame.  If
-stratum equals NULL, the design is unstratified, and a column named
-"stratum" (with all its elements equal to the stratum name specified in
-design) is added to the data slot of the spframe object.  The default is
- NULL.}
+\item{stratum}{name of the attribute from the sfframe object that identifies
+stratum membership for each feature in the frame.  If stratum equals NULL,
+the design is unstratified, and an attribute named "stratum" (with all its
+elements equal to the stratum name specified in design) is added to the
+sfframe object.  The default is NULL.}
 
-\item{mdcaty}{name of the column from the data slot of the spframe object
-that identifies the unequal probability category for each element in the
-frame.  The default is NULL.}
+\item{mdcaty}{name of the attribute from the sfframe object that identifies
+the unequal probability category for each feature in the survey frame.  The
+default is NULL.}
 
 \item{pdffile}{a character variable containing the name of the pdf file to
 which output is written. If a value is not provided, output is written to

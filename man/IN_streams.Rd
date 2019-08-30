@@ -4,7 +4,7 @@
 \name{IN_streams}
 \alias{IN_streams}
 \title{Streams in the Upper Wabash Basin in Indiana}
-\format{A data frame with 100 rows and 11 variables:
+\format{A data frame with 100 rows and 11 attributes:
 \describe{
   \item{siteID}{site ID value.}
   \item{xcoord}{Albers projection x-coordinate.}

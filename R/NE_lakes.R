@@ -9,8 +9,8 @@
 #'
 #' @usage NE_lakes
 #'
-#' @format An object of class SpatialPointsDataFrame.\cr
-#' The data slot contains 6,121 rows and 4 variables:
+#' @format An object of class sf (simple features) containing 6,121 features
+#'   and 4 attributes:
 #' \describe{
 #'   \item{xcoord}{Albers projection x-coordinate of the lake centroid.}
 #'   \item{ycoord}{Albers projection y-coordinate of the lake centroid.}

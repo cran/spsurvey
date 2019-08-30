@@ -4,7 +4,7 @@
 \name{NRSA_2009}
 \alias{NRSA_2009}
 \title{Western Mountains Ecoregion Rivers and Streams}
-\format{A data frame with 668 rows and 13 variables:
+\format{A data frame with 668 rows and 13 attributes:
 \describe{
   \item{siteID}{site ID value.}
   \item{xcoord}{Albers projection x-coordinate.}

@@ -2,20 +2,14 @@
 # Function: sbcframe
 # Programmer: Tom Kincaid
 # Date: September 29, 2011
-# Last Revised: August 18, 2016
+# Date: July 8, 2019
 #
-#' Calculate Spatial Balance Grid Cell Extent and Proportions for a Sample Frame
+#' Calculate Spatial Balance Grid Cell Extent and Proportion for a Survey Frame
 #'
-#' This function calculates spatial balance grid cell extent and proportions
+#' This function calculates spatial balance grid cell extent and proportion
 #' for the sample frame.  
 #'      
-#' @param shapefilename Name of the input shapefile.  If shapefilename equals
-#'   NULL, then the shapefile or shapefiles in the working directory are used.
-#'   The default is NULL.
-#'      
-#' @param spframe An sp package object of class SpatialPointsDataFrame,
-#'   SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the
-#'   survey design frame.  The default is NULL.
+#' @param sfobject An object of class sf that contains the survey frame.
 #'      
 #' @param nrows Number of rows (and columns) for the grid of cells.  The
 #'   default is 5.
@@ -38,73 +32,20 @@
 #'     \item{yc}{the vector of grid cell y-coordinates}
 #'   }
 #'
-#' @section Other Functions Required:
-#'   \describe{
-#'     \item{\code{readShapeFile}}{C function to read a single shapefile
-#'       or multiple shapefiles}
-#'     \item{\code{readShapeFilePts}}{C function to read the shp file of
-#'       a point shapefile and return a data frame containing the x-coordinates
-#'       and y-coordinates for elements in the frame}
-#'     \item{\code{\link{cell.wt}}}{calculates number of points in a cell for a
-#'       points object}
-#'     \item{\code{insideLinearGridCell}}{C function to determine ID
-#'       value and clipped polyline length for shapefile records contained in
-#'       the selected grid cells}
-#'     \item{\code{insideAreaGridCell}}{C function to determine ID value
-#'       and clipped polygon area for shapefile records contained in the
-#'       selected grid cells}
-#'   }
-#'
 #' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
 #'
 #' @export
 ################################################################################
 
-sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
-   dxdy = TRUE) {
-
-# Check that either a shapefile name of a survey design frame object was provided
-   if(is.null(shapefilename) & is.null(spframe))
-      stop("\nEither a shapefile name or a survey design frame object must be provided.")
-
-# If a shapefile name is provided, ensure that the processor is little-endian
-
-   if(!is.null(shapefilename) & .Platform$endian == "big") 
-      stop("\nA little-endian processor is required for the sbcframe function when a \nshapefile name is assigned to argument shapefilename.  Assign an sp package \nobject to argument spframe.")
-
-# If necessary, strip the file extension from the shapefile name
-   if(!is.null(shapefilename)) {
-      nc <- nchar(shapefilename)
-      if(substr(shapefilename, nc-3, nc) == ".shp") {
-         shapefilename <- substr(shapefilename, 1, nc-4)
-      }
-   }
-# If a survey design frame object was provided, then create a temporary
-# shapefile
-   if(!is.null(spframe)) {
-      shapefilename <- "shapefile0202"
-      sp2shape(spframe, shapefilename)
-   }
-
-# Read the shapefile
-   sfile <- .Call("readShapeFile", shapefilename)
-   if(is.null(sfile[[1]]))
-      stop("\nAn error occurred while reading the shapefile(s) in the working directory.")
-
-# Determine the type of shapefile
-   shp.type <- attr(sfile$Shapes, "shp.type")
-
-# Determine the number of records in the shapefile
-   nshps <- attr(sfile$Shapes, "nshps")
+sbcframe <- function(sfobject, nrows = 5, dxdy = TRUE) {
 
 # Calculate the x-coordinate and y-coordinate increment values and create the
 # vectors of grid x-coordinates and y-coordinates
-   minbb <- attr(sfile$Shapes, "minbb")
-   maxbb <- attr(sfile$Shapes, "maxbb")
-   xmin <- minbb[1]
-   ymin <- minbb[2]
-   xmax <- maxbb[1]
-   ymax <- maxbb[2]
+   bbox <- st_bbox(sfobject)
+   xmin <- bbox$xmin
+   ymin <- bbox$ymin
+   xmax <- bbox$xmax
+   ymax <- bbox$ymax
    if(dxdy) {
       gridExtent = max((xmax - xmin), (ymax - ymin))
       xmin = xmin - gridExtent * 0.001
@@ -125,45 +66,47 @@ sbcframe <- function(shapefilename = NULL, spframe = NULL, nrows = 5,
    xc <- rep(xc, nrows)
    yc <- seq(ymin, ymax, length=(nrows+1))[-1]
    yc <- rep(yc, rep(nrows, nrows))
-   ncells <- length(xc)
 
-# Calculate grid cell extent and proportion for a point shapefile
-   if(shp.type == "point") {
-      temp <- .Call("readShapeFilePts", shapefilename)
-      ptsframe <- data.frame(x=temp$x, y=temp$y, mdm=1)
-      extent <- sapply(1:ncells, cell.wt, xc, yc, dx, dy, ptsframe)
-      prop <- extent/sum(extent)
+# Calculate extent for each grid cell
 
-# Calculate grid cell extent and proportion for a polyline shapefile
-   } else if(shp.type == "arc") {
-      extent <- numeric(ncells)
-      temp <- .Call("insideLinearGridCell", shapefilename, 1:nshps, 1:ncells,
-         xc, yc, dx, dy)
-      temp <- tapply(temp$recordLength, temp$cellID, sum)
-      extent[as.numeric(names(temp))] <- temp
-      prop <- extent/sum(extent)
+  if(all(st_geometry_type(sfobject) %in% c("POINT", "MULTIPOINT"))) {
+    frame_grd <- make_grid(xc, yc, dx, dy, sfobject)
+    frame_grd <- st_join(frame_grd, sfobject)
+    frame_grd$point_mdm <- 1
+    extent <- with(frame_grd, tapply(point_mdm, poly, sum))
+    extent[is.na(extent)] <- 0
+  } else if(all(st_geometry_type(sfobject) %in% c("LINESTRING", "MULTILINESTRING"))) {
+    extent <- numeric(length(xc))
+    for(i in 1:length(xc)) {
+      temp <- rbind(c(xc[i] - dx, yc[i] - dy), c(xc[i], yc[i] - dy),
+                    c(xc[i], yc[i]), c(xc[i] - dx, yc[i]),
+                    c(xc[i] - dx, yc[i] - dy))
+      sfcell <- st_sf(st_sfc(st_polygon(list(temp)), crs = st_crs(sfobject)))
+      tempsf <- st_intersection(sfobject, sfcell)
+      if(nrow(tempsf == 0)) {
+        extent[i] <- 0
+      } else {
+        extent[i] <- sum(as.numeric(st_length(tempsf)))
+      }
+    }
+  } else {
+    extent <- numeric(length(xc))
+    for(i in 1:length(xc)) {
+      temp <- rbind(c(xc[i] - dx, yc[i] - dy), c(xc[i], yc[i] - dy),
+                    c(xc[i], yc[i]), c(xc[i] - dx, yc[i]),
+                    c(xc[i] - dx, yc[i] - dy))
+      sfcell <- st_sf(st_sfc(st_polygon(list(temp)), crs = st_crs(sfobject)))
+      tempsf <- st_intersection(sfobject, sfcell)
+      if(nrow(tempsf == 0)) {
+        extent[i] <- 0
+      } else {
+        extent[i] <- sum(as.numeric(st_area(tempsf)))
+      }
+    }
+  }
 
-# Calculate grid cell extent and proportion for a polygon shapefile
-   } else if(shp.type == "poly") {
-      extent <- numeric(ncells)
-      temp <- .Call("insideAreaGridCell", shapefilename, 1:nshps, 1:ncells,
-         xc, yc, dx, dy)
-      temp <- tapply(temp$recordArea, temp$cellID, sum)
-      extent[as.numeric(names(temp))] <- temp
-      prop <- extent/sum(extent)
-
-# Print an error message to indicate unknown shapefile type
-   } else {
-      stop(paste("\nShapefile type", shp.type, "is not recognized."))
-   }
-
-# If a survey design frame object was provided, then  remove the temporary
-# shapefile
-
-   if(!is.null(spframe)) {
-      file.remove(paste(shapefilename, ".dbf", sep=""), paste(shapefilename,
-         ".shp", sep=""), paste(shapefilename, ".shx", sep=""))
-   }
+# Calculate proportion for each grid cell
+  prop <- extent/sum(extent)
 
 # Return results
    list(extent=extent, prop=prop, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax,

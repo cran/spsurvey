@@ -4,7 +4,7 @@
 \name{SC_estuaries}
 \alias{SC_estuaries}
 \title{Estuaries in South Carolina}
-\format{A data frame with 135 rows and 10 variables:
+\format{A data frame with 135 rows and 10 attributes:
 \describe{
   \item{siteID}{site ID value.}
   \item{xcoord}{Albers projection x-coordinate.}

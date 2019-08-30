@@ -4,16 +4,11 @@
 \alias{grtsarea}
 \title{Select a Generalized Random-Tesselation Stratified (GRTS) Sample of an Area Resource}
 \usage{
-grtsarea(shapefilename = NULL, areaframe, samplesize = 100,
-  SiteBegin = 1, shift.grid = TRUE, startlev = NULL, maxlev = 1,
-  maxtry = 1000)
+grtsarea(areaframe, samplesize = 100, SiteBegin = 1,
+  shift.grid = TRUE, startlev = NULL, maxlev = 1, maxtry = NULL)
 }
 \arguments{
-\item{shapefilename}{Name of the input shapefile.  If shapefilename equals
-NULL, then the shapefile or shapefiles in the working directory are used.
-The default is NULL.}
-
-\item{areaframe}{Data frame containing id, mdcaty and mdm.}
+\item{areaframe}{The sf object containing attributes: id, mdcaty and mdm.}
 
 \item{samplesize}{Number of points to select in the sample.  The default is
 100.}
@@ -30,9 +25,7 @@ and cannot be greater than 11.  The default is NULL.}
 \item{maxlev}{Maximum number of hierarchical levels to use for the GRTS
 grid, which cannot be greater than 11.  The default is 11.}
 
-\item{maxtry}{Maximum number of iterations for randomly generating a point
-within a grid cell to select a site when type.frame equals "area".  The
-default is 1000.}
+\item{maxtry}{This argument is depricated.}
 }
 \value{
 Data frame of sample points containing: siteID, id, x, y, mdcaty,
@@ -46,23 +39,19 @@ than one point per cell and then picks a point in selected cells.
 \section{Other Functions Required}{
 
   \describe{
-    \item{\code{pointInPolygonObj}}{C function to determine which
-      points in a set of points are located within a specified polygon}
-    \item{\code{numLevels}}{C function to determine the number of
-      levels for hierarchical randomization}
-    \item{\code{constructAddr}}{C function to construct the
-      hierarchical address for all points}
-    \item{\code{ranho}}{C function to construct the randomized
-      hierarchical address for all points}
-    \item{\code{pickGridCells}}{C function to select grid cells that
-      get a sample point}
-    \item{\code{insideAreaGridCell}}{C function to determine ID value
-      and clipped polygon area for shapefile records contained in the
-      selected grid cells}
-    \item{\code{\link{selectrecordID}}}{select a shapefile record from which
+    \item{\code{numLevels}}{determines the number of levels for hierarchical
+      randomization}
+    \item{\code{constructAddr}}{constructs the hierarchical address for
+      sample points}
+    \item{\code{ranho}}{constructs the randomized hierarchical address for
+      sample points}
+    \item{\code{pickGridCells}}{selects grid cells that get a sample point}
+    \item{\code{insideAreaGridCell}}{determines feature ID value and
+      clipped polygon area for each feature contained in a selected grid
+      cell}
+    \item{\code{\link{selectFeatureID}}}{identifies a feature ID from which
       to select a sample point}
-    \item{\code{pickAreaSamplePoints}}{C function to pick sample
-      points in the selected grid cells}
+    \item{\code{pickSamplePoints}}{selects sample points from an sf object}
   }
 }
 

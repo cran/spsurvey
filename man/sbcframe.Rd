@@ -2,19 +2,12 @@
 % Please edit documentation in R/sbcframe.R
 \name{sbcframe}
 \alias{sbcframe}
-\title{Calculate Spatial Balance Grid Cell Extent and Proportions for a Sample Frame}
+\title{Calculate Spatial Balance Grid Cell Extent and Proportion for a Survey Frame}
 \usage{
-sbcframe(shapefilename = NULL, spframe = NULL, nrows = 5,
-  dxdy = TRUE)
+sbcframe(sfobject, nrows = 5, dxdy = TRUE)
 }
 \arguments{
-\item{shapefilename}{Name of the input shapefile.  If shapefilename equals
-NULL, then the shapefile or shapefiles in the working directory are used.
-The default is NULL.}
-
-\item{spframe}{An sp package object of class SpatialPointsDataFrame,
-SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the
-survey design frame.  The default is NULL.}
+\item{sfobject}{An object of class sf that contains the survey frame.}
 
 \item{nrows}{Number of rows (and columns) for the grid of cells.  The
 default is 5.}
@@ -39,28 +32,9 @@ List containing the following components:
   }
 }
 \description{
-This function calculates spatial balance grid cell extent and proportions
+This function calculates spatial balance grid cell extent and proportion
 for the sample frame.
 }
-\section{Other Functions Required}{
-
-  \describe{
-    \item{\code{readShapeFile}}{C function to read a single shapefile
-      or multiple shapefiles}
-    \item{\code{readShapeFilePts}}{C function to read the shp file of
-      a point shapefile and return a data frame containing the x-coordinates
-      and y-coordinates for elements in the frame}
-    \item{\code{\link{cell.wt}}}{calculates number of points in a cell for a
-      points object}
-    \item{\code{insideLinearGridCell}}{C function to determine ID
-      value and clipped polyline length for shapefile records contained in
-      the selected grid cells}
-    \item{\code{insideAreaGridCell}}{C function to determine ID value
-      and clipped polygon area for shapefile records contained in the
-      selected grid cells}
-  }
-}
-
 \author{
 Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }

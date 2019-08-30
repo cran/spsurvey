@@ -2,40 +2,22 @@
 # Function: irsarea
 # Programmer: Tom Kincaid
 # Date: November 30, 2005
-# Last Revised: August 18, 2016
+# Last Revised: May 31, 2019
 #'
 #' Select an Independent Random Sample (IRS) of an Area Resource
 #'
 #' This function selects an IRS of an area resource.
 #'
-#' @param shapefilename Name of the input shapefile.  If shapefilename equals
-#'   NULL, then the shapefile or shapefiles in the working directory are used.
-#'   The default is NULL.
-#'
-#' @param areaframe Data frame containing id, mdcaty, area, and mdm.
+#' @param areaframe The sf object containing attributes: id, mdcaty, area_mdm,
+#'   and mdm.
 #'
 #' @param samplesize Number of points to select in the sample.  The default is
 #'   100.
 #'
 #' @param SiteBegin First number to start siteID numbering.  The default is 1.
 #'
-#' @param maxtry Maximum number of iterations for randomly generating a point
-#'   within the frame to select a site when type.frame equals "area".  The
-#'   default is 1000.
-#'
-#' @return data frame of sample points containing: siteID, id, x, y, mdcaty,
-#'   and weight.
-#'
-#' @section Other Functions Required:
-#'   \describe{
-#'     \item{\code{getRecordIDs}}{C function to obtain the shapefile
-#'       record IDs for records from which sample points will be selected}
-#'     \item{\code{getShapeBox}}{C function to obtain the shapefile
-#'       minimum and maximum values for the x and y coordinates}
-#'     \item{\code{pointInPolygonFile}}{C function to determine the
-#'       polygon IDs and the probability values associated with a set of point,
-#'       where polygons are specified by a shapefile}
-#'   }
+#' @return  An sf object of sample points containing attributes: siteID, id,
+#'   mdcaty, and wgt.
 #'
 #' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
 #'
@@ -44,71 +26,43 @@
 #' @export
 ################################################################################
 
-irsarea <- function (shapefilename = NULL, areaframe, samplesize = 100,
-   SiteBegin = 1, maxtry = 1000) {
+irsarea <- function (areaframe, samplesize = 100, SiteBegin = 1) {
 
-# Ensure that the processor is little-endian
+# Determine IDs for features that will contain sample points
 
-   if(.Platform$endian == "big")
-      stop("\nA little-endian processor is required for the irsarea function.")
-
-# Determine IDs for records that will contain sample points
-
-   area.cumsum <- cumsum(areaframe$area*areaframe$mdm)
+   area.cumsum <- cumsum(areaframe$area_mdm * areaframe$mdm)
    samp.pos <- runif(samplesize, 0, area.cumsum[nrow(areaframe)])
-   samp.id <- .Call("getRecordIDs", area.cumsum, samp.pos, areaframe$id)
+   samp.id <- numeric(samplesize)
+   indx <- numeric(samplesize)
+   for(j in 1:samplesize) {
+      for(i in 1:nrow(areaframe)) {
+         if(samp.pos[j] < area.cumsum[i]) {
+            samp.id[j] <- areaframe$id[i];
+            indx[j] <- i
+    	      break;
+         }
+      }
+   }
 
 # Pick sample points
 
-   x <- y <- id <- mdm <-numeric(samplesize)
-   j <- 1
-   for(i in unique(samp.id)) {
-      npt <- sum(samp.id == i)
-      bp <- !logical(npt)
-      ntry <- 0
-      idx <- seq(j, j+npt-1)
-      temp <- .Call("getShapeBox", shapefilename, i)
-      xmin <- temp$xmin
-      ymin <- temp$ymin
-      xmax <- temp$xmax
-      ymax <- temp$ymax
-      while(any(bp) & ntry < maxtry) {
-         x[idx[bp]] <- runif(sum(bp), xmin, xmax)
-         y[idx[bp]] <- runif(sum(bp), ymin, ymax)
-         temp <- .Call("pointInPolygonFile", shapefilename, x[idx[bp]],
-            y[idx[bp]], i, areaframe$mdm[areaframe$id == i])
-         id[idx[bp]] <- temp$id
-         mdm[idx[bp]] <- temp$mdm
-         ntry <- ntry + 1
-         bp <- mdm[idx] == 0
-      }
-      j <- j + npt
-   }
+   samp <- st_sample(areaframe[indx,], rep(1, samplesize), exact=TRUE)
+   samp <- st_cast(samp, "POINT")
 
-# When the achieved sample size is less than the desired sample size, remove
-# values from the output vectors
+# Create desired attributes
 
-   bp <- mdm == 0
-   if(sum(!bp) < samplesize) {
-      x <- x[!bp]
-      y <- y[!bp]
-      id <- id[!bp]
-      mdm <- mdm[!bp]
-   }
-   mdcaty <- areaframe$mdcaty[match(id, areaframe$id)]
+   siteID <- SiteBegin - 1 + 1:length(samp)
+   temp <- st_coordinates(samp)
+   xcoord <- temp[,1]
+   ycoord <- temp[,2]
 
-# Assign Site ID
+# Create the output sf object
 
-   siteID <- SiteBegin - 1 + 1:length(x)
-
-
-# Place Site ID as first column and add weights
-
-   rho <- data.frame(siteID=siteID, id=id, xcoord=x, ycoord=y, mdcaty=mdcaty,
-      wgt=1/mdm)
+   rho <- st_sf(siteID=siteID, id=samp.id, xcoord=xcoord, ycoord=ycoord,
+      mdcaty=areaframe$mdcaty[indx], wgt=1/areaframe$mdm[indx], geometry=samp)
    row.names(rho) <- 1:nrow(rho)
 
 # Return the sample
 
-   rho
+   return(rho)
 }

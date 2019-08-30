@@ -2,64 +2,40 @@
 # Function: read.dbf
 # Programmer: Tom Kincaid
 # Date: March 1, 2005
-# Last Revised: August 18, 2016
+# Last Revised: May 30, 2019
 #
 #' Read the dbf File of an ESRI Shapefile
 #'
-#' This function reads either a single dbf file or multiple dbf files.  For
-#' multiple dbf files, all of the dbf files must have the same variable names.
+#' This function reads the dbf file of an ESRI shapefile and creates a data
+#'   frame.
 #'
-#' @param filename  Name of the dbf file without any extension.  If filename
-#'   equals a dbf file name, then that dbf file is read.  If filename equals
-#'   NULL, then all of the dbf files in the working directory are read.  The
-#'   default is NULL.
+#' @param filename  Character string containing the name of the shapefile.
 #'
-#' @return Data frame composed of either the contents of the single dbf file,
-#'   when filename is provided, or the contents of the dbf file(s) in the
-#'   working directory, when filename is NULL.
-#'
-#' @section Other Functions Required:
-#'   \describe{
-#'     \item{\code{readDbfFile}}{C function to read a single dbf file or
-#'       multiple dbf files}
-#'   }
+#' @return Data frame containing contents of the dbf file.
 #'
 #' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#' @author Marc Weber  \email{Weber.Marc@epa.gov}
 #'
 #' @export
 ################################################################################
 
-read.dbf <- function(filename = NULL) {
+read.dbf <- function(filename) {
 
-# Ensure that the processor is little-endian
+# Ensure that the file extension is ".shp"
 
-   if(.Platform$endian == "big")
-      stop("\nA little-endian processor is required for the read.dbf function.")
+   
+   if(!grepl(".shp",filename))
+      filename <- paste0(filename, '.shp')
 
-# If necessary, strip the file extension from the file name
+# Read the shapefile
 
-   if(!is.null(filename)) {
-      nc <- nchar(filename)
-      if(substr(filename, nc-3, nc) == ".dbf") {
-         filename <- substr(filename, 1, nc-4)
-      }
-   }
+   dbffile <- st_read(filename, quiet = TRUE)
 
-# Read the dbf file
+# Drop the geometry column from dbffile to create a data frame
 
-   dbffile <- .Call("readDbfFile", filename)
-   if(is.null(dbffile[[1]]))
-      stop("\nAn error occurred while reading the dbf file(s) in the working directory.")
-
-# Convert character vectors to factors
-
-   ind <- sapply(dbffile, is.character)
-   if(any(ind)) {
-      for(i in (1:length(dbffile))[ind])
-         dbffile[,i] <- as.factor(dbffile[,i])
-   }
+   dbffile <- st_set_geometry(dbffile, NULL)
 
 # Return the data frame
 
-   dbffile
+   return(dbffile)
 }

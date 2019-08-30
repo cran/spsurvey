@@ -9,7 +9,7 @@
 #'
 #' @usage decon_data
 #'
-#' @format A data frame with 930 rows and 6 variables:
+#' @format A data frame with 930 rows and 6 attributes:
 #' \describe{
 #'   \item{xcoord}{simulated x-coordinate value.}
 #'   \item{ycoord}{simulated y-coordinate value.}

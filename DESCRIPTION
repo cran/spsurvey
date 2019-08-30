@@ -1,26 +1,22 @@
 Package: spsurvey
-Version: 4.0.0
-Date: 2019-04-04
 Title: Spatial Survey Design and Analysis
+Version: 4.1.0
+Date: 2019-08-09
 Authors@R: c(
-    person("Tom", "Kincaid", role=c("aut", "cre"),
+    person("Tom", "Kincaid", role="aut",
            email = "Kincaid.Tom@epa.gov"),
     person("Tony", "Olsen",  role="aut",
            email = "Olsen.Tony@epa.gov"),
+    person("Marc", "Weber",  role=c("aut","cre"),
+           email = "Weber.Marc@epa.gov"),
     person("Don", "Stevens",  role="ctb"),
     person("Christian", "Platt",  role="ctb"),
     person("Denis", "White",  role="ctb"),
     person("Richard", "Remington",  role="ctb")
     )
-Author: Tom Kincaid [aut, cre],
-  Tony Olsen [aut],
-  Don Stevens [ctb],
-  Christian Platt [ctb],
-  Denis White [ctb],
-  Richard Remington [ctb]
-Maintainer: Tom Kincaid <Kincaid.Tom@epa.gov>
-Depends: R (>= 2.10), sp
-Suggests: knitr (>= 1.19)
+Maintainer: Marc Weber <Weber.Marc@epa.gov>
+Depends: R (>= 3.5.0), methods, sf, sp
+Suggests: knitr, testthat, rmarkdown
 Description: These functions provide procedures for selecting sites for spatial
     surveys using spatially balanced algorithms applied to discrete points,
     linear networks, or polygons. The probability survey designs available
@@ -42,14 +38,19 @@ Description: These functions provide procedures for selecting sites for spatial
     <Online ISBN:9781139022422>).
 License: GPL (>= 3)
 Imports: crossdes, deldir, foreign, graphics, grDevices, Hmisc, MASS,
-        methods, rgeos, stats
-SystemRequirements: A little-endian processor is required for some
-        functions (see the README file).
+        parallel, rgeos, stats
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
-NeedsCompilation: yes
-Packaged: 2019-04-04 21:06:15 UTC; tkincaid
+NeedsCompilation: no
+Packaged: 2019-08-29 17:59:24 UTC; mweber
+Author: Tom Kincaid [aut],
+  Tony Olsen [aut],
+  Marc Weber [aut, cre],
+  Don Stevens [ctb],
+  Christian Platt [ctb],
+  Denis White [ctb],
+  Richard Remington [ctb]
 Repository: CRAN
-Date/Publication: 2019-04-05 10:10:04 UTC
+Date/Publication: 2019-08-30 04:20:03 UTC

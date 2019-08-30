@@ -2,6 +2,7 @@
 # Function: sbcsamp
 # Programmer: Tom Kincaid
 # Date: September 29, 2011
+# Last Revised: May 30, 2019
 #
 #' Calculate Spatial Balance Grid Cell Extent and Proportions for a Survey Design
 #'
@@ -9,14 +10,19 @@
 #' for a survey design.  The user must provide either sbc.frame or values for
 #' dx, dy, xc, and yc.
 #'
-#' @param sp.sample The sp package object of class "SpatialPointsDataFrame"
-#'   produced by the grts or irs functions that contains survey design
-#'   information.
+#' @param spsample Object of class SpatialDesign produced by either the grts or
+#'   irs functions that contains survey design information and additional
+#'   attribute (auxiliary) variables.
+#'
 #' @param sbc.frame The object created by the sbcframe function.  The default is
 #'   NULL.
+#'
 #' @param dx Grid cell x-coordinate increment value.  The default is NULL.
+#'
 #' @param dy Grid cell y-coordinate increment value.  The default is NULL.
+#'
 #' @param xc Vector of grid cell x-coordinates.  The default is NULL.
+#'
 #' @param yc Vector of grid cell y-coordinates.  The default is NULL.
 #'
 #' @return List containing the following components:
@@ -25,26 +31,16 @@
 #'     \item{prop}{the sample proportion for each grid cell}
 #'   }
 #'
-#' @section Other Functions Required:
-#'   \describe{
-#'     \item{\code{readShapeFilePts}}{C function to read the shp file of
-#'       a point shapefile and return a data frame containing the x-coordinates
-#'       and y-coordinates for elements in the frame}
-#'     \item{\code{\link{cell.wt}}}{calculates number of points in a cell for a
-#'       points object}
-#'   }
-#'
 #' @author Tom Kincaid \email{Kincaid.Tom@epa.gov}
 #'
 #' @export
 ################################################################################
 
-sbcsamp <- function(sp.sample, sbc.frame = NULL, dx = NULL, dy = NULL,
+sbcsamp <- function(spsample, sbc.frame = NULL, dx = NULL, dy = NULL,
    xc = NULL, yc = NULL) {
 
-# Obtain the sample x-coordinates and y-coordinates from the sp.sample object
-   xcoord <- sp.sample@data$xcoord
-   ycoord <- sp.sample@data$ycoord
+# Convert the spsample object to an object of class sf
+  sfobject <- st_as_sf(spsample)
 
 # If the sbc.frame object was provided, obtain values for dx, dy, xc, and yc
    if(!is.null(sbc.frame)) {
@@ -54,11 +50,19 @@ sbcsamp <- function(sp.sample, sbc.frame = NULL, dx = NULL, dy = NULL,
       yc <- sbc.frame$yc
    }
 
-# Calculate grid cell extent and proportion
-   ncells <- length(xc)
-   ptsframe <- data.frame(x=xcoord, y=ycoord, mdm=1)
-   extent <- sapply(1:ncells, cell.wt, xc, yc, dx, dy, ptsframe)
-   prop <- (extent/sum(extent))
+# Create an sf polygon object containing the survey design grid
+
+  design_grd <- make_grid(xc, yc, dx, dy, sfobject)
+  design_grd <- st_join(design_grd, sfobject)
+
+# Calculate extent for each grid cell
+
+  design_grd$point_mdm <- 1
+  extent <- with(design_grd, tapply(point_mdm, poly, sum))
+  extent[is.na(extent)] <- 0
+
+# Calculate proportion for each grid cell
+  prop <- extent/sum(extent)
 
 # Return results
    list(extent=extent, prop=prop)

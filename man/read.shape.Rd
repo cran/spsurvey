@@ -2,50 +2,24 @@
 % Please edit documentation in R/read.shape.R
 \name{read.shape}
 \alias{read.shape}
-\title{Read Single or Multiple ESRI Shapefiles}
+\title{Read an ESRI Shapefile}
 \usage{
-read.shape(filename = NULL)
+read.shape(filename)
 }
 \arguments{
-\item{filename}{Name of the shapefile without any extension.  If filename
-equals a shapefile name, then that shapefile is read.  If filename equals
-NULL, then all of the shapefiles in the working directory are read.  The
-default is NULL.}
+\item{filename}{Character string containing the name of the shapefile.  The
+shapefile name should include the ".shp" extension.  If the name does not
+include that extension, it will be added.}
 }
 \value{
-An sp package object containing information in the shapefile.  The
-  object is assigned class "SpatialPointsDataFrame", "SpatialLinesDataFrame",
-  or "SpatialPolygonsDataFrame" corresponding to the shapefile type, i.e.,
-  point, polyline, or polygon, respectively.  For further information
-  regarding the output object, see documentation for the sp package.
+An object belonging to class sf.
 }
 \description{
-This function reads either a single shapefile or multiple shapefiles.  For
-multiple shapefiles, all of the shapefiles must be the same type, i.e.,
-point, polyline, or polygon.
+This function reads an ESRI shapefile and creates a simple features (sf)
+  object.
 }
-\section{Other Functions Required}{
-
-  \describe{
-    \item{\code{readShapeFile}}{C function to read a single shapefile
-      or multiple shapefiles}
-    \item{\code{\link{SpatialPoints}}}{sp package function to create an
-      object of class SpatialPoints}
-    \item{\code{\link{SpatialPointsDataFrame}}}{function to create an object
-      of class SpatialPointsDataFrame}
-    \item{\code{\link{shape2spList}}}{function to create an object of class
-      Lines for a lines shapefile or class Polygons for a polygons shapefile}
-    \item{\code{\link{SpatialLines}}}{sp package function to create an object
-      of class SpatialLines}
-    \item{\code{\link{SpatialLinesDataFrame}}}{sp package function to create
-      an object of class SpatialLinesDataFrame}
-    \item{\code{\link{SpatialPolygons}}}{sp package function to create an
-      object of class SpatialPolygons}
-    \item{\code{\link{SpatialPolygonsDataFrame}}}{sp package function to
-      create an object of class SpatialPolygonsDataFrame}
-  }
-}
-
 \author{
 Tom Kincaid \email{Kincaid.Tom@epa.gov}
+
+Marc Weber  \email{Weber.Marc@epa.gov}
 }

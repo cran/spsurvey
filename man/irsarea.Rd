@@ -4,45 +4,24 @@
 \alias{irsarea}
 \title{Select an Independent Random Sample (IRS) of an Area Resource}
 \usage{
-irsarea(shapefilename = NULL, areaframe, samplesize = 100,
-  SiteBegin = 1, maxtry = 1000)
+irsarea(areaframe, samplesize = 100, SiteBegin = 1)
 }
 \arguments{
-\item{shapefilename}{Name of the input shapefile.  If shapefilename equals
-NULL, then the shapefile or shapefiles in the working directory are used.
-The default is NULL.}
-
-\item{areaframe}{Data frame containing id, mdcaty, area, and mdm.}
+\item{areaframe}{The sf object containing attributes: id, mdcaty, area_mdm,
+and mdm.}
 
 \item{samplesize}{Number of points to select in the sample.  The default is
 100.}
 
 \item{SiteBegin}{First number to start siteID numbering.  The default is 1.}
-
-\item{maxtry}{Maximum number of iterations for randomly generating a point
-within the frame to select a site when type.frame equals "area".  The
-default is 1000.}
 }
 \value{
-data frame of sample points containing: siteID, id, x, y, mdcaty,
-  and weight.
+An sf object of sample points containing attributes: siteID, id,
+  mdcaty, and wgt.
 }
 \description{
 This function selects an IRS of an area resource.
 }
-\section{Other Functions Required}{
-
-  \describe{
-    \item{\code{getRecordIDs}}{C function to obtain the shapefile
-      record IDs for records from which sample points will be selected}
-    \item{\code{getShapeBox}}{C function to obtain the shapefile
-      minimum and maximum values for the x and y coordinates}
-    \item{\code{pointInPolygonFile}}{C function to determine the
-      polygon IDs and the probability values associated with a set of point,
-      where polygons are specified by a shapefile}
-  }
-}
-
 \author{
 Tom Kincaid \email{Kincaid.Tom@epa.gov}
 }

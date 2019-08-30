@@ -3,7 +3,7 @@
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #   			Denis White, Richard Remington
 # Date: May 19, 2004
-# Last Revised: August 18, 2016
+# Last Revised: June 10, 2019
 #
 #' Select a Generalized Random-Tesselation Stratified (GRTS) Sample of a Linear Resource
 #'
@@ -11,11 +11,7 @@
 #' hierarchical randomization to ensure that the sample will include no more
 #' than one point per cell and then picks a point in selected cells.
 #'
-#' @param shapefilename Name of the input shapefile.  If shapefilename equals
-#'   NULL, then the shapefile or shapefiles in the working directory are used.
-#'   The default is NULL.
-#'
-#' @param linframe Data frame containing id, mdcaty, and mdm.
+#' @param linframe The sf object containing attributes: id, mdcaty, and mdm.
 #'
 #' @param samplesize Number of points to select in the sample.  The default is
 #'   100.
@@ -37,44 +33,36 @@
 #'
 #' @section Other Functions Required:
 #'   \describe{
-#'     \item{\code{numLevels}}{C function to determine the number of
-#'       levels for hierarchical randomization}
-#'     \item{\code{constructAddr}}{C function to construct the
-#'       hierarchical address for all points}
-#'     \item{\code{ranho}}{C function to construct the randomized
-#'       hierarchical address for all points}
-#'     \item{\code{pickGridCells}}{C function to select grid cells that
-#'       get a sample point}
-#'     \item{\code{insideLinearGridCell}}{C function to determine ID
-#'       value and clipped polyline length for shapefile records contained in
-#'       the selected grid cells}
-#'     \item{\code{\link{selectrecordID}}}{select a shapefile record from which
+#'     \item{\code{numLevels}}{determines the number of levels for hierarchical
+#'       randomization}
+#'     \item{\code{constructAddr}}{constructs the hierarchical address for
+#'       sample points}
+#'     \item{\code{ranho}}{constructs the randomized hierarchical address for
+#'       sample points}
+#'     \item{\code{pickGridCells}}{selects grid cells that get a sample point}
+#'     \item{\code{insideLinearGridCell}}{determines feature ID value and
+#'       clipped linestring length for each feature contained in a selected grid
+#'       cell}
+#'     \item{\code{\link{selectFeatureID}}}{identifies a feature ID from which
 #'       to select a sample point}
-#'     \item{\code{pickLinearSamplePoints}}{C function to pick sample
-#'       points in the selected grid cells}
+#'     \item{\code{pickSamplePoints}}{selects sample points from an sf object}
 #'   }
 #'
-#' @author Tony Olsen \email{Olsen.Tony@epa.gov}
+#' @author
+#'  Tom Kincaid \email{Kincaid.Tom@epa.gov}
+#'  Tony Olsen \email{Olsen.Tony@epa.gov}\cr
 #'
 #' @keywords survey
 #'
 #' @export
 ################################################################################
 
-grtslin <- function (shapefilename = NULL, linframe, samplesize = 100,
-   SiteBegin = 1, shift.grid = TRUE, startlev = NULL, maxlev = 1){
-
-# Ensure that the processor is little-endian
-
-   if(.Platform$endian == "big")
-      stop("\nA little-endian processor is required for the grtslin function.")
+grtslin <- function (linframe, samplesize = 100, SiteBegin = 1,
+   shift.grid = TRUE, startlev = NULL, maxlev = 1){
 
 # Determine the number of levels for hierarchical randomization
 
-   temp <- .Call("numLevels", shapefilename, samplesize, shift.grid,
-      startlev, maxlev, linframe$id, linframe$mdm)
-   if(is.null(temp[[1]]))
-      stop("\nAn error occured while determining the number of levels for hierarchical \nrandomization.")
+   temp <- numLevels(samplesize, shift.grid, startlev, maxlev, linframe)
    nlev <- temp$nlev
    dx <- temp$dx
    dy <- temp$dy
@@ -92,11 +80,11 @@ grtslin <- function (shapefilename = NULL, linframe, samplesize = 100,
 
 # Construct the hierarchical address for all cells
 
-   hadr <- .Call("constructAddr", xc, yc, dx, dy, as.integer(nlev))
+   hadr <- constructAddr(xc, yc, dx, dy, nlev)
 
 # Construct randomized hierarchical addresses
 
-   ranhadr <- .C("ranho", hadr, as.integer(length(hadr)))[[1]]
+   ranhadr <- ranho(hadr)
 
 # Determine order of the randomized hierarchical addresses
 
@@ -107,7 +95,7 @@ grtslin <- function (shapefilename = NULL, linframe, samplesize = 100,
    rstrt <- runif(1, 0, sint)
    ttl.wt <- c(0, cumsum(cel.wt[rord]))
    idx <- ceiling((ttl.wt - rstrt)/sint)
-   smpdx <- .Call("pickGridCells", samplesize, as.integer(idx))
+   smpdx <- pickGridCells(samplesize, idx)
    rdx <- rord[smpdx]
    n.cells <- length(unique(rdx))
    if(length(rdx) > n.cells) {
@@ -115,24 +103,21 @@ grtslin <- function (shapefilename = NULL, linframe, samplesize = 100,
       warning(paste("\nOf the ", n.cells, " grid cells from which sample points were selected,\n", temp, " (", round(100*temp/n.cells, 1), "%) of the cells contained more than one sample point.\n", sep=""))
    }
 
-# Determine shapefile record IDs and clipped polyline lengths for each selected
-# cell
+# Determine feature ID and clipped polygon length for each selected cell
 
    rdx.u <- unique(rdx)
-   cell.df <- .Call("insideLinearGridCell", shapefilename, linframe$id, rdx.u,
-      xc[rdx.u], yc[rdx.u], dx, dy)
+   cell.df <- insideLinearGridCell(linframe, rdx.u, xc[rdx.u], yc[rdx.u], dx, dy)
 
 # Pick a sample point in selected cells
 
    id <- integer(samplesize)
    for(i in 1:samplesize) {
-      id[i] <- selectrecordID(rdx[i], cell.df$cellID, cell.df$recordLength,
-         cell.df$recordID, linframe$mdm, linframe$id)
+      id[i] <- selectFeatureID(rdx[i], cell.df$cellID, cell.df$featureLength,
+         cell.df$featureID, linframe$mdm, linframe$id)
    }
    prb <- linframe$mdm[match(id, linframe$id)]
    shp.id <- sort(unique(id))
-   temp <- .Call("pickLinearSamplePoints", shapefilename, shp.id, id, xc[rdx],
-      yc[rdx], dx, dy)
+   temp <- pickSamplePoints(linframe, id, xc[rdx], yc[rdx], dx, dy)
    xcs <- temp$xcs
    ycs <- temp$ycs
 
@@ -155,17 +140,18 @@ grtslin <- function (shapefilename = NULL, linframe, samplesize = 100,
    mdcaty <- linframe$mdcaty[match(id, linframe$id)]
    mdm <- prb[rh.ord]
 
-# Assign Site ID
+# Assign Site ID values
 
    siteID <- SiteBegin - 1 + 1:length(rh.ord)
 
-# Place Site ID as first column and add weights
+# Create the output sf object
 
    rho <- data.frame(siteID=siteID, id=id, xcoord=x, ycoord=y, mdcaty=mdcaty,
       wgt=1/mdm)
+   rho <- st_as_sf(rho, coords = c("xcoord", "ycoord"), remove = FALSE)
    row.names(rho) <- 1:nrow(rho)
 
-# Assign the final number of levels as an attribute of the output data frame
+# Assign the final number of levels as an attribute of the output object
 
    attr(rho, "nlev") <- nlev - 1
 

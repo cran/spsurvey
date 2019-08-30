@@ -1,6 +1,45 @@
 \name{NEWS}
 \title{News for Package \pkg{spsurvey}}
 
+\section{CHANGES IN spsurvey VERSION 4.1.0 (Released 2019-08-02)}{
+  \subsection{NEW FEATURES}{
+    \itemize{
+      \item Functions that create survey designs were modified to replace use of
+        shapefiles to provide the survey frame with use of simple features (sf)
+        objects to provide the survey frame.  To accommodate this change,
+        argument src.frame for functions \code{grts} and \code{irs} now will
+        accept the choice "sf.object" to indicate that an sf object will be used
+        as the source of the survey frame.  In addition, a new argument named
+        sf.object was added to functions \code{grts} and \code{irs} to allow
+        input of an sf object as the survey frame.  Also, note that arguments
+        id, maxtry, and prjfilename for functions \code{grts} and \code{irs}
+        have been depricated since they are no longer needed.  Finally, the
+        three rda files in the data directory that contain survey frame objects
+        (\code{NE_lakes}, \code{Luck_Ash_streams}, and \code{UT_ecoregions})
+        were revised to contain sf objects rather than objects belonging to
+        classes that are defined in the sp package. 
+      \item The package no longer contains any functions written in C.  The C
+        functions were either no longer required due to the transition to use of
+        sf objects to contain the survey frame or were replaced with functions
+        written in R.  The new R code functions are: \code{cellWeight},
+        \code{constructAddr}, \code{insideAreaGridCell},
+        \code{insideLinearGridCell}, \code{make_grid}, \code{numLevels},
+        \code{pickFiniteSamplePoints}, \code{pickGridCells},
+        \code{pickSamplePoints}, \code{ranho}, and \code{selectFeatureID}. 
+    }
+  }
+
+  \subsection{BUG FIXES}{
+    \itemize{
+      \item The new R code function named \code{numLevels} that determines the
+        number of hierarchical levels for a generalized random-tesselation
+        stratified (GRTS) survey design now includes code to ensure that the
+        maximum number of levels (which is currently 11) is not bypassed when
+        creating a survey design.
+    }
+  }
+}
+
 \section{CHANGES IN spsurvey VERSION 4.0.0 (Released 2019-04-04)}{
   \subsection{NEW FEATURES}{
     \itemize{

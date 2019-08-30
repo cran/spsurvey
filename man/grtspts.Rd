@@ -4,20 +4,12 @@
 \alias{grtspts}
 \title{Select a Generalized Random-Tesselation Stratified (GRTS) Sample of a Finite Resource}
 \usage{
-grtspts(src.frame = "shapefile", shapefilename = NULL, ptsframe,
-  samplesize = 100, SiteBegin = 1, shift.grid = TRUE,
+grtspts(ptsframe, samplesize = 100, SiteBegin = 1, shift.grid = TRUE,
   do.sample = TRUE, startlev = NULL, maxlev = 11)
 }
 \arguments{
-\item{src.frame}{Source of the frame, which equals "shapefile" if the frame
-is to be read from a shapefile, or "att.frame" if the frame is included in
-ptsframe.  The default is "shapefile".}
-
-\item{shapefilename}{Name of the input shapefile. If src.frame equals
-"shapefile" and shapefilename equals NULL, then the shapefile or shapefiles
-in the working directory are used.  The default is NULL.}
-
-\item{ptsframe}{Data frame containing id, x, y, mdcaty, and mdm.}
+\item{ptsframe}{The sf object containing attributes: id, x, y, mdcaty, and
+mdm.}
 
 \item{samplesize}{Number of points to select in the sample.  The default is
 100.}
@@ -45,26 +37,25 @@ Data frame of sample points containing: siteID, id, x, y, mdcaty,
 \description{
 This function select a GRTS sample of a finite resource.  This function uses
 hierarchical randomization to ensure that the sample will include no more
-than one point per cell and then picks a point in selected cells.
+than one point per grid cell and then picks a point in selected cells.
 }
 \section{Other Functions Required}{
 
   \describe{
-    \item{\code{numLevels}}{C function to determine the number of
-      levels for hierarchical randomization}
-    \item{\code{\link{cell.wt}}}{calculates total inclusion probability for a
-      cell}
-    \item{\code{constructAddr}}{C function to construct the
-      hierarchical address for all points}
-    \item{\code{ranho}}{C function to construct the randomized
-      hierarchical address for all points}
-    \item{\code{pickGridCells}}{C function to select grid cells that
-      get a sample point}
-    \item{\code{\link{selectpts}}}{pick sample point(s) from selected cells}
+    \item{\code{numLevels}}{determines the number of levels for hierarchical
+      randomization}
+    \item{\code{constructAddr}}{constructs the hierarchical address for
+      sample points}
+    \item{\code{ranho}}{constructs the randomized hierarchical address for
+      sample points}
+    \item{\code{pickGridCells}}{selects grid cells that get a sample point}
+    \item{\code{\link{pickFiniteSamplePoints}}}{pick sample point(s) from
+      selected cells}
   }
 }
 
 \author{
-Tony Olsen \email{Olsen.Tony@epa.gov}
+Tom Kincaid \email{Kincaid.Tom@epa.gov}
+ Tony Olsen \email{Olsen.Tony@epa.gov}\cr
 }
 \keyword{survey}

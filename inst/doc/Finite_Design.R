@@ -1,250 +1,120 @@
-### R code from vignette source 'Finite_Design.Rnw'
-### Encoding: ISO8859-1
+## ----setup, include = FALSE----------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
 
-###################################################
-### code chunk number 1: processor
-###################################################
-# Ensure that the processor is little-endian
-
-if(.Platform$endian == "big") 
-   stop("\nA little-endian processor is required for this vignette.")
-
-
-
-###################################################
-### code chunk number 2: preliminaries
-###################################################
-# Load the spsurvey package
+## ----load-spsurvey-------------------------------------------------------
 library(spsurvey)
 
-
-
-###################################################
-### code chunk number 3: createshape
-###################################################
-# Load the sp object in the data directory
+## ----load_NElakes--------------------------------------------------------
 data(NE_lakes)
 
-# Create a shapefile
-sp2shape(sp.obj=NE_lakes, shpfilename="NE_lakes")
+## ----head_NElakes--------------------------------------------------------
+head(NE_lakes)
 
+## ----cross-class_NElakes-------------------------------------------------
+with(NE_lakes, addmargins(table("State"=State, "Lake Area Category"=Area_Cat)))
 
-
-###################################################
-### code chunk number 4: att
-###################################################
-# Read the attribute table from the shapefile
-att <- read.dbf("NE_lakes")
-
-
-
-###################################################
-### code chunk number 5: att
-###################################################
-# Display the initial six lines in the attribute data frame
-head(att)
-
-
-
-###################################################
-### code chunk number 6: att
-###################################################
-# Display number of lakes cross-classified by strata and multidensity
-# category
-addmargins(table("State"=att$State, "Lake Area Category"=att$Area_Cat))
-
-
-
-###################################################
-### code chunk number 7: Equalsites
-###################################################
-# Call the set.seed function so that the survey designs can be replicate
+## ----set.seed------------------------------------------------------------
 set.seed(4447864)
 
+## ----design.list---------------------------------------------------------
+Equaldsgn <- list(None=list(panel=c(PanelOne=100), seltype="Equal"))
 
-
-###################################################
-### code chunk number 8: Equalsites
-###################################################
-# Create the design list
-Equaldsgn <- list(None=list(panel=c(PanelOne=300), seltype="Equal"))
-
-
-
-###################################################
-### code chunk number 9: Equalsites
-###################################################
-# Select the sample
+## ----select.sample-------------------------------------------------------
 Equalsites <- grts(design=Equaldsgn,
                    DesignID="EQUAL",
                    type.frame="finite",
-                   src.frame="shapefile",
-                   in.shape="NE_lakes", 
-                   att.frame=att,
+                   src.frame="sf.object",
+                   sf.object=NE_lakes,
                    shapefile=FALSE)
 
+## ----head.design---------------------------------------------------------
+head(Equalsites)
 
-
-###################################################
-### code chunk number 10: Equalsites
-###################################################
-# Print the initial six lines of the survey design
-head(Equalsites@data)
-
-
-
-###################################################
-### code chunk number 11: Equalsites
-###################################################
-# Print the survey design summary
+## ----summary.design------------------------------------------------------
 summary(Equalsites)
 
+## ----create_df-----------------------------------------------------------
+geom_name <- attr(NE_lakes, "sf_column")
+NE_lakes_df <- subset(NE_lakes, select=names(NE_lakes) != geom_name, drop = TRUE)
 
+## ----create_designlist---------------------------------------------------
+Stratdsgn <- list(CT=list(panel=c(PanelOne=40), seltype="Equal"),
+                  MA=list(panel=c(PanelOne=40), seltype="Equal"),
+                  RI=list(panel=c(PanelOne=20), seltype="Equal"))
 
-###################################################
-### code chunk number 12: Stratsites
-###################################################
-# Create the design list
-Stratdsgn <- list(CT=list(panel=c(PanelOne=125), seltype="Equal"),
-                  MA=list(panel=c(PanelOne=125), seltype="Equal"),
-                  RI=list(panel=c(PanelOne=50), seltype="Equal"))
-
-
-
-###################################################
-### code chunk number 13: Stratsites
-###################################################
-# Select the sample
+## ----select.sample2------------------------------------------------------
 Stratsites <- grts(design=Stratdsgn,
                    DesignID="STRATIFIED",
                    type.frame="finite",
                    src.frame="att.frame",
-                   att.frame=att,
+                   att.frame=NE_lakes_df,
                    xcoord="xcoord",
                    ycoord="ycoord",
                    stratum="State",
                    shapefile=FALSE)
 
+## ----head.stratsites-----------------------------------------------------
+head(Stratsites)
 
-
-###################################################
-### code chunk number 14: Stratsites
-###################################################
-# Print the initial six lines of the survey design
-head(Stratsites@data)
-
-
-
-###################################################
-### code chunk number 15: Stratsites
-###################################################
-# Print the survey design summary
+## ----summary.stratsites--------------------------------------------------
 summary(Stratsites)
 
+## ----create_sp-----------------------------------------------------------
+NE_lakes_sp <- as_Spatial(NE_lakes)
 
-
-###################################################
-### code chunk number 16: Unequalsites
-###################################################
-# Read the shapefile
-shp <- read.shape("NE_lakes")
-
-
-
-###################################################
-### code chunk number 17: Unequalsites
-###################################################
-# Create the design list
-Unequaldsgn <- list(None=list(panel=c(PanelOne=300),
+## ----create_design_list--------------------------------------------------
+Unequaldsgn <- list(None=list(panel=c(PanelOne=90),
                               seltype="Unequal",
-                              caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
-                                       "(10,50]"=50, "(50,500]"=25,
+                              caty.n=c("(0,1]"=15, "(1,5]"=30, "(5,10]"=15,
+                                       "(10,50]"=15, "(50,500]"=10,
                                        "(500,1e+04]"=5),
-                              over=120))
+                              over=10))
 
-
-
-###################################################
-### code chunk number 18: Unequalsites
-###################################################
-# Select the sample
+## ----select_sample-------------------------------------------------------
 Unequalsites <- grts(design=Unequaldsgn,
                      DesignID="UNEQUAL",
                      type.frame="finite",
                      src.frame="sp.object",
-                     sp.object=shp,
-                     att.frame=att,
+                     sp.object=NE_lakes_sp,
                      mdcaty="Area_Cat",
                      shapefile=FALSE)
 
+## ----head_design---------------------------------------------------------
+head(Unequalsites)
 
-
-###################################################
-### code chunk number 19: Unequalsites
-###################################################
-# Print the initial six lines of the survey design
-head(Unequalsites@data)
-
-
-
-###################################################
-### code chunk number 20: Unequalsites
-###################################################
-# Print the survey design summary
+## ----summary_design------------------------------------------------------
 summary(Unequalsites)
 
+## ----create_shapefile----------------------------------------------------
+st_write(NE_lakes, "NE_lakes.shp", quiet = TRUE, delete_dsn = TRUE)
 
-
-###################################################
-### code chunk number 21: Panelsites
-###################################################
-# Create the design list
-Paneldsgn <- list(None=list(panel=c(Annual=50, Year1=50, Year2=50, Year3=50,
-                                    Year4=50, Year5=50),
+## ----create_design2------------------------------------------------------
+Paneldsgn <- list(None=list(panel=c(Annual=15, Year1=15, Year2=15, Year3=15,
+                                    Year4=15, Year5=15),
                             seltype="Unequal",
-                            caty.n=c("(0,1]"=50, "(1,5]"=120, "(5,10]"=50,
-                                     "(10,50]"=50, "(50,500]"=25,
+                            caty.n=c("(0,1]"=15, "(1,5]"=30, "(5,10]"=15,
+                                     "(10,50]"=15, "(50,500]"=10,
                                      "(500,1e+04]"=5),
-                            over=100))
+                            over=10))
 
-
-
-###################################################
-### code chunk number 22: Panelsites
-###################################################
-# Select the sample
+## ----select_sample2------------------------------------------------------
 Panelsites <- grts(design=Paneldsgn,
                    DesignID="UNEQUAL",
                    type.frame="finite",
                    src.frame="shapefile",
-                   in.shape="NE_lakes",
-                   att.frame=att,
+                   in.shape="NE_lakes.shp",
                    mdcaty="Area_Cat",
                    shapefile=FALSE)
 
+## ----warnings------------------------------------------------------------
+warnings()
 
+## ----head_design2--------------------------------------------------------
+head(Panelsites)
 
-###################################################
-### code chunk number 23: Panelsites (eval = FALSE)
-###################################################
-## # Print the warning message
-## warnings()
-## 
-
-
-###################################################
-### code chunk number 24: Panelsites
-###################################################
-# Print the initial six lines of the survey design
-head(Panelsites@data)
-
-
-
-###################################################
-### code chunk number 25: Panelsites
-###################################################
-# Print the survey design summary
+## ----summary_design2-----------------------------------------------------
 summary(Panelsites)
-
-
 

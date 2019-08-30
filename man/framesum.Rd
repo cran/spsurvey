@@ -87,11 +87,9 @@ This function summarizes the frame for a survey design.  When type.frame
 equals "finite", summary is a count of number of units in att.frame for
 cross-tabulation of stratum, mdcaty, and auxvar.  When type.frame equals
 "linear" or "area", summary is the sum of length or area for units for cross-
-tabulation of stratum, mdcaty, and auxvar.  Note that length and area are
-taken from length_mdm and area_mdm, which are calculated by the function
-read.dbf and added to att.frame.  If argument mdcaty or argument stratum
-equals NULL or if both arguments equal NULL, then the cross-tabulation is
-performed without use of the design variable(s).
+tabulation of stratum, mdcaty, and auxvar.  If argument mdcaty or argument
+stratum equals NULL or if both arguments equal NULL, then the cross-tabulation
+is performed without use of the design variable(s).
 }
 \section{Other Functions Required}{
 
@@ -103,7 +101,7 @@ performed without use of the design variable(s).
 
 \examples{
 \dontrun{
-attframe <- read.dbf("shapefile")
+attframe <- read.dbf("shapefile.shp")
 design <- list(
   Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
   Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",

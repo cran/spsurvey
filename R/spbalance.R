@@ -2,7 +2,7 @@
 # Function: spbalance
 # Programmer: Tom Kincaid
 # Date: February 17, 2012
-# Last Revised: April 17, 2015
+# Last Revised: May 31, 2019
 #
 #' Calculate Spatial Balance Metrics for a Survey Design
 #'
@@ -15,13 +15,11 @@
 #' balance metrics.  Two metrics are calculated: (1) the Pielou evenness measure
 #' and (2) the chi-square statistic.
 #'
-#' @param spsample Object of class SpatialDesign produced by either the
-#'   grts or irs functions that contains survey design information and
-#'   additional attribute (auxiliary) variables.
+#' @param spsample Object of class SpatialDesign produced by either the grts or
+#'   irs functions that contains survey design information and additional
+#'   attribute (auxiliary) variables.
 #'
-#' @param spframe An sp package object of class SpatialPointsDataFrame,
-#'   SpatialLinesDataFrame, or SpatialPolygonsDataFrame that contains the survey
-#'   design frame.  The default is NULL.
+#' @param sfframe An object of class sf that contains the survey frame.
 #'
 #' @param tess_ind Logical variable indicating whether spatial balance metrics
 #'   are calculated using proportions obtained from the intersection of
@@ -32,7 +30,7 @@
 #' @param sbc_ind Logical variable indicating whether spatial balance metrics
 #'   are calculated using proportions obtained from a rectangular grid
 #'   superimposed on the sample points and the frame.  TRUE means calculate the
-#'   metrics. FALSE means do not calculate the metrics. The default is FALSE.
+#'   metrics.  FALSE means do not calculate the metrics.  The default is FALSE.
 #'
 #' @param nrows Number of rows (and columns) for the grid of cells. The
 #'   default is 5.
@@ -87,31 +85,25 @@
 #'   Stratum1=list(panel=c(PanelOne=50), seltype="Equal", over=10),
 #'   Stratum2=list(panel=c(PanelOne=50, PanelTwo=50), seltype="Unequal",
 #'     caty.n=c(CatyOne=25, CatyTwo=25, CatyThree=25, CatyFour=25), over=75))
-#' sframe <- read.shp("shapefile")
 #' samp <- grts(design=design, DesignID="Test.Site", type.frame="area",
-#'   src.frame="shapefile", in.shape="shapefile", att.frame=frame@data,
-#'   stratum="stratum", mdcaty="mdcaty", shapefile=TRUE,
-#'   shapefilename="sample")
-#' spbalance(samp, frame, sbc_ind = TRUE)
+#'   src.frame="shapefile", in.shape="shapefile.shp", stratum="stratum",
+#'   mdcaty="mdcaty", shapefile=TRUE, out.shape="sample.shp")
+#' sframe <- read.shp("shapefile.shp")
+#' spbalance(samp, sframe, sbc_ind = TRUE)
 #' }
 #'
 #' @export
 ################################################################################
 
-spbalance <- function(spsample, spframe = NULL, tess_ind = TRUE,
-   sbc_ind = FALSE, nrows = 5, dxdy = TRUE) {
+spbalance <- function(spsample, sfframe, tess_ind = TRUE, sbc_ind = FALSE,
+   nrows = 5, dxdy = TRUE) {
 
-# Obtain the sample x-coordinates, y-coordinates, survey design weights,
-# multidensity category values, and  stratum names from the spsample object
+# Obtain the sample x-coordinates, y-coordinates, and survey design weights,
+# from the spsample object
 xcoord <- spsample@data$xcoord
 ycoord <- spsample@data$ycoord
 wgt <- spsample@data$wgt
-mdcaty <- spsample@data$mdcaty
-stratum <- spsample@data$stratum
 n <- nrow(spsample@data)
-
-# Determine the strata names
-strata.names <- unique(stratum)
 
 #
 # Section for metrics calculted using Dirichlet tesselation polygons
@@ -121,67 +113,48 @@ if(tess_ind) {
 
 # Determine whether an appropriate frame object was supplied
 
-   if(is.null(spframe))
-      stop("\nAn object containing the survey design frame must be supplied as the spframe \nargument.")
-   if(!(class(spframe) %in% c("SpatialPointsDataFrame", "SpatialLinesDataFrame", "SpatialPolygonsDataFrame")))
-      stop("\nThe spframe argument must be a member of class SpatialPointsDataFrame, \nSpatialLinesDataFrame, or SpatialPolygonsDataFrame.")
+   if(is.null(sfframe))
+      stop("\nAn object containing the survey design frame must be supplied as the sfframe \nargument.")
+   if(!("sf" %in% class(sfframe)))
+      stop("\nThe sfframe argument must be a member of class sf.")
 
-# Obtain the bounding box from the spframe object
-   bbox <- c(spframe@bbox[1,], spframe@bbox[2,])
+# Obtain the bounding box from the sfframe object
+   bbox <- st_bbox(sfframe)
 
-# Create an sp object containing the Dirichlet tesselation polygons for the
+# Create an sf object containing the Dirichlet tesselation polygons for the
 # sample points
-   tiles <- tile.list(deldir(xcoord, ycoord, rw=bbox))
-   sptess <- rep(list(NA), n)
+   tiles <- tile.list(deldir(xcoord, ycoord, rw=as.vector(bbox[c(1,3,2,4)])))
+   sftess <- vector("list", n)
    for(i in 1:n) {
       nv <- length(tiles[[i]]$x)
-      sptess[[i]] <- SpatialPolygons(list(Polygons(list(Polygon(cbind(
+      sftess[[i]] <- st_polygon(list(cbind(
          c(tiles[[i]]$x[1], tiles[[i]]$x[nv:1]),
-         c(tiles[[i]]$y[1], tiles[[i]]$y[nv:1])))), 1)))
+         c(tiles[[i]]$y[1], tiles[[i]]$y[nv:1]))))
    }
+   sftess <- st_sfc(sftess, crs = st_crs(sfframe))
+   sftess <- st_sf(poly = 1:n, geometry = sftess)
 
-# Determine the type of frame object
-   temp <- class(spframe)
-   ftype <- substr(temp, 8, nchar(temp) - 9)
+# Join the sftess object with the sfframe object
+  sftess <- st_join(sftess, sfframe)
 
-# Intersect each Dirichlet tesselation polygon with the frame object and
-# calculate extent and proportion
-   extent <- numeric(n)
-   for(i in 1:n) {
-      if(ftype == "Points") {
-         temp <- gIntersection(sptess[[i]], spframe)
-         extent[i] <- nrow(temp@coords)
-      } else if(ftype == "Lines") {
-         temp <- sapply(spframe@lines, function(x) length(x@Lines))
-         if(any(temp > 1)) {
-            for(j in 1:length(spframe@lines)) {
-               temp <- gIntersection(sptess[[i]],
-                                     SpatialLines(list(spframe@lines[[j]])))
-               extent[i] <- extent[i] + ifelse(is.null(temp), 0,
-                  LinesLength(temp@lines[[1]]))
-            }
-         } else {
-            temp <- gIntersection(sptess[[i]], spframe)
-            extent[i] <- LinesLength(temp@lines[[1]])
-         }
-      } else if(ftype == "Polygons") {
-         temp <- sapply(spframe@polygons, function(x) length(x@Polygons))
-         if(any(temp > 1)) {
-            for(j in 1:length(spframe@polygons)) {
-               temp <- gIntersection(sptess[[i]],
-                                  SpatialPolygons(list(spframe@polygons[[j]])))
-               extent[i] <- extent[i] + ifelse(is.null(temp), 0,
-                  temp@polygons[[1]]@area)
-            }
-         } else {
-            temp <- gIntersection(sptess[[i]], spframe)
-            extent[i] <- temp@polygons[[1]]@area
-         }
-      } else {
-         stop(paste("'Spatial", ftype, "DataFrame' is not a known class of sp object.\n", sep=""))
-      }
-   }
-   prop <- extent/sum(extent)
+# Calculate extent for each Dirichlet tesselation polygon
+
+  if(all(st_geometry_type(sfframe) %in% c("POINT", "MULTIPOINT"))) {
+    sftess$point_mdm <- 1
+    extent <- with(sftess, tapply(point_mdm, poly, sum))
+    extent[is.na(extent)] <- 0
+  } else if(all(st_geometry_type(sfframe) %in% c("LINESTRING", "MULTILINESTRING"))) {
+    sftess$length_mdm <- as.numeric(st_length(sftess))
+    extent <- with(sftess, tapply(length_mdm, poly, sum))
+    extent[is.na(extent)] <- 0
+  } else {
+    sftess$area_mdm <- as.numeric(st_area(sftess))
+    extent <- with(sftess, tapply(area_mdm, poly, sum))
+    extent[is.na(extent)] <- 0
+  }
+
+# Calculate proportion for Dirichlet tesselation polygon
+  prop <- extent/sum(extent)
 
 # Calculate the spatial balance metrics
    prob <- wgt/sum(wgt)
@@ -208,7 +181,7 @@ if(tess_ind) {
 if(sbc_ind) {
 
 # Calculate grid cell extent and proportion for the frame
-   sbc.frame <- sbcframe(spframe = spframe, nrows = nrows, dxdy = dxdy)
+   sbc.frame <- sbcframe(sfframe, nrows, dxdy)
 
 # Calculate grid cell extent and proportion for the sample
    sbc.sample <- sbcsamp(spsample, sbc.frame)

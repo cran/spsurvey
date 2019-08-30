@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Tom Kincaid" />
+
+<meta name="date" content="2019-08-29" />
+
+<title>CDF Deconvolution</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">CDF Deconvolution</h1>
+<h4 class="author">Tom Kincaid</h4>
+<h4 class="date">2019-08-29</h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This document presents deconvolution of a cumulative distribution function (CDF). Convolution is a term that refers to a distribution that is a mixture of two or more component distributions. Specifically, we are interested in the situation where the CDF is a mixture of the distribution for a variable of interest and measurement error. The presence of measurement error will cause the CDF to occur across a wider range of variable values, which will lead to biased estimation of the CDF. Deconvolution is the name of the procedure for removing the measurement error from the CDF. In order to illustrate the deconvolution process, simulated data is used rather than data generated by a probability survey. For additional discussion of measurement error and deconvolution see Kincaid and Olsen <span class="citation">(Kincaid and Olsen 2012)</span>.</p>
+</div>
+<div id="preliminaries" class="section level2">
+<h2>Preliminaries</h2>
+<p>The initial step is to use the library function to load the <code>spsurvey</code> package. After the package is loaded, a message is printed to the R console indicating that the <code>spsurvey</code> package was loaded successfully.</p>
+<p>Load the <code>spsurvey</code> package:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(spsurvey)</a></code></pre></div>
+</div>
+<div id="load-the-simulated-variables-data-set" class="section level2">
+<h2>Load the Simulated Variables Data Set</h2>
+<p>A data set was created that contains simulated species richness variables. The initial variable was created using the Normal distribution with mean 20 and standard deviation 5. Addition variables were created by adding 25%, 50%, and 100% measurement error variance to the original variable, where the percent values refer to the variance of the original variable. The data file also includes x-coordinates and y-coordinates, which were simulated using the Uniform distribution with a range from zero to one. The data set contains 500 records.</p>
+<p>The next step is to load the data set. The data function is used to load the data set and assign it to a data frame named <code>decon_data</code>. The <code>nrow</code> function is used to determine the number of rows in the <code>decon_data</code> data frame, and the resulting value is assigned to an object named <code>nr</code>. Finally, the initial six lines and the final six lines in the <code>decon_data</code> data frame are printed using the <code>head</code> and <code>tail</code> functions, respectively.</p>
+<p>Load the simulated variables data set:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span>(decon_data)</a>
+<a class="sourceLine" id="cb2-2" title="2">nr &lt;-<span class="st"> </span><span class="kw">nrow</span>(decon_data)</a></code></pre></div>
+<p>Display the initial six lines in the data file:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">head</span>(decon_data)</a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="co">#&gt;      xcoord    ycoord  Richness Richness_25 Richness_50 Richness_100</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="co">#&gt; 1 0.2156870 0.1040707  9.195568   10.413331    2.291196     2.819672</span></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt; 2 0.7253217 0.4319726  8.853398    9.521474    4.521184     8.183711</span></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt; 3 0.3200359 0.4419541  8.631306    3.747440    4.815115     5.909885</span></a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; 4 0.9686209 0.8958557 10.361718   10.973729    5.192450     9.874936</span></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; 5 0.0974488 0.1890712 12.424943   10.121154    5.235458    14.121246</span></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; 6 0.8153121 0.6643893  9.635846    9.413341    5.872094    16.581228</span></a></code></pre></div>
+<p>Display the final six lines in the data file:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">tail</span>(decon_data)</a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">#&gt;        xcoord     ycoord Richness Richness_25 Richness_50 Richness_100</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co">#&gt; 495 0.7431377 0.68816008 28.40369    29.78458    33.61083     27.16529</span></a>
+<a class="sourceLine" id="cb4-4" title="4"><span class="co">#&gt; 496 0.8238306 0.92598006 30.17266    31.48048    33.89747     34.05622</span></a>
+<a class="sourceLine" id="cb4-5" title="5"><span class="co">#&gt; 497 0.8884304 0.07949327 26.96940    27.06877    34.58659     33.63208</span></a>
+<a class="sourceLine" id="cb4-6" title="6"><span class="co">#&gt; 498 0.5394230 0.60650557 29.80406    26.15533    34.93280     22.27781</span></a>
+<a class="sourceLine" id="cb4-7" title="7"><span class="co">#&gt; 499 0.4200749 0.28636323 28.68552    29.03119    36.22896     32.96995</span></a>
+<a class="sourceLine" id="cb4-8" title="8"><span class="co">#&gt; 500 0.5356669 0.64663409 30.65390    30.58069    37.46364     30.13545</span></a></code></pre></div>
+</div>
+<div id="illustration-of-extraneous-variance" class="section level2">
+<h2>Illustration of Extraneous Variance</h2>
+<p>Measurement error is an example of extraneous variance, additional variance that is convoluted with the population frequency distribution for a variable of interest. The impact of extraneous variance on the CDF will be investigated in this section. As an initial step, the <code>summary</code> function is used to summarize the data structure of the species richness values for the original variable.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">cat</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Summarize the data structure of the species richness variable:</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Summarize the data structure of the species richness variable:</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="kw">summary</span>(decon_data<span class="op">$</span>Richness)</a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt;   8.631  15.958  20.093  19.999  23.611  30.658</span></a></code></pre></div>
+<p>Note that the species richness values range between approximately 8 and 31. By way of comparison, consider the range of value for the original variable plus 100% additional measurement error.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">cat</span>(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">Summarize the data structure of the species richness variable plus </span><span class="ch">\n</span><span class="st">100% measurrement error:</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co">#&gt; Summarize the data structure of the species richness variable plus </span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt; 100% measurrement error:</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="kw">summary</span>(decon_data<span class="op">$</span>Richness_<span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt;   1.274  15.312  20.026  20.150  25.078  39.652</span></a></code></pre></div>
+<p>The range of species richness values now has increased to 1 to 40, which reflects the bias that is introduced into the CDF. To illustrate the bias induced by extraneous variance, CDFs for the species richness variables will be graphed. The first step is to assign a vector of values at which the CDFs will be calculated. The sequence (<code>seq</code>) function is used to create the set of values using the range 0 to 40. Output from the <code>seq</code> function is assigned to an object named <code>cdfvals</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">cdfvals &lt;-<span class="st"> </span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">40</span>,<span class="dt">length=</span><span class="dv">25</span>)</a></code></pre></div>
+<p>The next step is to calculate a CDF estimate for the original species richness variable. The <code>cdf.est</code> function in <code>spsurvey</code> will be used to calculate the estimate. Since values for the species richness variables were not selected in a probability survey, the survey design weights argument (wgt) for the function is assigned a vector of ones using the repeat (<code>rep</code>) function. Recall that the object named <code>nr</code> contains the number of rows in the <code>decon_data</code> data frame.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">CDF_org &lt;-<span class="st"> </span><span class="kw">cdf.est</span>(<span class="dt">z=</span>decon_data<span class="op">$</span>Richness,</a>
+<a class="sourceLine" id="cb8-2" title="2">                   <span class="dt">wgt=</span><span class="kw">rep</span>(<span class="dv">1</span>, nr),</a>
+<a class="sourceLine" id="cb8-3" title="3">                   <span class="dt">x=</span>decon_data<span class="op">$</span>xcoord,</a>
+<a class="sourceLine" id="cb8-4" title="4">                   <span class="dt">y=</span>decon_data<span class="op">$</span>ycoord,</a>
+<a class="sourceLine" id="cb8-5" title="5">                   <span class="dt">cdfval=</span>cdfvals)</a></code></pre></div>
+<p>Similarly, the <code>cdf.est</code> function will be used to calculate CDF estimates for the species richness variables that include measurement error.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="co"># Calculate a CDF estimate for the variable plus 25% extraneous variance</span></a>
+<a class="sourceLine" id="cb9-2" title="2">CDF_<span class="dv">25</span> &lt;-<span class="st"> </span><span class="kw">cdf.est</span>(<span class="dt">z=</span>decon_data<span class="op">$</span>Richness_<span class="dv">25</span>,</a>
+<a class="sourceLine" id="cb9-3" title="3">                  <span class="dt">wgt=</span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(decon_data)),</a>
+<a class="sourceLine" id="cb9-4" title="4">                  <span class="dt">x=</span>decon_data<span class="op">$</span>xcoord,</a>
+<a class="sourceLine" id="cb9-5" title="5">                  <span class="dt">y=</span>decon_data<span class="op">$</span>ycoord,</a>
+<a class="sourceLine" id="cb9-6" title="6">                  <span class="dt">cdfval=</span>cdfvals)</a>
+<a class="sourceLine" id="cb9-7" title="7"></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="co"># Calculate a CDF estimate for the variable plus 50% extraneous variance</span></a>
+<a class="sourceLine" id="cb9-9" title="9">CDF_<span class="dv">50</span> &lt;-<span class="st"> </span><span class="kw">cdf.est</span>(<span class="dt">z=</span>decon_data<span class="op">$</span>Richness_<span class="dv">50</span>,</a>
+<a class="sourceLine" id="cb9-10" title="10">                  <span class="dt">wgt=</span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(decon_data)),</a>
+<a class="sourceLine" id="cb9-11" title="11">                  <span class="dt">x=</span>decon_data<span class="op">$</span>xcoord,</a>
+<a class="sourceLine" id="cb9-12" title="12">                  <span class="dt">y=</span>decon_data<span class="op">$</span>ycoord,</a>
+<a class="sourceLine" id="cb9-13" title="13">                  <span class="dt">cdfval=</span>cdfvals)</a>
+<a class="sourceLine" id="cb9-14" title="14"></a>
+<a class="sourceLine" id="cb9-15" title="15"><span class="co"># Calculate a CDF estimate for the variable plus 100% extraneous variance</span></a>
+<a class="sourceLine" id="cb9-16" title="16">CDF_<span class="dv">100</span> &lt;-<span class="st"> </span><span class="kw">cdf.est</span>(<span class="dt">z=</span>decon_data<span class="op">$</span>Richness_<span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb9-17" title="17">                   <span class="dt">wgt=</span><span class="kw">rep</span>(<span class="dv">1</span>, <span class="kw">nrow</span>(decon_data)),</a>
+<a class="sourceLine" id="cb9-18" title="18">                   <span class="dt">x=</span>decon_data<span class="op">$</span>xcoord,</a>
+<a class="sourceLine" id="cb9-19" title="19">                   <span class="dt">y=</span>decon_data<span class="op">$</span>ycoord,</a>
+<a class="sourceLine" id="cb9-20" title="20">                   <span class="dt">cdfval=</span>cdfvals)</a></code></pre></div>
+<p>Density estimates facilitate visualizing the increased variance induced in a CDF by measurement error. The <code>ash1.wgt</code> function in <code>spsurvey</code>, which implements the average shifted histogram algorithm <span class="citation">(Scott 1985)</span>, will be used to calculate density estimates for each of the species richness variables.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">Density_org &lt;-<span class="st"> </span><span class="kw">ash1.wgt</span>(decon_data<span class="op">$</span>Richness, <span class="dt">nbin=</span><span class="dv">25</span>)</a>
+<a class="sourceLine" id="cb10-2" title="2">Density_<span class="dv">25</span> &lt;-<span class="st"> </span><span class="kw">ash1.wgt</span>(decon_data<span class="op">$</span>Richness_<span class="dv">25</span>, <span class="dt">nbin=</span><span class="dv">25</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3">Density_<span class="dv">50</span> &lt;-<span class="st"> </span><span class="kw">ash1.wgt</span>(decon_data<span class="op">$</span>Richness_<span class="dv">50</span>, <span class="dt">nbin=</span><span class="dv">25</span>)</a>
+<a class="sourceLine" id="cb10-4" title="4">Density_<span class="dv">100</span> &lt;-<span class="st"> </span><span class="kw">ash1.wgt</span>(decon_data<span class="op">$</span>Richness_<span class="dv">100</span>, <span class="dt">nbin=</span><span class="dv">25</span>)</a></code></pre></div>
+<p>CDF and density estimates are displayed in the figure below. Estimates for the original species richness variable are displayed using red. Estimates for variables containing measurement error are displayed using blue.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">op &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">1</span>), <span class="dt">mgp=</span><span class="kw">c</span>(<span class="fl">2.2</span>,<span class="fl">0.6</span>,<span class="dv">0</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">0</span>)<span class="op">+</span><span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb11-2" title="2"></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">plot</span>(CDF_org<span class="op">$</span>CDF<span class="op">$</span>Value, CDF_org<span class="op">$</span>CDF<span class="op">$</span>Estimate.P, <span class="dt">type=</span><span class="st">&quot;l&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>,</a>
+<a class="sourceLine" id="cb11-4" title="4">     <span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">40</span>), <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">100</span>), <span class="dt">xaxt=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Percent&quot;</span>)</a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="kw">title</span>(<span class="dt">main=</span><span class="st">&quot;CDF Estimates&quot;</span>)</a>
+<a class="sourceLine" id="cb11-6" title="6"><span class="kw">axis</span>(<span class="dt">side=</span><span class="dv">1</span>, <span class="dt">at=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>, <span class="dv">30</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
+<a class="sourceLine" id="cb11-7" title="7">     <span class="dt">labels=</span><span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;5&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;15&quot;</span>, <span class="st">&quot;20&quot;</span>, <span class="st">&quot;25&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;35&quot;</span>, <span class="st">&quot;40&quot;</span>))</a>
+<a class="sourceLine" id="cb11-8" title="8"><span class="kw">mtext</span>(<span class="st">&quot;Species Richness&quot;</span>, <span class="dt">side=</span><span class="dv">1</span>, <span class="dt">line=</span><span class="fl">1.75</span>, <span class="dt">cex=</span><span class="kw">par</span>(<span class="st">&quot;cex&quot;</span>))</a>
+<a class="sourceLine" id="cb11-9" title="9"><span class="kw">lines</span>(CDF_<span class="dv">25</span><span class="op">$</span>CDF<span class="op">$</span>Value, CDF_<span class="dv">25</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb11-10" title="10"><span class="kw">lines</span>(CDF_<span class="dv">50</span><span class="op">$</span>CDF<span class="op">$</span>Value, CDF_<span class="dv">50</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, <span class="dt">lty=</span><span class="dv">5</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>,</a>
+<a class="sourceLine" id="cb11-11" title="11">      <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb11-12" title="12"><span class="kw">lines</span>(CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Value, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, <span class="dt">lty=</span><span class="dv">4</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>,</a>
+<a class="sourceLine" id="cb11-13" title="13">      <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb11-14" title="14"><span class="kw">legend</span>(<span class="dt">x=</span><span class="st">&quot;bottomright&quot;</span>, <span class="dt">inset=</span><span class="fl">0.025</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Original Variable&quot;</span>,</a>
+<a class="sourceLine" id="cb11-15" title="15">      <span class="st">&quot;25% Added Variance&quot;</span>, <span class="st">&quot;50% Added Variance&quot;</span>,</a>
+<a class="sourceLine" id="cb11-16" title="16">      <span class="st">&quot;100% Added Variance&quot;</span>), <span class="dt">lty=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">5</span>,<span class="dv">4</span>), <span class="dt">lwd=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="dv">2</span>,<span class="fl">2.5</span>, <span class="fl">2.5</span>),</a>
+<a class="sourceLine" id="cb11-17" title="17">      <span class="dt">bty=</span><span class="st">&quot;o&quot;</span>, <span class="dt">cex=</span><span class="dv">1</span>, <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;blue&quot;</span>))</a>
+<a class="sourceLine" id="cb11-18" title="18"></a>
+<a class="sourceLine" id="cb11-19" title="19"><span class="kw">plot</span>(Density_org<span class="op">$</span>x, Density_org<span class="op">$</span>y, <span class="dt">type=</span><span class="st">&quot;l&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>,</a>
+<a class="sourceLine" id="cb11-20" title="20">     <span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">40</span>), <span class="dt">ylim=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.075</span>), <span class="dt">xaxt=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;&quot;</span>,</a>
+<a class="sourceLine" id="cb11-21" title="21">     <span class="dt">ylab=</span><span class="st">&quot;Resource Density&quot;</span>)</a>
+<a class="sourceLine" id="cb11-22" title="22"><span class="kw">title</span>(<span class="dt">main=</span><span class="st">&quot;Density Estimates&quot;</span>)</a>
+<a class="sourceLine" id="cb11-23" title="23"><span class="kw">axis</span>(<span class="dt">side=</span><span class="dv">1</span>, <span class="dt">at=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>, <span class="dv">30</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
+<a class="sourceLine" id="cb11-24" title="24">     <span class="dt">labels=</span><span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;5&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;15&quot;</span>, <span class="st">&quot;20&quot;</span>, <span class="st">&quot;25&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;35&quot;</span>, <span class="st">&quot;40&quot;</span>))</a>
+<a class="sourceLine" id="cb11-25" title="25"><span class="kw">mtext</span>(<span class="st">&quot;Species Richness&quot;</span>, <span class="dt">side=</span><span class="dv">1</span>, <span class="dt">line=</span><span class="fl">1.75</span>, <span class="dt">cex=</span><span class="kw">par</span>(<span class="st">&quot;cex&quot;</span>))</a>
+<a class="sourceLine" id="cb11-26" title="26"><span class="kw">lines</span>(Density_<span class="dv">25</span><span class="op">$</span>x, Density_<span class="dv">25</span><span class="op">$</span>y, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb11-27" title="27"><span class="kw">lines</span>(Density_<span class="dv">50</span><span class="op">$</span>x, Density_<span class="dv">50</span><span class="op">$</span>y, <span class="dt">lty=</span><span class="dv">5</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb11-28" title="28"><span class="kw">lines</span>(Density_<span class="dv">100</span><span class="op">$</span>x, Density_<span class="dv">100</span><span class="op">$</span>y, <span class="dt">lty=</span><span class="dv">4</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="CDF and Density Estimates for Species Richness Variables." />
+<p class="caption">CDF and Density Estimates for Species Richness Variables.</p>
+</div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="kw">par</span>(op)</a></code></pre></div>
+</div>
+<div id="deconvolution" class="section level2">
+<h2>Deconvolution</h2>
+<p>Deconvolution will be demonstrated using the species richness variable that includes 100% additional measurement error variance. The <code>decon.est</code> function in <code>spsurvey</code> will be used to calculate a deconvoluted CDF estimate, which uses an algorithm based on the procedure developed by Stefansky and Bay <span class="citation">(Stefansky and Bay 1996)</span>. Argument sigma for that function specifies the extraneous variance. For an actual survey design, a value for sigma would be estimated from the survey data or obtained from some other source. Since we are using simulated data, a direct estimate of sigma is available. Specifically, the variance estimation function (<code>var</code>) will be used to estimate the additional variance for the species richness variable with added measurement error, and the result will be assigned to an object named <code>extvar</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1">extvar &lt;-<span class="st"> </span><span class="kw">var</span>(decon_data<span class="op">$</span>Richness_<span class="dv">100</span>) <span class="op">-</span><span class="st"> </span><span class="kw">var</span>(decon_data<span class="op">$</span>Richness)</a>
+<a class="sourceLine" id="cb13-2" title="2">CDF_decon &lt;-<span class="st"> </span><span class="kw">cdf.decon</span>(<span class="dt">z=</span>decon_data<span class="op">$</span>Richness_<span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb13-3" title="3">                       <span class="dt">wgt=</span><span class="kw">rep</span>(<span class="dv">1</span>,nr),</a>
+<a class="sourceLine" id="cb13-4" title="4">                       <span class="dt">sigma=</span>extvar,</a>
+<a class="sourceLine" id="cb13-5" title="5">                       <span class="dt">x=</span>decon_data<span class="op">$</span>xcoord,</a>
+<a class="sourceLine" id="cb13-6" title="6">                       <span class="dt">y=</span>decon_data<span class="op">$</span>ycoord,</a>
+<a class="sourceLine" id="cb13-7" title="7">                       <span class="dt">cdfval=</span>cdfvals)</a></code></pre></div>
+<p>The original CDF and deconvoluted CDF estimates for the species richness variable that includes 100% additional measurement error variance are displayed in the figure below. The CDF estimate and confidence bounds for the original variable are displayed in red. The deconvoluted CDF estimate and confidence bound are displayed in blue. One consequence of deconvolution is increased confidence bound width, which can be observed in the CDFs in the figure below. For example, for a species richness value of 25, the confidence bounds for the original variable are 78.7% to 84.5%, which is a width of 5.8%. For the deconvoluted CDF, the confidence bounds are 74.2% to 83.9%, which is a width of 9.7%.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1">op &lt;-<span class="st"> </span><span class="kw">par</span>(<span class="dt">mgp=</span><span class="kw">c</span>(<span class="fl">2.2</span>,<span class="fl">0.6</span>,<span class="dv">0</span>), <span class="dt">mar=</span><span class="kw">c</span>(<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">0</span>)<span class="op">+</span><span class="fl">0.1</span>)</a>
+<a class="sourceLine" id="cb14-2" title="2"></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="kw">plot</span>(CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Value, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, <span class="dt">type=</span><span class="st">&quot;l&quot;</span>, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>,</a>
+<a class="sourceLine" id="cb14-4" title="4">   <span class="dt">xlim=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">40</span>), <span class="dt">xaxt=</span><span class="st">&quot;n&quot;</span>, <span class="dt">xlab=</span><span class="st">&quot;Species Richness&quot;</span>, <span class="dt">ylab=</span><span class="st">&quot;Percent&quot;</span>)</a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="kw">axis</span>(<span class="dt">side=</span><span class="dv">1</span>, <span class="dt">at=</span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">25</span>, <span class="dv">30</span>, <span class="dv">35</span>, <span class="dv">40</span>),</a>
+<a class="sourceLine" id="cb14-6" title="6">     <span class="dt">labels=</span><span class="kw">c</span>(<span class="st">&quot;0&quot;</span>, <span class="st">&quot;5&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;15&quot;</span>, <span class="st">&quot;20&quot;</span>, <span class="st">&quot;25&quot;</span>, <span class="st">&quot;30&quot;</span>, <span class="st">&quot;35&quot;</span>, <span class="st">&quot;40&quot;</span>))</a>
+<a class="sourceLine" id="cb14-7" title="7">confcut &lt;-<span class="st"> </span><span class="dv">5</span></a>
+<a class="sourceLine" id="cb14-8" title="8">pctval &lt;-<span class="st"> </span><span class="kw">c</span>(confcut, <span class="dv">100</span><span class="op">-</span>confcut)</a>
+<a class="sourceLine" id="cb14-9" title="9">tvalue &lt;-<span class="st"> </span>CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P <span class="op">&gt;=</span><span class="st"> </span>pctval[<span class="dv">1</span>] <span class="op">&amp;</span></a>
+<a class="sourceLine" id="cb14-10" title="10"><span class="st">          </span>CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P <span class="op">&lt;=</span><span class="st"> </span>pctval[<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb14-11" title="11">x &lt;-<span class="st">  </span><span class="kw">interp.cdf</span>(pctval, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Value)</a>
+<a class="sourceLine" id="cb14-12" title="12">ylow &lt;-<span class="st"> </span><span class="kw">interp.cdf</span>(pctval, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>LCB95Pct.P)</a>
+<a class="sourceLine" id="cb14-13" title="13">yhi &lt;-<span class="st"> </span><span class="kw">interp.cdf</span>(pctval, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Estimate.P, CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>UCB95Pct.P)</a>
+<a class="sourceLine" id="cb14-14" title="14">value &lt;-<span class="st"> </span><span class="kw">c</span>(x[<span class="dv">1</span>], CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>Value[tvalue], x[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb14-15" title="15">lower &lt;-<span class="st"> </span><span class="kw">c</span>(ylow[<span class="dv">1</span>], CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>LCB95Pct.P[tvalue], ylow[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb14-16" title="16">upper &lt;-<span class="st"> </span><span class="kw">c</span>(yhi[<span class="dv">1</span>], CDF_<span class="dv">100</span><span class="op">$</span>CDF<span class="op">$</span>UCB95Pct.P[tvalue], yhi[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb14-17" title="17"><span class="kw">lines</span>(value, lower, <span class="dt">lty=</span><span class="dv">3</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb14-18" title="18"><span class="kw">lines</span>(value, upper, <span class="dt">lty=</span><span class="dv">3</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>, <span class="dt">col=</span><span class="st">&quot;red&quot;</span>)</a>
+<a class="sourceLine" id="cb14-19" title="19"><span class="kw">lines</span>(CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Value, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Estimate.P, <span class="dt">lwd=</span><span class="dv">2</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb14-20" title="20">tvalue &lt;-<span class="st"> </span>CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Estimate.P <span class="op">&gt;=</span><span class="st"> </span>pctval[<span class="dv">1</span>] <span class="op">&amp;</span></a>
+<a class="sourceLine" id="cb14-21" title="21"><span class="st">          </span>CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Estimate.P <span class="op">&lt;=</span><span class="st"> </span>pctval[<span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb14-22" title="22">x &lt;-<span class="st">  </span><span class="kw">interp.cdf</span>(pctval, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Estimate.P, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Value)</a>
+<a class="sourceLine" id="cb14-23" title="23">ylow &lt;-<span class="st"> </span><span class="kw">interp.cdf</span>(pctval, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Estimate.P, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>LCB95Pct.P)</a>
+<a class="sourceLine" id="cb14-24" title="24">yhi &lt;-<span class="st"> </span><span class="kw">interp.cdf</span>(pctval, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Estimate.P, CDF_decon<span class="op">$</span>CDF<span class="op">$</span>UCB95Pct.P)</a>
+<a class="sourceLine" id="cb14-25" title="25">value &lt;-<span class="st"> </span><span class="kw">c</span>(x[<span class="dv">1</span>], CDF_decon<span class="op">$</span>CDF<span class="op">$</span>Value[tvalue], x[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb14-26" title="26">lower &lt;-<span class="st"> </span><span class="kw">c</span>(ylow[<span class="dv">1</span>], CDF_decon<span class="op">$</span>CDF<span class="op">$</span>LCB95Pct.P[tvalue], ylow[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb14-27" title="27">upper &lt;-<span class="st"> </span><span class="kw">c</span>(yhi[<span class="dv">1</span>], CDF_decon<span class="op">$</span>CDF<span class="op">$</span>UCB95Pct.P[tvalue], yhi[<span class="dv">2</span>])</a>
+<a class="sourceLine" id="cb14-28" title="28"><span class="kw">lines</span>(value, lower, <span class="dt">lty=</span><span class="dv">3</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb14-29" title="29"><span class="kw">lines</span>(value, upper, <span class="dt">lty=</span><span class="dv">3</span>, <span class="dt">lwd=</span><span class="fl">2.5</span>, <span class="dt">col=</span><span class="st">&quot;blue&quot;</span>)</a>
+<a class="sourceLine" id="cb14-30" title="30"><span class="kw">legend</span>(<span class="dt">x=</span><span class="st">&quot;bottomright&quot;</span>, <span class="dt">inset=</span><span class="fl">0.05</span>, <span class="dt">legend=</span><span class="kw">c</span>(<span class="st">&quot;Original CDF&quot;</span>,</a>
+<a class="sourceLine" id="cb14-31" title="31">       <span class="st">&quot;Confidence Bounds&quot;</span>, <span class="st">&quot;Deconvoluted CDF&quot;</span>, <span class="st">&quot;Confidence Bounds&quot;</span>),</a>
+<a class="sourceLine" id="cb14-32" title="32">       <span class="dt">lty=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">3</span>), <span class="dt">lwd=</span><span class="kw">c</span>(<span class="dv">2</span>,<span class="fl">2.5</span>,<span class="dv">2</span>,<span class="fl">2.5</span>), <span class="dt">bty=</span><span class="st">&quot;o&quot;</span>, <span class="dt">cex=</span><span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb14-33" title="33">       <span class="dt">col=</span><span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;blue&quot;</span>))</a></code></pre></div>
+<div class="figure">
+<img src="data:image/png;base64,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" alt="Original and Deconvoluted CDF Estimates for a Species Richness Variable with Added Measurement Error." />
+<p class="caption">Original and Deconvoluted CDF Estimates for a Species Richness Variable with Added Measurement Error.</p>
+</div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"></a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="kw">par</span>(op)</a></code></pre></div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2>References</h2>
+<div id="refs" class="references">
+<div id="ref-Kincaid+Olsen:2012">
+<p>Kincaid, Thomas M., and Anthony R. Olsen. 2012. “Survey Analysis in Natural Resource Monitoring Programs with a Focus on Cumulative Distribution Functions.” In <em>Design and Analysis of Long-Term Ecological Monitoring Studies</em>, edited by Robert A. Gitzen, Joshua J. Millspaugh, Andrew B. Cooper, and Daniel S. Licht, 313–24. Cambridge University Press.</p>
+</div>
+<div id="ref-Scott:1985">
+<p>Scott, D. W. 1985. “Averaged Shifted Histograms: Effective Nonparametric Density Estimators in Several Dimensions.” <em>Annals of Statistics</em> 13: 1024–40.</p>
+</div>
+<div id="ref-Stefansky+Bay:1996">
+<p>Stefansky, F. A., and J. M. Bay. 1996. “Simulation Extrapolation Deconvolution of Finite Population Cumulative Distribution Function Estimators.” <em>Biometrika</em> 83: 407–17.</p>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

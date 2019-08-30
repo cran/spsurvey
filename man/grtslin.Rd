@@ -4,15 +4,11 @@
 \alias{grtslin}
 \title{Select a Generalized Random-Tesselation Stratified (GRTS) Sample of a Linear Resource}
 \usage{
-grtslin(shapefilename = NULL, linframe, samplesize = 100,
-  SiteBegin = 1, shift.grid = TRUE, startlev = NULL, maxlev = 1)
+grtslin(linframe, samplesize = 100, SiteBegin = 1, shift.grid = TRUE,
+  startlev = NULL, maxlev = 1)
 }
 \arguments{
-\item{shapefilename}{Name of the input shapefile.  If shapefilename equals
-NULL, then the shapefile or shapefiles in the working directory are used.
-The default is NULL.}
-
-\item{linframe}{Data frame containing id, mdcaty, and mdm.}
+\item{linframe}{The sf object containing attributes: id, mdcaty, and mdm.}
 
 \item{samplesize}{Number of points to select in the sample.  The default is
 100.}
@@ -41,25 +37,24 @@ than one point per cell and then picks a point in selected cells.
 \section{Other Functions Required}{
 
   \describe{
-    \item{\code{numLevels}}{C function to determine the number of
-      levels for hierarchical randomization}
-    \item{\code{constructAddr}}{C function to construct the
-      hierarchical address for all points}
-    \item{\code{ranho}}{C function to construct the randomized
-      hierarchical address for all points}
-    \item{\code{pickGridCells}}{C function to select grid cells that
-      get a sample point}
-    \item{\code{insideLinearGridCell}}{C function to determine ID
-      value and clipped polyline length for shapefile records contained in
-      the selected grid cells}
-    \item{\code{\link{selectrecordID}}}{select a shapefile record from which
+    \item{\code{numLevels}}{determines the number of levels for hierarchical
+      randomization}
+    \item{\code{constructAddr}}{constructs the hierarchical address for
+      sample points}
+    \item{\code{ranho}}{constructs the randomized hierarchical address for
+      sample points}
+    \item{\code{pickGridCells}}{selects grid cells that get a sample point}
+    \item{\code{insideLinearGridCell}}{determines feature ID value and
+      clipped linestring length for each feature contained in a selected grid
+      cell}
+    \item{\code{\link{selectFeatureID}}}{identifies a feature ID from which
       to select a sample point}
-    \item{\code{pickLinearSamplePoints}}{C function to pick sample
-      points in the selected grid cells}
+    \item{\code{pickSamplePoints}}{selects sample points from an sf object}
   }
 }
 
 \author{
-Tony Olsen \email{Olsen.Tony@epa.gov}
+Tom Kincaid \email{Kincaid.Tom@epa.gov}
+ Tony Olsen \email{Olsen.Tony@epa.gov}\cr
 }
 \keyword{survey}
