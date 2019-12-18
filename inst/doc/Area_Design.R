@@ -30,6 +30,7 @@ Equalsites <- grts(design=Equaldsgn,
                    type.frame="area",
                    src.frame="sf.object",
                    sf.object=UT_ecoregions,
+                   maxlev = 5,
                    shapefile=FALSE)
 
 ## ----head_design---------------------------------------------------------
@@ -58,7 +59,8 @@ Unequalsites <- grts(design=Unequaldsgn,
                      type.frame="area",
                      src.frame="shapefile",
                      in.shape="UT_ecoregions.shp",
-                     mdcaty="Level3_Nam",									
+                     mdcaty="Level3_Nam",	
+                     maxlev = 5,
                      shapefile=FALSE)
 
 ## ----head_unequalsites---------------------------------------------------
@@ -92,7 +94,8 @@ Stratsites <- grts(design=Stratdsgn,
                    type.frame="area",
                    src.frame="sp.object",
                    sp.object=UT_ecoregions_sp,
-                   stratum="Level3_Nam",									
+                   stratum="Level3_Nam",	
+                   maxlev = 5,
                    shapefile=FALSE)
 
 ## ----head_stratsites-----------------------------------------------------
@@ -120,6 +123,7 @@ Panelsites <- grts(design=Paneldsgn,
                    type.frame="area",
                    src.frame="sf.object",
                    sf.object=UT_ecoregions,
+                   maxlev = 5,
                    mdcaty="Level3_Nam",									
                    shapefile=FALSE)
 

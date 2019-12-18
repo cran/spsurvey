@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -13,7 +12,7 @@
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2019-08-29" />
+<meta name="date" content="2019-12-17" />
 
 <title>Linear Design</title>
 
@@ -304,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Linear Design</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2019-08-29</h4>
+<h4 class="date">2019-12-17</h4>
 
 
 
@@ -383,12 +382,13 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb8-3" title="3">                   <span class="dt">type.frame=</span><span class="st">&quot;linear&quot;</span>,</a>
 <a class="sourceLine" id="cb8-4" title="4">                   <span class="dt">src.frame=</span><span class="st">&quot;sf.object&quot;</span>,</a>
 <a class="sourceLine" id="cb8-5" title="5">                   <span class="dt">sf.object=</span>Luck_Ash_streams,</a>
-<a class="sourceLine" id="cb8-6" title="6">                   <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; Stratum: None </span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; Current number of levels: 4 </span></a>
-<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; Current number of levels: 5 </span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; Final number of levels: 5</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-6" title="6">                   <span class="dt">maxlev =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb8-7" title="7">                   <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; Stratum: None </span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; Current number of levels: 4 </span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; Current number of levels: 5 </span></a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt; Final number of levels: 5</span></a></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">head</span>(Equalsites)</a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="co">#&gt;           coordinates    siteID   xcoord  ycoord mdcaty      wgt stratum</span></a>
@@ -437,19 +437,20 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb13-3" title="3">                   <span class="dt">type.frame=</span><span class="st">&quot;linear&quot;</span>,</a>
 <a class="sourceLine" id="cb13-4" title="4">                   <span class="dt">src.frame=</span><span class="st">&quot;shapefile&quot;</span>,</a>
 <a class="sourceLine" id="cb13-5" title="5">                   <span class="dt">in.shape=</span><span class="st">&quot;Luck_Ash_streams.shp&quot;</span>,</a>
-<a class="sourceLine" id="cb13-6" title="6">                   <span class="dt">stratum=</span><span class="st">&quot;Per_Int&quot;</span>,</a>
-<a class="sourceLine" id="cb13-7" title="7">                   <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb13-8" title="8"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb13-9" title="9"><span class="co">#&gt; Stratum: Perennial </span></a>
-<a class="sourceLine" id="cb13-10" title="10"><span class="co">#&gt; Current number of levels: 3 </span></a>
-<a class="sourceLine" id="cb13-11" title="11"><span class="co">#&gt; Current number of levels: 4 </span></a>
-<a class="sourceLine" id="cb13-12" title="12"><span class="co">#&gt; Final number of levels: 4 </span></a>
-<a class="sourceLine" id="cb13-13" title="13"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb13-14" title="14"><span class="co">#&gt; Stratum: Intermittent </span></a>
-<a class="sourceLine" id="cb13-15" title="15"><span class="co">#&gt; Current number of levels: 3 </span></a>
-<a class="sourceLine" id="cb13-16" title="16"><span class="co">#&gt; Current number of levels: 4 </span></a>
-<a class="sourceLine" id="cb13-17" title="17"><span class="co">#&gt; Current number of levels: 5 </span></a>
-<a class="sourceLine" id="cb13-18" title="18"><span class="co">#&gt; Final number of levels: 5</span></a></code></pre></div>
+<a class="sourceLine" id="cb13-6" title="6">                   <span class="dt">maxlev =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb13-7" title="7">                   <span class="dt">stratum=</span><span class="st">&quot;Per_Int&quot;</span>,</a>
+<a class="sourceLine" id="cb13-8" title="8">                   <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="co">#&gt; Stratum: Perennial </span></a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="co">#&gt; Current number of levels: 3 </span></a>
+<a class="sourceLine" id="cb13-12" title="12"><span class="co">#&gt; Current number of levels: 4 </span></a>
+<a class="sourceLine" id="cb13-13" title="13"><span class="co">#&gt; Final number of levels: 4 </span></a>
+<a class="sourceLine" id="cb13-14" title="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb13-15" title="15"><span class="co">#&gt; Stratum: Intermittent </span></a>
+<a class="sourceLine" id="cb13-16" title="16"><span class="co">#&gt; Current number of levels: 3 </span></a>
+<a class="sourceLine" id="cb13-17" title="17"><span class="co">#&gt; Current number of levels: 4 </span></a>
+<a class="sourceLine" id="cb13-18" title="18"><span class="co">#&gt; Current number of levels: 5 </span></a>
+<a class="sourceLine" id="cb13-19" title="19"><span class="co">#&gt; Final number of levels: 5</span></a></code></pre></div>
 <p>Print the initial six lines of the survey design</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">head</span>(Stratsites)</a>
 <a class="sourceLine" id="cb14-2" title="2"><span class="co">#&gt;           coordinates         siteID   xcoord  ycoord mdcaty      wgt</span></a>
@@ -500,22 +501,25 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb18-4" title="4">                     <span class="dt">src.frame=</span><span class="st">&quot;sp.object&quot;</span>,</a>
 <a class="sourceLine" id="cb18-5" title="5">                     <span class="dt">sp.object=</span>Luck_Ash_streams_sp,</a>
 <a class="sourceLine" id="cb18-6" title="6">                     <span class="dt">stratum=</span><span class="st">&quot;Per_Int&quot;</span>,</a>
-<a class="sourceLine" id="cb18-7" title="7">                     <span class="dt">mdcaty=</span><span class="st">&quot;Strah_Cat&quot;</span>,</a>
-<a class="sourceLine" id="cb18-8" title="8">                     <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb18-9" title="9"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb18-10" title="10"><span class="co">#&gt; Stratum: Perennial</span></a>
-<a class="sourceLine" id="cb18-11" title="11"><span class="co">#&gt; Warning in grts(design = Unequaldsgn, DesignID = &quot;UNEQUAL&quot;, type.frame = &quot;linear&quot;, : </span></a>
-<a class="sourceLine" id="cb18-12" title="12"><span class="co">#&gt; Oversample size is not proportional to category sample sizes for stratum</span></a>
-<a class="sourceLine" id="cb18-13" title="13"><span class="co">#&gt; &quot;Perennial&quot;.</span></a>
-<a class="sourceLine" id="cb18-14" title="14"><span class="co">#&gt; Current number of levels: 4 </span></a>
-<a class="sourceLine" id="cb18-15" title="15"><span class="co">#&gt; Current number of levels: 5 </span></a>
-<a class="sourceLine" id="cb18-16" title="16"><span class="co">#&gt; Final number of levels: 5 </span></a>
-<a class="sourceLine" id="cb18-17" title="17"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb18-18" title="18"><span class="co">#&gt; Stratum: Intermittent </span></a>
-<a class="sourceLine" id="cb18-19" title="19"><span class="co">#&gt; Current number of levels: 3 </span></a>
-<a class="sourceLine" id="cb18-20" title="20"><span class="co">#&gt; Current number of levels: 5 </span></a>
-<a class="sourceLine" id="cb18-21" title="21"><span class="co">#&gt; Current number of levels: 6 </span></a>
-<a class="sourceLine" id="cb18-22" title="22"><span class="co">#&gt; Final number of levels: 6</span></a></code></pre></div>
+<a class="sourceLine" id="cb18-7" title="7">                     <span class="dt">maxlev=</span><span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb18-8" title="8">                     <span class="dt">mdcaty=</span><span class="st">&quot;Strah_Cat&quot;</span>,</a>
+<a class="sourceLine" id="cb18-9" title="9">                     <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb18-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-11" title="11"><span class="co">#&gt; Stratum: Perennial</span></a>
+<a class="sourceLine" id="cb18-12" title="12"><span class="co">#&gt; Warning in grts(design = Unequaldsgn, DesignID = &quot;UNEQUAL&quot;, type.frame = &quot;linear&quot;, : </span></a>
+<a class="sourceLine" id="cb18-13" title="13"><span class="co">#&gt; Oversample size is not proportional to category sample sizes for stratum</span></a>
+<a class="sourceLine" id="cb18-14" title="14"><span class="co">#&gt; &quot;Perennial&quot;.</span></a>
+<a class="sourceLine" id="cb18-15" title="15"><span class="co">#&gt; Current number of levels: 4 </span></a>
+<a class="sourceLine" id="cb18-16" title="16"><span class="co">#&gt; Current number of levels: 5 </span></a>
+<a class="sourceLine" id="cb18-17" title="17"><span class="co">#&gt; Final number of levels: 5 </span></a>
+<a class="sourceLine" id="cb18-18" title="18"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-19" title="19"><span class="co">#&gt; Stratum: Intermittent </span></a>
+<a class="sourceLine" id="cb18-20" title="20"><span class="co">#&gt; Current number of levels: 3 </span></a>
+<a class="sourceLine" id="cb18-21" title="21"><span class="co">#&gt; Current number of levels: 5 </span></a>
+<a class="sourceLine" id="cb18-22" title="22"><span class="co">#&gt; Final number of levels: 5</span></a>
+<a class="sourceLine" id="cb18-23" title="23"><span class="co">#&gt; Warning in grtslin(sframe, sum(n.desired), SiteBegin, shift.grid, startlev, : </span></a>
+<a class="sourceLine" id="cb18-24" title="24"><span class="co">#&gt; Of the 29 grid cells from which sample points were selected,</span></a>
+<a class="sourceLine" id="cb18-25" title="25"><span class="co">#&gt; 1 (3.4%) of the cells contained more than one sample point.</span></a></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">head</span>(Unequalsites)</a>
 <a class="sourceLine" id="cb19-2" title="2"><span class="co">#&gt;           coordinates      siteID   xcoord  ycoord mdcaty       wgt</span></a>
@@ -539,8 +543,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb20-4" title="4"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb20-5" title="5"><span class="co">#&gt;       stratum</span></a>
 <a class="sourceLine" id="cb20-6" title="6"><span class="co">#&gt; mdcaty Perennial Intermittent Sum</span></a>
-<a class="sourceLine" id="cb20-7" title="7"><span class="co">#&gt;   1st         28           21  49</span></a>
-<a class="sourceLine" id="cb20-8" title="8"><span class="co">#&gt;   2nd         24            5  29</span></a>
+<a class="sourceLine" id="cb20-7" title="7"><span class="co">#&gt;   1st         28           20  48</span></a>
+<a class="sourceLine" id="cb20-8" title="8"><span class="co">#&gt;   2nd         24            6  30</span></a>
 <a class="sourceLine" id="cb20-9" title="9"><span class="co">#&gt;   3rd+        20            4  24</span></a>
 <a class="sourceLine" id="cb20-10" title="10"><span class="co">#&gt;   Sum         72           30 102</span></a>
 <a class="sourceLine" id="cb20-11" title="11"><span class="co">#&gt; </span></a>
@@ -570,8 +574,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb20-35" title="35"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb20-36" title="36"><span class="co">#&gt;       panel</span></a>
 <a class="sourceLine" id="cb20-37" title="37"><span class="co">#&gt; mdcaty OverSamp PanelOne Sum</span></a>
-<a class="sourceLine" id="cb20-38" title="38"><span class="co">#&gt;   1st         0       21  21</span></a>
-<a class="sourceLine" id="cb20-39" title="39"><span class="co">#&gt;   2nd         0        5   5</span></a>
+<a class="sourceLine" id="cb20-38" title="38"><span class="co">#&gt;   1st         0       20  20</span></a>
+<a class="sourceLine" id="cb20-39" title="39"><span class="co">#&gt;   2nd         0        6   6</span></a>
 <a class="sourceLine" id="cb20-40" title="40"><span class="co">#&gt;   3rd+        0        4   4</span></a>
 <a class="sourceLine" id="cb20-41" title="41"><span class="co">#&gt;   Sum         0       30  30</span></a>
 <a class="sourceLine" id="cb20-42" title="42"><span class="co">#&gt; </span></a>
@@ -579,8 +583,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb20-44" title="44"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb20-45" title="45"><span class="co">#&gt;       panel</span></a>
 <a class="sourceLine" id="cb20-46" title="46"><span class="co">#&gt; mdcaty OverSamp PanelOne Sum</span></a>
-<a class="sourceLine" id="cb20-47" title="47"><span class="co">#&gt;   1st         5       44  49</span></a>
-<a class="sourceLine" id="cb20-48" title="48"><span class="co">#&gt;   2nd         5       24  29</span></a>
+<a class="sourceLine" id="cb20-47" title="47"><span class="co">#&gt;   1st         5       43  48</span></a>
+<a class="sourceLine" id="cb20-48" title="48"><span class="co">#&gt;   2nd         5       25  30</span></a>
 <a class="sourceLine" id="cb20-49" title="49"><span class="co">#&gt;   3rd+        2       22  24</span></a>
 <a class="sourceLine" id="cb20-50" title="50"><span class="co">#&gt;   Sum        12       90 102</span></a></code></pre></div>
 </div>
@@ -603,39 +607,39 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb22-4" title="4">                   <span class="dt">src.frame=</span><span class="st">&quot;sf.object&quot;</span>,</a>
 <a class="sourceLine" id="cb22-5" title="5">                   <span class="dt">sf.object=</span>Luck_Ash_streams,</a>
 <a class="sourceLine" id="cb22-6" title="6">                   <span class="dt">stratum=</span><span class="st">&quot;Per_Int&quot;</span>,</a>
-<a class="sourceLine" id="cb22-7" title="7">                   <span class="dt">mdcaty=</span><span class="st">&quot;Strah_Cat&quot;</span>,</a>
-<a class="sourceLine" id="cb22-8" title="8">                   <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
-<a class="sourceLine" id="cb22-9" title="9"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb22-10" title="10"><span class="co">#&gt; Stratum: Perennial</span></a>
-<a class="sourceLine" id="cb22-11" title="11"><span class="co">#&gt; Warning in grts(design = Paneldsgn, DesignID = &quot;UNEQUAL&quot;, type.frame = &quot;linear&quot;, : </span></a>
-<a class="sourceLine" id="cb22-12" title="12"><span class="co">#&gt; Oversample size is not proportional to category sample sizes for stratum</span></a>
-<a class="sourceLine" id="cb22-13" title="13"><span class="co">#&gt; &quot;Perennial&quot;.</span></a>
-<a class="sourceLine" id="cb22-14" title="14"><span class="co">#&gt; Current number of levels: 4 </span></a>
-<a class="sourceLine" id="cb22-15" title="15"><span class="co">#&gt; Current number of levels: 5 </span></a>
-<a class="sourceLine" id="cb22-16" title="16"><span class="co">#&gt; Final number of levels: 5 </span></a>
-<a class="sourceLine" id="cb22-17" title="17"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb22-18" title="18"><span class="co">#&gt; Stratum: Intermittent </span></a>
-<a class="sourceLine" id="cb22-19" title="19"><span class="co">#&gt; Current number of levels: 3 </span></a>
-<a class="sourceLine" id="cb22-20" title="20"><span class="co">#&gt; Current number of levels: 4 </span></a>
-<a class="sourceLine" id="cb22-21" title="21"><span class="co">#&gt; Current number of levels: 5 </span></a>
-<a class="sourceLine" id="cb22-22" title="22"><span class="co">#&gt; Current number of levels: 6 </span></a>
-<a class="sourceLine" id="cb22-23" title="23"><span class="co">#&gt; Final number of levels: 6</span></a></code></pre></div>
+<a class="sourceLine" id="cb22-7" title="7">                   <span class="dt">maxlev =</span> <span class="dv">5</span>,</a>
+<a class="sourceLine" id="cb22-8" title="8">                   <span class="dt">mdcaty=</span><span class="st">&quot;Strah_Cat&quot;</span>,</a>
+<a class="sourceLine" id="cb22-9" title="9">                   <span class="dt">shapefile=</span><span class="ot">FALSE</span>)</a>
+<a class="sourceLine" id="cb22-10" title="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-11" title="11"><span class="co">#&gt; Stratum: Perennial</span></a>
+<a class="sourceLine" id="cb22-12" title="12"><span class="co">#&gt; Warning in grts(design = Paneldsgn, DesignID = &quot;UNEQUAL&quot;, type.frame = &quot;linear&quot;, : </span></a>
+<a class="sourceLine" id="cb22-13" title="13"><span class="co">#&gt; Oversample size is not proportional to category sample sizes for stratum</span></a>
+<a class="sourceLine" id="cb22-14" title="14"><span class="co">#&gt; &quot;Perennial&quot;.</span></a>
+<a class="sourceLine" id="cb22-15" title="15"><span class="co">#&gt; Current number of levels: 4 </span></a>
+<a class="sourceLine" id="cb22-16" title="16"><span class="co">#&gt; Current number of levels: 5 </span></a>
+<a class="sourceLine" id="cb22-17" title="17"><span class="co">#&gt; Final number of levels: 5 </span></a>
+<a class="sourceLine" id="cb22-18" title="18"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-19" title="19"><span class="co">#&gt; Stratum: Intermittent </span></a>
+<a class="sourceLine" id="cb22-20" title="20"><span class="co">#&gt; Current number of levels: 3 </span></a>
+<a class="sourceLine" id="cb22-21" title="21"><span class="co">#&gt; Current number of levels: 4 </span></a>
+<a class="sourceLine" id="cb22-22" title="22"><span class="co">#&gt; Current number of levels: 5 </span></a>
+<a class="sourceLine" id="cb22-23" title="23"><span class="co">#&gt; Final number of levels: 5</span></a></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">head</span>(Panelsites)</a>
 <a class="sourceLine" id="cb23-2" title="2"><span class="co">#&gt;           coordinates      siteID   xcoord  ycoord mdcaty       wgt</span></a>
-<a class="sourceLine" id="cb23-3" title="3"><span class="co">#&gt; 1 (-2124696, 2743279) UNEQUAL-001 -2124696 2743279    1st  8021.238</span></a>
-<a class="sourceLine" id="cb23-4" title="4"><span class="co">#&gt; 2 (-2139956, 2736488) UNEQUAL-002 -2139956 2736488    1st  8021.238</span></a>
-<a class="sourceLine" id="cb23-5" title="5"><span class="co">#&gt; 3 (-2149976, 2735214) UNEQUAL-003 -2149976 2735214   3rd+ 10652.682</span></a>
-<a class="sourceLine" id="cb23-6" title="6"><span class="co">#&gt; 4 (-2138533, 2737853) UNEQUAL-004 -2138533 2737853    1st  8021.238</span></a>
-<a class="sourceLine" id="cb23-7" title="7"><span class="co">#&gt; 5 (-2128068, 2733806) UNEQUAL-005 -2128068 2733806    2nd  6655.043</span></a>
-<a class="sourceLine" id="cb23-8" title="8"><span class="co">#&gt; 6 (-2142682, 2729721) UNEQUAL-006 -2142682 2729721    1st  8021.238</span></a>
+<a class="sourceLine" id="cb23-3" title="3"><span class="co">#&gt; 1 (-2150259, 2735357) UNEQUAL-001 -2150259 2735357    2nd  6655.043</span></a>
+<a class="sourceLine" id="cb23-4" title="4"><span class="co">#&gt; 2 (-2132955, 2733467) UNEQUAL-002 -2132955 2733467    1st  8021.238</span></a>
+<a class="sourceLine" id="cb23-5" title="5"><span class="co">#&gt; 3 (-2120878, 2719055) UNEQUAL-003 -2120878 2719055    2nd  6655.043</span></a>
+<a class="sourceLine" id="cb23-6" title="6"><span class="co">#&gt; 4 (-2140550, 2737047) UNEQUAL-004 -2140550 2737047    1st  8021.238</span></a>
+<a class="sourceLine" id="cb23-7" title="7"><span class="co">#&gt; 5 (-2127963, 2722741) UNEQUAL-005 -2127963 2722741    2nd  6655.043</span></a>
+<a class="sourceLine" id="cb23-8" title="8"><span class="co">#&gt; 6 (-2144151, 2726551) UNEQUAL-006 -2144151 2726551   3rd+ 10652.682</span></a>
 <a class="sourceLine" id="cb23-9" title="9"><span class="co">#&gt;     stratum  panel EvalStatus EvalReason Length_km</span></a>
-<a class="sourceLine" id="cb23-10" title="10"><span class="co">#&gt; 1 Perennial Annual    NotEval            1.7852580</span></a>
-<a class="sourceLine" id="cb23-11" title="11"><span class="co">#&gt; 2 Perennial Annual    NotEval            3.0482268</span></a>
-<a class="sourceLine" id="cb23-12" title="12"><span class="co">#&gt; 3 Perennial Annual    NotEval            0.6150209</span></a>
-<a class="sourceLine" id="cb23-13" title="13"><span class="co">#&gt; 4 Perennial Annual    NotEval            1.8896457</span></a>
-<a class="sourceLine" id="cb23-14" title="14"><span class="co">#&gt; 5 Perennial Annual    NotEval            2.8633171</span></a>
-<a class="sourceLine" id="cb23-15" title="15"><span class="co">#&gt; 6 Perennial Annual    NotEval            6.3837155</span></a></code></pre></div>
+<a class="sourceLine" id="cb23-10" title="10"><span class="co">#&gt; 1 Perennial Annual    NotEval            0.8712123</span></a>
+<a class="sourceLine" id="cb23-11" title="11"><span class="co">#&gt; 2 Perennial Annual    NotEval            3.4334122</span></a>
+<a class="sourceLine" id="cb23-12" title="12"><span class="co">#&gt; 3 Perennial Annual    NotEval            3.2958615</span></a>
+<a class="sourceLine" id="cb23-13" title="13"><span class="co">#&gt; 4 Perennial Annual    NotEval            3.0482268</span></a>
+<a class="sourceLine" id="cb23-14" title="14"><span class="co">#&gt; 5 Perennial Annual    NotEval            2.3261097</span></a>
+<a class="sourceLine" id="cb23-15" title="15"><span class="co">#&gt; 6 Perennial Annual    NotEval            3.4314522</span></a></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="kw">summary</span>(Panelsites)</a>
 <a class="sourceLine" id="cb24-2" title="2"><span class="co">#&gt; Design Summary: Number of Sites Classified by mdcaty (Multidensity Category) </span></a>
@@ -643,9 +647,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb24-4" title="4"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-5" title="5"><span class="co">#&gt;       stratum</span></a>
 <a class="sourceLine" id="cb24-6" title="6"><span class="co">#&gt; mdcaty Perennial Intermittent Sum</span></a>
-<a class="sourceLine" id="cb24-7" title="7"><span class="co">#&gt;   1st         36           19  55</span></a>
-<a class="sourceLine" id="cb24-8" title="8"><span class="co">#&gt;   2nd         24            3  27</span></a>
-<a class="sourceLine" id="cb24-9" title="9"><span class="co">#&gt;   3rd+        16            3  19</span></a>
+<a class="sourceLine" id="cb24-7" title="7"><span class="co">#&gt;   1st         32           21  53</span></a>
+<a class="sourceLine" id="cb24-8" title="8"><span class="co">#&gt;   2nd         19            3  22</span></a>
+<a class="sourceLine" id="cb24-9" title="9"><span class="co">#&gt;   3rd+        25            1  26</span></a>
 <a class="sourceLine" id="cb24-10" title="10"><span class="co">#&gt;   Sum         76           25 101</span></a>
 <a class="sourceLine" id="cb24-11" title="11"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-12" title="12"><span class="co">#&gt; </span></a>
@@ -667,27 +671,27 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb24-28" title="28"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-29" title="29"><span class="co">#&gt;       panel</span></a>
 <a class="sourceLine" id="cb24-30" title="30"><span class="co">#&gt; mdcaty Annual OverSamp Year1 Year2 Sum</span></a>
-<a class="sourceLine" id="cb24-31" title="31"><span class="co">#&gt;   1st      12        6     7    11  36</span></a>
-<a class="sourceLine" id="cb24-32" title="32"><span class="co">#&gt;   2nd       3        8     9     4  24</span></a>
-<a class="sourceLine" id="cb24-33" title="33"><span class="co">#&gt;   3rd+      5        2     4     5  16</span></a>
+<a class="sourceLine" id="cb24-31" title="31"><span class="co">#&gt;   1st       9        8     9     6  32</span></a>
+<a class="sourceLine" id="cb24-32" title="32"><span class="co">#&gt;   2nd       6        6     3     4  19</span></a>
+<a class="sourceLine" id="cb24-33" title="33"><span class="co">#&gt;   3rd+      5        2     8    10  25</span></a>
 <a class="sourceLine" id="cb24-34" title="34"><span class="co">#&gt;   Sum      20       16    20    20  76</span></a>
 <a class="sourceLine" id="cb24-35" title="35"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-36" title="36"><span class="co">#&gt; , , stratum = Intermittent</span></a>
 <a class="sourceLine" id="cb24-37" title="37"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-38" title="38"><span class="co">#&gt;       panel</span></a>
 <a class="sourceLine" id="cb24-39" title="39"><span class="co">#&gt; mdcaty Annual OverSamp Year1 Year2 Sum</span></a>
-<a class="sourceLine" id="cb24-40" title="40"><span class="co">#&gt;   1st      19        0     0     0  19</span></a>
+<a class="sourceLine" id="cb24-40" title="40"><span class="co">#&gt;   1st      21        0     0     0  21</span></a>
 <a class="sourceLine" id="cb24-41" title="41"><span class="co">#&gt;   2nd       3        0     0     0   3</span></a>
-<a class="sourceLine" id="cb24-42" title="42"><span class="co">#&gt;   3rd+      3        0     0     0   3</span></a>
+<a class="sourceLine" id="cb24-42" title="42"><span class="co">#&gt;   3rd+      1        0     0     0   1</span></a>
 <a class="sourceLine" id="cb24-43" title="43"><span class="co">#&gt;   Sum      25        0     0     0  25</span></a>
 <a class="sourceLine" id="cb24-44" title="44"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-45" title="45"><span class="co">#&gt; , , stratum = Sum</span></a>
 <a class="sourceLine" id="cb24-46" title="46"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb24-47" title="47"><span class="co">#&gt;       panel</span></a>
 <a class="sourceLine" id="cb24-48" title="48"><span class="co">#&gt; mdcaty Annual OverSamp Year1 Year2 Sum</span></a>
-<a class="sourceLine" id="cb24-49" title="49"><span class="co">#&gt;   1st      31        6     7    11  55</span></a>
-<a class="sourceLine" id="cb24-50" title="50"><span class="co">#&gt;   2nd       6        8     9     4  27</span></a>
-<a class="sourceLine" id="cb24-51" title="51"><span class="co">#&gt;   3rd+      8        2     4     5  19</span></a>
+<a class="sourceLine" id="cb24-49" title="49"><span class="co">#&gt;   1st      30        8     9     6  53</span></a>
+<a class="sourceLine" id="cb24-50" title="50"><span class="co">#&gt;   2nd       9        6     3     4  22</span></a>
+<a class="sourceLine" id="cb24-51" title="51"><span class="co">#&gt;   3rd+      6        2     8    10  26</span></a>
 <a class="sourceLine" id="cb24-52" title="52"><span class="co">#&gt;   Sum      45       16    20    20 101</span></a></code></pre></div>
 </div>
 

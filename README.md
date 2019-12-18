@@ -1,5 +1,5 @@
 <!-- badges: start -->
-[![](https://cranlogs.r-pkg.org/badges/grand-total/spsurvey)](https://cran.rstudio.com/web/packages/spsurvey/index.html)[![Travis build status](https://travis-ci.org/mhweber/spsurvey.svg?branch=master)](https://travis-ci.org/mhweber/spsurvey)[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
+[![](https://cranlogs.r-pkg.org/badges/grand-total/spsurvey)](https://cran.r-project.org/package=spsurvey)[![Travis build status](https://travis-ci.org/mhweber/spsurvey.svg?branch=master)](https://travis-ci.org/mhweber/spsurvey)[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 [![CRAN](http://www.r-pkg.org/badges/version/spsurvey)](https://cran.r-project.org/package=spsurvey)
 [![cran checks](https://cranchecks.info/badges/worst/spsurvey)](https://cran.r-project.org/web/checks/check_results_spsurvey.html)
 <!-- badges: end -->
@@ -19,7 +19,7 @@ install.packages('spsurvey')
 library(spsurvey)
 ```
 
-You can install `spsurvey` from github with:
+You can install development version of`spsurvey` from GitHub with the following:
 
 ```r
 # requires devtools to install
@@ -28,6 +28,13 @@ library(devtools)
 
 # install from repository
 install_github('USEPA/spsurvey')
+library(spsurvey)
+```
+
+To install from GitHub with package vignettes:
+```r
+library(devtools)
+install_github('USEPA/spsurvey', build_vignettes=TRUE)
 library(spsurvey)
 ```
 
@@ -43,16 +50,17 @@ citation(package = 'spsurvey')
 ## 
 ## To cite the spsurvey package in publications use:
 ## 
-##   Kincaid, T. M. and Olsen, A. R. (2016). spsurvey: Spatial Survey
-##   Design and Analysis. R package version 3.3.
+##   Kincaid, T. M., Olsen, A. R., and Weber, M. H. (2019).
+##   spsurvey: Spatial Survey Design and Analysis. R package
+##  version 4.1.0.
 ## 
 ## A BibTeX entry for LaTeX users is
 ## 
-##   @Manual{,
+##  @Manual{,
 ##     title = {spsurvey: Spatial Survey Design and Analysis},
-##     author = {Thomas M. Kincaid and Anthony R. Olsen},
-##     year = {2016},
-##     note = {R package version 3.3},
+##     author = {Thomas M. Kincaid and Anthony R. Olsen and Marc H. Weber},
+##     year = {2019},
+##     note = {R package version 4.1.0},
 ##   }
 ```
 

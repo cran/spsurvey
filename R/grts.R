@@ -3,16 +3,15 @@
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: July 31, 2019
+# Last Revised: October 30, 2019
 #'
 #' Select a Generalized Random-Tesselation Stratified (GRTS) Sample
 #'
 #' This function select a GRTS sample of a finite, linear, or area resource.
 #' Frame elements must be located in 1- or 2-dimensional coordinate system.
-#' Random selection may be generalized random tessellation stratified (GRTS),
-#' independent random sample (IRS), or systematic sample.  Sample may be equal
-#' probability or unequal probability (either categorical or proportional to
-#' auxiliary variable).  May designate panels of sites for surveys over time.
+#' Sample may be equal probability or unequal probability (either categorical or
+#' proportional to auxiliary variable).  May designate panels of sites for
+#' surveys over time.
 #'
 #' @param design Named list of stratum design specifications which are also
 #'   lists.  Stratum names must be subset of values in stratum argument.  Each
@@ -50,7 +49,7 @@
 #'   is 1.
 #'
 #' @param type.frame The type of frame, which must be one of following:
-#'   "finite", "linear", or "area".  The default is "finite".
+#'   "finite", "linear", or "area".  The default is NULL.
 #'
 #' @param src.frame Source of the frame, which equals "sf.object" if the frame
 #'   is contained in an sf package object, "shapefile" if the frame is to be
@@ -70,13 +69,12 @@
 #'   "sp.object". The default is NULL.
 #'
 #' @param att.frame Data frame composed of attributes associated with elements
-#'   in the frame, which must contain the columns used for stratum and mdcaty
-#'   (if required).  If src.frame equals "shapefile" and att.frame equals NULL,
-#'   then att.frame is created from the dbf file(s) in the working directory. If
-#'   src.frame equals "sp.object" and att.frame equals NULL, then att.frame is
-#'   created from the sp object.  If src.frame equals "att.frame", then
-#'   att.frame must include columns that contain x-coordinates and y-coordinates
-#'   for each element in the frame.  The default is NULL.
+#'   in the frame.  If src.frame equals "att.frame", then att.frame must include
+#'   columns that contain x-coordinates and y-coordinates for each element in
+#'   the frame.  If src.frame does not equal "att.frame" and att.frame is not
+#'   equal to NULL, then an sf object is created from att.frame and the geometry
+#'   column from the object named "sf.object" that is created by the function.
+#'   The default is NULL.
 #'
 #' @param id This argument is depricated.
 #'
@@ -165,12 +163,12 @@
 #' @export
 ################################################################################
 
-grts <- function(design, DesignID = "Site", SiteBegin = 1, type.frame =
-   "finite", src.frame = "shapefile", in.shape = NULL, sf.object = NULL,
-   sp.object = NULL, att.frame = NULL, id = NULL, xcoord = NULL, ycoord = NULL,
-   stratum = NULL, mdcaty = NULL, startlev = NULL, maxlev = 11, maxtry = NULL,
-   shift.grid = TRUE, do.sample = rep(TRUE, length(design)), shapefile = TRUE,
-   prjfilename = NULL, out.shape = "sample.shp") {
+grts <- function(design, DesignID = "Site", SiteBegin = 1, type.frame = NULL,
+   src.frame = "shapefile", in.shape = NULL, sf.object = NULL, sp.object = NULL,
+   att.frame = NULL, id = NULL, xcoord = NULL, ycoord = NULL, stratum = NULL,
+   mdcaty = NULL, startlev = NULL, maxlev = 11, maxtry = NULL, shift.grid =
+   TRUE, do.sample = rep(TRUE, length(design)), shapefile = TRUE, prjfilename =
+   NULL, out.shape = "sample.shp") {
 
 # Ensure that a design list is provided
 
@@ -191,12 +189,20 @@ if(is.null(strata.names)) {
    }
 }
 
+# Ensure that type.frame contains a valid value
+
+if(is.null(type.frame))
+   stop("\nA value must be provided for argument type.frame.")
+temp <- match(type.frame, c("finite", "linear", "area"), nomatch=0)
+if(temp == 0)
+   stop(paste("\nThe value provided for argument type.frame, \"", type.frame, "\", is not a valid value.", sep=""))
+
 # Ensure that src.frame contains a valid value
 
 temp <- match(src.frame, c("sf.object", "shapefile", "sp.object", "att.frame"),
    nomatch=0)
 if(temp == 0)
-   stop(paste("\nThe value provided for argument src.frame, \"", src.frame, "\" is not a valid value.", sep=""))
+   stop(paste("\nThe value provided for argument src.frame, \"", src.frame, "\", is not a valid value.", sep=""))
 
 # If src.frame equals "shapefile", then create an sf object from the shapefile
 
@@ -220,6 +226,8 @@ if(src.frame == "sf.object") {
    if(is.null(sf.object))
       stop("\nAn sf package object is required when the value provided for argument src.frame \nequals \"sf.object\".")
 }
+
+# If src.frame equals "sp.object", then create an sf object from the sp object
 
 if(src.frame == "sp.object") {
    if(is.null(sp.object))
@@ -247,14 +255,27 @@ if(src.frame == "att.frame") {
    sf.object <- st_as_sf(att.frame, coords = c(xcoord, ycoord))
 }
 
-# Check that the geometry types for the survey frame object are consistent
+# If src.frame does not equal "att.frame" and att.frame is not NULL, create an
+# sf object composed of att.frame and the geometry column from sf.object
+
+if(src.frame != "att.frame" & !is.null(att.frame)) {
+   geom <- st_geometry(sf.object)
+   sf.object <- st_set_geometry(att.frame, geom)
+}
+
+# Ensure that the class attribute for sf.object contains only the values "sf"
+# and "data.frame"
+
+class(sf.object) <- c("sf", "data.frame")
+
+# Ensure that the geometry types for sf.object are consistent
 
 temp <- st_geometry_type(sf.object)
 tst <- all(temp %in% c("POINT", "MULTIPOINT")) |
        all(temp %in% c("LINESTRING", "MULTILINESTRING")) |
        all(temp %in% c("POLYGON", "MULTIPOLYGON"))
 if(!tst) {
-   stop(paste("\nThe geometry types for the survey frame object passed to function IRS: \n\"", unique(st_geometry_type(sf.object)), "\" are not consistent.", sep=""))
+   stop(paste("\nThe geometry types for the survey frame object passed to function grts: \n\"", unique(st_geometry_type(sf.object)), "\" are not consistent.", sep=""))
 }
 
 # Create ID values
@@ -943,10 +964,6 @@ if(type.frame == "finite") {
 
 # End the section for a polygonal area
 
-} else {
-
-   stop(paste("\nThe value provided for the type of frame, \"", type.frame, "\", is not valid.", sep=""))
-
 }
 
 # As necessary, terminate parallel processing
@@ -968,11 +985,12 @@ sites$EvalReason <- rep(" ", nrow(sites))
 # Add attributes from sf.object that are not included in sites
 
 tm <- match(sites$id, sf.object$id)
+geom_name <- attr(sf.object, "sf_column")
 if(design[[s]]$seltype == "Equal") {
-   td <- match(c(id, stratum, "length_mdm", "area_mdm", "geometry"),
+   td <- match(c(id, stratum, "length_mdm", "area_mdm", geom_name),
       names(sf.object), nomatch=0)
 } else {
-   td <- match(c(id, stratum, mdcaty, "length_mdm", "area_mdm", "geometry"),
+   td <- match(c(id, stratum, mdcaty, "length_mdm", "area_mdm", geom_name),
       names(sf.object), nomatch=0)
 }
 temp <- names(sf.object)[-td]
@@ -985,7 +1003,7 @@ if(length(temp) > 0) {
 # Remove the id attribute from sites
 
 temp <- names(sites)
-temp <- temp[!(temp %in% c("id", "geometry"))]
+temp <- temp[!(temp %in% c("id", geom_name))]
 sites <- subset(sites, select=temp)
 
 # Add row names to sites
@@ -1026,11 +1044,10 @@ if(shapefile == TRUE) {
 }
 
 # Create an object of class SpatialDesign
-
 SpointsMat <- st_coordinates(sites)
 rownames(SpointsMat) <- IDs
-sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),
-   data = sites[, 1:(ncol(sites)-1), drop = TRUE])
+dat <- st_set_geometry(sites, NULL)
+sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),data=dat)
 rslt <- SpatialDesign(design = design, sp_obj = sp_obj)
 
 # Return the SpatialDesign object

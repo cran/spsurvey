@@ -34,6 +34,7 @@ Equalsites <- grts(design=Equaldsgn,
                    type.frame="linear",
                    src.frame="sf.object",
                    sf.object=Luck_Ash_streams,
+                   maxlev = 5,
                    shapefile=FALSE)
 
 ## ----head.design---------------------------------------------------------
@@ -59,6 +60,7 @@ Stratsites <- grts(design=Stratdsgn,
                    type.frame="linear",
                    src.frame="shapefile",
                    in.shape="Luck_Ash_streams.shp",
+                   maxlev = 5,
                    stratum="Per_Int",
                    shapefile=FALSE)
 
@@ -88,6 +90,7 @@ Unequalsites <- grts(design=Unequaldsgn,
                      src.frame="sp.object",
                      sp.object=Luck_Ash_streams_sp,
                      stratum="Per_Int",
+                     maxlev=5,
                      mdcaty="Strah_Cat",
                      shapefile=FALSE)
 
@@ -113,6 +116,7 @@ Panelsites <- grts(design=Paneldsgn,
                    src.frame="sf.object",
                    sf.object=Luck_Ash_streams,
                    stratum="Per_Int",
+                   maxlev = 5,
                    mdcaty="Strah_Cat",
                    shapefile=FALSE)
 

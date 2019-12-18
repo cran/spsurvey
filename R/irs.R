@@ -2,7 +2,7 @@
 # Function: irs
 # Programmer: Tom Kincaid
 # Date: November 28, 2005
-# Last Revised: July 8, 2019
+# Last Revised: October 30, 2019
 #'
 #' Select an Independent Random Sample (IRS)
 #'
@@ -67,10 +67,13 @@
 #' @param sp.object An sp package object containing the frame, which is required
 #'   when src.frame equals "sp.object".  The default is NULL.
 #'
-#' @param att.frame Data frame containing the frame for a finite resource, which
-#'   is required when src.frame equals "att.frame".  The data frame must include
-#'   x-coordinates and y-coordinates for each element in the frame.  The default
-#'   is NULL.
+#' @param att.frame Data frame composed of attributes associated with elements
+#'   in the frame.  If src.frame equals "att.frame", then att.frame must include
+#'   columns that contain x-coordinates and y-coordinates for each element in
+#'   the frame.  If src.frame does not equal "att.frame" and att.frame is not
+#'   equal to NULL, then an sf object is created from att.frame and the geometry
+#'   column from the object named "sf.object" that is created by the function.
+#'   The default is NULL.
 #'
 #' @param id This argument is depricated.
 #'
@@ -222,14 +225,27 @@ if(src.frame == "att.frame") {
    sf.object <- st_as_sf(att.frame, coords = c(xcoord, ycoord))
 }
 
-# Check that the geometry types for the survey frame object are consistent
+# If src.frame does not equal "att.frame" and att.frame is not NULL, create an
+# sf object composed of att.frame and the geometry column from sf.object
+
+if(src.frame != "att.frame" & !is.null(att.frame)) {
+   geom <- st_geometry(sf.object)
+   sf.object <- st_set_geometry(att.frame, geom)
+}
+
+# Ensure that the class attribute for sf.object contains only the values "sf"
+# and "data.frame"
+
+class(sf.object) <- c("sf", "data.frame")
+
+# Ensure that the geometry types for sf.object are consistent
 
 temp <- st_geometry_type(sf.object)
 tst <- all(temp %in% c("POINT", "MULTIPOINT")) |
        all(temp %in% c("LINESTRING", "MULTILINESTRING")) |
        all(temp %in% c("POLYGON", "MULTIPOLYGON"))
 if(!tst) {
-   stop(paste("\nThe geometry types for the survey frame object passed to function IRS: \n\"", unique(st_geometry_type(sf.object)), "\" are not consistent.", sep=""))
+   stop(paste("\nThe geometry types for the survey frame object passed to function irs: \n\"", unique(st_geometry_type(sf.object)), "\" are not consistent.", sep=""))
 }
 
 # Create ID values
