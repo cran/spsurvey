@@ -8,11 +8,11 @@
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2019-12-17" />
+<meta name="date" content="2020-03-31" />
 
 <title>Linear Design</title>
 
@@ -117,9 +117,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -288,7 +285,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -303,7 +301,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Linear Design</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2019-12-17</h4>
+<h4 class="date">2020-03-31</h4>
 
 
 
@@ -330,15 +328,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb3-3" title="3"><span class="co">#&gt; geometry type:  LINESTRING</span></a>
 <a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt; dimension:      XY</span></a>
 <a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt; bbox:           xmin: -2148980 ymin: 2722288 xmax: -2126694 ymax: 2746966</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; epsg (SRID):    5070</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; proj4string:    +proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt;        Per_Int Strah_Cat Length_km                       geometry</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; 1    Perennial       2nd 2.3261097 LINESTRING (-2128642 272228...</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; 2 Intermittent       1st 0.5785829 LINESTRING (-2137334 274498...</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; 3 Intermittent       1st 0.7796058 LINESTRING (-2129644 274406...</span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; 4    Perennial       1st 1.8757176 LINESTRING (-2148980 274686...</span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; 5 Intermittent       1st 1.0012245 LINESTRING (-2134217 274357...</span></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; 6    Perennial       1st 1.6464196 LINESTRING (-2136771 274488...</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; CRS:            EPSG:5070</span></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt;        Per_Int Strah_Cat Length_km                       geometry</span></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; 1    Perennial       2nd 2.3261097 LINESTRING (-2128642 272228...</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; 2 Intermittent       1st 0.5785829 LINESTRING (-2137334 274498...</span></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; 3 Intermittent       1st 0.7796058 LINESTRING (-2129644 274406...</span></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; 4    Perennial       1st 1.8757176 LINESTRING (-2148980 274686...</span></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; 5 Intermittent       1st 1.0012245 LINESTRING (-2134217 274357...</span></a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; 6    Perennial       1st 1.6464196 LINESTRING (-2136771 274488...</span></a></code></pre></div>
 <p>Display number of stream segments cross-classified by the strata and multidensity category variables:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">with</span>(Luck_Ash_streams, <span class="kw">addmargins</span>(<span class="kw">table</span>(<span class="st">&quot;Stream Type&quot;</span>=Per_Int, <span class="st">&quot;Strahler Order&quot;</span>=Strah_Cat)))</a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="co">#&gt;               Strahler Order</span></a>
@@ -484,7 +481,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The third survey design is a stratified, unequal probability design with an oversample. As for the second survey design, the stream type attribute is used to identify strata. Strahler order categories are used to identify multidensity categories. List <code>Unequaldsgn</code> is assigned design specifications. <code>Unequaldsgn</code> includes the same two lists with three items (panel, seltype, and over) as used for the stratified, equal probability design plus a value for caty.n. For both lists, panel specifies a single panel, and seltype is assigned “Unequal” to indicate unequal probability sampling. Note that the value 0 is assigned to over for the “Intermittent” stratum, i.e., no oversample. The over item could have been omitted from the list for “Intermittent”. The vector assigned to caty.n specifies sample sizes for each of the three multidensity categories. Note that the sum of values provided in caty.n must equal the value in panel.</p>
 <p>For this survey design, an <code>sp</code> package object will be used as the sampling frame. The <code>sf</code> package function <code>as_Spatial</code> is used to create an <code>sp</code> object named <code>Luck_Ash_streams_sp</code>. The following arguments are included in the call to <code>grts</code>: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value “UNEQUAL”; (3) type.frame: assigned the value “linear”; (4) src.frame: assigned the value “sp.object” to indicate that the sampling frame is provided by an <code>sp</code> object; (5) sp.object: name of the <code>sp</code> object, which is assigned the shp object; (6) stratum: assigned the value “Per_Int”; (7) mdcaty: name of the column in the attributes data frame that identifies the unequal probability category for each element in the frame, which is assigned the value “Strah_Cat”; and (8) shapefile: assigned the value FALSE. Upon completion of the call to <code>grts</code>, the initial six sites for the survey design and a design summary are printed.</p>
 <p>Create the <code>sp</code> object:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">Luck_Ash_streams_sp &lt;-<span class="st"> </span><span class="kw">as_Spatial</span>(Luck_Ash_streams)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">Luck_Ash_streams_sp &lt;-<span class="st"> </span><span class="kw">as_Spatial</span>(Luck_Ash_streams)</a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="co">#&gt; Warning: st_crs&lt;- : replacing crs does not reproject data; use st_transform</span></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="co">#&gt; for that</span></a></code></pre></div>
 <p>Create the design list:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">Unequaldsgn &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">Perennial=</span><span class="kw">list</span>(<span class="dt">panel=</span><span class="kw">c</span>(<span class="dt">PanelOne=</span><span class="dv">60</span>),</a>
 <a class="sourceLine" id="cb17-2" title="2">                                   <span class="dt">seltype=</span><span class="st">&quot;Unequal&quot;</span>,</a>

@@ -8,11 +8,11 @@
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2019-12-17" />
+<meta name="date" content="2020-03-31" />
 
 <title>Finite Design</title>
 
@@ -117,9 +117,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -288,7 +285,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -303,7 +301,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Finite Design</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2019-12-17</h4>
+<h4 class="date">2020-03-31</h4>
 
 
 
@@ -329,15 +327,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb3-3" title="3"><span class="co">#&gt; geometry type:  POINT</span></a>
 <a class="sourceLine" id="cb3-4" title="4"><span class="co">#&gt; dimension:      XY</span></a>
 <a class="sourceLine" id="cb3-5" title="5"><span class="co">#&gt; bbox:           xmin: 2008789 ymin: 2468603 xmax: 2015009 ymax: 2474343</span></a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; epsg (SRID):    5070</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt; proj4string:    +proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt;    xcoord  ycoord State Area_Cat                geometry</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; 1 2012313 2474271    MA  (10,50] POINT (2012313 2474271)</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; 2 2013905 2474343    MA    (1,5] POINT (2013905 2474343)</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; 3 2008789 2472920    MA  (10,50] POINT (2008789 2472920)</span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; 4 2009814 2472036    MA (50,500] POINT (2009814 2472036)</span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; 5 2014014 2471614    MA   (5,10] POINT (2014014 2471614)</span></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; 6 2015009 2468603    MA  (10,50] POINT (2015009 2468603)</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; CRS:            EPSG:5070</span></a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt;    xcoord  ycoord State Area_Cat                geometry</span></a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt; 1 2012313 2474271    MA  (10,50] POINT (2012313 2474271)</span></a>
+<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; 2 2013905 2474343    MA    (1,5] POINT (2013905 2474343)</span></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; 3 2008789 2472920    MA  (10,50] POINT (2008789 2472920)</span></a>
+<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; 4 2009814 2472036    MA (50,500] POINT (2009814 2472036)</span></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; 5 2014014 2471614    MA   (5,10] POINT (2014014 2471614)</span></a>
+<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; 6 2015009 2468603    MA  (10,50] POINT (2015009 2468603)</span></a></code></pre></div>
 <p>Display number of lakes cross-classified by strata and multidensity category:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">with</span>(NE_lakes, <span class="kw">addmargins</span>(<span class="kw">table</span>(<span class="st">&quot;State&quot;</span>=State, <span class="st">&quot;Lake Area Category&quot;</span>=Area_Cat)))</a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="co">#&gt;      Lake Area Category</span></a>
@@ -468,7 +465,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>The third survey design is an unstratified, unequal probability design with an oversample. Lake area classes are used to identify multidensity categories. List <code>Unequaldsgn</code> is assigned design specifications. Since the survey design is unstratified, <code>Unequaldsgn</code> includes a single list named “None” that contains four items: panel, seltype, caty.n, and over. The value for panel is the same as the equal probability design, and seltype is assigned “Unequal” to indicate unequal selection probabilities. The third item, caty.n, assigns sample sizes for each of the six multidensity categories. Note that the sum of sample sizes provided in caty.n must equal the value in panel. The fourth item, over, is assigned the value 120, which specifies an oversample of 120 sites. An oversample is replacement sites for the survey design. The <code>grts</code> function attempts to distribute the oversample proportionately among sample sizes for the multidensity categories. If the oversample proportion for one or more categories is not a whole number, a warning message is printed and the proportion is rounded to the next higher integer. For this example, the oversample is proportionate to the category sample sizes, and the warning message is not printed.</p>
 <p>For this survey design, an <code>sp</code> package object will be used as the sampling frame. The <code>sf</code> package function <code>as_Spatial</code> is used to create an <code>sp</code> object named <code>NE_lakes_sp</code>. The following arguments are included in the call to <code>grts</code>: (1) design: assigned the Unequaldsgn list; (2) DesignID: assigned the value “UNEQUAL”; (3) type.frame: assigned the value “finite”; (4) src.frame: assigned the value “sp.object” to indicate that the sampling frame is provided by an sp object; (5) sp.object: the sp object, which is assigned the <code>NE_lakes_sp</code> object; (6) mdcaty: name of the column in the <code>attributes</code> data frame that identifies the unequal probability category for each element in the frame, which is assigned the value “Area_cat”; and (7) shapefile: assigned the value FALSE. Upon completion of the call to <code>grts</code>, the initial six sites for the survey design and a design summary are printed.</p>
 <p>Create the <code>sp</code> object:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">NE_lakes_sp &lt;-<span class="st"> </span><span class="kw">as_Spatial</span>(NE_lakes)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">NE_lakes_sp &lt;-<span class="st"> </span><span class="kw">as_Spatial</span>(NE_lakes)</a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="co">#&gt; Warning: st_crs&lt;- : replacing crs does not reproject data; use st_transform</span></a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="co">#&gt; for that</span></a></code></pre></div>
 <p>Create the design list:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1">Unequaldsgn &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">None=</span><span class="kw">list</span>(<span class="dt">panel=</span><span class="kw">c</span>(<span class="dt">PanelOne=</span><span class="dv">90</span>),</a>
 <a class="sourceLine" id="cb16-2" title="2">                              <span class="dt">seltype=</span><span class="st">&quot;Unequal&quot;</span>,</a>
