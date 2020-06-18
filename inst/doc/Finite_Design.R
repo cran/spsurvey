@@ -1,28 +1,29 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ----load-spsurvey-------------------------------------------------------
+## ----load-spsurvey------------------------------------------------------------
 library(spsurvey)
+library(sf)
 
-## ----load_NElakes--------------------------------------------------------
+## ----load_NElakes-------------------------------------------------------------
 data(NE_lakes)
 
-## ----head_NElakes--------------------------------------------------------
+## ----head_NElakes-------------------------------------------------------------
 head(NE_lakes)
 
-## ----cross-class_NElakes-------------------------------------------------
+## ----cross-class_NElakes------------------------------------------------------
 with(NE_lakes, addmargins(table("State"=State, "Lake Area Category"=Area_Cat)))
 
-## ----set.seed------------------------------------------------------------
+## ----set.seed-----------------------------------------------------------------
 set.seed(4447864)
 
-## ----design.list---------------------------------------------------------
+## ----design.list--------------------------------------------------------------
 Equaldsgn <- list(None=list(panel=c(PanelOne=100), seltype="Equal"))
 
-## ----select.sample-------------------------------------------------------
+## ----select.sample------------------------------------------------------------
 Equalsites <- grts(design=Equaldsgn,
                    DesignID="EQUAL",
                    type.frame="finite",
@@ -30,22 +31,22 @@ Equalsites <- grts(design=Equaldsgn,
                    sf.object=NE_lakes,
                    shapefile=FALSE)
 
-## ----head.design---------------------------------------------------------
+## ----head.design--------------------------------------------------------------
 head(Equalsites)
 
-## ----summary.design------------------------------------------------------
+## ----summary.design-----------------------------------------------------------
 summary(Equalsites)
 
-## ----create_df-----------------------------------------------------------
+## ----create_df----------------------------------------------------------------
 geom_name <- attr(NE_lakes, "sf_column")
 NE_lakes_df <- subset(NE_lakes, select=names(NE_lakes) != geom_name, drop = TRUE)
 
-## ----create_designlist---------------------------------------------------
+## ----create_designlist--------------------------------------------------------
 Stratdsgn <- list(CT=list(panel=c(PanelOne=40), seltype="Equal"),
                   MA=list(panel=c(PanelOne=40), seltype="Equal"),
                   RI=list(panel=c(PanelOne=20), seltype="Equal"))
 
-## ----select.sample2------------------------------------------------------
+## ----select.sample2-----------------------------------------------------------
 Stratsites <- grts(design=Stratdsgn,
                    DesignID="STRATIFIED",
                    type.frame="finite",
@@ -56,16 +57,16 @@ Stratsites <- grts(design=Stratdsgn,
                    stratum="State",
                    shapefile=FALSE)
 
-## ----head.stratsites-----------------------------------------------------
+## ----head.stratsites----------------------------------------------------------
 head(Stratsites)
 
-## ----summary.stratsites--------------------------------------------------
+## ----summary.stratsites-------------------------------------------------------
 summary(Stratsites)
 
-## ----create_sp-----------------------------------------------------------
+## ----create_sp----------------------------------------------------------------
 NE_lakes_sp <- as_Spatial(NE_lakes)
 
-## ----create_design_list--------------------------------------------------
+## ----create_design_list-------------------------------------------------------
 Unequaldsgn <- list(None=list(panel=c(PanelOne=90),
                               seltype="Unequal",
                               caty.n=c("(0,1]"=15, "(1,5]"=30, "(5,10]"=15,
@@ -73,7 +74,7 @@ Unequaldsgn <- list(None=list(panel=c(PanelOne=90),
                                        "(500,1e+04]"=5),
                               over=10))
 
-## ----select_sample-------------------------------------------------------
+## ----select_sample------------------------------------------------------------
 Unequalsites <- grts(design=Unequaldsgn,
                      DesignID="UNEQUAL",
                      type.frame="finite",
@@ -82,16 +83,16 @@ Unequalsites <- grts(design=Unequaldsgn,
                      mdcaty="Area_Cat",
                      shapefile=FALSE)
 
-## ----head_design---------------------------------------------------------
+## ----head_design--------------------------------------------------------------
 head(Unequalsites)
 
-## ----summary_design------------------------------------------------------
+## ----summary_design-----------------------------------------------------------
 summary(Unequalsites)
 
-## ----create_shapefile----------------------------------------------------
+## ----create_shapefile---------------------------------------------------------
 st_write(NE_lakes, "NE_lakes.shp", quiet = TRUE, delete_dsn = TRUE)
 
-## ----create_design2------------------------------------------------------
+## ----create_design2-----------------------------------------------------------
 Paneldsgn <- list(None=list(panel=c(Annual=15, Year1=15, Year2=15, Year3=15,
                                     Year4=15, Year5=15),
                             seltype="Unequal",
@@ -100,7 +101,7 @@ Paneldsgn <- list(None=list(panel=c(Annual=15, Year1=15, Year2=15, Year3=15,
                                      "(500,1e+04]"=5),
                             over=10))
 
-## ----select_sample2------------------------------------------------------
+## ----select_sample2-----------------------------------------------------------
 Panelsites <- grts(design=Paneldsgn,
                    DesignID="UNEQUAL",
                    type.frame="finite",
@@ -109,12 +110,12 @@ Panelsites <- grts(design=Paneldsgn,
                    mdcaty="Area_Cat",
                    shapefile=FALSE)
 
-## ----warnings------------------------------------------------------------
+## ----warnings-----------------------------------------------------------------
 warnings()
 
-## ----head_design2--------------------------------------------------------
+## ----head_design2-------------------------------------------------------------
 head(Panelsites)
 
-## ----summary_design2-----------------------------------------------------
+## ----summary_design2----------------------------------------------------------
 summary(Panelsites)
 

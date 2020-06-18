@@ -1,7 +1,7 @@
 Package: spsurvey
 Title: Spatial Survey Design and Analysis
-Version: 4.1.2
-Date: 2020-3-31
+Version: 4.1.3
+Date: 2020-6-15
 Authors@R: c(
     person("Tom", "Kincaid", role="aut",
            email = "Kincaid.Tom@epa.gov"),
@@ -15,7 +15,7 @@ Authors@R: c(
     person("Richard", "Remington",  role="ctb")
     )
 Maintainer: Marc Weber <Weber.Marc@epa.gov>
-Depends: R (>= 3.5.0), methods, sf, sp
+Depends: R (>= 3.5.0), methods
 Suggests: knitr, testthat, rmarkdown, lwgeom (>= 0.2-1)
 Description: These functions provide procedures for selecting sites for spatial
     surveys using spatially balanced algorithms applied to discrete points,
@@ -38,13 +38,13 @@ Description: These functions provide procedures for selecting sites for spatial
     <Online ISBN:9781139022422>).
 License: GPL (>= 3)
 Imports: crossdes, deldir, foreign, graphics, grDevices, Hmisc, MASS,
-        parallel, rgeos, stats
+        parallel, rgeos, stats, sf, sp
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2020-03-31 16:01:04 UTC; mweber
+Packaged: 2020-06-15 17:51:15 UTC; mweber
 Author: Tom Kincaid [aut],
   Tony Olsen [aut],
   Marc Weber [aut, cre],
@@ -53,4 +53,4 @@ Author: Tom Kincaid [aut],
   Denis White [ctb],
   Richard Remington [ctb]
 Repository: CRAN
-Date/Publication: 2020-04-01 12:50:02 UTC
+Date/Publication: 2020-06-18 17:10:02 UTC

@@ -3,7 +3,7 @@
 # Programmers: Tony Olsen, Tom Kincaid, Don Stevens, Christian Platt,
 #              Denis White, Richard Remington
 # Date: October 8, 2002
-# Last Revised: October 30, 2019
+# Last Revised: April 1, 2020
 #'
 #' Select a Generalized Random-Tesselation Stratified (GRTS) Sample
 #'
@@ -147,7 +147,11 @@
 #' @author Tom Kincaid  email{Kincaid.Tom@epa.gov}
 #'
 #' @keywords survey
-#'
+#' 
+#' @importFrom sf st_read st_as_sf st_geometry st_coordinates st_set_geometry st_geometry_type st_agr st_length st_area st_write st_crs
+#'  
+#' @importFrom sp SpatialPoints SpatialPointsDataFrame proj4string CRS
+#' 
 #' @examples
 #' \dontrun{
 #'   test_design <- list(
@@ -516,8 +520,12 @@ if(type.frame == "finite") {
       } else {
          stmp <- sframe
          stmp$siteID <- SiteBegin
+         temp <- st_coordinates(stmp)
+         stmp$xcoord <- temp[,1]
+         stmp$ycoord <- temp[,2]
          stmp$wgt <- 1/sframe$mdm
-         stmp <- subset(stmp, select = c("siteID", "id", "mdcaty", "wgt"))
+         stmp <- subset(stmp, select = c("siteID", "id", "xcoord", "ycoord",
+            "mdcaty", "wgt"))
          row.names(stmp) <- 1
          attr(stmp, "nlev") <- NA
       }
@@ -709,12 +717,12 @@ if(type.frame == "finite") {
 # Calculate mdm - inclusion probabilities
 
       if(design[[s]]$seltype == "Equal")
-         sframe$mdm <- mdmlin(sframe$len, sframe$mdcaty, c(Equal=n.desired))
+         sframe$mdm <- mdmlin(sframe$length_mdm, sframe$mdcaty, c(Equal=n.desired))
       else if(design[[s]]$seltype == "Unequal")
-         sframe$mdm <- mdmlin(sframe$len, sframe$mdcaty, n.desired)
+         sframe$mdm <- mdmlin(sframe$length_mdm, sframe$mdcaty, n.desired)
       else
          sframe$mdm <- n.desired * sframe$mdcaty /
-                       sum(sframe$len * sframe$mdcaty)
+                       sum(sframe$length_mdm * sframe$mdcaty)
 
 # Select the sample
 
@@ -1044,10 +1052,12 @@ if(shapefile == TRUE) {
 }
 
 # Create an object of class SpatialDesign
+
 SpointsMat <- st_coordinates(sites)
 rownames(SpointsMat) <- IDs
 dat <- st_set_geometry(sites, NULL)
-sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),data=dat)
+sp_obj <- SpatialPointsDataFrame(SpatialPoints(SpointsMat),data = dat)
+sp::proj4string(sp_obj) <-  sp::CRS(st_crs(sites)$proj4string)
 rslt <- SpatialDesign(design = design, sp_obj = sp_obj)
 
 # Return the SpatialDesign object

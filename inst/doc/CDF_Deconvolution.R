@@ -1,41 +1,41 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ----load-spsurvey-------------------------------------------------------
+## ----load-spsurvey------------------------------------------------------------
 library(spsurvey)
 
-## ----load_decon----------------------------------------------------------
+## ----load_decon---------------------------------------------------------------
 data(decon_data)
 nr <- nrow(decon_data)
 
-## ----head_decon----------------------------------------------------------
+## ----head_decon---------------------------------------------------------------
 head(decon_data)
 
-## ----tail_decon----------------------------------------------------------
+## ----tail_decon---------------------------------------------------------------
 tail(decon_data)
 
-## ----summary_decon-------------------------------------------------------
+## ----summary_decon------------------------------------------------------------
 cat("\nSummarize the data structure of the species richness variable:\n")
 summary(decon_data$Richness)
 
-## ----summarize_decon_richness--------------------------------------------
+## ----summarize_decon_richness-------------------------------------------------
 cat("\nSummarize the data structure of the species richness variable plus \n100% measurrement error:\n")
 summary(decon_data$Richness_100)
 
-## ----cdfvals-------------------------------------------------------------
+## ----cdfvals------------------------------------------------------------------
 cdfvals <- seq(0,40,length=25)
 
-## ----cdf_richness--------------------------------------------------------
+## ----cdf_richness-------------------------------------------------------------
 CDF_org <- cdf.est(z=decon_data$Richness,
                    wgt=rep(1, nr),
                    x=decon_data$xcoord,
                    y=decon_data$ycoord,
                    cdfval=cdfvals)
 
-## ----cdf_ests------------------------------------------------------------
+## ----cdf_ests-----------------------------------------------------------------
 # Calculate a CDF estimate for the variable plus 25% extraneous variance
 CDF_25 <- cdf.est(z=decon_data$Richness_25,
                   wgt=rep(1, nrow(decon_data)),
@@ -57,7 +57,7 @@ CDF_100 <- cdf.est(z=decon_data$Richness_100,
                    y=decon_data$ycoord,
                    cdfval=cdfvals)
 
-## ----dens_ests-----------------------------------------------------------
+## ----dens_ests----------------------------------------------------------------
 Density_org <- ash1.wgt(decon_data$Richness, nbin=25)
 Density_25 <- ash1.wgt(decon_data$Richness_25, nbin=25)
 Density_50 <- ash1.wgt(decon_data$Richness_50, nbin=25)
@@ -95,7 +95,7 @@ lines(Density_100$x, Density_100$y, lty=4, lwd=2.5, col="blue")
 
 par(op)
 
-## ----decon_est-----------------------------------------------------------
+## ----decon_est----------------------------------------------------------------
 extvar <- var(decon_data$Richness_100) - var(decon_data$Richness)
 CDF_decon <- cdf.decon(z=decon_data$Richness_100,
                        wgt=rep(1,nr),

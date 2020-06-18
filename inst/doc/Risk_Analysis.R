@@ -1,38 +1,39 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 
-## ----load-spsurvey-------------------------------------------------------
+## ----load-spsurvey------------------------------------------------------------
 library(spsurvey)
+library(sf)
 
-## ----load.nla------------------------------------------------------------
+## ----load.nla-----------------------------------------------------------------
 data(NLA_2007)
 nr <- nrow(NLA_2007)
 
-## ----head.nla------------------------------------------------------------
+## ----head.nla-----------------------------------------------------------------
 head(NLA_2007)
 
-## ----tail.nla------------------------------------------------------------
+## ----tail.nla-----------------------------------------------------------------
 tail(NLA_2007)
 
-## ----create.sites--------------------------------------------------------
+## ----create.sites-------------------------------------------------------------
 sites <- data.frame(siteID=NLA_2007$siteID,
                     Use=rep(TRUE, nr))
 
-## ----create.subpop-------------------------------------------------------
+## ----create.subpop------------------------------------------------------------
 subpop <- data.frame(siteID=NLA_2007$siteID,
                      Western_US=rep("Western_US", nr),
                      Lake_Origin=NLA_2007$Lake_Origin)
 
-## ----create.design-------------------------------------------------------
+## ----create.design------------------------------------------------------------
 design <- data.frame(siteID=NLA_2007$siteID,
                      wgt=NLA_2007$wgt,
                      xcoord=NLA_2007$xcoord,
                      ycoord=NLA_2007$ycoord)
 
-## ----create.data.risk----------------------------------------------------
+## ----create.data.risk---------------------------------------------------------
 data.risk <- data.frame(siteID=NLA_2007$siteID,
                         Chlorophyll_a=NLA_2007$Chla_cond,
                         MacroInvert_OE=NLA_2007$OE5_cond,
@@ -40,29 +41,29 @@ data.risk <- data.frame(siteID=NLA_2007$siteID,
                         Total_Phosphorus=NLA_2007$PTL_cond,
                         Turbidity=NLA_2007$Turbidity_cond)
 
-## ----stress.resp---------------------------------------------------------
+## ----stress.resp--------------------------------------------------------------
 resp_vars <- c("Chlorophyll_a", "MacroInvert_OE")
 stress_vars <- c("Total_Nitrogen", "Total_Phosphorus", "Turbidity")
 
-## ----calc.rel.risk-------------------------------------------------------
+## ----calc.rel.risk------------------------------------------------------------
 RelRisk_Estimates <- relrisk.analysis(sites, subpop, design, data.risk,
    response.var= rep(resp_vars, each=length(stress_vars)),
    stressor.var=rep(stress_vars, length(resp_vars)))
 
-## ----print.rel.risk.ests-------------------------------------------------
+## ----print.rel.risk.ests------------------------------------------------------
 print(RelRisk_Estimates)
 
-## ----write.rel.risk------------------------------------------------------
+## ----write.rel.risk-----------------------------------------------------------
 write.csv(RelRisk_Estimates, file="RelRisk_Estimates.csv", row.names=FALSE)
 
-## ----att.risk.ests-------------------------------------------------------
+## ----att.risk.ests------------------------------------------------------------
 AttRisk_Estimates <- attrisk.analysis(sites, subpop, design, data.risk,
    response.var= rep(resp_vars, each=length(stress_vars)),
    stressor.var=rep(stress_vars, length(resp_vars)))
 
-## ----print.att.risk.ests-------------------------------------------------
+## ----print.att.risk.ests------------------------------------------------------
 print(AttRisk_Estimates)
 
-## ----write.att.risk.ests-------------------------------------------------
+## ----write.att.risk.ests------------------------------------------------------
 write.csv(AttRisk_Estimates, file="AttRisk_Estimates.csv", row.names=FALSE)
 
