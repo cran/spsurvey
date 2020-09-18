@@ -12,10 +12,26 @@
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2020-06-15" />
+<meta name="date" content="2020-09-17" />
 
 <title>Linear Design</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -303,7 +319,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Linear Design</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2020-06-15</h4>
+<h4 class="date">2020-09-17</h4>
 
 
 
@@ -393,19 +409,19 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">head</span>(Equalsites)</span>
 <span id="cb9-2"><a href="#cb9-2"></a><span class="co">#&gt;           coordinates    siteID   xcoord  ycoord mdcaty      wgt stratum</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#&gt; 1 (-2120719, 2736598) EQUAL-001 -2120719 2736598  Equal 8224.881    None</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#&gt; 2 (-2150233, 2735349) EQUAL-002 -2150233 2735349  Equal 8224.881    None</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; 3 (-2127679, 2727034) EQUAL-003 -2127679 2727034  Equal 8224.881    None</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt; 4 (-2129461, 2715834) EQUAL-004 -2129461 2715834  Equal 8224.881    None</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; 5 (-2122074, 2733907) EQUAL-005 -2122074 2733907  Equal 8224.881    None</span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt; 6 (-2138997, 2730255) EQUAL-006 -2138997 2730255  Equal 8224.881    None</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="co">#&gt; 1 (-2118550, 2720036) EQUAL-001 -2118550 2720036  Equal 8224.881    None</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#&gt; 2 (-2127497, 2735584) EQUAL-002 -2127497 2735584  Equal 8224.881    None</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; 3 (-2129591, 2723848) EQUAL-003 -2129591 2723848  Equal 8224.881    None</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt; 4 (-2138086, 2716640) EQUAL-004 -2138086 2716640  Equal 8224.881    None</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; 5 (-2121342, 2721904) EQUAL-005 -2121342 2721904  Equal 8224.881    None</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt; 6 (-2127680, 2729463) EQUAL-006 -2127680 2729463  Equal 8224.881    None</span></span>
 <span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason      Per_Int Strah_Cat Length_km</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt; 1 PanelOne    NotEval            Intermittent       1st 5.5893081</span></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; 2 PanelOne    NotEval               Perennial       2nd 0.8712123</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt; 3 PanelOne    NotEval            Intermittent       1st 3.1007885</span></span>
-<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt; 4 PanelOne    NotEval               Perennial       2nd 1.2532549</span></span>
-<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt; 5 PanelOne    NotEval            Intermittent       1st 2.9219660</span></span>
-<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; 6 PanelOne    NotEval               Perennial      3rd+ 4.6578267</span></span></code></pre></div>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt; 1 PanelOne    NotEval               Perennial      3rd+  1.528642</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; 2 PanelOne    NotEval               Perennial       1st  2.570941</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt; 3 PanelOne    NotEval            Intermittent       1st  4.300290</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt; 4 PanelOne    NotEval            Intermittent       1st  2.047414</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt; 5 PanelOne    NotEval               Perennial      3rd+  4.626449</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; 6 PanelOne    NotEval               Perennial      3rd+  4.831711</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">summary</span>(Equalsites)</span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="co">#&gt; </span></span>
@@ -446,31 +462,33 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
 <span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt; Final number of levels: 3</span></span>
 <span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt; Warning in grtslin(sframe, sum(n.desired), SiteBegin, shift.grid, startlev, : </span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; Of the 30 grid cells from which sample points were selected,</span></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; 18 (60%) of the cells contained more than one sample point.</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; Of the 35 grid cells from which sample points were selected,</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; 12 (34.3%) of the cells contained more than one sample point.</span></span>
 <span id="cb13-16"><a href="#cb13-16"></a><span class="co">#&gt; </span></span>
 <span id="cb13-17"><a href="#cb13-17"></a><span class="co">#&gt; Stratum: Intermittent </span></span>
 <span id="cb13-18"><a href="#cb13-18"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
 <span id="cb13-19"><a href="#cb13-19"></a><span class="co">#&gt; Final number of levels: 3</span></span>
 <span id="cb13-20"><a href="#cb13-20"></a><span class="co">#&gt; Warning in grtslin(sframe, sum(n.desired), SiteBegin, shift.grid, startlev, : </span></span>
 <span id="cb13-21"><a href="#cb13-21"></a><span class="co">#&gt; Of the 34 grid cells from which sample points were selected,</span></span>
-<span id="cb13-22"><a href="#cb13-22"></a><span class="co">#&gt; 13 (38.2%) of the cells contained more than one sample point.</span></span></code></pre></div>
+<span id="cb13-22"><a href="#cb13-22"></a><span class="co">#&gt; 12 (35.3%) of the cells contained more than one sample point.</span></span>
+<span id="cb13-23"><a href="#cb13-23"></a><span class="co">#&gt; Warning in showSRID(uprojargs, format = &quot;PROJ&quot;, multiline = &quot;NO&quot;): Discarded</span></span>
+<span id="cb13-24"><a href="#cb13-24"></a><span class="co">#&gt; datum Unknown based on GRS80 ellipsoid in CRS definition</span></span></code></pre></div>
 <p>Print the initial six lines of the survey design</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">head</span>(Stratsites)</span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="co">#&gt;           coordinates         siteID   xcoord  ycoord mdcaty      wgt   stratum</span></span>
-<span id="cb14-3"><a href="#cb14-3"></a><span class="co">#&gt; 1 (-2123406, 2743141) STRATIFIED-001 -2123406 2743141  Equal 12335.55 Perennial</span></span>
-<span id="cb14-4"><a href="#cb14-4"></a><span class="co">#&gt; 2 (-2140634, 2742649) STRATIFIED-002 -2140634 2742649  Equal 12335.55 Perennial</span></span>
-<span id="cb14-5"><a href="#cb14-5"></a><span class="co">#&gt; 3 (-2119946, 2727690) STRATIFIED-003 -2119946 2727690  Equal 12335.55 Perennial</span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt; 4 (-2125995, 2719462) STRATIFIED-004 -2125995 2719462  Equal 12335.55 Perennial</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a><span class="co">#&gt; 5 (-2129745, 2737805) STRATIFIED-005 -2129745 2737805  Equal 12335.55 Perennial</span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="co">#&gt; 6 (-2139012, 2734120) STRATIFIED-006 -2139012 2734120  Equal 12335.55 Perennial</span></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason Strah_Cat  Length_km</span></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="co">#&gt; 1 PanelOne    NotEval                  1st 11.2514779</span></span>
-<span id="cb14-11"><a href="#cb14-11"></a><span class="co">#&gt; 2 PanelOne    NotEval                 3rd+  0.7881177</span></span>
-<span id="cb14-12"><a href="#cb14-12"></a><span class="co">#&gt; 3 PanelOne    NotEval                  2nd  1.0195857</span></span>
-<span id="cb14-13"><a href="#cb14-13"></a><span class="co">#&gt; 4 PanelOne    NotEval                  1st  2.2349353</span></span>
-<span id="cb14-14"><a href="#cb14-14"></a><span class="co">#&gt; 5 PanelOne    NotEval                  2nd  2.6563369</span></span>
-<span id="cb14-15"><a href="#cb14-15"></a><span class="co">#&gt; 6 PanelOne    NotEval                  2nd  1.3900997</span></span></code></pre></div>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co">#&gt; 1 (-2135897, 2720709) STRATIFIED-001 -2135897 2720709  Equal 12335.55 Perennial</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="co">#&gt; 2 (-2132322, 2738447) STRATIFIED-002 -2132322 2738447  Equal 12335.55 Perennial</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">#&gt; 3 (-2147400, 2731867) STRATIFIED-003 -2147400 2731867  Equal 12335.55 Perennial</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt; 4 (-2129928, 2732798) STRATIFIED-004 -2129928 2732798  Equal 12335.55 Perennial</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">#&gt; 5 (-2143649, 2724755) STRATIFIED-005 -2143649 2724755  Equal 12335.55 Perennial</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co">#&gt; 6 (-2141887, 2738528) STRATIFIED-006 -2141887 2738528  Equal 12335.55 Perennial</span></span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason Strah_Cat Length_km</span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co">#&gt; 1 PanelOne    NotEval                  1st  2.762255</span></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="co">#&gt; 2 PanelOne    NotEval                 3rd+  1.356632</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">#&gt; 3 PanelOne    NotEval                 3rd+  2.260482</span></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="co">#&gt; 4 PanelOne    NotEval                 3rd+  2.963369</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a><span class="co">#&gt; 5 PanelOne    NotEval                 3rd+  4.611704</span></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="co">#&gt; 6 PanelOne    NotEval                  1st  1.465750</span></span></code></pre></div>
 <p>Print the survey design summary</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">summary</span>(Stratsites)</span>
 <span id="cb15-2"><a href="#cb15-2"></a><span class="co">#&gt; </span></span>
@@ -523,27 +541,25 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb18-18"><a href="#cb18-18"></a><span class="co">#&gt; </span></span>
 <span id="cb18-19"><a href="#cb18-19"></a><span class="co">#&gt; Stratum: Intermittent </span></span>
 <span id="cb18-20"><a href="#cb18-20"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
-<span id="cb18-21"><a href="#cb18-21"></a><span class="co">#&gt; Current number of levels: 5 </span></span>
-<span id="cb18-22"><a href="#cb18-22"></a><span class="co">#&gt; Final number of levels: 5</span></span>
-<span id="cb18-23"><a href="#cb18-23"></a><span class="co">#&gt; Warning in grtslin(sframe, sum(n.desired), SiteBegin, shift.grid, startlev, : </span></span>
-<span id="cb18-24"><a href="#cb18-24"></a><span class="co">#&gt; Of the 29 grid cells from which sample points were selected,</span></span>
-<span id="cb18-25"><a href="#cb18-25"></a><span class="co">#&gt; 1 (3.4%) of the cells contained more than one sample point.</span></span></code></pre></div>
+<span id="cb18-21"><a href="#cb18-21"></a><span class="co">#&gt; Current number of levels: 4 </span></span>
+<span id="cb18-22"><a href="#cb18-22"></a><span class="co">#&gt; Current number of levels: 5 </span></span>
+<span id="cb18-23"><a href="#cb18-23"></a><span class="co">#&gt; Final number of levels: 5</span></span></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">head</span>(Unequalsites)</span>
 <span id="cb19-2"><a href="#cb19-2"></a><span class="co">#&gt;           coordinates      siteID   xcoord  ycoord mdcaty       wgt   stratum</span></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="co">#&gt; 1 (-2134315, 2732197) UNEQUAL-001 -2134315 2732197    1st 10026.548 Perennial</span></span>
-<span id="cb19-4"><a href="#cb19-4"></a><span class="co">#&gt; 2 (-2138928, 2731515) UNEQUAL-002 -2138928 2731515    2nd  6655.043 Perennial</span></span>
-<span id="cb19-5"><a href="#cb19-5"></a><span class="co">#&gt; 3 (-2116818, 2721384) UNEQUAL-003 -2116818 2721384   3rd+  7989.511 Perennial</span></span>
-<span id="cb19-6"><a href="#cb19-6"></a><span class="co">#&gt; 4 (-2136367, 2738014) UNEQUAL-004 -2136367 2738014    2nd  6655.043 Perennial</span></span>
-<span id="cb19-7"><a href="#cb19-7"></a><span class="co">#&gt; 5 (-2129116, 2729529) UNEQUAL-005 -2129116 2729529   3rd+  7989.511 Perennial</span></span>
-<span id="cb19-8"><a href="#cb19-8"></a><span class="co">#&gt; 6 (-2139905, 2723470) UNEQUAL-006 -2139905 2723470   3rd+  7989.511 Perennial</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="co">#&gt; 1 (-2122480, 2742981) UNEQUAL-001 -2122480 2742981    1st 10026.548 Perennial</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="co">#&gt; 2 (-2148366, 2734081) UNEQUAL-002 -2148366 2734081   3rd+  7989.511 Perennial</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="co">#&gt; 3 (-2142375, 2720075) UNEQUAL-003 -2142375 2720075   3rd+  7989.511 Perennial</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="co">#&gt; 4 (-2134757, 2741065) UNEQUAL-004 -2134757 2741065   3rd+  7989.511 Perennial</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="co">#&gt; 5 (-2119569, 2719188) UNEQUAL-005 -2119569 2719188    2nd  6655.043 Perennial</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="co">#&gt; 6 (-2128054, 2733184) UNEQUAL-006 -2128054 2733184    2nd  6655.043 Perennial</span></span>
 <span id="cb19-9"><a href="#cb19-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason Length_km</span></span>
-<span id="cb19-10"><a href="#cb19-10"></a><span class="co">#&gt; 1 PanelOne    NotEval             2.431217</span></span>
-<span id="cb19-11"><a href="#cb19-11"></a><span class="co">#&gt; 2 PanelOne    NotEval             3.955503</span></span>
-<span id="cb19-12"><a href="#cb19-12"></a><span class="co">#&gt; 3 PanelOne    NotEval             3.035346</span></span>
-<span id="cb19-13"><a href="#cb19-13"></a><span class="co">#&gt; 4 PanelOne    NotEval             1.759316</span></span>
-<span id="cb19-14"><a href="#cb19-14"></a><span class="co">#&gt; 5 PanelOne    NotEval             4.831711</span></span>
-<span id="cb19-15"><a href="#cb19-15"></a><span class="co">#&gt; 6 PanelOne    NotEval             1.660109</span></span></code></pre></div>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="co">#&gt; 1 PanelOne    NotEval            11.251478</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="co">#&gt; 2 PanelOne    NotEval             2.141402</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="co">#&gt; 3 PanelOne    NotEval             3.567628</span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="co">#&gt; 4 PanelOne    NotEval             1.331251</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="co">#&gt; 5 PanelOne    NotEval             3.295862</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="co">#&gt; 6 PanelOne    NotEval             2.863317</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">summary</span>(Unequalsites)</span>
 <span id="cb20-2"><a href="#cb20-2"></a><span class="co">#&gt; Design Summary: Number of Sites Classified by mdcaty (Multidensity Category) </span></span>
@@ -551,9 +567,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb20-4"><a href="#cb20-4"></a><span class="co">#&gt; </span></span>
 <span id="cb20-5"><a href="#cb20-5"></a><span class="co">#&gt;       stratum</span></span>
 <span id="cb20-6"><a href="#cb20-6"></a><span class="co">#&gt; mdcaty Perennial Intermittent Sum</span></span>
-<span id="cb20-7"><a href="#cb20-7"></a><span class="co">#&gt;   1st         23           19  42</span></span>
-<span id="cb20-8"><a href="#cb20-8"></a><span class="co">#&gt;   2nd         21            7  28</span></span>
-<span id="cb20-9"><a href="#cb20-9"></a><span class="co">#&gt;   3rd+        28            4  32</span></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="co">#&gt;   1st         22           20  42</span></span>
+<span id="cb20-8"><a href="#cb20-8"></a><span class="co">#&gt;   2nd         24            8  32</span></span>
+<span id="cb20-9"><a href="#cb20-9"></a><span class="co">#&gt;   3rd+        26            2  28</span></span>
 <span id="cb20-10"><a href="#cb20-10"></a><span class="co">#&gt;   Sum         72           30 102</span></span>
 <span id="cb20-11"><a href="#cb20-11"></a><span class="co">#&gt; </span></span>
 <span id="cb20-12"><a href="#cb20-12"></a><span class="co">#&gt; </span></span>
@@ -573,27 +589,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb20-26"><a href="#cb20-26"></a><span class="co">#&gt; </span></span>
 <span id="cb20-27"><a href="#cb20-27"></a><span class="co">#&gt;       panel</span></span>
 <span id="cb20-28"><a href="#cb20-28"></a><span class="co">#&gt; mdcaty OverSamp PanelOne Sum</span></span>
-<span id="cb20-29"><a href="#cb20-29"></a><span class="co">#&gt;   1st         5       18  23</span></span>
-<span id="cb20-30"><a href="#cb20-30"></a><span class="co">#&gt;   2nd         3       18  21</span></span>
-<span id="cb20-31"><a href="#cb20-31"></a><span class="co">#&gt;   3rd+        4       24  28</span></span>
+<span id="cb20-29"><a href="#cb20-29"></a><span class="co">#&gt;   1st         3       19  22</span></span>
+<span id="cb20-30"><a href="#cb20-30"></a><span class="co">#&gt;   2nd         5       19  24</span></span>
+<span id="cb20-31"><a href="#cb20-31"></a><span class="co">#&gt;   3rd+        4       22  26</span></span>
 <span id="cb20-32"><a href="#cb20-32"></a><span class="co">#&gt;   Sum        12       60  72</span></span>
 <span id="cb20-33"><a href="#cb20-33"></a><span class="co">#&gt; </span></span>
 <span id="cb20-34"><a href="#cb20-34"></a><span class="co">#&gt; , , stratum = Intermittent</span></span>
 <span id="cb20-35"><a href="#cb20-35"></a><span class="co">#&gt; </span></span>
 <span id="cb20-36"><a href="#cb20-36"></a><span class="co">#&gt;       panel</span></span>
 <span id="cb20-37"><a href="#cb20-37"></a><span class="co">#&gt; mdcaty OverSamp PanelOne Sum</span></span>
-<span id="cb20-38"><a href="#cb20-38"></a><span class="co">#&gt;   1st         0       19  19</span></span>
-<span id="cb20-39"><a href="#cb20-39"></a><span class="co">#&gt;   2nd         0        7   7</span></span>
-<span id="cb20-40"><a href="#cb20-40"></a><span class="co">#&gt;   3rd+        0        4   4</span></span>
+<span id="cb20-38"><a href="#cb20-38"></a><span class="co">#&gt;   1st         0       20  20</span></span>
+<span id="cb20-39"><a href="#cb20-39"></a><span class="co">#&gt;   2nd         0        8   8</span></span>
+<span id="cb20-40"><a href="#cb20-40"></a><span class="co">#&gt;   3rd+        0        2   2</span></span>
 <span id="cb20-41"><a href="#cb20-41"></a><span class="co">#&gt;   Sum         0       30  30</span></span>
 <span id="cb20-42"><a href="#cb20-42"></a><span class="co">#&gt; </span></span>
 <span id="cb20-43"><a href="#cb20-43"></a><span class="co">#&gt; , , stratum = Sum</span></span>
 <span id="cb20-44"><a href="#cb20-44"></a><span class="co">#&gt; </span></span>
 <span id="cb20-45"><a href="#cb20-45"></a><span class="co">#&gt;       panel</span></span>
 <span id="cb20-46"><a href="#cb20-46"></a><span class="co">#&gt; mdcaty OverSamp PanelOne Sum</span></span>
-<span id="cb20-47"><a href="#cb20-47"></a><span class="co">#&gt;   1st         5       37  42</span></span>
-<span id="cb20-48"><a href="#cb20-48"></a><span class="co">#&gt;   2nd         3       25  28</span></span>
-<span id="cb20-49"><a href="#cb20-49"></a><span class="co">#&gt;   3rd+        4       28  32</span></span>
+<span id="cb20-47"><a href="#cb20-47"></a><span class="co">#&gt;   1st         3       39  42</span></span>
+<span id="cb20-48"><a href="#cb20-48"></a><span class="co">#&gt;   2nd         5       27  32</span></span>
+<span id="cb20-49"><a href="#cb20-49"></a><span class="co">#&gt;   3rd+        4       24  28</span></span>
 <span id="cb20-50"><a href="#cb20-50"></a><span class="co">#&gt;   Sum        12       90 102</span></span></code></pre></div>
 </div>
 <div id="stratified-unequal-probability-grts-survey-design-with-an-oversample-and-a-panel-structure-for-survey-over-time" class="section level2">
@@ -635,19 +651,19 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">head</span>(Panelsites)</span>
 <span id="cb23-2"><a href="#cb23-2"></a><span class="co">#&gt;           coordinates      siteID   xcoord  ycoord mdcaty       wgt   stratum</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="co">#&gt; 1 (-2119116, 2737481) UNEQUAL-001 -2119116 2737481    1st  8021.238 Perennial</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="co">#&gt; 2 (-2141126, 2722237) UNEQUAL-002 -2141126 2722237   3rd+ 10652.682 Perennial</span></span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="co">#&gt; 3 (-2134307, 2732402) UNEQUAL-003 -2134307 2732402    1st  8021.238 Perennial</span></span>
-<span id="cb23-6"><a href="#cb23-6"></a><span class="co">#&gt; 4 (-2144851, 2744455) UNEQUAL-004 -2144851 2744455    1st  8021.238 Perennial</span></span>
-<span id="cb23-7"><a href="#cb23-7"></a><span class="co">#&gt; 5 (-2148729, 2734680) UNEQUAL-005 -2148729 2734680    1st  8021.238 Perennial</span></span>
-<span id="cb23-8"><a href="#cb23-8"></a><span class="co">#&gt; 6 (-2143801, 2724726) UNEQUAL-006 -2143801 2724726   3rd+ 10652.682 Perennial</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="co">#&gt; 1 (-2140692, 2741762) UNEQUAL-001 -2140692 2741762    1st  8021.238 Perennial</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="co">#&gt; 2 (-2136307, 2742173) UNEQUAL-002 -2136307 2742173   3rd+ 10652.682 Perennial</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="co">#&gt; 3 (-2146924, 2735225) UNEQUAL-003 -2146924 2735225    1st  8021.238 Perennial</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="co">#&gt; 4 (-2131100, 2721184) UNEQUAL-004 -2131100 2721184    1st  8021.238 Perennial</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="co">#&gt; 5 (-2145200, 2744635) UNEQUAL-005 -2145200 2744635    1st  8021.238 Perennial</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="co">#&gt; 6 (-2149486, 2735998) UNEQUAL-006 -2149486 2735998   3rd+ 10652.682 Perennial</span></span>
 <span id="cb23-9"><a href="#cb23-9"></a><span class="co">#&gt;    panel EvalStatus EvalReason Length_km</span></span>
-<span id="cb23-10"><a href="#cb23-10"></a><span class="co">#&gt; 1 Annual    NotEval            11.251478</span></span>
-<span id="cb23-11"><a href="#cb23-11"></a><span class="co">#&gt; 2 Annual    NotEval             1.791776</span></span>
-<span id="cb23-12"><a href="#cb23-12"></a><span class="co">#&gt; 3 Annual    NotEval             2.431217</span></span>
-<span id="cb23-13"><a href="#cb23-13"></a><span class="co">#&gt; 4 Annual    NotEval             3.349822</span></span>
-<span id="cb23-14"><a href="#cb23-14"></a><span class="co">#&gt; 5 Annual    NotEval             2.738611</span></span>
-<span id="cb23-15"><a href="#cb23-15"></a><span class="co">#&gt; 6 Annual    NotEval             4.611704</span></span></code></pre></div>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="co">#&gt; 1 Annual    NotEval             1.945254</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a><span class="co">#&gt; 2 Annual    NotEval             3.999982</span></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="co">#&gt; 3 Annual    NotEval             2.738611</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a><span class="co">#&gt; 4 Annual    NotEval             1.194911</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="co">#&gt; 5 Annual    NotEval             3.349822</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a><span class="co">#&gt; 6 Annual    NotEval             1.599491</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">summary</span>(Panelsites)</span>
 <span id="cb24-2"><a href="#cb24-2"></a><span class="co">#&gt; Design Summary: Number of Sites Classified by mdcaty (Multidensity Category) </span></span>
@@ -655,9 +671,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb24-4"><a href="#cb24-4"></a><span class="co">#&gt; </span></span>
 <span id="cb24-5"><a href="#cb24-5"></a><span class="co">#&gt;       stratum</span></span>
 <span id="cb24-6"><a href="#cb24-6"></a><span class="co">#&gt; mdcaty Perennial Intermittent Sum</span></span>
-<span id="cb24-7"><a href="#cb24-7"></a><span class="co">#&gt;   1st         35           16  51</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a><span class="co">#&gt;   2nd         23            7  30</span></span>
-<span id="cb24-9"><a href="#cb24-9"></a><span class="co">#&gt;   3rd+        18            2  20</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="co">#&gt;   1st         34           19  53</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a><span class="co">#&gt;   2nd         21            4  25</span></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="co">#&gt;   3rd+        21            2  23</span></span>
 <span id="cb24-10"><a href="#cb24-10"></a><span class="co">#&gt;   Sum         76           25 101</span></span>
 <span id="cb24-11"><a href="#cb24-11"></a><span class="co">#&gt; </span></span>
 <span id="cb24-12"><a href="#cb24-12"></a><span class="co">#&gt; </span></span>
@@ -679,17 +695,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb24-28"><a href="#cb24-28"></a><span class="co">#&gt; </span></span>
 <span id="cb24-29"><a href="#cb24-29"></a><span class="co">#&gt;       panel</span></span>
 <span id="cb24-30"><a href="#cb24-30"></a><span class="co">#&gt; mdcaty Annual OverSamp Year1 Year2 Sum</span></span>
-<span id="cb24-31"><a href="#cb24-31"></a><span class="co">#&gt;   1st      11        8     8     8  35</span></span>
-<span id="cb24-32"><a href="#cb24-32"></a><span class="co">#&gt;   2nd       2        5     8     8  23</span></span>
-<span id="cb24-33"><a href="#cb24-33"></a><span class="co">#&gt;   3rd+      7        3     4     4  18</span></span>
+<span id="cb24-31"><a href="#cb24-31"></a><span class="co">#&gt;   1st       9        9    10     6  34</span></span>
+<span id="cb24-32"><a href="#cb24-32"></a><span class="co">#&gt;   2nd       4        5     7     5  21</span></span>
+<span id="cb24-33"><a href="#cb24-33"></a><span class="co">#&gt;   3rd+      7        2     3     9  21</span></span>
 <span id="cb24-34"><a href="#cb24-34"></a><span class="co">#&gt;   Sum      20       16    20    20  76</span></span>
 <span id="cb24-35"><a href="#cb24-35"></a><span class="co">#&gt; </span></span>
 <span id="cb24-36"><a href="#cb24-36"></a><span class="co">#&gt; , , stratum = Intermittent</span></span>
 <span id="cb24-37"><a href="#cb24-37"></a><span class="co">#&gt; </span></span>
 <span id="cb24-38"><a href="#cb24-38"></a><span class="co">#&gt;       panel</span></span>
 <span id="cb24-39"><a href="#cb24-39"></a><span class="co">#&gt; mdcaty Annual OverSamp Year1 Year2 Sum</span></span>
-<span id="cb24-40"><a href="#cb24-40"></a><span class="co">#&gt;   1st      16        0     0     0  16</span></span>
-<span id="cb24-41"><a href="#cb24-41"></a><span class="co">#&gt;   2nd       7        0     0     0   7</span></span>
+<span id="cb24-40"><a href="#cb24-40"></a><span class="co">#&gt;   1st      19        0     0     0  19</span></span>
+<span id="cb24-41"><a href="#cb24-41"></a><span class="co">#&gt;   2nd       4        0     0     0   4</span></span>
 <span id="cb24-42"><a href="#cb24-42"></a><span class="co">#&gt;   3rd+      2        0     0     0   2</span></span>
 <span id="cb24-43"><a href="#cb24-43"></a><span class="co">#&gt;   Sum      25        0     0     0  25</span></span>
 <span id="cb24-44"><a href="#cb24-44"></a><span class="co">#&gt; </span></span>
@@ -697,9 +713,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb24-46"><a href="#cb24-46"></a><span class="co">#&gt; </span></span>
 <span id="cb24-47"><a href="#cb24-47"></a><span class="co">#&gt;       panel</span></span>
 <span id="cb24-48"><a href="#cb24-48"></a><span class="co">#&gt; mdcaty Annual OverSamp Year1 Year2 Sum</span></span>
-<span id="cb24-49"><a href="#cb24-49"></a><span class="co">#&gt;   1st      27        8     8     8  51</span></span>
-<span id="cb24-50"><a href="#cb24-50"></a><span class="co">#&gt;   2nd       9        5     8     8  30</span></span>
-<span id="cb24-51"><a href="#cb24-51"></a><span class="co">#&gt;   3rd+      9        3     4     4  20</span></span>
+<span id="cb24-49"><a href="#cb24-49"></a><span class="co">#&gt;   1st      28        9    10     6  53</span></span>
+<span id="cb24-50"><a href="#cb24-50"></a><span class="co">#&gt;   2nd       8        5     7     5  25</span></span>
+<span id="cb24-51"><a href="#cb24-51"></a><span class="co">#&gt;   3rd+      9        2     3     9  23</span></span>
 <span id="cb24-52"><a href="#cb24-52"></a><span class="co">#&gt;   Sum      45       16    20    20 101</span></span></code></pre></div>
 </div>
 

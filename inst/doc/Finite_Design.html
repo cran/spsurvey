@@ -12,10 +12,26 @@
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2020-06-15" />
+<meta name="date" content="2020-09-17" />
 
 <title>Finite Design</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -303,7 +319,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Finite Design</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2020-06-15</h4>
+<h4 class="date">2020-09-17</h4>
 
 
 
@@ -377,19 +393,19 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">head</span>(Equalsites)</span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="co">#&gt;          coordinates    siteID  xcoord  ycoord mdcaty   wgt stratum    panel</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="co">#&gt; 1 (2122717, 2369405) EQUAL-001 2122717 2369405  Equal 61.21    None PanelOne</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="co">#&gt; 2 (2016917, 2392127) EQUAL-002 2016917 2392127  Equal 61.21    None PanelOne</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt; 3 (1924406, 2304683) EQUAL-003 1924406 2304683  Equal 61.21    None PanelOne</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; 4 (1866194, 2297691) EQUAL-004 1866194 2297691  Equal 61.21    None PanelOne</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 5 (2095181, 2403351) EQUAL-005 2095181 2403351  Equal 61.21    None PanelOne</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 6 (1968415, 2285874) EQUAL-006 1968415 2285874  Equal 61.21    None PanelOne</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">#&gt; 1 (1995962, 2453842) EQUAL-001 1995962 2453842  Equal 61.21    None PanelOne</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">#&gt; 2 (2057789, 2376718) EQUAL-002 2057789 2376718  Equal 61.21    None PanelOne</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt; 3 (1866647, 2401423) EQUAL-003 1866647 2401423  Equal 61.21    None PanelOne</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; 4 (1915494, 2415726) EQUAL-004 1915494 2415726  Equal 61.21    None PanelOne</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 5 (1965994, 2378033) EQUAL-005 1965994 2378033  Equal 61.21    None PanelOne</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 6 (2047308, 2341203) EQUAL-006 2047308 2341203  Equal 61.21    None PanelOne</span></span>
 <span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt;   EvalStatus EvalReason State Area_Cat</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; 1    NotEval               MA  (10,50]</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; 1    NotEval               MA    (1,5]</span></span>
 <span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; 2    NotEval               MA    (1,5]</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt; 3    NotEval               CT (50,500]</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 4    NotEval               CT  (10,50]</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 5    NotEval               MA    (1,5]</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; 6    NotEval               CT    (1,5]</span></span></code></pre></div>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt; 3    NotEval               MA    (1,5]</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 4    NotEval               MA   (5,10]</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 5    NotEval               MA   (5,10]</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; 6    NotEval               MA    (1,5]</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">summary</span>(Equalsites)</span>
 <span id="cb9-2"><a href="#cb9-2"></a><span class="co">#&gt; </span></span>
@@ -429,29 +445,28 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb12-15"><a href="#cb12-15"></a><span class="co">#&gt; </span></span>
 <span id="cb12-16"><a href="#cb12-16"></a><span class="co">#&gt; Stratum: MA </span></span>
 <span id="cb12-17"><a href="#cb12-17"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
-<span id="cb12-18"><a href="#cb12-18"></a><span class="co">#&gt; Current number of levels: 4 </span></span>
-<span id="cb12-19"><a href="#cb12-19"></a><span class="co">#&gt; Current number of levels: 5 </span></span>
-<span id="cb12-20"><a href="#cb12-20"></a><span class="co">#&gt; Final number of levels: 5 </span></span>
-<span id="cb12-21"><a href="#cb12-21"></a><span class="co">#&gt; </span></span>
-<span id="cb12-22"><a href="#cb12-22"></a><span class="co">#&gt; Stratum: RI </span></span>
-<span id="cb12-23"><a href="#cb12-23"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
-<span id="cb12-24"><a href="#cb12-24"></a><span class="co">#&gt; Current number of levels: 4 </span></span>
-<span id="cb12-25"><a href="#cb12-25"></a><span class="co">#&gt; Final number of levels: 4</span></span></code></pre></div>
+<span id="cb12-18"><a href="#cb12-18"></a><span class="co">#&gt; Current number of levels: 5 </span></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="co">#&gt; Final number of levels: 5 </span></span>
+<span id="cb12-20"><a href="#cb12-20"></a><span class="co">#&gt; </span></span>
+<span id="cb12-21"><a href="#cb12-21"></a><span class="co">#&gt; Stratum: RI </span></span>
+<span id="cb12-22"><a href="#cb12-22"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="co">#&gt; Current number of levels: 4 </span></span>
+<span id="cb12-24"><a href="#cb12-24"></a><span class="co">#&gt; Final number of levels: 4</span></span></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">head</span>(Stratsites)</span>
 <span id="cb13-2"><a href="#cb13-2"></a><span class="co">#&gt;          coordinates         siteID  xcoord  ycoord mdcaty  wgt stratum</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#&gt; 1 (1845107, 2225902) STRATIFIED-001 1845107 2225902  Equal 57.8      CT</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#&gt; 2 (1882596, 2261000) STRATIFIED-002 1882596 2261000  Equal 57.8      CT</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; 3 (1852837, 2252845) STRATIFIED-003 1852837 2252845  Equal 57.8      CT</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt; 4 (1976930, 2289337) STRATIFIED-004 1976930 2289337  Equal 57.8      CT</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt; 5 (1862983, 2230104) STRATIFIED-005 1862983 2230104  Equal 57.8      CT</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt; 6 (1901969, 2269839) STRATIFIED-006 1901969 2269839  Equal 57.8      CT</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#&gt; 1 (1953602, 2338609) STRATIFIED-001 1953602 2338609  Equal 57.8      CT</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#&gt; 2 (1953234, 2315236) STRATIFIED-002 1953234 2315236  Equal 57.8      CT</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; 3 (1889178, 2298129) STRATIFIED-003 1889178 2298129  Equal 57.8      CT</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt; 4 (1857603, 2306043) STRATIFIED-004 1857603 2306043  Equal 57.8      CT</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt; 5 (1939319, 2340655) STRATIFIED-005 1939319 2340655  Equal 57.8      CT</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt; 6 (1968415, 2285874) STRATIFIED-006 1968415 2285874  Equal 57.8      CT</span></span>
 <span id="cb13-9"><a href="#cb13-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason Area_Cat</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt; 1 PanelOne    NotEval               (1,5]</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt; 1 PanelOne    NotEval             (10,50]</span></span>
 <span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt; 2 PanelOne    NotEval               (1,5]</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt; 3 PanelOne    NotEval               (1,5]</span></span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt; 4 PanelOne    NotEval             (10,50]</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; 5 PanelOne    NotEval               (1,5]</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt; 3 PanelOne    NotEval             (10,50]</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt; 4 PanelOne    NotEval              (5,10]</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; 5 PanelOne    NotEval               (0,1]</span></span>
 <span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; 6 PanelOne    NotEval               (1,5]</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">summary</span>(Stratsites)</span>
@@ -497,20 +512,20 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb17-16"><a href="#cb17-16"></a><span class="co">#&gt; Final number of levels: 6</span></span></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">head</span>(Unequalsites)</span>
-<span id="cb18-2"><a href="#cb18-2"></a><span class="co">#&gt;          coordinates      siteID  xcoord  ycoord      mdcaty       wgt stratum</span></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="co">#&gt; 1 (2004228, 2463625) UNEQUAL-001 2004228 2463625     (10,50]  72.33333    None</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; 2 (2026832, 2388748) UNEQUAL-002 2026832 2388748       (1,5] 103.16667    None</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; 3 (1864531, 2272856) UNEQUAL-003 1864531 2272856 (500,1e+04]   2.60000    None</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt; 4 (1937863, 2395837) UNEQUAL-004 1937863 2395837     (10,50]  72.33333    None</span></span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="co">#&gt; 5 (2112877, 2371740) UNEQUAL-005 2112877 2371740     (10,50]  72.33333    None</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="co">#&gt; 6 (1994584, 2367712) UNEQUAL-006 1994584 2367712      (5,10]  60.00000    None</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="co">#&gt;          coordinates      siteID  xcoord  ycoord   mdcaty       wgt stratum</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="co">#&gt; 1 (1967834, 2289901) UNEQUAL-001 1967834 2289901    (1,5] 103.16667    None</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; 2 (2044723, 2402264) UNEQUAL-002 2044723 2402264   (5,10]  60.00000    None</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; 3 (1878496, 2311692) UNEQUAL-003 1878496 2311692    (0,1]  45.86667    None</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt; 4 (1950218, 2397629) UNEQUAL-004 1950218 2397629 (50,500]  34.00000    None</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="co">#&gt; 5 (1975486, 2317431) UNEQUAL-005 1975486 2317431    (1,5] 103.16667    None</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="co">#&gt; 6 (1967382, 2387147) UNEQUAL-006 1967382 2387147 (50,500]  34.00000    None</span></span>
 <span id="cb18-9"><a href="#cb18-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason State</span></span>
-<span id="cb18-10"><a href="#cb18-10"></a><span class="co">#&gt; 1 PanelOne    NotEval               MA</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a><span class="co">#&gt; 1 PanelOne    NotEval               CT</span></span>
 <span id="cb18-11"><a href="#cb18-11"></a><span class="co">#&gt; 2 PanelOne    NotEval               MA</span></span>
 <span id="cb18-12"><a href="#cb18-12"></a><span class="co">#&gt; 3 PanelOne    NotEval               CT</span></span>
 <span id="cb18-13"><a href="#cb18-13"></a><span class="co">#&gt; 4 PanelOne    NotEval               MA</span></span>
-<span id="cb18-14"><a href="#cb18-14"></a><span class="co">#&gt; 5 PanelOne    NotEval               MA</span></span>
-<span id="cb18-15"><a href="#cb18-15"></a><span class="co">#&gt; 6 PanelOne    NotEval               RI</span></span></code></pre></div>
+<span id="cb18-14"><a href="#cb18-14"></a><span class="co">#&gt; 5 PanelOne    NotEval               CT</span></span>
+<span id="cb18-15"><a href="#cb18-15"></a><span class="co">#&gt; 6 PanelOne    NotEval               MA</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">summary</span>(Unequalsites)</span>
 <span id="cb19-2"><a href="#cb19-2"></a><span class="co">#&gt; </span></span>
@@ -520,12 +535,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb19-6"><a href="#cb19-6"></a><span class="co">#&gt; </span></span>
 <span id="cb19-7"><a href="#cb19-7"></a><span class="co">#&gt;              panel</span></span>
 <span id="cb19-8"><a href="#cb19-8"></a><span class="co">#&gt; mdcaty        OverSamp PanelOne Sum</span></span>
-<span id="cb19-9"><a href="#cb19-9"></a><span class="co">#&gt;   (0,1]              1       13  14</span></span>
-<span id="cb19-10"><a href="#cb19-10"></a><span class="co">#&gt;   (1,5]              4       32  36</span></span>
-<span id="cb19-11"><a href="#cb19-11"></a><span class="co">#&gt;   (10,50]            1       25  26</span></span>
-<span id="cb19-12"><a href="#cb19-12"></a><span class="co">#&gt;   (5,10]             3       11  14</span></span>
-<span id="cb19-13"><a href="#cb19-13"></a><span class="co">#&gt;   (50,500]           4        4   8</span></span>
-<span id="cb19-14"><a href="#cb19-14"></a><span class="co">#&gt;   (500,1e+04]        0        5   5</span></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="co">#&gt;   (0,1]              2       16  18</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="co">#&gt;   (1,5]              4       28  32</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="co">#&gt;   (10,50]            2       15  17</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="co">#&gt;   (5,10]             4       14  18</span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="co">#&gt;   (50,500]           1        7   8</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="co">#&gt;   (500,1e+04]        0       10  10</span></span>
 <span id="cb19-15"><a href="#cb19-15"></a><span class="co">#&gt;   Sum               13       90 103</span></span></code></pre></div>
 </div>
 <div id="unstratified-unequal-probability-grts-survey-design-with-an-oversample-and-a-panel-structure-for-survey-over-time" class="section level2">
@@ -561,24 +576,26 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb22-13"><a href="#cb22-13"></a><span class="co">#&gt; Current number of levels: 4 </span></span>
 <span id="cb22-14"><a href="#cb22-14"></a><span class="co">#&gt; Current number of levels: 5 </span></span>
 <span id="cb22-15"><a href="#cb22-15"></a><span class="co">#&gt; Current number of levels: 6 </span></span>
-<span id="cb22-16"><a href="#cb22-16"></a><span class="co">#&gt; Final number of levels: 6</span></span></code></pre></div>
+<span id="cb22-16"><a href="#cb22-16"></a><span class="co">#&gt; Final number of levels: 6</span></span>
+<span id="cb22-17"><a href="#cb22-17"></a><span class="co">#&gt; Warning in showSRID(uprojargs, format = &quot;PROJ&quot;, multiline = &quot;NO&quot;): Discarded</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="co">#&gt; datum Unknown based on GRS80 ellipsoid in CRS definition</span></span></code></pre></div>
 <p>Print the warning message:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">warnings</span>()</span></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">head</span>(Panelsites)</span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="co">#&gt;          coordinates      siteID  xcoord  ycoord mdcaty       wgt stratum</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="co">#&gt; 1 (2005249, 2373261) UNEQUAL-001 2005249 2373261  (0,1]  45.86667    None</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a><span class="co">#&gt; 2 (2123424, 2320893) UNEQUAL-002 2123424 2320893 (5,10]  60.00000    None</span></span>
-<span id="cb24-5"><a href="#cb24-5"></a><span class="co">#&gt; 3 (1850363, 2264998) UNEQUAL-003 1850363 2264998  (0,1]  45.86667    None</span></span>
-<span id="cb24-6"><a href="#cb24-6"></a><span class="co">#&gt; 4 (1960952, 2295800) UNEQUAL-004 1960952 2295800  (1,5] 103.16667    None</span></span>
-<span id="cb24-7"><a href="#cb24-7"></a><span class="co">#&gt; 5 (2007017, 2444237) UNEQUAL-005 2007017 2444237  (0,1]  45.86667    None</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a><span class="co">#&gt; 6 (1966055, 2340658) UNEQUAL-006 1966055 2340658  (1,5] 103.16667    None</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="co">#&gt;          coordinates      siteID  xcoord  ycoord   mdcaty       wgt stratum</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="co">#&gt; 1 (1895304, 2310636) UNEQUAL-001 1895304 2310636   (5,10]  60.00000    None</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="co">#&gt; 2 (1942582, 2378438) UNEQUAL-002 1942582 2378438 (50,500]  34.00000    None</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="co">#&gt; 3 (2015172, 2435227) UNEQUAL-003 2015172 2435227    (0,1]  45.86667    None</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="co">#&gt; 4 (2085458, 2326899) UNEQUAL-004 2085458 2326899 (50,500]  34.00000    None</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a><span class="co">#&gt; 5 (1958054, 2318191) UNEQUAL-005 1958054 2318191    (1,5] 103.16667    None</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a><span class="co">#&gt; 6 (1842006, 2323113) UNEQUAL-006 1842006 2323113    (0,1]  45.86667    None</span></span>
 <span id="cb24-9"><a href="#cb24-9"></a><span class="co">#&gt;    panel EvalStatus EvalReason State</span></span>
-<span id="cb24-10"><a href="#cb24-10"></a><span class="co">#&gt; 1 Annual    NotEval               MA</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="co">#&gt; 1 Annual    NotEval               CT</span></span>
 <span id="cb24-11"><a href="#cb24-11"></a><span class="co">#&gt; 2 Annual    NotEval               MA</span></span>
-<span id="cb24-12"><a href="#cb24-12"></a><span class="co">#&gt; 3 Annual    NotEval               CT</span></span>
-<span id="cb24-13"><a href="#cb24-13"></a><span class="co">#&gt; 4 Annual    NotEval               CT</span></span>
-<span id="cb24-14"><a href="#cb24-14"></a><span class="co">#&gt; 5 Annual    NotEval               MA</span></span>
+<span id="cb24-12"><a href="#cb24-12"></a><span class="co">#&gt; 3 Annual    NotEval               MA</span></span>
+<span id="cb24-13"><a href="#cb24-13"></a><span class="co">#&gt; 4 Annual    NotEval               MA</span></span>
+<span id="cb24-14"><a href="#cb24-14"></a><span class="co">#&gt; 5 Annual    NotEval               CT</span></span>
 <span id="cb24-15"><a href="#cb24-15"></a><span class="co">#&gt; 6 Annual    NotEval               CT</span></span></code></pre></div>
 <p>Print the survey design summary</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">summary</span>(Panelsites)</span>
@@ -589,12 +606,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb25-6"><a href="#cb25-6"></a><span class="co">#&gt; </span></span>
 <span id="cb25-7"><a href="#cb25-7"></a><span class="co">#&gt;              panel</span></span>
 <span id="cb25-8"><a href="#cb25-8"></a><span class="co">#&gt; mdcaty        Annual OverSamp Year1 Year2 Year3 Year4 Year5 Sum</span></span>
-<span id="cb25-9"><a href="#cb25-9"></a><span class="co">#&gt;   (0,1]            5        2     3     3     1     4     2  20</span></span>
-<span id="cb25-10"><a href="#cb25-10"></a><span class="co">#&gt;   (1,5]            7        8     6     3     6     2     7  39</span></span>
-<span id="cb25-11"><a href="#cb25-11"></a><span class="co">#&gt;   (10,50]          1        2     4     4     0     0     1  12</span></span>
-<span id="cb25-12"><a href="#cb25-12"></a><span class="co">#&gt;   (5,10]           2        1     2     1     5     4     2  17</span></span>
-<span id="cb25-13"><a href="#cb25-13"></a><span class="co">#&gt;   (50,500]         0        0     0     3     2     4     0   9</span></span>
-<span id="cb25-14"><a href="#cb25-14"></a><span class="co">#&gt;   (500,1e+04]      0        0     0     1     1     1     3   6</span></span>
+<span id="cb25-9"><a href="#cb25-9"></a><span class="co">#&gt;   (0,1]            2        2     2     3     3     2     3  17</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a><span class="co">#&gt;   (1,5]            3        5     6     4     6     5     4  33</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a><span class="co">#&gt;   (10,50]          3        1     4     3     1     3     3  18</span></span>
+<span id="cb25-12"><a href="#cb25-12"></a><span class="co">#&gt;   (5,10]           3        3     2     4     2     1     2  17</span></span>
+<span id="cb25-13"><a href="#cb25-13"></a><span class="co">#&gt;   (50,500]         3        1     0     1     2     3     2  12</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a><span class="co">#&gt;   (500,1e+04]      1        1     1     0     1     1     1   6</span></span>
 <span id="cb25-15"><a href="#cb25-15"></a><span class="co">#&gt;   Sum             15       13    15    15    15    15    15 103</span></span></code></pre></div>
 </div>
 

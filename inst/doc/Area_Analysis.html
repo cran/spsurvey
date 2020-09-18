@@ -12,10 +12,26 @@
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2020-06-15" />
+<meta name="date" content="2020-09-17" />
 
 <title>Area Analysis</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -303,7 +319,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Area Analysis</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2020-06-15</h4>
+<h4 class="date">2020-09-17</h4>
 
 
 
@@ -313,10 +329,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>The initial step is to use the library function to load the <code>spsurvey</code> package. After the package is loaded, a message is printed to the R console indicating that the spsurvey package was loaded successfully.</p>
 <p>Load the spsurvey package:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(spsurvey)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="co">#&gt; </span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#&gt; Version 4.1.0 of the spsurvey package was loaded successfully.</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(sf)</span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#&gt; Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1</span></span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co">#&gt; Warning: replacing previous import &#39;vctrs::data_frame&#39; by &#39;tibble::data_frame&#39;</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#&gt; when loading &#39;dplyr&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co">#&gt; </span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#&gt; Version 4.1.0 of the spsurvey package was loaded successfully.</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(sf)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co">#&gt; Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1</span></span></code></pre></div>
 </div>
 <div id="load-the-survey-design-and-analytical-variables-data-set" class="section level2">
 <h2>Load the survey design and analytical variables data set</h2>

@@ -12,10 +12,26 @@
 
 <meta name="author" content="Tom Kincaid" />
 
-<meta name="date" content="2020-06-15" />
+<meta name="date" content="2020-09-17" />
 
 <title>Area Design</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -303,7 +319,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Area Design</h1>
 <h4 class="author">Tom Kincaid</h4>
-<h4 class="date">2020-06-15</h4>
+<h4 class="date">2020-09-17</h4>
 
 
 
@@ -382,17 +398,17 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">head</span>(Equalsites)</span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="co">#&gt;           coordinates   siteID   xcoord  ycoord mdcaty        wgt stratum</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a><span class="co">#&gt; 1 (-1256763, 2115951) EQUAL-01 -1256763 2115951  Equal 4396596870    None</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="co">#&gt; 2 (-1259924, 2079541) EQUAL-02 -1259924 2079541  Equal 4396596870    None</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt; 3 (-1242538, 1721144) EQUAL-03 -1242538 1721144  Equal 4396596870    None</span></span>
-<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; 4 (-1464103, 2224971) EQUAL-04 -1464103 2224971  Equal 4396596870    None</span></span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 5 (-1106808, 2023967) EQUAL-05 -1106808 2023967  Equal 4396596870    None</span></span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 6 (-1393773, 2103455) EQUAL-06 -1393773 2103455  Equal 4396596870    None</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co">#&gt; 1 (-1155597, 2068384) EQUAL-01 -1155597 2068384  Equal 4396596870    None</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="co">#&gt; 2 (-1425210, 2065981) EQUAL-02 -1425210 2065981  Equal 4396596870    None</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt; 3 (-1198925, 1660384) EQUAL-03 -1198925 1660384  Equal 4396596870    None</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; 4 (-1489064, 1970077) EQUAL-04 -1489064 1970077  Equal 4396596870    None</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 5 (-1118314, 2031373) EQUAL-05 -1118314 2031373  Equal 4396596870    None</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 6 (-1380084, 1984276) EQUAL-06 -1380084 1984276  Equal 4396596870    None</span></span>
 <span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt;      panel EvalStatus EvalReason Level3                  Level3_Nam     Area_ha</span></span>
 <span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; 1 PanelOne    NotEval                19 Wasatch and Uinta Mountains 4.47240e+10</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; 2 PanelOne    NotEval                19 Wasatch and Uinta Mountains 4.47240e+10</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; 2 PanelOne    NotEval                13     Central Basin and Range 3.09949e+11</span></span>
 <span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt; 3 PanelOne    NotEval                20           Colorado Plateaus 1.26379e+11</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 4 PanelOne    NotEval                80    Northern Basin and Range 1.42202e+11</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 4 PanelOne    NotEval                13     Central Basin and Range 3.09949e+11</span></span>
 <span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 5 PanelOne    NotEval                20           Colorado Plateaus 1.26379e+11</span></span>
 <span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; 6 PanelOne    NotEval                13     Central Basin and Range 3.09949e+11</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
@@ -477,37 +493,39 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb12-11"><a href="#cb12-11"></a><span class="co">#&gt; Current number of levels: 3 </span></span>
 <span id="cb12-12"><a href="#cb12-12"></a><span class="co">#&gt; Final number of levels: 3</span></span>
 <span id="cb12-13"><a href="#cb12-13"></a><span class="co">#&gt; Warning in grtsarea(sframe, sum(n.desired), SiteBegin, shift.grid, startlev, : </span></span>
-<span id="cb12-14"><a href="#cb12-14"></a><span class="co">#&gt; Of the 34 grid cells from which sample points were selected,</span></span>
-<span id="cb12-15"><a href="#cb12-15"></a><span class="co">#&gt; 9 (26.5%) of the cells contained more than one sample point.</span></span></code></pre></div>
+<span id="cb12-14"><a href="#cb12-14"></a><span class="co">#&gt; Of the 33 grid cells from which sample points were selected,</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="co">#&gt; 12 (36.4%) of the cells contained more than one sample point.</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="co">#&gt; Warning in showSRID(uprojargs, format = &quot;PROJ&quot;, multiline = &quot;NO&quot;): Discarded</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="co">#&gt; datum Unknown based on GRS80 ellipsoid in CRS definition</span></span></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">head</span>(Unequalsites)</span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="co">#&gt;           coordinates     siteID   xcoord  ycoord                      mdcaty</span></span>
-<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#&gt; 1 (-1133612, 1800781) UNEQUAL-01 -1133612 1800781            Southern Rockies</span></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#&gt; 2 (-1353647, 1681207) UNEQUAL-02 -1353647 1681207           Colorado Plateaus</span></span>
-<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; 3 (-1406694, 2219944) UNEQUAL-03 -1406694 2219944     Central Basin and Range</span></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt; 4 (-1333702, 1977473) UNEQUAL-04 -1333702 1977473 Wasatch and Uinta Mountains</span></span>
-<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt; 5 (-1353875, 1806395) UNEQUAL-05 -1353875 1806395 Wasatch and Uinta Mountains</span></span>
-<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt; 6 (-1296535, 1903227) UNEQUAL-06 -1296535 1903227 Wasatch and Uinta Mountains</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="co">#&gt;           coordinates     siteID   xcoord  ycoord                  mdcaty</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="co">#&gt; 1 (-1558089, 1703408) UNEQUAL-01 -1558089 1703408  Mojave Basin and Range</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="co">#&gt; 2 (-1126103, 2074736) UNEQUAL-02 -1126103 2074736           Wyoming Basin</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">#&gt; 3 (-1263654, 2192250) UNEQUAL-03 -1263654 2192250           Wyoming Basin</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="co">#&gt; 4 (-1162018, 1723076) UNEQUAL-04 -1162018 1723076        Southern Rockies</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">#&gt; 5 (-1559142, 1724424) UNEQUAL-05 -1559142 1724424  Mojave Basin and Range</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="co">#&gt; 6 (-1354725, 2014889) UNEQUAL-06 -1354725 2014889 Central Basin and Range</span></span>
 <span id="cb13-9"><a href="#cb13-9"></a><span class="co">#&gt;          wgt stratum    panel EvalStatus EvalReason Level3     Area_ha</span></span>
-<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt; 1  189288683    None PanelOne    NotEval                21 5.40909e+08</span></span>
-<span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt; 2 8579716309    None PanelOne    NotEval                20 1.26379e+11</span></span>
-<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt; 3 8206454636    None PanelOne    NotEval                13 3.09949e+11</span></span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt; 4 4353925113    None PanelOne    NotEval                19 4.47240e+10</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; 5 4353925113    None PanelOne    NotEval                19 4.47240e+10</span></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; 6 4353925113    None PanelOne    NotEval                19 4.47240e+10</span></span></code></pre></div>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="co">#&gt; 1  386372151    None PanelOne    NotEval                14 1.29599e+11</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="co">#&gt; 2  582117660    None PanelOne    NotEval                18 1.33312e+11</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#&gt; 3  582117660    None PanelOne    NotEval                18 1.33312e+11</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="co">#&gt; 4  189288683    None PanelOne    NotEval                21 4.05534e+08</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#&gt; 5  386372151    None PanelOne    NotEval                14 1.29599e+11</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#&gt; 6 8206454636    None PanelOne    NotEval                13 3.09949e+11</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">summary</span>(Unequalsites)</span>
 <span id="cb14-2"><a href="#cb14-2"></a><span class="co">#&gt; Design Summary: Number of Sites Classified by mdcaty (Multidensity Category)</span></span>
 <span id="cb14-3"><a href="#cb14-3"></a><span class="co">#&gt; </span></span>
 <span id="cb14-4"><a href="#cb14-4"></a><span class="co">#&gt; mdcaty</span></span>
 <span id="cb14-5"><a href="#cb14-5"></a><span class="co">#&gt;     Central Basin and Range           Colorado Plateaus </span></span>
-<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt;                          10                           8 </span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt;                          10                          10 </span></span>
 <span id="cb14-7"><a href="#cb14-7"></a><span class="co">#&gt;      Mojave Basin and Range    Northern Basin and Range </span></span>
-<span id="cb14-8"><a href="#cb14-8"></a><span class="co">#&gt;                           6                           5 </span></span>
+<span id="cb14-8"><a href="#cb14-8"></a><span class="co">#&gt;                           5                           4 </span></span>
 <span id="cb14-9"><a href="#cb14-9"></a><span class="co">#&gt;            Southern Rockies Wasatch and Uinta Mountains </span></span>
-<span id="cb14-10"><a href="#cb14-10"></a><span class="co">#&gt;                           4                          13 </span></span>
+<span id="cb14-10"><a href="#cb14-10"></a><span class="co">#&gt;                           6                           9 </span></span>
 <span id="cb14-11"><a href="#cb14-11"></a><span class="co">#&gt;               Wyoming Basin                         Sum </span></span>
-<span id="cb14-12"><a href="#cb14-12"></a><span class="co">#&gt;                           4                          50</span></span></code></pre></div>
+<span id="cb14-12"><a href="#cb14-12"></a><span class="co">#&gt;                           6                          50</span></span></code></pre></div>
 </div>
 <div id="stratified-equal-probability-grts-survey-design" class="section level2">
 <h2>Stratified, equal probability, GRTS survey design</h2>
@@ -580,12 +598,12 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">head</span>(Stratsites)</span>
 <span id="cb18-2"><a href="#cb18-2"></a><span class="co">#&gt;           coordinates        siteID   xcoord  ycoord mdcaty        wgt</span></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="co">#&gt; 1 (-1401318, 2190822) STRATIFIED-01 -1401318 2190822  Equal 8206454636</span></span>
-<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; 2 (-1450532, 2116724) STRATIFIED-02 -1450532 2116724  Equal 8206454636</span></span>
-<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; 3 (-1459589, 1941707) STRATIFIED-03 -1459589 1941707  Equal 8206454636</span></span>
-<span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt; 4 (-1341986, 2142783) STRATIFIED-04 -1341986 2142783  Equal 8206454636</span></span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="co">#&gt; 5 (-1428699, 2062467) STRATIFIED-05 -1428699 2062467  Equal 8206454636</span></span>
-<span id="cb18-8"><a href="#cb18-8"></a><span class="co">#&gt; 6 (-1543868, 1878707) STRATIFIED-06 -1543868 1878707  Equal 8206454636</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="co">#&gt; 1 (-1531721, 1824033) STRATIFIED-01 -1531721 1824033  Equal 8206454636</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="co">#&gt; 2 (-1398588, 2056297) STRATIFIED-02 -1398588 2056297  Equal 8206454636</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="co">#&gt; 3 (-1369118, 2007008) STRATIFIED-03 -1369118 2007008  Equal 8206454636</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a><span class="co">#&gt; 4 (-1338733, 1981828) STRATIFIED-04 -1338733 1981828  Equal 8206454636</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="co">#&gt; 5 (-1443186, 2136787) STRATIFIED-05 -1443186 2136787  Equal 8206454636</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="co">#&gt; 6 (-1353950, 2214941) STRATIFIED-06 -1353950 2214941  Equal 8206454636</span></span>
 <span id="cb18-9"><a href="#cb18-9"></a><span class="co">#&gt;                   stratum    panel EvalStatus EvalReason Level3     Area_ha</span></span>
 <span id="cb18-10"><a href="#cb18-10"></a><span class="co">#&gt; 1 Central Basin and Range PanelOne    NotEval                13 3.09949e+11</span></span>
 <span id="cb18-11"><a href="#cb18-11"></a><span class="co">#&gt; 2 Central Basin and Range PanelOne    NotEval                13 3.09949e+11</span></span>
@@ -643,26 +661,26 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb21-15"><a href="#cb21-15"></a><span class="co">#&gt; Current number of levels: 5 </span></span>
 <span id="cb21-16"><a href="#cb21-16"></a><span class="co">#&gt; Final number of levels: 5</span></span>
 <span id="cb21-17"><a href="#cb21-17"></a><span class="co">#&gt; Warning in grtsarea(sframe, sum(n.desired), SiteBegin, shift.grid, startlev, : </span></span>
-<span id="cb21-18"><a href="#cb21-18"></a><span class="co">#&gt; Of the 54 grid cells from which sample points were selected,</span></span>
-<span id="cb21-19"><a href="#cb21-19"></a><span class="co">#&gt; 3 (5.6%) of the cells contained more than one sample point.</span></span></code></pre></div>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="co">#&gt; Of the 55 grid cells from which sample points were selected,</span></span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="co">#&gt; 2 (3.6%) of the cells contained more than one sample point.</span></span></code></pre></div>
 <p>Print the warning message:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">warnings</span>()</span></code></pre></div>
 <p>Print the initial six lines of the survey design:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">head</span>(Panelsites)</span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="co">#&gt;           coordinates     siteID   xcoord  ycoord                      mdcaty</span></span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="co">#&gt; 1 (-1376666, 1839348) UNEQUAL-01 -1376666 1839348 Wasatch and Uinta Mountains</span></span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="co">#&gt; 2 (-1138785, 1809706) UNEQUAL-02 -1138785 1809706            Southern Rockies</span></span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="co">#&gt; 3 (-1295387, 2165883) UNEQUAL-03 -1295387 2165883 Wasatch and Uinta Mountains</span></span>
-<span id="cb23-6"><a href="#cb23-6"></a><span class="co">#&gt; 4 (-1207305, 1997363) UNEQUAL-04 -1207305 1997363           Colorado Plateaus</span></span>
-<span id="cb23-7"><a href="#cb23-7"></a><span class="co">#&gt; 5 (-1254706, 1921143) UNEQUAL-05 -1254706 1921143           Colorado Plateaus</span></span>
-<span id="cb23-8"><a href="#cb23-8"></a><span class="co">#&gt; 6 (-1184133, 1727075) UNEQUAL-06 -1184133 1727075           Colorado Plateaus</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="co">#&gt;           coordinates     siteID   xcoord  ycoord                  mdcaty</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="co">#&gt; 1 (-1360080, 2099839) UNEQUAL-01 -1360080 2099839 Central Basin and Range</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="co">#&gt; 2 (-1120360, 2076983) UNEQUAL-02 -1120360 2076983           Wyoming Basin</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="co">#&gt; 3 (-1144710, 1796206) UNEQUAL-03 -1144710 1796206        Southern Rockies</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="co">#&gt; 4 (-1141340, 1805220) UNEQUAL-04 -1141340 1805220        Southern Rockies</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="co">#&gt; 5 (-1249382, 2133024) UNEQUAL-05 -1249382 2133024           Wyoming Basin</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="co">#&gt; 6 (-1383508, 2067069) UNEQUAL-06 -1383508 2067069 Central Basin and Range</span></span>
 <span id="cb23-9"><a href="#cb23-9"></a><span class="co">#&gt;          wgt stratum panel EvalStatus EvalReason Level3     Area_ha</span></span>
-<span id="cb23-10"><a href="#cb23-10"></a><span class="co">#&gt; 1 4353925113    None Year1    NotEval                19 4.47240e+10</span></span>
-<span id="cb23-11"><a href="#cb23-11"></a><span class="co">#&gt; 2  189288683    None Year1    NotEval                21 5.40909e+08</span></span>
-<span id="cb23-12"><a href="#cb23-12"></a><span class="co">#&gt; 3 4353925113    None Year1    NotEval                19 4.47240e+10</span></span>
-<span id="cb23-13"><a href="#cb23-13"></a><span class="co">#&gt; 4 8579716309    None Year1    NotEval                20 1.26379e+11</span></span>
-<span id="cb23-14"><a href="#cb23-14"></a><span class="co">#&gt; 5 8579716309    None Year1    NotEval                20 1.26379e+11</span></span>
-<span id="cb23-15"><a href="#cb23-15"></a><span class="co">#&gt; 6 8579716309    None Year1    NotEval                20 1.26379e+11</span></span></code></pre></div>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="co">#&gt; 1 8206454636    None Year1    NotEval                13 3.09949e+11</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a><span class="co">#&gt; 2  582117660    None Year1    NotEval                18 1.33312e+11</span></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="co">#&gt; 3  189288683    None Year1    NotEval                21 5.40909e+08</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a><span class="co">#&gt; 4  189288683    None Year1    NotEval                21 5.40909e+08</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="co">#&gt; 5  582117660    None Year1    NotEval                18 1.33312e+11</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a><span class="co">#&gt; 6 8206454636    None Year1    NotEval                13 3.09949e+11</span></span></code></pre></div>
 <p>Print the survey design summary:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">summary</span>(Panelsites)</span>
 <span id="cb24-2"><a href="#cb24-2"></a><span class="co">#&gt; </span></span>
@@ -672,13 +690,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb24-6"><a href="#cb24-6"></a><span class="co">#&gt; </span></span>
 <span id="cb24-7"><a href="#cb24-7"></a><span class="co">#&gt;                              panel</span></span>
 <span id="cb24-8"><a href="#cb24-8"></a><span class="co">#&gt; mdcaty                        OverSamp Year1 Year2 Year3 Year4 Year5 Sum</span></span>
-<span id="cb24-9"><a href="#cb24-9"></a><span class="co">#&gt;   Central Basin and Range            2     1     2     2     1     3  11</span></span>
-<span id="cb24-10"><a href="#cb24-10"></a><span class="co">#&gt;   Colorado Plateaus                  3     4     2     2     2     2  15</span></span>
-<span id="cb24-11"><a href="#cb24-11"></a><span class="co">#&gt;   Mojave Basin and Range             1     0     1     1     1     2   6</span></span>
-<span id="cb24-12"><a href="#cb24-12"></a><span class="co">#&gt;   Northern Basin and Range           0     1     0     1     2     0   4</span></span>
-<span id="cb24-13"><a href="#cb24-13"></a><span class="co">#&gt;   Southern Rockies                   1     1     1     1     0     1   5</span></span>
-<span id="cb24-14"><a href="#cb24-14"></a><span class="co">#&gt;   Wasatch and Uinta Mountains        0     3     1     1     2     2   9</span></span>
-<span id="cb24-15"><a href="#cb24-15"></a><span class="co">#&gt;   Wyoming Basin                      0     0     3     2     2     0   7</span></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="co">#&gt;   Central Basin and Range            1     3     4     0     2     2  12</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="co">#&gt;   Colorado Plateaus                  3     1     1     2     3     3  13</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a><span class="co">#&gt;   Mojave Basin and Range             1     1     0     2     0     1   5</span></span>
+<span id="cb24-12"><a href="#cb24-12"></a><span class="co">#&gt;   Northern Basin and Range           0     1     1     2     2     1   7</span></span>
+<span id="cb24-13"><a href="#cb24-13"></a><span class="co">#&gt;   Southern Rockies                   1     2     1     0     1     1   6</span></span>
+<span id="cb24-14"><a href="#cb24-14"></a><span class="co">#&gt;   Wasatch and Uinta Mountains        0     0     3     3     2     2  10</span></span>
+<span id="cb24-15"><a href="#cb24-15"></a><span class="co">#&gt;   Wyoming Basin                      1     2     0     1     0     0   4</span></span>
 <span id="cb24-16"><a href="#cb24-16"></a><span class="co">#&gt;   Sum                                7    10    10    10    10    10  57</span></span></code></pre></div>
 </div>
 
