@@ -1,76 +1,103 @@
 <!-- badges: start -->
-[![](https://cranlogs.r-pkg.org/badges/grand-total/spsurvey)](https://cran.r-project.org/package=spsurvey)[![Travis build status](https://travis-ci.org/mhweber/spsurvey.svg?branch=master)](https://travis-ci.org/mhweber/spsurvey)[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%202%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
+[![R-CMD-check](https://github.com/USEPA/spsurvey/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/USEPA/spsurvey/actions/workflows/R-CMD-check.yaml)
 [![CRAN](http://www.r-pkg.org/badges/version/spsurvey)](https://cran.r-project.org/package=spsurvey)
 [![cran checks](https://cranchecks.info/badges/worst/spsurvey)](https://cran.r-project.org/web/checks/check_results_spsurvey.html)
+[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/spsurvey)](https://cran.r-project.org/package=spsurvey)
 <!-- badges: end -->
-
 
 # spsurvey
 
-`spsurvey` is comprised of functions which implement algorithms for design and analysis of probability surveys.  The functions are tailored for Generalized Random Tessellation Stratified survey designs.
+spsurvey is an R package that implements a design-based approach to statistical inference,
+with a focus on spatial data.
+Spatially balanced samples are selected using the
+Generalized Random Tessellation Stratified (GRTS) algorithm.
+The GRTS algorithm can be applied to finite resources (point geometries) and
+infinite resources (linear / linestring and areal / polygon geometries) and flexibly
+accommodates a diverse set of sampling design features, including
+stratification, unequal inclusion probabilities, proportional (to size)
+inclusion probabilities, legacy (historical) sites, a minimum distance between
+sites, and two options for replacement sites (reverse hierarchical order and
+nearest neighbor). Data are analyzed using a wide
+range of analysis functions that perform categorical variable analysis, continuous
+variable analysis, attributable risk analysis, risk difference analysis, relative
+risk analysis, change analysis, and trend analysis. spsurvey can also be used to
+summarize objects, visualize objects, select samples that are not spatially balanced,
+select panel samples, measure the amount of spatial balance in a sample,
+adjust design weights, and more.
 
 ## Installation
 
-You can install the released version from CRAN using:
+You can install and load the most recent approved version from CRAN by running
 
 ```r
-# install from CRAN
-install.packages('spsurvey')
+# install the most recent approved version from CRAN
+install.packages("spsurvey")
+# load the most recent approved version from CRAN
 library(spsurvey)
 ```
 
-You can install development version of`spsurvey` from GitHub with the following:
+You can install and load the most recent development version of`spsurvey` from GitHub by running:
 
 ```r
-# requires devtools to install
-install.packages('devtools')
-library(devtools)
+# Installing from GitHub requires you first install devtools
+install.packages("devtools")
 
-# install from repository
-install_github('USEPA/spsurvey')
+# install the most recent development version from GitHub
+devtools::install_github("USEPA/spsurvey", ref = "main")
+# load the most recent development version from GitHub
 library(spsurvey)
 ```
 
-To install from GitHub with package vignettes:
+You can install the most recent development version of `spsurvey` from GitHub with package vignettes by running:
 ```r
-library(devtools)
-install_github('USEPA/spsurvey', build_vignettes=TRUE)
-library(spsurvey)
+install the most recent development version from GitHub with package vignettes
+devtools::install_github("USEPA/spsurvey", build_vignettes=TRUE)
 ```
 
-## Example
-An overview of the spsurvey package is provided in the users guide that is included with the package.  The documentation includes a number of vignettes for the design and analysis of survey designs for point (finite), linear and area (polygons) spatial features.  Vignettes are also available for typical survey analyses.
+To view the vignettes in RStudio, run
+```r
+vignette("start-here", "spsurvey") # start with this vignette for an spsurvey overview
+vignette("EDA", "spsurvey") # for summaries and visualizations (exploratory data analysis)
+vignette("sampling", "spsurvey") # for spatially balanced sampling
+vignette("analysis", "spsurvey") # for analyzing data
+```
+
+To view the vignettes in a web format, visit [here](https://cran.r-project.org/package=spsurvey).
+
+Further detail regarding spsurvey is contained in the package's documentation manual available for download [here](https://cran.r-project.org/package=spsurvey).
+
 
 ## Citation
+
+If you used spsurvey in your work, please cite it. You can view the most recent citation by running
 ```r
-citation(package = 'spsurvey')
+citation(package = "spsurvey")
 ```
 
 ```
-## 
-## To cite the spsurvey package in publications use:
-## 
-##   Kincaid, T. M., Olsen, A. R., and Weber, M. H. (2019).
-##   spsurvey: Spatial Survey Design and Analysis. R package
-##  version 4.1.0.
-## 
-## A BibTeX entry for LaTeX users is
-## 
-##  @Manual{,
-##     title = {spsurvey: Spatial Survey Design and Analysis},
-##     author = {Thomas M. Kincaid and Anthony R. Olsen and Marc H. Weber},
-##     year = {2019},
-##     note = {R package version 4.1.0},
-##   }
+#> To cite the spsurvey package in publications use:
+#> 
+#>   Dumelle, Michael., Kincaid, T. M., Olsen, A. R., and Weber, M. H. (2021). spsurvey:
+#>   Spatial Sampling Design and Analysis. R package version 5.0.0.
+#> 
+#> A BibTeX entry for LaTeX users is
+#> 
+#>   @Manual{,
+#>     title = {spsurvey: Spatial Sampling Design and Analysis},
+#>     author = {Michael Dumelle and Thomas M. Kincaid and Anthony R. Olsen and Marc H. Weber},
+#>     year = {2021},
+#>     note = {R package version 5.0.0},
+#>   }
 ```
 
 ## Package Contributions
+
 We encourage users to submit issues and enhancement requests so we may
-continue to improve our package.
+continue to improve spsurvey.
 
 ## EPA Disclaimer
 The United States Environmental Protection Agency (EPA) GitHub project code is provided on an "as is" basis and the user assumes responsibility for its use. EPA has relinquished control of the information and no longer has responsibility to protect the integrity , confidentiality, or availability of the information. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by EPA. The EPA seal and logo shall not be used in any manner to imply endorsement of any commercial product or activity by EPA or the United States Government.
 
 ### License
 
-This project is licensed under the GNU General Public License, [GPL-2](https://cran.r-project.org/web/licenses/GPL-2).  
+This project is licensed under the GNU General Public License, [GPL-3](https://cran.r-project.org/web/licenses/GPL-3).  
