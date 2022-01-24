@@ -1539,7 +1539,7 @@ div.tocify {
 #&gt; 
 #&gt;   Dumelle, Michael., Kincaid, T. M., Olsen, A. R., and Weber, M. H.
 #&gt;   (2021). spsurvey: Spatial Sampling Design and Analysis. R package
-#&gt;   version 5.1.0.
+#&gt;   version 5.2.0.
 #&gt; 
 #&gt; A BibTeX entry for LaTeX users is
 #&gt; 
@@ -1547,7 +1547,7 @@ div.tocify {
 #&gt;     title = {spsurvey: Spatial Sampling Design and Analysis},
 #&gt;     author = {Michael Dumelle and Thomas M. Kincaid and Anthony R. Olsen and Marc H. Weber},
 #&gt;     year = {2021},
-#&gt;     note = {R package version 5.1.0},
+#&gt;     note = {R package version 5.2.0},
 #&gt;   }</code></pre>
 </div>
 <div id="spsurvey-terminology" class="section level1">
@@ -1617,7 +1617,7 @@ NE_Lakes_geo
 <h1><span class="header-section-number">7</span> Coordinate reference systems</h1>
 <p>Spatial data and <code>sf</code> objects rely on coordinate reference systems. A coordinate reference system (CRS) provides a structure by which to identify unique locations on the Earth’s surface. CRSs are either geographic or projected. A geographic CRS uses longitude (east-west direction) and latitude (north-south direction) coordinates to represent location with respect to a specific ellipsoid or spheroid surface. Geographic CRSs are measured in degrees, <em>not units like meters or feet</em> – this has important consequences. For example, a one degree difference in latitude is different at different longitudes. Projected CRSs are measured in standard Cartesian coordinates with respect to a flat surface. They have x and y locations, an origin, and a unit of measurement (like meters or feet).</p>
 <p>You can move between coordinate systems using <code>sf::st_transform()</code>. For example, we can transform <code>NE_Lakes_geo</code> (which uses a geographic CRS) to <code>NE_Lakes</code> (which uses a projected CRS) by running</p>
-<pre class="r"><code>NE_Lakes &lt;- st_transform(NE_Lakes, crs = 5070)
+<pre class="r"><code>NE_Lakes &lt;- st_transform(NE_Lakes_geo, crs = 5070)
 NE_Lakes
 #&gt; Simple feature collection with 195 features and 4 fields
 #&gt; Geometry type: POINT
