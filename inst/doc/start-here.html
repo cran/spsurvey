@@ -1334,6 +1334,7 @@ if (window.hljs) {
 
 
 
+
 <style type="text/css">
 .main-container {
   max-width: 940px;
@@ -1354,6 +1355,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -1539,7 +1543,7 @@ div.tocify {
 #&gt; 
 #&gt;   Dumelle, Michael., Kincaid, T. M., Olsen, A. R., and Weber, M. H.
 #&gt;   (2022). spsurvey: Spatial Sampling Design and Analysis. R package
-#&gt;   version 5.3.0.
+#&gt;   version 5.4.0.
 #&gt; 
 #&gt; A BibTeX entry for LaTeX users is
 #&gt; 
@@ -1547,7 +1551,7 @@ div.tocify {
 #&gt;     title = {spsurvey: Spatial Sampling Design and Analysis},
 #&gt;     author = {Michael Dumelle and Thomas M. Kincaid and Anthony R. Olsen and Marc H. Weber},
 #&gt;     year = {2022},
-#&gt;     note = {R package version 5.3.0},
+#&gt;     note = {R package version 5.4.0},
 #&gt;   }</code></pre>
 </div>
 <div id="spsurvey-terminology" class="section level1">
@@ -1568,7 +1572,7 @@ div.tocify {
 <ol style="list-style-type: decimal">
 <li>Exploratory Data Analysis: Summarizing and Visualizing Sampling Frames, Design Sites, and Analysis Data
 <ul>
-<li>Use the <code>sp_summary()</code> and <code>sp_plot()</code> functions to summarize and visualize sampling frames, design sites, and analysis data</li>
+<li>Use the <code>summary()</code> and <code>plot()</code> functions to summarize and visualize sampling frames, design sites, and analysis data</li>
 <li>To view this vignette, run <code>vignette(&quot;EDA&quot;, &quot;spsurvey&quot;)</code></li>
 </ul></li>
 <li>Spatially Balanced Sampling
@@ -1582,11 +1586,11 @@ div.tocify {
 <li>To view this vignette, run <code>vignette(&quot;analysis&quot;, &quot;spsurvey&quot;)</code>.</li>
 </ul></li>
 </ol>
-<p>These vignettes cover some of the core functions (and arguments within those functions) in spsurvey. To learn more about features of spsurvey that are not covered in these vignettes, we encourage you to read spsurvey’s documentation available for download <a href="https://cran.r-project.org/package=spsurvey">here</a>. Help files for a particular function are viewable by running <code>?function_name</code> after loading spsurvey. For example, to learn more about the <code>grts()</code> function, run <code>?grts</code>.</p>
+<p>These vignettes cover some of the core functions (and arguments within those functions) in spsurvey. To learn more about features of spsurvey that are not covered in these vignettes, we encourage you to read spsurvey’s documentation available for download <a href="https://cran.r-project.org/package=spsurvey">here</a> or viewable interactively on our website <a href="https://usepa.github.io/spsurvey/">here</a>. Help files for a particular function are viewable by running <code>?function_name</code> after loading spsurvey. For example, to learn more about the <code>grts()</code> function, run <code>?grts</code>.</p>
 </div>
 <div id="installing-a-previous-version-of-spsurvey" class="section level1">
 <h1><span class="header-section-number">5</span> Installing a previous version of spsurvey</h1>
-<p>The version 5.0.0 update to spsurvey implemented many significant changes to existing functions. As a result, some of your old code may not run properly while using version 5.0.0. Though we recommend adapting your code to work with the version 5.0.0, you may also install a previous version of spsurvey. For information regarding the installation of previous version of R packages, please see the RStudio support page <a href="https://support.rstudio.com/hc/en-us/articles/219949047-Installing-older-versions-of-packages">here</a>. Additionally, old versions of spsurvey are also available for download in the release tags section of our GitHub repository <a href="https://github.com/USEPA/spsurvey/releases">here</a>.</p>
+<p>The version 5.0.0 update to spsurvey implemented many significant changes to existing functions. As a result, some of your old code may not run properly while using version 5.0.0. Though we recommend adapting your code to work with the version 5.0.0, you may also install a previous version of spsurvey. For information regarding the installation of previous version of R packages, please see the RStudio support page <a href="https://support.posit.co/hc/en-us/articles/219949047-Installing-older-versions-of-packages">here</a>. Additionally, old versions of spsurvey are also available for download in the release tags section of our GitHub repository <a href="https://github.com/USEPA/spsurvey/releases">here</a>.</p>
 </div>
 <div id="sf-objects" class="section level1">
 <h1><span class="header-section-number">6</span> <code>sf</code> objects</h1>
