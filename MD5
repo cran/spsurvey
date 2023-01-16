@@ -1,6 +1,6 @@
-ba51bf56cfb5c4e1cdb92c34895ed1b3 *DESCRIPTION
+2cb24a861b84241ab05b17d993896062 *DESCRIPTION
 a541d999fff8dfa7e4d75c14b7d6794d *NAMESPACE
-7ad0c188273fc7470d051deadf407c5d *NEWS.md
+f6341181d433cd48a27aebaf6acf9e98 *NEWS.md
 7af2b098c57e15cdf499d7dfd8dac399 *R/adjwgt.R
 5ef2bda5834b3d6217e2e1f1b2905455 *R/ash1_wgt.R
 986f145ce145212f25d2b81b500f3ec3 *R/attrisk_analysis.R
@@ -90,7 +90,7 @@ fb36bec07d04e72cc2a526085d88e656 *R/total_est.R
 143cb486ceee5fbf6d9cd57d2d434d92 *R/utils.R
 a3692972d5870eed8322fda4efe039e5 *R/vecprint.R
 0d856894a4f48f972606f6a251686237 *R/warnprnt.R
-370f0dc60da5743c90d5db5c5807b7a0 *README.md
+1fdc8945a6c7c86c49e23c1c7771e74b *README.md
 37a5f8ca400e51675607f8f76e662e83 *build/vignette.rds
 306dd9af722f7a28ebebef2b7c844874 *data/Illinois_River.rda
 b70feeeb642578ee1e8ad68b6718a2bc *data/Illinois_River_Legacy.rda
@@ -100,7 +100,7 @@ b6e3bcb90f2cff08320201439f7fcdb6 *data/NE_Lakes.rda
 2e9f39c2fd4f4de87ecd9af1209d4b38 *data/NE_Lakes_df.rda
 d9199f981126e9f1a0563b4ec6754d3a *data/NLA_PNW.rda
 35b72e78025d817a3f84a242dcca7648 *data/NRSA_EPA7.rda
-d638ba46023b30b01a5c99859c373c07 *inst/CITATION
+0d5ac9b6d757507e117187819e48502a *inst/CITATION
 2d7a346600b75282419955eda559118f *inst/doc/EDA.R
 66eed77fa7544b95913228cf322f80ee *inst/doc/EDA.Rmd
 1ab2e6124c12070653ec37aae48408ee *inst/doc/EDA.html
@@ -112,7 +112,7 @@ d638ba46023b30b01a5c99859c373c07 *inst/CITATION
 30cf69d078b1d314c3d6c766f85ff748 *inst/doc/sampling.html
 e095fd7be678f3153fa5cf09fbce4a02 *inst/doc/start-here.R
 edf5fe6d8d887f1b7005c6c52e7a536f *inst/doc/start-here.Rmd
-f545536e209d9cd52253e30ab6bdf683 *inst/doc/start-here.html
+521d66a1d19ce432ff80ad4fd06a05c0 *inst/doc/start-here.html
 cfa0b5354d55b3c2ba6c32fb3743ea84 *inst/extdata/NLA_IN.rda
 fc42927b4a08a2e459d1c505595ca1f4 *man/Illinois_River.Rd
 58b8f2435f49759f69b89de8ad084893 *man/Illinois_River_Legacy.Rd
