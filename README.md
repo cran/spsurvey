@@ -1,7 +1,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/USEPA/spsurvey/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/USEPA/spsurvey/actions/workflows/R-CMD-check.yaml)
 [![CRAN](http://www.r-pkg.org/badges/version/spsurvey)](https://cran.r-project.org/package=spsurvey)
-[![cran checks](https://cranchecks.info/badges/worst/spsurvey)](https://cran.r-project.org/web/checks/check_results_spsurvey.html)
+[![cran checks](https://badges.cranchecks.info/worst/spsurvey.svg)](https://cran.r-project.org/web/checks/check_results_spsurvey.html)
 [![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/spsurvey)](https://cran.r-project.org/package=spsurvey)
 <!-- badges: end -->
 
@@ -23,7 +23,7 @@ variable analysis, attributable risk analysis, risk difference analysis, relativ
 risk analysis, change analysis, and trend analysis. spsurvey can also be used to
 summarize objects, visualize objects, select samples that are not spatially balanced,
 select panel samples, measure the amount of spatial balance in a sample,
-adjust design weights, and more.
+adjust design weights, and more. For additional details, see Dumelle et al. (2023) <doi:10.18637/jss.v105.i03>.
 
 ## Installation
 
@@ -77,8 +77,9 @@ citation(package = "spsurvey")
 ```
 #> To cite spsurvey in publications use:
 #> 
-#>   Michael Dumelle, Tom Kincaid, Anthony R. Olsen, Marc Weber (2023). spsurvey: Spatial Sampling Design and Analysis
-#>   in R. Journal of Statistical Software, 105(3), 1-29. doi:10.18637/jss.v105.i03
+#>   Michael Dumelle, Tom Kincaid, Anthony R. Olsen, Marc Weber (2023).
+#>   spsurvey: Spatial Sampling Design and Analysis in R. Journal of
+#>   Statistical Software, 105(3), 1-29. doi:10.18637/jss.v105.i03
 #> 
 #> A BibTeX entry for LaTeX users is
 #> 
