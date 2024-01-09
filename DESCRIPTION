@@ -1,6 +1,6 @@
 Package: spsurvey
 Title: Spatial Sampling Design and Analysis
-Version: 5.5.0
+Version: 5.5.1
 Authors@R: c(
     person("Michael", "Dumelle", role=c("aut","cre"),
            email = "Dumelle.Michael@epa.gov", comment = c(ORCID = "0000-0002-3393-5529")),
@@ -26,9 +26,9 @@ BugReports: https://github.com/USEPA/spsurvey/issues
 VignetteBuilder: knitr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-05-16 19:17:13 UTC; MDUMELLE
+Packaged: 2024-01-08 20:47:59 UTC; MDUMELLE
 Author: Michael Dumelle [aut, cre] (<https://orcid.org/0000-0002-3393-5529>),
   Tom Kincaid [aut],
   Tony Olsen [aut],
@@ -36,4 +36,4 @@ Author: Michael Dumelle [aut, cre] (<https://orcid.org/0000-0002-3393-5529>),
   Don Stevens [ctb],
   Denis White [ctb]
 Repository: CRAN
-Date/Publication: 2023-05-16 22:50:02 UTC
+Date/Publication: 2024-01-09 08:20:02 UTC
